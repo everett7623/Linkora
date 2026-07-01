@@ -1,0 +1,22 @@
+{
+  "name": "linkora",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:worker": "npm run dev --workspace=apps/worker",
+    "dev:admin": "npm run dev --workspace=apps/admin",
+    "build:admin": "npm run build --workspace=apps/admin",
+    "deploy:worker": "npm run deploy --workspace=apps/worker",
+    "db:migrate:local": "npm run db:migrate:local --workspace=apps/worker",
+    "db:migrate:remote": "npm run db:migrate:remote --workspace=apps/worker"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "prettier": "^3.3.3",
+    "eslint": "^9.8.0"
+  }
+}

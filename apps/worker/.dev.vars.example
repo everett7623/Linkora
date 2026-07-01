@@ -1,0 +1,4 @@
+# Copy this file to .dev.vars for local development
+# NEVER commit .dev.vars to git
+
+ADMIN_TOKEN=your-secret-admin-token-here
