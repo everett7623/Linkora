@@ -77,10 +77,16 @@ exportRoutes.get('/backup.json', async (c) => {
 });
 
 function csv(value: string): string {
-  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-    return `"${value.replace(/"/g, '""')}"`;
+  // Prevent CSV formula/injection: values starting with a formula trigger
+  // could execute in spreadsheet apps, so neutralize them with a leading quote.
+  let sanitized = value;
+  if (/^[=+\-@\t\r]/.test(sanitized)) {
+    sanitized = `'${sanitized}`;
   }
-  return value;
+  if (sanitized.includes(',') || sanitized.includes('"') || sanitized.includes('\n')) {
+    return `"${sanitized.replace(/"/g, '""')}"`;
+  }
+  return sanitized;
 }
 
 export default exportRoutes;

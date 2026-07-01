@@ -34,7 +34,17 @@ export function disabledPage(): Response {
   });
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function renderNotFoundPage(message: string): string {
+  const safeMessage = escapeHtml(message);
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,7 +66,7 @@ function renderNotFoundPage(message: string): string {
   <div class="container">
     <div class="code">404</div>
     <h1>Link Not Found</h1>
-    <p>${message}</p>
+    <p>${safeMessage}</p>
   </div>
 </body>
 </html>`;

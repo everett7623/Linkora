@@ -2,3 +2,6 @@
 # NEVER commit .dev.vars to git
 
 ADMIN_TOKEN=your-secret-admin-token-here
+
+# Optional: random secret used to salt visitor IP hashes.
+IP_HASH_SALT=change-me-to-a-random-string

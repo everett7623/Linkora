@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import type { Env } from '../types';
 import { jsonOk, jsonError } from '../utils/response';
+import { isAuthenticated, timingSafeEqual } from '../auth/index';
 
 const auth = new Hono<{ Bindings: Env }>();
 
@@ -13,7 +14,7 @@ auth.post('/login', async (c) => {
       return jsonError('Token is required', 400);
     }
 
-    if (!c.env.ADMIN_TOKEN || token !== c.env.ADMIN_TOKEN) {
+    if (!c.env.ADMIN_TOKEN || !timingSafeEqual(token, c.env.ADMIN_TOKEN)) {
       return jsonError('Invalid token', 401);
     }
 
@@ -24,12 +25,7 @@ auth.post('/login', async (c) => {
 });
 
 auth.get('/me', (c) => {
-  const authHeader = c.req.header('Authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return jsonError('Unauthorized', 401);
-  }
-  const token = authHeader.slice(7);
-  if (!c.env.ADMIN_TOKEN || token !== c.env.ADMIN_TOKEN) {
+  if (!isAuthenticated(c)) {
     return jsonError('Unauthorized', 401);
   }
   return jsonOk({ authenticated: true, role: 'admin' });

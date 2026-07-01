@@ -5,6 +5,10 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 LINKORA_VERSION = "0.1.0"
+# Comma-separated list of origins allowed to call /api/* via CORS.
+# Set to your admin frontend origin(s), e.g. "https://admin.example.com".
+# Leave empty to reject cross-origin browser requests, or "*" to allow all.
+CORS_ORIGINS = ""
 
 # D1 Database - replace database_id after running: wrangler d1 create linkora-db
 [[d1_databases]]
@@ -21,3 +25,4 @@ preview_id = "YOUR_KV_PREVIEW_NAMESPACE_ID"
 
 # Secrets (set via: wrangler secret put ADMIN_TOKEN)
 # ADMIN_TOKEN = set via wrangler secret
+# IP_HASH_SALT = set via wrangler secret put IP_HASH_SALT (salts visitor IP hashes)

@@ -19,12 +19,24 @@ const RESERVED_PATHS = new Set([
 
 const app = new Hono<{ Bindings: Env }>();
 
-// CORS for admin frontend
-app.use('/api/*', cors({
-  origin: ['*'],
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization'],
-}));
+// CORS for admin frontend. Origins are restricted to the comma-separated
+// CORS_ORIGINS allowlist; a bare "*" may be set to explicitly allow all.
+app.use('/api/*', (c, next) => {
+  const configured = (c.env.CORS_ORIGINS ?? '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+  const allowAll = configured.includes('*');
+
+  return cors({
+    origin: (origin) => {
+      if (allowAll) return origin || '*';
+      return configured.includes(origin) ? origin : null;
+    },
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+  })(c, next);
+});
 
 // Health check
 app.get('/health', (c) => {

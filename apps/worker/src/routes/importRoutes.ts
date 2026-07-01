@@ -11,6 +11,18 @@ import type { NormalizedImportItem, ImportAdapter, KVCacheEntry } from '@linkora
 
 const importRoutes = new Hono<{ Bindings: Env }>();
 
+// Escape a value for CSV output and neutralize spreadsheet formula injection.
+function csvCell(value: string): string {
+  let sanitized = value;
+  if (/^[=+\-@\t\r]/.test(sanitized)) {
+    sanitized = `'${sanitized}`;
+  }
+  if (/[",\n\r]/.test(sanitized)) {
+    return `"${sanitized.replace(/"/g, '""')}"`;
+  }
+  return sanitized;
+}
+
 importRoutes.use('*', async (c, next) => {
   const authError = requireAuth(c);
   if (authError) return authError;
@@ -158,7 +170,7 @@ importRoutes.post('/confirm', async (c) => {
     const validation = adapter.validate(item);
     if (!validation.valid) {
       failedCount++;
-      reportRows.push(`${item.slug},failed,"${validation.errors.join('; ')}"`);
+      reportRows.push(`${csvCell(item.slug)},failed,${csvCell(validation.errors.join('; '))}`);
       continue;
     }
 
@@ -166,7 +178,7 @@ importRoutes.post('/confirm', async (c) => {
     if (existing) {
       conflictCount++;
       skippedCount++;
-      reportRows.push(`${item.slug},skipped,slug already exists`);
+      reportRows.push(`${csvCell(item.slug)},skipped,slug already exists`);
       continue;
     }
 
@@ -215,10 +227,10 @@ importRoutes.post('/confirm', async (c) => {
       await setCachedLink(c.env, domain, cacheEntry);
 
       successCount++;
-      reportRows.push(`${item.slug},success,`);
+      reportRows.push(`${csvCell(item.slug)},success,`);
     } catch (err) {
       failedCount++;
-      reportRows.push(`${item.slug},failed,"${String(err)}"`);
+      reportRows.push(`${csvCell(item.slug)},failed,${csvCell(String(err))}`);
     }
   }
 

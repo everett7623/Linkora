@@ -53,7 +53,9 @@ export async function recordVisit(
     const ip = request.headers.get('CF-Connecting-IP') ?? '';
 
     const isBot = detectBot(ua) ? 1 : 0;
-    const ipHash = ip ? await sha256(ip) : undefined;
+    // Salt the IP before hashing so stored hashes cannot be reversed by
+    // brute-forcing the (small) IP address space.
+    const ipHash = ip ? await sha256(`${env.IP_HASH_SALT ?? ''}:${ip}`) : undefined;
 
     const visitId = generateId();
     const createdAt = now();
