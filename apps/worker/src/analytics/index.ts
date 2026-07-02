@@ -88,6 +88,7 @@ export async function recordVisit(
       expiresAt: link.expires_at ?? undefined,
       maxClicks: link.max_clicks ?? undefined,
       warningEnabled: link.warning_enabled === 1,
+      passwordProtected: !!link.password_hash,
     };
     await setCachedLink(env, domain, cacheEntry);
   } catch {

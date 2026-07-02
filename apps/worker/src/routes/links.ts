@@ -10,7 +10,7 @@ import {
 } from '../db/index';
 import { setCachedLink, deleteCachedLink } from '../cache/index';
 import { jsonOk, jsonError, jsonCreated } from '../utils/response';
-import { generateId, now } from '../utils/id';
+import { generateId, now, sha256 } from '../utils/id';
 import { validateSlug, validateLongUrl } from '@linkora/shared';
 import { logAudit } from '../utils/audit';
 import type { Link, KVCacheEntry } from '@linkora/shared';
@@ -106,6 +106,13 @@ links.post('/', async (c) => {
 
   const expiresAt = (body as Record<string, unknown>).expires_at as string | undefined;
   const maxClicks = (body as Record<string, unknown>).max_clicks as number | undefined;
+  const password = (body as Record<string, unknown>).password as string | undefined;
+  const warningEnabled = (body as Record<string, unknown>).warning_enabled as boolean | number | undefined;
+
+  let passwordHash: string | null = null;
+  if (password) {
+    passwordHash = await sha256(password);
+  }
 
   const link: Link = {
     id,
@@ -126,8 +133,8 @@ links.post('/', async (c) => {
     last_clicked_at: null,
     expires_at: expiresAt ?? null,
     max_clicks: maxClicks ?? null,
-    password_hash: null,
-    warning_enabled: 0,
+    password_hash: passwordHash,
+    warning_enabled: warningEnabled ? 1 : 0,
     fallback_url: null,
     archived: 0,
   };
@@ -145,7 +152,8 @@ links.post('/', async (c) => {
     status: link.status,
     expiresAt: link.expires_at ?? undefined,
     maxClicks: link.max_clicks ?? undefined,
-    warningEnabled: false,
+    warningEnabled: link.warning_enabled === 1,
+    passwordProtected: !!link.password_hash,
   };
   await setCachedLink(c.env, domain, cacheEntry);
 
@@ -199,6 +207,15 @@ links.put('/:id', async (c) => {
   if (body.expires_at !== undefined) fields.expires_at = body.expires_at;
   if (body.max_clicks !== undefined) fields.max_clicks = body.max_clicks;
 
+  const bodyRaw = body as Record<string, unknown>;
+  if (bodyRaw.password !== undefined) {
+    const pwd = bodyRaw.password as string | null;
+    fields.password_hash = pwd ? await sha256(pwd) : null;
+  }
+  if (bodyRaw.warning_enabled !== undefined) {
+    fields.warning_enabled = bodyRaw.warning_enabled ? 1 : 0;
+  }
+
   if (body.tags !== undefined) {
     const tagsArr = Array.isArray(body.tags)
       ? body.tags
@@ -223,6 +240,7 @@ links.put('/:id', async (c) => {
       expiresAt: updated.expires_at ?? undefined,
       maxClicks: updated.max_clicks ?? undefined,
       warningEnabled: updated.warning_enabled === 1,
+      passwordProtected: !!updated.password_hash,
     };
     await setCachedLink(c.env, domain, cacheEntry);
   }
@@ -277,6 +295,7 @@ links.post('/:id/enable', async (c) => {
     expiresAt: existing.expires_at ?? undefined,
     maxClicks: existing.max_clicks ?? undefined,
     warningEnabled: existing.warning_enabled === 1,
+    passwordProtected: !!existing.password_hash,
   };
   await setCachedLink(c.env, domain, cacheEntry);
 
@@ -315,6 +334,7 @@ links.post('/:id/restore', async (c) => {
     expiresAt: existing.expires_at ?? undefined,
     maxClicks: existing.max_clicks ?? undefined,
     warningEnabled: existing.warning_enabled === 1,
+    passwordProtected: !!existing.password_hash,
   };
   await setCachedLink(c.env, domain, cacheEntry);
 
@@ -413,6 +433,7 @@ links.post('/bulk-enable', async (c) => {
         expiresAt: existing.expires_at ?? undefined,
         maxClicks: existing.max_clicks ?? undefined,
         warningEnabled: existing.warning_enabled === 1,
+        passwordProtected: !!existing.password_hash,
       };
       await setCachedLink(c.env, domain, cacheEntry);
       updated++;
@@ -496,6 +517,31 @@ links.post('/bulk-archive', async (c) => {
 
   c.executionCtx.waitUntil(logAudit(c, 'link.bulk_archive', 'link', undefined, `archived=${updated}/${body.ids.length}`));
   return jsonOk({ updated, total: body.ids.length });
+});
+
+// GET /api/links/:id/qr
+links.get('/:id/qr', async (c) => {
+  const id = c.req.param('id');
+  const link = await getLinkById(c.env, id);
+  if (!link) return jsonError('Link not found', 404);
+
+  const url = link.short_url ?? `https://${link.domain ?? 'localhost'}/${link.slug}`;
+  const size = parseInt(c.req.query('size') ?? '256', 10);
+  const format = c.req.query('format') ?? 'svg';
+
+  const { generateQRCodeSVG } = await import('../utils/qrcode');
+  const svg = generateQRCodeSVG(url, Math.min(Math.max(size, 64), 1024));
+
+  if (format === 'svg') {
+    return new Response(svg, {
+      headers: {
+        'Content-Type': 'image/svg+xml',
+        'Cache-Control': 'public, max-age=86400',
+      },
+    });
+  }
+
+  return jsonOk({ url, svg });
 });
 
 export default links;

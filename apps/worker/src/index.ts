@@ -74,6 +74,15 @@ app.get('/:slug', async (c) => {
   return handleRedirect(c);
 });
 
+// Password submission for protected links
+app.post('/:slug', async (c) => {
+  const slug = c.req.param('slug');
+  if (RESERVED_PATHS.has(slug.toLowerCase())) {
+    return new Response('Not Found', { status: 404 });
+  }
+  return handleRedirect(c);
+});
+
 // Root
 app.get('/', (c) => {
   return jsonOk({ name: 'Linkora', version: c.env.LINKORA_VERSION ?? '0.1.0', status: 'ok' });

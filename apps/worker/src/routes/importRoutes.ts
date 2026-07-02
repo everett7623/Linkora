@@ -211,6 +211,7 @@ importRoutes.post('/confirm', async (c) => {
         expiresAt: undefined,
         maxClicks: undefined,
         warningEnabled: false,
+        passwordProtected: false,
       };
       await setCachedLink(c.env, domain, cacheEntry);
 

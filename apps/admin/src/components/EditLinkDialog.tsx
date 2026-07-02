@@ -30,6 +30,8 @@ export default function EditLinkDialog({ link, onClose, onSaved }: Props) {
   const [status, setStatus] = useState(link.status);
   const [expiresAt, setExpiresAt] = useState(isoToLocalDatetime(link.expires_at));
   const [maxClicks, setMaxClicks] = useState(link.max_clicks != null ? String(link.max_clicks) : '');
+  const [password, setPassword] = useState('');
+  const [warningEnabled, setWarningEnabled] = useState(link.warning_enabled === 1);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -49,6 +51,8 @@ export default function EditLinkDialog({ link, onClose, onSaved }: Props) {
         status,
         expires_at: expiresAt ? new Date(expiresAt).toISOString() : null,
         max_clicks: maxClicks ? parseInt(maxClicks, 10) : null,
+        password: password || undefined,
+        warning_enabled: warningEnabled,
       });
       onSaved();
     } catch (err) {
@@ -119,6 +123,31 @@ export default function EditLinkDialog({ link, onClose, onSaved }: Props) {
                 className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-brand-500 focus:outline-none"
               />
               <p className="mt-1 text-xs text-slate-500">Leave empty for unlimited</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={link.password_hash ? '(unchanged)' : 'No password'}
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-brand-500 focus:outline-none"
+              />
+              <p className="mt-1 text-xs text-slate-500">Leave empty to keep current</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300">Warning Page</label>
+              <div className="mt-2 flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={warningEnabled}
+                  onChange={(e) => setWarningEnabled(e.target.checked)}
+                  className="h-4 w-4 rounded border-slate-600 bg-slate-800 text-brand-600 focus:ring-brand-500"
+                />
+                <span className="text-sm text-slate-400">Show warning before redirect</span>
+              </div>
             </div>
           </div>
           {error && <p className="text-sm text-red-400">{error}</p>}

@@ -110,6 +110,7 @@ export interface KVCacheEntry {
   expiresAt?: string | null;
   maxClicks?: number | null;
   warningEnabled: boolean;
+  passwordProtected: boolean;
 }
 
 export interface PaginatedResult<T> {

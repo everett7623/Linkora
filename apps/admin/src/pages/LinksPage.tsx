@@ -5,11 +5,12 @@ import type { Link as LinkType, PaginatedResult } from '@linkora/shared';
 import {
   Search, Plus, Copy, Pencil, Trash2, Ban, CheckCircle,
   Archive, ArchiveRestore, ExternalLink, ChevronLeft, ChevronRight,
-  Tags, XCircle,
+  Tags, XCircle, QrCode,
 } from 'lucide-react';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import EditLinkDialog from '../components/EditLinkDialog';
+import QRCodeDialog from '../components/QRCodeDialog';
 
 const STATUS_OPTIONS = ['', 'active', 'disabled', 'expired', 'archived'];
 const SORT_OPTIONS = [
@@ -27,6 +28,7 @@ export default function LinksPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [editingLink, setEditingLink] = useState<LinkType | null>(null);
+  const [qrLink, setQrLink] = useState<LinkType | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
   const [bulkTagInput, setBulkTagInput] = useState('');
@@ -300,6 +302,7 @@ export default function LinksPage() {
                   onCopy={() => copyShortUrl(link)}
                   onAction={(a) => handleAction(link.id, a)}
                   onEdit={() => setEditingLink(link)}
+                  onQR={() => setQrLink(link)}
                 />
               ))}
             </tbody>
@@ -339,6 +342,14 @@ export default function LinksPage() {
           onSaved={() => { setEditingLink(null); fetchLinks(); }}
         />
       )}
+
+      {/* QR Code Dialog */}
+      {qrLink && (
+        <QRCodeDialog
+          link={qrLink}
+          onClose={() => setQrLink(null)}
+        />
+      )}
     </div>
   );
 }
@@ -357,6 +368,7 @@ function LinkRow({
   onCopy,
   onAction,
   onEdit,
+  onQR,
 }: {
   link: LinkType;
   selected: boolean;
@@ -364,6 +376,7 @@ function LinkRow({
   onCopy: () => void;
   onAction: (action: string) => void;
   onEdit: () => void;
+  onQR: () => void;
 }) {
   const tags = parseTags(link.tags);
 
@@ -415,6 +428,7 @@ function LinkRow({
       <td className="px-4 py-3">
         <div className="flex items-center justify-end gap-1">
           <ActionBtn icon={<Copy className="h-3.5 w-3.5" />} title="Copy short URL" onClick={onCopy} />
+          <ActionBtn icon={<QrCode className="h-3.5 w-3.5" />} title="QR Code" onClick={onQR} />
           <ActionBtn icon={<Pencil className="h-3.5 w-3.5" />} title="Edit" onClick={onEdit} />
           {link.status === 'active' ? (
             <ActionBtn icon={<Ban className="h-3.5 w-3.5" />} title="Disable" onClick={() => onAction('disable')} />

@@ -13,6 +13,8 @@ export default function CreateLinkPage() {
   const [status, setStatus] = useState<string>('active');
   const [expiresAt, setExpiresAt] = useState('');
   const [maxClicks, setMaxClicks] = useState('');
+  const [password, setPassword] = useState('');
+  const [warningEnabled, setWarningEnabled] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -31,6 +33,8 @@ export default function CreateLinkPage() {
         status,
         expires_at: expiresAt ? new Date(expiresAt).toISOString() : undefined,
         max_clicks: maxClicks ? parseInt(maxClicks, 10) : undefined,
+        password: password || undefined,
+        warning_enabled: warningEnabled,
       });
       navigate('/links');
     } catch (err) {
@@ -133,6 +137,32 @@ export default function CreateLinkPage() {
               className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-brand-500 focus:outline-none"
             />
             <p className="mt-1 text-xs text-slate-500">Leave empty for unlimited</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-300">Password Protection</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Leave empty for no password"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-brand-500 focus:outline-none"
+            />
+            <p className="mt-1 text-xs text-slate-500">Visitors must enter password to access</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-300">Warning Page</label>
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={warningEnabled}
+                onChange={(e) => setWarningEnabled(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-600 bg-slate-800 text-brand-600 focus:ring-brand-500"
+              />
+              <span className="text-sm text-slate-400">Show warning before redirect</span>
+            </div>
+            <p className="mt-1 text-xs text-slate-500">Displays destination URL before redirecting</p>
           </div>
         </div>
         {error && <p className="text-sm text-red-400">{error}</p>}
