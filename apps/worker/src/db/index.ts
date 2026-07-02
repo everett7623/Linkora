@@ -312,3 +312,77 @@ export async function getImportJobById(env: Env, id: string): Promise<ImportJob 
   const result = await env.DB.prepare('SELECT * FROM import_jobs WHERE id = ? LIMIT 1').bind(id).first<ImportJob>();
   return result ?? null;
 }
+
+// ===== AUDIT LOGS (V2) =====
+
+export interface AuditLogEntry {
+  id: string;
+  action: string;
+  target_type?: string | null;
+  target_id?: string | null;
+  detail?: string | null;
+  ip_hash?: string | null;
+  user_agent?: string | null;
+  created_at: string;
+}
+
+export async function insertAuditLog(env: Env, log: AuditLogEntry): Promise<void> {
+  await env.DB.prepare(
+    `INSERT INTO audit_logs (id, action, target_type, target_id, detail, ip_hash, user_agent, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+  )
+    .bind(
+      log.id,
+      log.action,
+      log.target_type ?? null,
+      log.target_id ?? null,
+      log.detail ?? null,
+      log.ip_hash ?? null,
+      log.user_agent ?? null,
+      log.created_at
+    )
+    .run();
+}
+
+export interface ListAuditLogsOptions {
+  action?: string;
+  target_type?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export async function listAuditLogs(
+  env: Env,
+  options: ListAuditLogsOptions = {}
+): Promise<{ items: AuditLogEntry[]; total: number }> {
+  const { action, target_type, page = 1, pageSize = 50 } = options;
+
+  const conditions: string[] = ['1=1'];
+  const params: unknown[] = [];
+
+  if (action) {
+    conditions.push('action = ?');
+    params.push(action);
+  }
+  if (target_type) {
+    conditions.push('target_type = ?');
+    params.push(target_type);
+  }
+
+  const where = conditions.join(' AND ');
+  const offset = (page - 1) * pageSize;
+
+  const countResult = await env.DB.prepare(`SELECT COUNT(*) as count FROM audit_logs WHERE ${where}`)
+    .bind(...params)
+    .first<{ count: number }>();
+
+  const total = countResult?.count ?? 0;
+
+  const rows = await env.DB.prepare(
+    `SELECT * FROM audit_logs WHERE ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`
+  )
+    .bind(...params, pageSize, offset)
+    .all<AuditLogEntry>();
+
+  return { items: rows.results ?? [], total };
+}

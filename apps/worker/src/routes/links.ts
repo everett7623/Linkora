@@ -12,6 +12,7 @@ import { setCachedLink, deleteCachedLink } from '../cache/index';
 import { jsonOk, jsonError, jsonCreated } from '../utils/response';
 import { generateId, now } from '../utils/id';
 import { validateSlug, validateLongUrl } from '@linkora/shared';
+import { logAudit } from '../utils/audit';
 import type { Link, KVCacheEntry } from '@linkora/shared';
 
 const links = new Hono<{ Bindings: Env }>();
@@ -103,6 +104,9 @@ links.post('/', async (c) => {
     tagsStr = JSON.stringify(tagsArr);
   }
 
+  const expiresAt = (body as Record<string, unknown>).expires_at as string | undefined;
+  const maxClicks = (body as Record<string, unknown>).max_clicks as number | undefined;
+
   const link: Link = {
     id,
     slug,
@@ -120,8 +124,8 @@ links.post('/', async (c) => {
     created_at: ts,
     updated_at: ts,
     last_clicked_at: null,
-    expires_at: null,
-    max_clicks: null,
+    expires_at: expiresAt ?? null,
+    max_clicks: maxClicks ?? null,
     password_hash: null,
     warning_enabled: 0,
     fallback_url: null,
@@ -129,6 +133,7 @@ links.post('/', async (c) => {
   };
 
   await createLink(c.env, link);
+  c.executionCtx.waitUntil(logAudit(c, 'link.create', 'link', id, `slug=${slug}`));
 
   // Write to KV
   const cacheEntry: KVCacheEntry = {
@@ -191,6 +196,8 @@ links.put('/:id', async (c) => {
   if (body.description !== undefined) fields.description = body.description;
   if (body.status !== undefined) fields.status = body.status;
   if (body.redirect_type !== undefined) fields.redirect_type = body.redirect_type;
+  if (body.expires_at !== undefined) fields.expires_at = body.expires_at;
+  if (body.max_clicks !== undefined) fields.max_clicks = body.max_clicks;
 
   if (body.tags !== undefined) {
     const tagsArr = Array.isArray(body.tags)
@@ -233,6 +240,7 @@ links.delete('/:id', async (c) => {
 
   await deleteLink(c.env, id);
   await deleteCachedLink(c.env, domain, existing.slug);
+  c.executionCtx.waitUntil(logAudit(c, 'link.delete', 'link', id, `slug=${existing.slug}`));
 
   return jsonOk({ message: 'Link deleted' });
 });
@@ -311,6 +319,183 @@ links.post('/:id/restore', async (c) => {
   await setCachedLink(c.env, domain, cacheEntry);
 
   return jsonOk({ message: 'Link restored' });
+});
+
+// ===== BULK OPERATIONS (V2) =====
+
+// POST /api/links/bulk-delete
+links.post('/bulk-delete', async (c) => {
+  let body: { ids: string[] };
+  try {
+    body = await c.req.json();
+  } catch {
+    return jsonError('Invalid JSON body', 400);
+  }
+
+  if (!body.ids || !Array.isArray(body.ids) || body.ids.length === 0) {
+    return jsonError('ids array is required', 400);
+  }
+
+  const domain = new URL(c.req.url).hostname;
+  let deleted = 0;
+
+  for (const id of body.ids) {
+    const existing = await getLinkById(c.env, id);
+    if (existing) {
+      await deleteLink(c.env, id);
+      await deleteCachedLink(c.env, domain, existing.slug);
+      deleted++;
+    }
+  }
+
+  c.executionCtx.waitUntil(logAudit(c, 'link.bulk_delete', 'link', undefined, `deleted=${deleted}/${body.ids.length}`));
+  return jsonOk({ deleted, total: body.ids.length });
+});
+
+// POST /api/links/bulk-disable
+links.post('/bulk-disable', async (c) => {
+  let body: { ids: string[] };
+  try {
+    body = await c.req.json();
+  } catch {
+    return jsonError('Invalid JSON body', 400);
+  }
+
+  if (!body.ids || !Array.isArray(body.ids) || body.ids.length === 0) {
+    return jsonError('ids array is required', 400);
+  }
+
+  const domain = new URL(c.req.url).hostname;
+  const ts = now();
+  let updated = 0;
+
+  for (const id of body.ids) {
+    const existing = await getLinkById(c.env, id);
+    if (existing && existing.status !== 'disabled') {
+      await updateLink(c.env, id, { status: 'disabled', updated_at: ts });
+      await deleteCachedLink(c.env, domain, existing.slug);
+      updated++;
+    }
+  }
+
+  c.executionCtx.waitUntil(logAudit(c, 'link.bulk_disable', 'link', undefined, `disabled=${updated}/${body.ids.length}`));
+  return jsonOk({ updated, total: body.ids.length });
+});
+
+// POST /api/links/bulk-enable
+links.post('/bulk-enable', async (c) => {
+  let body: { ids: string[] };
+  try {
+    body = await c.req.json();
+  } catch {
+    return jsonError('Invalid JSON body', 400);
+  }
+
+  if (!body.ids || !Array.isArray(body.ids) || body.ids.length === 0) {
+    return jsonError('ids array is required', 400);
+  }
+
+  const domain = new URL(c.req.url).hostname;
+  const ts = now();
+  let updated = 0;
+
+  for (const id of body.ids) {
+    const existing = await getLinkById(c.env, id);
+    if (existing && existing.status !== 'active') {
+      await updateLink(c.env, id, { status: 'active', updated_at: ts });
+      const cacheEntry: KVCacheEntry = {
+        id: existing.id,
+        slug: existing.slug,
+        domain: existing.domain ?? undefined,
+        longUrl: existing.long_url,
+        redirectType: existing.redirect_type,
+        status: 'active',
+        expiresAt: existing.expires_at ?? undefined,
+        maxClicks: existing.max_clicks ?? undefined,
+        warningEnabled: existing.warning_enabled === 1,
+      };
+      await setCachedLink(c.env, domain, cacheEntry);
+      updated++;
+    }
+  }
+
+  c.executionCtx.waitUntil(logAudit(c, 'link.bulk_enable', 'link', undefined, `enabled=${updated}/${body.ids.length}`));
+  return jsonOk({ updated, total: body.ids.length });
+});
+
+// POST /api/links/bulk-tag
+links.post('/bulk-tag', async (c) => {
+  let body: { ids: string[]; tags: string[]; mode?: 'add' | 'replace' };
+  try {
+    body = await c.req.json();
+  } catch {
+    return jsonError('Invalid JSON body', 400);
+  }
+
+  if (!body.ids || !Array.isArray(body.ids) || body.ids.length === 0) {
+    return jsonError('ids array is required', 400);
+  }
+  if (!body.tags || !Array.isArray(body.tags)) {
+    return jsonError('tags array is required', 400);
+  }
+
+  const mode = body.mode ?? 'add';
+  const ts = now();
+  let updated = 0;
+
+  for (const id of body.ids) {
+    const existing = await getLinkById(c.env, id);
+    if (existing) {
+      let currentTags: string[] = [];
+      if (existing.tags) {
+        try { currentTags = JSON.parse(existing.tags); } catch { /* empty */ }
+      }
+
+      let newTags: string[];
+      if (mode === 'replace') {
+        newTags = body.tags;
+      } else {
+        const merged = new Set([...currentTags, ...body.tags]);
+        newTags = Array.from(merged);
+      }
+
+      await updateLink(c.env, id, { tags: JSON.stringify(newTags), updated_at: ts });
+      updated++;
+    }
+  }
+
+  c.executionCtx.waitUntil(logAudit(c, 'link.bulk_tag', 'link', undefined, `tagged=${updated}/${body.ids.length} mode=${mode}`));
+  return jsonOk({ updated, total: body.ids.length });
+});
+
+// POST /api/links/bulk-archive
+links.post('/bulk-archive', async (c) => {
+  let body: { ids: string[] };
+  try {
+    body = await c.req.json();
+  } catch {
+    return jsonError('Invalid JSON body', 400);
+  }
+
+  if (!body.ids || !Array.isArray(body.ids) || body.ids.length === 0) {
+    return jsonError('ids array is required', 400);
+  }
+
+  const domain = new URL(c.req.url).hostname;
+  const ts = now();
+  let updated = 0;
+
+  for (const id of body.ids) {
+    const existing = await getLinkById(c.env, id);
+    if (existing && !existing.archived) {
+      await updateLink(c.env, id, { archived: 1, status: 'archived', updated_at: ts });
+      await deleteCachedLink(c.env, domain, existing.slug);
+      updated++;
+    }
+  }
+
+  c.executionCtx.waitUntil(logAudit(c, 'link.bulk_archive', 'link', undefined, `archived=${updated}/${body.ids.length}`));
+  return jsonOk({ updated, total: body.ids.length });
 });
 
 export default links;

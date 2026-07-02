@@ -8,6 +8,7 @@ import tagsRoutes from './routes/tags';
 import settingsRoutes from './routes/settings';
 import exportRoutes from './routes/export';
 import importRoutes from './routes/importRoutes';
+import auditRoutes from './routes/audit';
 import { getOverviewStats } from './db/index';
 import { requireAuth } from './auth/index';
 import { jsonOk } from './utils/response';
@@ -52,6 +53,9 @@ app.route('/api/export', exportRoutes);
 
 // Import
 app.route('/api/import', importRoutes);
+
+// Audit logs
+app.route('/api/audit-logs', auditRoutes);
 
 // Overview stats
 app.get('/api/overview', async (c) => {
