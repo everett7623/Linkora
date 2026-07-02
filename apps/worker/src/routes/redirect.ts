@@ -8,6 +8,9 @@ import type { KVCacheEntry } from '@linkora/shared';
 
 export async function handleRedirect(c: Context<{ Bindings: Env }>): Promise<Response> {
   const slug = c.req.param('slug');
+  if (!slug) {
+    return notFound('The short link you are looking for does not exist.');
+  }
   const domain = new URL(c.req.url).hostname;
 
   // Try KV cache first
