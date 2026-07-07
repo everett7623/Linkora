@@ -8,11 +8,51 @@ export async function getLinkBySlug(env: Env, slug: string): Promise<Link | null
   return result ?? null;
 }
 
+export async function getExistingSlugs(env: Env, slugs: string[]): Promise<Set<string>> {
+  const uniqueSlugs = [...new Set(slugs)].filter(Boolean);
+  const existing = new Set<string>();
+
+  for (let i = 0; i < uniqueSlugs.length; i += 100) {
+    const chunk = uniqueSlugs.slice(i, i + 100);
+    if (chunk.length === 0) continue;
+
+    const placeholders = chunk.map(() => '?').join(', ');
+    const result = await env.DB.prepare(`SELECT slug FROM links WHERE slug IN (${placeholders})`)
+      .bind(...chunk)
+      .all<{ slug: string }>();
+
+    for (const row of result.results ?? []) {
+      existing.add(row.slug);
+    }
+  }
+
+  return existing;
+}
+
 export async function getLinkById(env: Env, id: string): Promise<Link | null> {
   const result = await env.DB.prepare('SELECT * FROM links WHERE id = ? LIMIT 1')
     .bind(id)
     .first<Link>();
   return result ?? null;
+}
+
+export async function getLinksByIds(env: Env, ids: string[]): Promise<Link[]> {
+  const uniqueIds = [...new Set(ids)].filter(Boolean);
+  const links: Link[] = [];
+
+  for (let i = 0; i < uniqueIds.length; i += 100) {
+    const chunk = uniqueIds.slice(i, i + 100);
+    if (chunk.length === 0) continue;
+
+    const placeholders = chunk.map(() => '?').join(', ');
+    const result = await env.DB.prepare(`SELECT * FROM links WHERE id IN (${placeholders})`)
+      .bind(...chunk)
+      .all<Link>();
+
+    links.push(...(result.results ?? []));
+  }
+
+  return links;
 }
 
 export interface ListLinksOptions {
@@ -45,7 +85,13 @@ export async function listLinks(
     params.push(`%"${tag}"%`);
   }
 
-  if (status) {
+  if (status === 'expired') {
+    conditions.push('archived = 0 AND (status = ? OR (expires_at IS NOT NULL AND expires_at < ?) OR (max_clicks IS NOT NULL AND clicks >= max_clicks))');
+    params.push(status, new Date().toISOString());
+  } else if (status === 'active') {
+    conditions.push('status = ? AND archived = 0 AND (expires_at IS NULL OR expires_at >= ?) AND (max_clicks IS NULL OR clicks < max_clicks)');
+    params.push(status, new Date().toISOString());
+  } else if (status) {
     conditions.push('status = ?');
     params.push(status);
   } else {
@@ -251,6 +297,16 @@ export async function createTag(env: Env, tag: Tag): Promise<void> {
   )
     .bind(tag.id, tag.name, tag.color ?? null, tag.description ?? null, tag.created_at, tag.updated_at)
     .run();
+}
+
+export async function createTagsIfMissing(env: Env, tags: Tag[]): Promise<void> {
+  for (const tag of tags) {
+    await env.DB.prepare(
+      'INSERT OR IGNORE INTO tags (id, name, color, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)'
+    )
+      .bind(tag.id, tag.name, tag.color ?? null, tag.description ?? null, tag.created_at, tag.updated_at)
+      .run();
+  }
 }
 
 export async function deleteTag(env: Env, id: string): Promise<void> {

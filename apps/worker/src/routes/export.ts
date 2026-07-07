@@ -14,7 +14,7 @@ exportRoutes.use('*', async (c, next) => {
 
 exportRoutes.get('/links.csv', async (c) => {
   const links = await getAllLinks(c.env);
-  const header = 'id,slug,long_url,short_url,title,tags,status,clicks,redirect_type,source,created_at,updated_at,last_clicked_at\r\n';
+  const header = 'id,slug,long_url,short_url,title,tags,status,clicks,redirect_type,source,created_at,updated_at,last_clicked_at,expires_at,max_clicks\r\n';
   const rows = links.map((l: Link) => [
     csv(l.id),
     csv(l.slug),
@@ -29,6 +29,8 @@ exportRoutes.get('/links.csv', async (c) => {
     csv(l.created_at),
     csv(l.updated_at),
     csv(l.last_clicked_at ?? ''),
+    csv(l.expires_at ?? ''),
+    l.max_clicks ?? '',
   ].join(','));
 
   const today = new Date().toISOString().slice(0, 10);

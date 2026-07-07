@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { Env } from '../types';
 import { requireAuth } from '../auth/index';
-import { getLinkBySlug, createLink, createImportJob, updateImportJob, getImportJobs, getImportJobById } from '../db/index';
+import { getExistingSlugs, createLink, createImportJob, updateImportJob, getImportJobs, getImportJobById } from '../db/index';
 import { setCachedLink } from '../cache/index';
 import { jsonOk, jsonError, jsonCreated } from '../utils/response';
 import { generateId, now } from '../utils/id';
@@ -38,41 +38,37 @@ async function previewItems(
   conflicts: number;
   preview: Array<NormalizedImportItem & { _valid: boolean; _errors: string[]; _conflict: boolean }>;
 }> {
-  const preview = await Promise.all(
-    items.slice(0, 200).map(async (item) => {
-      const validation = adapter.validate(item);
-      let conflict = false;
-      if (validation.valid) {
-        const existing = await getLinkBySlug(env, item.slug);
-        conflict = !!existing;
-      }
-      return { ...item, _valid: validation.valid, _errors: validation.errors, _conflict: conflict };
-    })
-  );
+  const validationResults = items.map((item) => ({
+    item,
+    validation: adapter.validate(item),
+  }));
+  const validItems = validationResults
+    .filter(({ validation }) => validation.valid)
+    .map(({ item }) => item);
+  const existingSlugs = await getExistingSlugs(env, validItems.map((item) => item.slug));
 
-  // For large batches, count totals efficiently
-  let valid = 0, invalid = 0, conflicts = 0;
-  for (const item of items) {
-    const v = adapter.validate(item);
-    if (v.valid) {
-      valid++;
-      // We already checked conflicts for first 200 in preview
-    } else {
-      invalid++;
+  let invalid = 0;
+  let conflicts = 0;
+  const preview: Array<NormalizedImportItem & { _valid: boolean; _errors: string[]; _conflict: boolean }> = [];
+
+  for (let i = 0; i < validationResults.length; i++) {
+    const { item, validation } = validationResults[i];
+    const conflict = validation.valid && existingSlugs.has(item.slug);
+
+    if (!validation.valid) invalid++;
+    if (conflict) conflicts++;
+
+    if (i < 200) {
+      preview.push({
+        ...item,
+        _valid: validation.valid,
+        _errors: validation.errors,
+        _conflict: conflict,
+      });
     }
   }
 
-  // Count conflicts from full set
-  const conflictSlugs = await Promise.all(
-    items
-      .filter((i) => adapter.validate(i).valid)
-      .map(async (i) => {
-        const ex = await getLinkBySlug(env, i.slug);
-        return ex ? 1 : 0;
-      })
-  );
-  conflicts = (conflictSlugs as number[]).reduce((a, b) => a + b, 0);
-  valid = valid - conflicts;
+  const valid = validItems.length - conflicts;
 
   return { total: items.length, valid, invalid, conflicts, preview };
 }
@@ -153,6 +149,10 @@ importRoutes.post('/confirm', async (c) => {
   let conflictCount = 0;
   let failedCount = 0;
   const reportRows: string[] = ['slug,status,reason'];
+  const validSlugs = items
+    .filter((item) => adapter.validate(item).valid)
+    .map((item) => item.slug);
+  const existingSlugs = await getExistingSlugs(c.env, validSlugs);
 
   for (const item of items) {
     const validation = adapter.validate(item);
@@ -162,8 +162,7 @@ importRoutes.post('/confirm', async (c) => {
       continue;
     }
 
-    const existing = await getLinkBySlug(c.env, item.slug);
-    if (existing) {
+    if (existingSlugs.has(item.slug)) {
       conflictCount++;
       skippedCount++;
       reportRows.push(`${item.slug},skipped,slug already exists`);
@@ -215,6 +214,7 @@ importRoutes.post('/confirm', async (c) => {
       await setCachedLink(c.env, domain, cacheEntry);
 
       successCount++;
+      existingSlugs.add(item.slug);
       reportRows.push(`${item.slug},success,`);
     } catch (err) {
       failedCount++;

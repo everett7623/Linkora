@@ -1,0 +1,113 @@
+# CHANGELOG
+
+All notable changes to Linkora will be documented here.
+
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).  
+Versioning follows [Semantic Versioning](https://semver.org/).
+
+---
+
+## [Unreleased]
+
+### Added
+- Nothing yet pending for V1.1
+
+---
+
+## [0.1.0] — 2026-07-01
+
+Initial V1 release — full code complete, awaiting first production deployment.
+
+### Added
+
+#### Worker (Backend)
+- `GET /health` — health check endpoint returning `{ status, name, version }`
+- `GET /:slug` — short link redirect with KV cache + D1 fallback
+- Async visit recording via `ctx.waitUntil()` (stats never block redirects)
+- 404 and disabled-link HTML pages
+- `POST /api/auth/login` — admin token login
+- `GET  /api/auth/me` — check auth status
+- Links CRUD: `GET/POST /api/links`, `GET/PUT/DELETE /api/links/:id`
+- Link status actions: `disable`, `enable`, `archive`, `restore`
+- Tags CRUD: `GET/POST /api/tags`, `DELETE /api/tags/:id`
+- Settings: `GET/PUT /api/settings`
+- Export: `GET /api/export/links.csv`, `/links.json`, `/backup.json`
+- Import: `POST /api/import/preview`, `POST /api/import/confirm`, `GET /api/import/jobs`
+- Shlink import adapter — supports JSON, JSONL, CSV formats
+- Generic CSV / JSON import adapter
+- KV cache helpers (`getCachedLink`, `setCachedLink`, `deleteCachedLink`)
+- D1 query layer (`src/db/index.ts`) — all SQL in one place
+- Bearer token auth middleware (`src/auth/index.ts`)
+- Standardized JSON response helpers (`src/utils/response.ts`)
+- ID and slug generation utilities (`src/utils/id.ts`)
+
+#### Admin (Frontend)
+- Login page with token authentication
+- Overview dashboard — total links, total clicks, today's clicks, recent/top links
+- Links list — search, filter by status/tag, sort, pagination, copy/open/edit/disable/archive/delete
+- Create Link form — URL, custom slug, title, tags, redirect type
+- Edit Link form — all fields + status change
+- Import / Export page — file upload, source detection, preview, confirm, history table, export buttons
+- Settings page — site name, default domain, redirect type
+- Reusable UI components: `Button`, `Badge`, `StatusBadge`, `Input`, `Select`, `Textarea`, `Modal`, `ConfirmDialog`, `Toast`, `Sidebar`, `Layout`
+- `AuthContext` — login/logout/token state via localStorage
+- API client layer with typed wrappers per resource
+- React Router v6 routing with `RequireAuth` guard
+
+#### Shared Package
+- TypeScript interfaces: `Link`, `Visit`, `Tag`, `ImportJob`, `Setting`, `PaginatedResult`, `NormalizedImportItem`, `ImportAdapter`
+- Validators: `isValidUrl`, `isValidSlug`, `RESERVED_SLUGS`
+
+#### Database
+- `migrations/0001_init.sql` — complete D1 schema for V1–V4
+- V1 active tables: `links`, `visits`, `tags`, `import_jobs`, `settings`
+- V2–V4 tables pre-created (not used): `daily_stats`, `domains`, `api_tokens`, `audit_logs`, `backups`, `redirect_rules`
+
+#### Documentation
+- `README.md` — project overview, setup, deployment, Shlink migration guide
+- `AGENTS.md` — AI agent instructions and golden rules
+- `DEVELOPMENT_GUIDE.md` — local setup, architecture, conventions
+- `TASKS.md` — active task list (V1 pending / completed / backlog)
+- `PROGRESS.md` — feature checklist and known issues
+- `CHANGELOG.md` — this file
+- `.env.example` — required environment variable reference
+- `apps/worker/.dev.vars.example` — local dev secrets template
+
+---
+
+## Version History Summary
+
+| Version | Date       | Description                              |
+|---------|------------|------------------------------------------|
+| 0.1.0   | 2026-07-01 | V1 code complete — full feature set built |
+
+---
+
+## Upcoming
+
+### V1.1 (patch)
+- Production deployment + acceptance testing
+- Fix any issues found during first real-world use
+
+### V2.0
+- Bulk operations (delete, disable, tag)
+- Link expiry (`expires_at`) and max clicks (`max_clicks`)
+- Password-protected links
+- Safety warning page
+- QR code generation
+- Sink / YOURLS / Dub import adapters
+- Audit logs
+- See `TASKS.md` for full V2 backlog
+
+### V3.0
+- Advanced analytics with daily_stats aggregation
+- Auto-backup to Cloudflare R2
+- API Token management
+- Cloudflare Queues for async stats
+- Cron triggers for scheduled backup
+
+### V4.0
+- Smart redirect rules (country, device, browser, A/B, weighted)
+- AI slug / title suggestions
+- Campaign and project grouping
+- Link health checker

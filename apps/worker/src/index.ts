@@ -8,6 +8,7 @@ import tagsRoutes from './routes/tags';
 import settingsRoutes from './routes/settings';
 import exportRoutes from './routes/export';
 import importRoutes from './routes/importRoutes';
+import metadataRoutes from './routes/metadata';
 import { getOverviewStats } from './db/index';
 import { requireAuth } from './auth/index';
 import { jsonOk } from './utils/response';
@@ -21,7 +22,7 @@ const app = new Hono<{ Bindings: Env }>();
 
 // CORS for admin frontend
 app.use('/api/*', cors({
-  origin: ['*'],
+  origin: '*',
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
 }));
@@ -52,6 +53,9 @@ app.route('/api/export', exportRoutes);
 
 // Import
 app.route('/api/import', importRoutes);
+
+// Metadata helpers
+app.route('/api/metadata', metadataRoutes);
 
 // Overview stats
 app.get('/api/overview', async (c) => {
