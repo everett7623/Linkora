@@ -169,12 +169,14 @@ _(none currently)_
 - [x] Tags management page
 - [x] Link tags and Tags catalog synchronization
 - [x] Create/Edit Link forms can select existing Tags catalog entries
-- [ ] Sink importer adapter
-- [ ] YOURLS importer adapter
-- [ ] Dub importer adapter
-- [ ] Import conflict strategies: rename / overwrite
+- [x] Local import smoke test: Sink, YOURLS, Dub, Linkora backup restore
+- [x] Local import conflict smoke test: rename and overwrite
+- [x] Sink importer adapter
+- [x] YOURLS importer adapter
+- [x] Dub importer adapter
+- [x] Import conflict strategies: rename / overwrite
 - [ ] Audit logs page
-- [ ] Linkora backup.json restore import
+- [x] Linkora backup.json restore import
 
 ## 🔵 Backlog — V3
 

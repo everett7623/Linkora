@@ -85,6 +85,13 @@ export interface NormalizedImportItem {
   lastClickedAt?: string;
   source?: string;
   sourceId?: string;
+  status?: LinkStatus;
+  redirectType?: RedirectType;
+  expiresAt?: string | null;
+  maxClicks?: number | null;
+  warningEnabled?: boolean;
+  fallbackUrl?: string | null;
+  archived?: number;
   raw?: unknown;
 }
 

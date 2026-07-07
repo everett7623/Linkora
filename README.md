@@ -14,8 +14,8 @@ A lightweight, stable, self-hosted short link system built on Cloudflare Workers
 - 🔍 Search by slug, URL, title; filter by tag and status
 - 🏷️ Tag support and tag management
 - 📊 Basic click count tracking
-- 📥 Import from Shlink (JSON / JSONL / CSV) with preview + conflict detection
-- 📥 Import from generic CSV / JSON
+- 📥 Import from Shlink, Sink, YOURLS, Dub, Linkora backup, and generic CSV / JSON
+- 🧭 Import preview with skip, rename, or overwrite conflict handling
 - 📤 Export links as CSV / JSON, visits as CSV, and full backups
 - ⚙️ System settings
 - 🏥 Health check endpoint (`/health`)

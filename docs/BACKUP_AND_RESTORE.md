@@ -38,9 +38,14 @@ The import only proceeds after that backup download request succeeds.
 }
 ```
 
-## Restore Status
+## Restore
 
-Full `backup.json` restore import is not implemented yet. It is tracked in the V2 backlog.
+Linkora `backup.json` files can be imported from the Admin Import / Export page by selecting `Linkora backup.json`.
 
-Until restore is implemented, keep exported backups and use D1 backup/restore tooling for disaster recovery.
+Restore imports links and tag catalog entries. Conflict handling follows the selected import strategy:
 
+- `skip` leaves existing slugs untouched.
+- `rename` imports conflicting links with a new slug suffix.
+- `overwrite` updates existing links.
+
+Keep exported backups and D1 backups for disaster recovery, especially before using overwrite.

@@ -28,11 +28,19 @@ export interface ConfirmResult {
   skipped: number;
   conflicts: number;
   failed: number;
+  conflictStrategy: ImportConflictStrategy;
   completedAt: string;
 }
 
-export function confirmImport(content: string, source?: string, filename?: string): Promise<ConfirmResult> {
-  return apiPost('/api/import/confirm', { content, source, filename });
+export type ImportConflictStrategy = 'skip' | 'rename' | 'overwrite';
+
+export function confirmImport(
+  content: string,
+  source?: string,
+  filename?: string,
+  conflictStrategy: ImportConflictStrategy = 'skip'
+): Promise<ConfirmResult> {
+  return apiPost('/api/import/confirm', { content, source, filename, conflictStrategy });
 }
 
 export function listImportJobs(): Promise<ImportJob[]> {

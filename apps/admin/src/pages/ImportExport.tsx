@@ -8,6 +8,7 @@ import {
 import { Button } from '../components/ui/Button';
 import { useToast } from '../components/ui/Toast';
 import type { ImportJob } from '@linkora/shared';
+import type { ImportConflictStrategy } from '../api/importExport';
 import dayjs from 'dayjs';
 
 export function ImportExport() {
@@ -16,13 +17,17 @@ export function ImportExport() {
   const [content, setContent] = useState('');
   const [filename, setFilename] = useState('');
   const [source, setSource] = useState('');
+  const [conflictStrategy, setConflictStrategy] = useState<ImportConflictStrategy>('skip');
   const [preview, setPreview] = useState<Awaited<ReturnType<typeof previewImport>> | null>(null);
   const [previewing, setPreviewing] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [jobs, setJobs] = useState<ImportJob[]>([]);
   const [jobsLoading, setJobsLoading] = useState(true);
   const [showPreview, setShowPreview] = useState(false);
-  const hasImportableLinks = (preview?.valid ?? 0) > 0;
+  const importableCount = preview
+    ? preview.valid + (conflictStrategy === 'skip' ? 0 : preview.conflicts)
+    : 0;
+  const hasImportableLinks = importableCount > 0;
 
   const loadJobs = () => {
     listImportJobs()
@@ -66,7 +71,7 @@ export function ImportExport() {
     setConfirming(true);
     try {
       await exportPreImportBackup();
-      const result = await confirmImport(content, source || undefined, filename || undefined);
+      const result = await confirmImport(content, source || undefined, filename || undefined, conflictStrategy);
       success(`Backup downloaded. Import complete: ${result.success} imported, ${result.skipped} skipped, ${result.failed} failed`);
       setPreview(null);
       setContent('');
@@ -102,10 +107,30 @@ export function ImportExport() {
               className="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
               <option value="">Auto-detect</option>
-              <option value="shlink">Shlink (JSON / JSONL / CSV)</option>
-              <option value="generic_csv">Generic CSV</option>
-              <option value="generic_json">Generic JSON</option>
+                <option value="shlink">Shlink (JSON / JSONL / CSV)</option>
+                <option value="sink">Sink (JSON / JSONL)</option>
+                <option value="yourls">YOURLS (JSON / JSONL)</option>
+                <option value="dub">Dub (JSON / JSONL)</option>
+                <option value="linkora-backup">Linkora backup.json</option>
+                <option value="generic-csv">Generic CSV</option>
+                <option value="generic-json">Generic JSON / JSONL</option>
             </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-1.5">Conflict Handling</label>
+            <select
+              value={conflictStrategy}
+              onChange={(e) => setConflictStrategy(e.target.value as ImportConflictStrategy)}
+              className="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-700 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            >
+              <option value="skip">Skip existing slugs</option>
+              <option value="rename">Rename conflicting slugs</option>
+              <option value="overwrite">Overwrite existing slugs</option>
+            </select>
+            <p className="mt-1 text-xs text-slate-500">
+              Skip is safest. Overwrite updates existing links and requires a pre-import backup.
+            </p>
           </div>
 
           <div>
@@ -129,7 +154,7 @@ export function ImportExport() {
             </Button>
             {preview && (
               <Button onClick={handleConfirm} loading={confirming} disabled={!hasImportableLinks}>
-                {hasImportableLinks ? `Import ${preview.valid} Links` : 'No Links to Import'}
+                {hasImportableLinks ? `Import ${importableCount} Links` : 'No Links to Import'}
               </Button>
             )}
           </div>
@@ -153,7 +178,12 @@ export function ImportExport() {
                   </div>
                   {!hasImportableLinks && (
                     <p className="py-1 text-slate-400">
-                      No links will be imported. Conflicting slugs already exist and are skipped by default.
+                      No links will be imported. Existing slugs are skipped by the selected conflict strategy.
+                    </p>
+                  )}
+                  {preview.conflicts > 0 && conflictStrategy !== 'skip' && (
+                    <p className="py-1 text-yellow-400">
+                      {preview.conflicts} conflicting slugs will be {conflictStrategy === 'rename' ? 'renamed' : 'overwritten'}.
                     </p>
                   )}
                   {preview.preview.map((item, i) => (

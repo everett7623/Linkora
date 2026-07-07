@@ -31,18 +31,18 @@ Done:
 - Auto-fetch page title
 - Visits CSV export
 - Tags management page
+- Sink importer
+- YOURLS importer
+- Dub importer
+- Rename/overwrite import conflict strategies
+- `backup.json` restore import
 
 Backlog:
 
 - Password-protected links
 - Safety warning page
 - UTM templates
-- Sink importer
-- YOURLS importer
-- Dub importer
-- Rename/overwrite import conflict strategies
 - Audit logs
-- `backup.json` restore import
 
 ## V3: Analytics And Automation
 

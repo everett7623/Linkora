@@ -170,8 +170,8 @@ export async function updateLink(
 ): Promise<void> {
   const allowedFields = [
     'slug', 'domain', 'long_url', 'short_url', 'title', 'description',
-    'tags', 'status', 'redirect_type', 'source', 'source_id',
-    'updated_at', 'expires_at', 'max_clicks', 'warning_enabled',
+    'tags', 'status', 'redirect_type', 'clicks', 'source', 'source_id',
+    'updated_at', 'last_clicked_at', 'expires_at', 'max_clicks', 'warning_enabled',
     'fallback_url', 'archived',
   ] as const;
 

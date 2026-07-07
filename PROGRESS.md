@@ -139,3 +139,8 @@ Database columns for V2–V4 are already present in `migrations/0001_init.sql` t
 | Tags management page | ✅ Done | Admin page supports tag create, edit, search, color, description, and delete |
 | Link tag catalog sync | ✅ Done | Link tags auto-create catalog entries; local rename/delete sync smoke test passed |
 | Link form tag picker | ✅ Done | Create/Edit forms load Tags catalog and offer clickable tag chips |
+| Sink importer adapter | ✅ Done | JSON / JSONL-style payloads supported; local smoke test passed |
+| YOURLS importer adapter | ✅ Done | JSON / JSONL-style payloads supported; local smoke test passed |
+| Dub importer adapter | ✅ Done | JSON / JSONL-style payloads supported; local smoke test passed |
+| Import conflict strategies | ✅ Done | `skip`, `rename`, and `overwrite` implemented; local smoke test passed |
+| Linkora backup.json restore import | ✅ Done | Restores backup links and tag catalog entries; local smoke test passed |

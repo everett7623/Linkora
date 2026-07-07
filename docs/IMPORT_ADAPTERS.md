@@ -16,6 +16,10 @@ export interface ImportAdapter {
 | Adapter | File | Formats |
 |---------|------|---------|
 | Shlink | `apps/worker/src/importers/shlink.ts` | JSON, JSONL, CSV |
+| Sink | `apps/worker/src/importers/platforms.ts` | JSON, JSONL |
+| YOURLS | `apps/worker/src/importers/platforms.ts` | JSON, JSONL |
+| Dub | `apps/worker/src/importers/platforms.ts` | JSON, JSONL |
+| Linkora backup | `apps/worker/src/importers/platforms.ts` | `backup.json` |
 | Generic CSV | `apps/worker/src/importers/generic.ts` | CSV |
 | Generic JSON | `apps/worker/src/importers/generic.ts` | JSON |
 
@@ -30,15 +34,12 @@ Adapters are registered in `apps/worker/src/routes/importRoutes.ts`.
 5. Add source selection in `apps/admin/src/pages/ImportExport.tsx`.
 6. Add tests or at least local preview/confirm smoke checks.
 
-## V1 Rules
+## Conflict Rules
 
-- Slug conflicts use `skip`.
-- Do not overwrite existing links.
+- Default slug conflict strategy is `skip`.
+- `rename` appends a suffix to conflicting slugs.
+- `overwrite` updates existing links and should be used only after reviewing the pre-import backup.
+- Do not overwrite existing links unless the user explicitly selects `overwrite`.
 - Do not make KV the source of truth.
 - Import confirmation writes links through `src/db/index.ts`.
 - Imported active links are cached after D1 writes succeed.
-
-## Future Adapters
-
-V2 backlog includes Sink, YOURLS, and Dub adapters plus rename/overwrite conflict modes.
-
