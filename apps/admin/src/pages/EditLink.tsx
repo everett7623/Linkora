@@ -3,10 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { getLink, updateLink } from '../api/links';
 import { fetchPageTitle } from '../api/metadata';
+import { listTags } from '../api/tags';
+import { TagSuggestions } from '../components/TagSuggestions';
 import { Button } from '../components/ui/Button';
 import { Input, Select } from '../components/ui/Input';
 import { useToast } from '../components/ui/Toast';
-import type { Link } from '@linkora/shared';
+import type { Link, Tag } from '@linkora/shared';
 
 function toDatetimeLocal(value?: string | null): string {
   if (!value) return '';
@@ -24,6 +26,7 @@ export function EditLink() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [titleLoading, setTitleLoading] = useState(false);
+  const [tagCatalog, setTagCatalog] = useState<Tag[]>([]);
   const [form, setForm] = useState({
     long_url: '',
     slug: '',
@@ -56,6 +59,12 @@ export function EditLink() {
       .catch(() => error('Failed to load link'))
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    listTags()
+      .then(setTagCatalog)
+      .catch(() => undefined);
+  }, []);
 
   const set = (key: string, value: string) => {
     setForm((f) => ({ ...f, [key]: value }));
@@ -190,7 +199,12 @@ export function EditLink() {
           placeholder="marketing, campaign"
           value={form.tags}
           onChange={(e) => set('tags', e.target.value)}
-          hint="Comma-separated"
+          hint="Comma-separated tags. Existing catalog tags are available below."
+        />
+        <TagSuggestions
+          tags={tagCatalog}
+          value={form.tags}
+          onChange={(value) => set('tags', value)}
         />
         <Select
           label="Redirect Type"

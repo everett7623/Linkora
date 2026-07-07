@@ -16,6 +16,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Added `PUT /api/tags/:id` and a Tags management page with color and description editing.
 - Link tags are now synchronized with the Tags catalog during list, create, edit, import, rename, and delete flows.
 - Added a GitHub Actions workflow for automatic Worker and Admin deployment on pushes to `main`.
+- Create/Edit Link forms now show existing Tags catalog entries as selectable tag chips.
 
 ---
 

@@ -168,6 +168,7 @@ _(none currently)_
 - [ ] UTM parameter templates
 - [x] Tags management page
 - [x] Link tags and Tags catalog synchronization
+- [x] Create/Edit Link forms can select existing Tags catalog entries
 - [ ] Sink importer adapter
 - [ ] YOURLS importer adapter
 - [ ] Dub importer adapter

@@ -138,3 +138,4 @@ Database columns for V2–V4 are already present in `migrations/0001_init.sql` t
 | Visits CSV export | ✅ Done | `/api/export/visits.csv` and Admin download button added; local API smoke test passed |
 | Tags management page | ✅ Done | Admin page supports tag create, edit, search, color, description, and delete |
 | Link tag catalog sync | ✅ Done | Link tags auto-create catalog entries; local rename/delete sync smoke test passed |
+| Link form tag picker | ✅ Done | Create/Edit forms load Tags catalog and offer clickable tag chips |
