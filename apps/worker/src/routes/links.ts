@@ -26,6 +26,8 @@ type BulkAction = 'disable' | 'enable' | 'archive' | 'restore' | 'delete';
 type BulkTagMode = 'add' | 'replace' | 'remove' | 'clear';
 type LinkBody = Partial<Link> & { tags?: string | string[]; password?: unknown };
 
+const LINK_STATUSES: Link['status'][] = ['active', 'disabled', 'expired', 'archived'];
+
 function requestDomain(requestUrl: string): string {
   return new URL(requestUrl).hostname.toLowerCase();
 }
@@ -35,7 +37,24 @@ function cacheDomainForLink(link: Pick<Link, 'domain'>, fallbackDomain: string):
 }
 
 function parseLinkStatus(value: unknown): Link['status'] {
-  return value === 'disabled' || value === 'expired' || value === 'archived' ? value : 'active';
+  return LINK_STATUSES.includes(value as Link['status']) ? value as Link['status'] : 'active';
+}
+
+function parseRequiredLinkStatus(value: unknown): { value?: Link['status']; error?: string } {
+  if (LINK_STATUSES.includes(value as Link['status'])) return { value: value as Link['status'] };
+  return { error: 'status must be active, disabled, expired, or archived' };
+}
+
+function parseRedirectType(value: unknown): { value?: Link['redirect_type']; error?: string } {
+  if (value === 301 || value === '301') return { value: 301 };
+  if (value === 302 || value === '302') return { value: 302 };
+  return { error: 'redirect_type must be 301 or 302' };
+}
+
+function parsePaginationNumber(value: string | undefined, fallback: number, max?: number): number {
+  const parsed = Number.parseInt(value ?? '', 10);
+  if (!Number.isFinite(parsed) || parsed < 1) return fallback;
+  return max === undefined ? parsed : Math.min(parsed, max);
 }
 
 async function ensureTagRecords(env: Env, tags: string[], ts = now()): Promise<void> {
@@ -322,8 +341,8 @@ links.get('/', async (c) => {
   const warning = c.req.query('warning');
   const limits = c.req.query('limits');
   const sort = c.req.query('sort');
-  const page = parseInt(c.req.query('page') ?? '1', 10);
-  const pageSize = Math.min(parseInt(c.req.query('pageSize') ?? '20', 10), 100);
+  const page = parsePaginationNumber(c.req.query('page'), 1);
+  const pageSize = parsePaginationNumber(c.req.query('pageSize'), 20, 100);
 
   const { items, total } = await listLinks(c.env, {
     keyword,
@@ -627,8 +646,16 @@ links.put('/:id', async (c) => {
 
   if (body.title !== undefined) fields.title = body.title;
   if (body.description !== undefined) fields.description = body.description;
-  if (body.status !== undefined) fields.status = body.status;
-  if (body.redirect_type !== undefined) fields.redirect_type = body.redirect_type;
+  if (body.status !== undefined) {
+    const parsedStatus = parseRequiredLinkStatus(body.status);
+    if (parsedStatus.error) return jsonError(parsedStatus.error, 400);
+    fields.status = parsedStatus.value;
+  }
+  if (body.redirect_type !== undefined) {
+    const parsedRedirectType = parseRedirectType(body.redirect_type);
+    if (parsedRedirectType.error) return jsonError(parsedRedirectType.error, 400);
+    fields.redirect_type = parsedRedirectType.value;
+  }
   if (body.expires_at !== undefined) {
     const expiresAt = parseOptionalDate(body.expires_at, 'expires_at');
     if (expiresAt.error) return jsonError(expiresAt.error, 400);
