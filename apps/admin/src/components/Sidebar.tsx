@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Link2, PlusCircle, ArrowLeftRight, BarChart3,
   Tags, Settings, LogOut, Zap, ClipboardList, Archive, KeyRound,
-  Globe2, Shuffle, Folder,
+  Globe2, Shuffle, Folder, Activity,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useAuth } from '../contexts/AuthContext';
@@ -23,6 +23,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/domains', icon: <Globe2 size={18} />, label: 'Domains' },
   { to: '/redirect-rules', icon: <Shuffle size={18} />, label: 'Redirect Rules' },
   { to: '/groups', icon: <Folder size={18} />, label: 'Groups' },
+  { to: '/health-checks', icon: <Activity size={18} />, label: 'Health Checks' },
   { to: '/tags', icon: <Tags size={18} />, label: 'Tags' },
   { to: '/import-export', icon: <ArrowLeftRight size={18} />, label: 'Import / Export' },
   { to: '/backups', icon: <Archive size={18} />, label: 'Backups' },

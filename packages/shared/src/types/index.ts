@@ -139,6 +139,32 @@ export interface RedirectRule {
   updated_at: string;
 }
 
+export type LinkHealthStatus = 'healthy' | 'warning' | 'broken';
+export type LinkHealthMethod = 'HEAD' | 'GET';
+
+export interface LinkHealthCheckResult {
+  link_id?: string;
+  slug?: string;
+  domain?: string | null;
+  url: string;
+  final_url?: string | null;
+  status: LinkHealthStatus;
+  http_status?: number | null;
+  method?: LinkHealthMethod;
+  response_time_ms: number;
+  checked_at: string;
+  error?: string | null;
+  fallback_url?: string | null;
+}
+
+export interface LinkHealthBatchResult {
+  items: LinkHealthCheckResult[];
+  total: number;
+  healthy: number;
+  warning: number;
+  broken: number;
+}
+
 export type ApiTokenScope = 'read' | 'write' | 'admin';
 
 export interface ApiToken {

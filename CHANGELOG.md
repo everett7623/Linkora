@@ -30,6 +30,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Added V4 smart redirect rules for country, device, browser, referer, language, and weighted/A-B traffic splitting.
 - Linkora backups now include redirect rules, and `backup.json` restore reattaches rules to restored links.
 - Added V4 campaign and project grouping backed by `campaign:*` and `project:*` tags.
+- Added V4 manual link health checks for individual URLs, single links, and capped batches of active links.
 
 ---
 

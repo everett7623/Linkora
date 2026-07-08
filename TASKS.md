@@ -211,4 +211,5 @@ _(none currently)_
 - [x] Campaign / project grouping
 - [x] V4 campaign / project grouping production validation
 - [ ] AI slug suggestions
-- [ ] Link health checker
+- [x] Link health checker
+- [x] V4 link health checker production validation

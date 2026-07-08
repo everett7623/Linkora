@@ -70,9 +70,9 @@ Done:
 - Admin Redirect Rules page
 - Redirect rules in `backup.json` export and restore
 - Campaign and project grouping with `campaign:*` / `project:*` tags
+- Manual URL and link health checks
 
 Remaining:
 
-- Link health checks
 - AI slug and title suggestions
 - UTM automation

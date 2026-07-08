@@ -254,6 +254,32 @@ Payload:
 |--------|------|-------------|
 | `POST` | `/api/metadata/title` | Fetch a page title for Create/Edit forms |
 
+## Health Checks
+
+Health check endpoints require admin access. Checks are manual and do not run in the redirect path, so slow or broken target pages do not affect short-link redirects.
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/health-checks/url` | Check an arbitrary target URL |
+| `POST` | `/api/health-checks/links/:id` | Check one stored link target |
+| `POST` | `/api/health-checks/batch` | Check up to 50 active or selected links |
+
+Batch payload:
+
+```json
+{
+  "limit": 20
+}
+```
+
+Or:
+
+```json
+{
+  "ids": ["link-id-1", "link-id-2"]
+}
+```
+
 ## Audit Logs
 
 | Method | Path | Description |
