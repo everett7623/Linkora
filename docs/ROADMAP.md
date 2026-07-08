@@ -69,10 +69,10 @@ Done:
 - A/B tests and weighted traffic splitting
 - Admin Redirect Rules page
 - Redirect rules in `backup.json` export and restore
+- Campaign and project grouping with `campaign:*` / `project:*` tags
 
 Remaining:
 
-- Campaign or project grouping
 - Link health checks
 - AI slug and title suggestions
 - UTM automation

@@ -15,7 +15,7 @@ Last updated: 2026-07-08
 | Database schema | ✅ Complete      | Local and production D1 migrations applied      |
 | Documentation   | ✅ Complete      | README, root runbooks, and `docs/` reference set |
 | Deployment      | ✅ Deployed      | Worker on `go.y8o.de`, Admin on `admin.y8o.de`; GitHub Actions deploy workflow added |
-| End-to-end test | ✅ V1-V4 slice passed | Full V1-V3 production regression passed; V4 smart redirect production smoke passed on `go.y8o.de` |
+| End-to-end test | ✅ V1-V4 slices passed | Full V1-V3 regression passed; V4 smart redirects and groups production smoke passed on `go.y8o.de` |
 
 ---
 
@@ -177,6 +177,6 @@ Database columns for V2–V4 are already present in `migrations/0001_init.sql` t
 | Admin Redirect Rules page | ✅ Done | Admin can create, edit, filter, and delete rules by link |
 | Backup / restore for rules | ✅ Done | `backup.json` includes `redirectRules`; Linkora backup restore reattaches rules to restored or overwritten links |
 | V4 production validation | ✅ Done | 21-check production smoke plus backup restore smoke passed; temporary `lk-v4-*` links cleaned up |
-| Campaign / project grouping | ⏳ Pending | Not started |
+| Campaign / project grouping | ✅ Done | Admin Groups page and `/api/groups` manage `campaign:*` / `project:*` tags; 15-check production smoke passed and temporary groups cleaned up |
 | AI slug suggestions | ⏳ Pending | Not started |
 | Link health checker | ⏳ Pending | Not started |

@@ -208,6 +208,7 @@ _(none currently)_
 - [x] Admin Redirect Rules page
 - [x] Redirect rules included in backup export / restore
 - [x] V4 smart redirect production validation
-- [ ] Campaign / project grouping
+- [x] Campaign / project grouping
+- [x] V4 campaign / project grouping production validation
 - [ ] AI slug suggestions
 - [ ] Link health checker

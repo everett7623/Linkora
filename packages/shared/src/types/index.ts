@@ -52,6 +52,23 @@ export interface Tag {
   updated_at: string;
 }
 
+export type LinkGroupType = 'campaign' | 'project';
+
+export interface LinkGroup {
+  id: string;
+  type: LinkGroupType;
+  name: string;
+  tagName: string;
+  color?: string | null;
+  description?: string | null;
+  linkCount: number;
+  activeLinkCount: number;
+  totalClicks: number;
+  lastClickedAt?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Domain {
   id: string;
   domain: string;

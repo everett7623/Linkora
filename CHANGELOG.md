@@ -29,6 +29,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Added webhook notifications with signed deliveries for link, import, and backup events.
 - Added V4 smart redirect rules for country, device, browser, referer, language, and weighted/A-B traffic splitting.
 - Linkora backups now include redirect rules, and `backup.json` restore reattaches rules to restored links.
+- Added V4 campaign and project grouping backed by `campaign:*` and `project:*` tags.
 
 ---
 

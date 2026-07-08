@@ -18,6 +18,7 @@ A lightweight, stable, self-hosted short link system built on Cloudflare Workers
 - 🔑 Scoped API tokens for read, write, and admin API access
 - 🌐 Multi-domain catalog with per-link short domain selection
 - Smart redirect rules for country, device, browser, referer, language, and weighted/A-B traffic
+- Campaign and project grouping through managed group tags
 - Webhook notifications for link, import, and backup events
 - 📥 Import from Shlink, Sink, YOURLS, Dub, Linkora backup, and generic CSV / JSON with field mapping
 - 🧭 Import preview with skip, rename, or overwrite conflict handling

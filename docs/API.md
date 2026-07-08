@@ -213,6 +213,30 @@ Generic CSV / JSON import preview and confirm requests can include `fieldMapping
 
 Scheduled R2 backups are created by the Worker cron trigger configured in `apps/worker/wrangler.toml`.
 
+## Groups
+
+Campaign and project groups require admin access. They are stored as normal tags using the `campaign:<name>` and `project:<name>` naming convention, so existing link tag filters, bulk tag assignment, import, and backup flows keep working without a new table.
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/groups` | List campaign and project groups with link and click totals |
+| `GET` | `/api/groups?type=campaign` | List only campaign groups |
+| `GET` | `/api/groups?type=project` | List only project groups |
+| `POST` | `/api/groups` | Create a campaign or project group |
+| `PUT` | `/api/groups/:id` | Rename or update a group tag |
+| `DELETE` | `/api/groups/:id` | Delete a group and remove its tag from links |
+
+Payload:
+
+```json
+{
+  "type": "campaign",
+  "name": "summer-launch",
+  "color": "#38bdf8",
+  "description": "Summer launch campaign"
+}
+```
+
 ## Tags And Settings
 
 | Method | Path |
