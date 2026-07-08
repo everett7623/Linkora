@@ -15,7 +15,7 @@ Last updated: 2026-07-08
 | Database schema | ✅ Complete      | Local and production D1 migrations applied      |
 | Documentation   | ✅ Complete      | README, root runbooks, and `docs/` reference set |
 | Deployment      | ✅ Deployed      | Worker on `go.y8o.de`, Admin on `admin.y8o.de`; GitHub Actions deploy workflow added |
-| End-to-end test | ✅ V1-V4 slices passed | Full V1-V3 regression passed; V4 smart redirects, groups, and health checks production smoke passed on `go.y8o.de` |
+| End-to-end test | ✅ V1-V4 slices passed | Full V1-V3 regression passed; V4 smart redirects, groups, health checks, and smart suggestions production smoke passed on `go.y8o.de`; final V4 core regression passed |
 
 ---
 
@@ -91,7 +91,7 @@ Last updated: 2026-07-08
 ## Next Steps
 
 1. Revoke or rotate the Shlink API key used during migration
-2. Continue remaining V4 modules: campaign/project grouping, AI suggestions, and link health checks
+2. Plan optional V4 long-tail enhancements only if needed: bulk UTM automation, target failure alerts, link notes, public stats, OpenGraph previews, or long-idle auto-archive
 3. Cut over `s.y8o.de` from Shlink to Linkora when ready
 
 ---
@@ -122,7 +122,7 @@ Last updated: 2026-07-08
 |---------|-------------|
 | V2      | ✅ Done |
 | V3      | ✅ Done |
-| V4      | 🟡 In progress |
+| V4      | ✅ Done |
 
 Database columns for V2–V4 are already present in `migrations/0001_init.sql` to avoid future migration complexity.
 
@@ -178,5 +178,5 @@ Database columns for V2–V4 are already present in `migrations/0001_init.sql` t
 | Backup / restore for rules | ✅ Done | `backup.json` includes `redirectRules`; Linkora backup restore reattaches rules to restored or overwritten links |
 | V4 production validation | ✅ Done | 21-check production smoke plus backup restore smoke passed; temporary `lk-v4-*` links cleaned up |
 | Campaign / project grouping | ✅ Done | Admin Groups page and `/api/groups` manage `campaign:*` / `project:*` tags; 15-check production smoke passed and temporary groups cleaned up |
-| AI slug suggestions | ⏳ Pending | Not started |
+| Local smart link suggestions | ✅ Done | Authenticated `/api/metadata/suggestions` suggests slugs, title, description, and tags from URL/page metadata; Create/Edit forms can apply suggestions; 8-check production smoke plus 10-check core regression passed and temporary `lk-v4-ai-*` / `lk-v4-final-*` links cleaned up |
 | Link health checker | ✅ Done | Manual URL, single-link, and capped active-link batch checks; 15-check production smoke passed and temporary `lk-v4-health-*` links cleaned up |

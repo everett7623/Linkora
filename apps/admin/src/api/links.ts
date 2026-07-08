@@ -44,6 +44,7 @@ export interface CreateLinkPayload {
   slug?: string;
   domain?: string | null;
   title?: string;
+  description?: string | null;
   tags?: string[];
   redirect_type?: 301 | 302;
   status?: string;

@@ -61,7 +61,7 @@ Done:
 
 ## V4: Smart Redirects And Operations
 
-Status: in progress.
+Status: complete for the currently tracked V4 scope.
 
 Done:
 
@@ -71,8 +71,10 @@ Done:
 - Redirect rules in `backup.json` export and restore
 - Campaign and project grouping with `campaign:*` / `project:*` tags
 - Manual URL and link health checks
+- Local smart slug, title, description, and tag suggestions from URL/page metadata
 
-Remaining:
+Future optional enhancements:
 
-- AI slug and title suggestions
-- UTM automation
+- Bulk UTM automation
+- Target failure alerts and periodic status monitoring
+- Public stats pages, OpenGraph previews, link notes, and long-idle auto-archive

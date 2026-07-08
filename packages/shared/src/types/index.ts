@@ -165,6 +165,17 @@ export interface LinkHealthBatchResult {
   broken: number;
 }
 
+export interface LinkSuggestionResult {
+  url: string;
+  final_url: string;
+  title?: string | null;
+  description?: string | null;
+  slugs: string[];
+  tags: string[];
+  metadata_fetched: boolean;
+  error?: string | null;
+}
+
 export type ApiTokenScope = 'read' | 'write' | 'admin';
 
 export interface ApiToken {

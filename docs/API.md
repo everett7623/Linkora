@@ -253,6 +253,30 @@ Payload:
 | Method | Path | Description |
 |--------|------|-------------|
 | `POST` | `/api/metadata/title` | Fetch a page title for Create/Edit forms |
+| `POST` | `/api/metadata/suggestions` | Suggest slug, title, description, and tags from URL/page metadata |
+
+Suggestions payload:
+
+```json
+{
+  "url": "https://example.com/path"
+}
+```
+
+Suggestions response data:
+
+```json
+{
+  "url": "https://example.com/path",
+  "final_url": "https://example.com/path",
+  "title": "Example Page",
+  "description": "Short page summary",
+  "slugs": ["example-page", "example"],
+  "tags": ["example"],
+  "metadata_fetched": true,
+  "error": null
+}
+```
 
 ## Health Checks
 

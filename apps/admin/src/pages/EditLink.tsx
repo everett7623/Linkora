@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, RefreshCw } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Sparkles } from 'lucide-react';
 import { getLink, updateLink } from '../api/links';
 import { listDomains } from '../api/domains';
-import { fetchPageTitle } from '../api/metadata';
+import { fetchLinkSuggestions, fetchPageTitle } from '../api/metadata';
 import { listTags } from '../api/tags';
+import { LinkSuggestionsPanel } from '../components/LinkSuggestionsPanel';
 import { TagSuggestions } from '../components/TagSuggestions';
 import { UtmBuilder } from '../components/UtmBuilder';
 import { Button } from '../components/ui/Button';
-import { Input, Select } from '../components/ui/Input';
+import { Input, Select, Textarea } from '../components/ui/Input';
 import { useToast } from '../components/ui/Toast';
-import type { Domain, Link, Tag } from '@linkora/shared';
+import type { Domain, Link, LinkSuggestionResult, Tag } from '@linkora/shared';
 
 function toDatetimeLocal(value?: string | null): string {
   if (!value) return '';
@@ -28,6 +29,8 @@ export function EditLink() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [titleLoading, setTitleLoading] = useState(false);
+  const [suggestionLoading, setSuggestionLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<LinkSuggestionResult | null>(null);
   const [tagCatalog, setTagCatalog] = useState<Tag[]>([]);
   const [domains, setDomains] = useState<Domain[]>([]);
   const [form, setForm] = useState({
@@ -35,6 +38,7 @@ export function EditLink() {
     slug: '',
     domain: '',
     title: '',
+    description: '',
     tags: '',
     redirect_type: '302' as '301' | '302',
     status: 'active',
@@ -57,6 +61,7 @@ export function EditLink() {
           slug: l.slug,
           domain: l.domain ?? '',
           title: l.title ?? '',
+          description: l.description ?? '',
           tags,
           redirect_type: l.redirect_type === 301 ? '301' : '302',
           status: l.status,
@@ -94,6 +99,7 @@ export function EditLink() {
     else if (!/^https?:\/\//i.test(form.long_url.trim())) errs.long_url = 'URL must start with http:// or https://';
     if (!form.slug.trim()) errs.slug = 'Slug is required';
     else if (!/^[a-zA-Z0-9_-]+$/.test(form.slug)) errs.slug = 'Slug can only contain letters, numbers, _ and -';
+    if (form.description.length > 240) errs.description = 'Description must be 240 characters or less';
     if (form.expires_at && Number.isNaN(new Date(form.expires_at).getTime())) errs.expires_at = 'Enter a valid date and time';
     if (form.max_clicks) {
       const maxClicks = Number(form.max_clicks);
@@ -129,6 +135,47 @@ export function EditLink() {
     }
   };
 
+  const handleSuggest = async () => {
+    const url = form.long_url.trim();
+    if (!url) {
+      setErrors((e) => ({ ...e, long_url: 'Destination URL is required' }));
+      return;
+    }
+    if (!/^https?:\/\//i.test(url)) {
+      setErrors((e) => ({ ...e, long_url: 'URL must start with http:// or https://' }));
+      return;
+    }
+
+    setSuggestionLoading(true);
+    try {
+      const result = await fetchLinkSuggestions(url);
+      setSuggestions(result);
+      success('Suggestions ready');
+    } catch (e) {
+      error(String(e));
+    } finally {
+      setSuggestionLoading(false);
+    }
+  };
+
+  const mergeTags = (incoming: string[]) => {
+    const current = form.tags ? form.tags.split(',').map((t) => t.trim()).filter(Boolean) : [];
+    const merged = [...current];
+    for (const tag of incoming) {
+      if (!merged.some((existing) => existing.toLowerCase() === tag.toLowerCase())) {
+        merged.push(tag);
+      }
+    }
+    set('tags', merged.join(', '));
+  };
+
+  const applyAllSuggestions = () => {
+    if (!suggestions) return;
+    if (suggestions.title) set('title', suggestions.title);
+    if (suggestions.description) set('description', suggestions.description);
+    mergeTags(suggestions.tags);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate() || !id) return;
@@ -142,6 +189,7 @@ export function EditLink() {
         slug: form.slug.trim(),
         domain: form.domain || undefined,
         title: form.title.trim() || undefined,
+        description: form.description.trim() || null,
         tags: tags.length ? tags : [],
         redirect_type: form.redirect_type === '301' ? 301 : 302,
         status: form.status,
@@ -209,6 +257,26 @@ export function EditLink() {
           onChange={(e) => set('long_url', e.target.value)}
           error={errors.long_url}
         />
+        <div className="flex justify-end">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleSuggest}
+            loading={suggestionLoading}
+            disabled={saving}
+            icon={<Sparkles size={14} />}
+          >
+            Suggest
+          </Button>
+        </div>
+        <LinkSuggestionsPanel
+          suggestions={suggestions}
+          onApplySlug={(slug) => set('slug', slug)}
+          onApplyTitle={(title) => set('title', title)}
+          onApplyDescription={(description) => set('description', description)}
+          onApplyTags={mergeTags}
+          onApplyAll={applyAllSuggestions}
+        />
         <Input
           label="Slug *"
           placeholder="my-link"
@@ -247,6 +315,15 @@ export function EditLink() {
             Fetch Title
           </Button>
         </div>
+        <Textarea
+          label="Description (optional)"
+          placeholder="Short internal note or page summary"
+          value={form.description}
+          onChange={(e) => set('description', e.target.value)}
+          error={errors.description}
+          rows={3}
+          maxLength={240}
+        />
         <Input
           label="Tags (optional)"
           placeholder="marketing, campaign"

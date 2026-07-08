@@ -210,6 +210,7 @@ _(none currently)_
 - [x] V4 smart redirect production validation
 - [x] Campaign / project grouping
 - [x] V4 campaign / project grouping production validation
-- [ ] AI slug suggestions
+- [x] Local smart slug / title / description / tag suggestions
+- [x] V4 smart suggestions production validation
 - [x] Link health checker
 - [x] V4 link health checker production validation
