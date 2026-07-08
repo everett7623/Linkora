@@ -152,6 +152,7 @@ _(none currently)_
 - [x] V2 expiry/max-clicks production check: expired links show expired page; max-click links stop after limit
 - [x] V2 auto-fetch page title production check: metadata endpoint rejects unauthenticated requests and fetches `Example Domain`
 - [x] V2 bulk tag assignment production check: add, replace, remove, and clear tags on temporary links
+- [x] V2 full production regression: 49 checks passed on `go.y8o.de`; temporary `lk-v2-reg-*` links cleaned up
 
 ---
 

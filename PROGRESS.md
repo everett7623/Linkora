@@ -120,7 +120,7 @@ Last updated: 2026-07-08
 
 | Version | Status      |
 |---------|-------------|
-| V2      | In progress |
+| V2      | ✅ Done |
 | V3      | In progress |
 | V4      | Not started |
 
@@ -153,6 +153,7 @@ Database columns for V2–V4 are already present in `migrations/0001_init.sql` t
 | Links advanced filters | ✅ Done | Links list filters by source, domain, password, warning, limits, and created date range |
 | Generic CSV field mapping | ✅ Done | Generic CSV import accepts explicit field mapping for non-standard headers |
 | Generic JSON / JSONL field mapping | ✅ Done | Generic JSON import accepts mapped fields and common wrapped arrays |
+| V2 production regression | ✅ Done | 49 production checks passed on `go.y8o.de`; temporary `lk-v2-reg-*` links cleaned up |
 
 ### V3 Progress
 
