@@ -9,6 +9,7 @@ import {
   createLink,
   updateLink,
   deleteLink,
+  deleteRedirectRulesForLink,
   createTagsIfMissing,
 } from '../db/index';
 import { recordAudit } from '../audit/index';
@@ -471,6 +472,7 @@ links.post('/bulk', async (c) => {
     const domain = cacheDomainForLink(link, fallbackDomain);
 
     if (action === 'delete') {
+      await deleteRedirectRulesForLink(c.env, link.id);
       await deleteLink(c.env, link.id);
       await deleteCachedLink(c.env, domain, link.slug);
       successCount++;
@@ -697,6 +699,7 @@ links.delete('/:id', async (c) => {
 
   const domain = cacheDomainForLink(existing, requestDomain(c.req.url));
 
+  await deleteRedirectRulesForLink(c.env, id);
   await deleteLink(c.env, id);
   await deleteCachedLink(c.env, domain, existing.slug);
   await recordAudit(c.env, c.req.raw, 'link.delete', 'link', id, { slug: existing.slug });

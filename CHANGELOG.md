@@ -27,6 +27,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Added optional Cloudflare Queues processing for visit statistics with direct `ctx.waitUntil()` fallback.
 - Added multi-domain management, per-link short domain selection, and domain-aware redirect lookups.
 - Added webhook notifications with signed deliveries for link, import, and backup events.
+- Added V4 smart redirect rules for country, device, browser, referer, language, and weighted/A-B traffic splitting.
+- Linkora backups now include redirect rules, and `backup.json` restore reattaches rules to restored links.
 
 ---
 

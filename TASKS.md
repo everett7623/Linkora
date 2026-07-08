@@ -198,10 +198,16 @@ _(none currently)_
 
 ## 🔵 Backlog — V4
 
-- [ ] Country-based redirect rules
-- [ ] Device-based redirect rules
-- [ ] A/B test redirect rules
-- [ ] Weighted traffic splitting
+- [x] Country-based redirect rules
+- [x] Device-based redirect rules
+- [x] Browser-based redirect rules
+- [x] Referer-based redirect rules
+- [x] Language-based redirect rules
+- [x] A/B test redirect rules
+- [x] Weighted traffic splitting
+- [x] Admin Redirect Rules page
+- [x] Redirect rules included in backup export / restore
+- [x] V4 smart redirect production validation
 - [ ] Campaign / project grouping
 - [ ] AI slug suggestions
 - [ ] Link health checker

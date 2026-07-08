@@ -5,9 +5,11 @@ import {
   getExistingSlugs,
   getLinkBySlug,
   createLink,
+  createRedirectRule,
   updateLink,
   createTagsIfMissing,
   createImportJob,
+  deleteRedirectRulesForLink,
   updateImportJob,
   getImportJobs,
   getImportJobById,
@@ -21,12 +23,13 @@ import { ShlinkAdapter } from '../importers/shlink';
 import { GenericCsvAdapter, GenericJsonAdapter } from '../importers/generic';
 import {
   DubAdapter,
+  extractLinkoraBackupRedirectRules,
   extractLinkoraBackupTags,
   LinkoraBackupAdapter,
   SinkAdapter,
   YourlsAdapter,
 } from '../importers/platforms';
-import type { ImportFieldMapping, Link, NormalizedImportItem, ImportAdapter, KVCacheEntry } from '@linkora/shared';
+import type { ImportFieldMapping, Link, NormalizedImportItem, ImportAdapter, KVCacheEntry, RedirectRule } from '@linkora/shared';
 
 const importRoutes = new Hono<{ Bindings: Env }>();
 
@@ -179,6 +182,45 @@ function overwriteFieldsFromImportItem(item: NormalizedImportItem, existing: Lin
     fallback_url: item.fallbackUrl ?? existing.fallback_url,
     archived: item.archived ?? existing.archived,
   };
+}
+
+function backupLinkIdFromItem(item: NormalizedImportItem): string | undefined {
+  if (typeof item.raw === 'object' && item.raw !== null && !Array.isArray(item.raw)) {
+    const rawId = (item.raw as { id?: unknown }).id;
+    if (typeof rawId === 'string' && rawId.trim()) return rawId.trim();
+  }
+  return item.sourceId;
+}
+
+async function restoreBackupRedirectRules(
+  env: Env,
+  rules: RedirectRule[],
+  linkIdByBackupId: Map<string, string>,
+  replaceRuleLinkIds: Set<string>,
+  ts: string
+): Promise<number> {
+  if (rules.length === 0 || linkIdByBackupId.size === 0) return 0;
+
+  for (const linkId of replaceRuleLinkIds) {
+    await deleteRedirectRulesForLink(env, linkId);
+  }
+
+  let restored = 0;
+  for (const rule of rules) {
+    const linkId = linkIdByBackupId.get(rule.link_id);
+    if (!linkId) continue;
+
+    await createRedirectRule(env, {
+      ...rule,
+      id: generateId(),
+      link_id: linkId,
+      created_at: rule.created_at || ts,
+      updated_at: rule.updated_at || ts,
+    });
+    restored++;
+  }
+
+  return restored;
 }
 
 async function previewItems(
@@ -398,6 +440,12 @@ importRoutes.post('/confirm', async (c) => {
     if (backupTags.length > 0) await createTagsIfMissing(c.env, backupTags);
   }
 
+  const backupRedirectRules = adapter.source === 'linkora-backup'
+    ? extractLinkoraBackupRedirectRules(parsedInput)
+    : [];
+  const linkIdByBackupId = new Map<string, string>();
+  const replaceRuleLinkIds = new Set<string>();
+
   let successCount = 0;
   let skippedCount = 0;
   let conflictCount = 0;
@@ -445,6 +493,11 @@ importRoutes.post('/confirm', async (c) => {
         const overwritten = { ...existing, ...overwriteFieldsFromImportItem(item, existing, ts) } as Link;
         await ensureImportedTags(c.env, item, ts);
         await syncImportCache(c.env, domain, overwritten);
+        const backupLinkId = backupLinkIdFromItem(item);
+        if (adapter.source === 'linkora-backup' && backupLinkId) {
+          linkIdByBackupId.set(backupLinkId, existing.id);
+          replaceRuleLinkIds.add(existing.id);
+        }
         successCount++;
         reportRows.push(`${item.slug},overwritten,slug already existed`);
         continue;
@@ -455,6 +508,10 @@ importRoutes.post('/confirm', async (c) => {
       await createLink(c.env, link);
       await ensureImportedTags(c.env, item, link.updated_at);
       await syncImportCache(c.env, domain, link);
+      const backupLinkId = backupLinkIdFromItem(item);
+      if (adapter.source === 'linkora-backup' && backupLinkId) {
+        linkIdByBackupId.set(backupLinkId, link.id);
+      }
 
       successCount++;
       existingSlugs.add(slug);
@@ -464,6 +521,14 @@ importRoutes.post('/confirm', async (c) => {
       reportRows.push(`${item.slug},failed,"${String(err)}"`);
     }
   }
+
+  const redirectRulesRestored = await restoreBackupRedirectRules(
+    c.env,
+    backupRedirectRules,
+    linkIdByBackupId,
+    replaceRuleLinkIds,
+    ts
+  );
 
   const completedAt = now();
   await updateImportJob(c.env, jobId, {
@@ -483,6 +548,7 @@ importRoutes.post('/confirm', async (c) => {
     conflicts: conflictCount,
     failed: failedCount,
     conflictStrategy,
+    redirectRulesRestored,
   });
   c.executionCtx.waitUntil(emitWebhook(c.env, 'import.completed', {
     jobId,
@@ -493,6 +559,7 @@ importRoutes.post('/confirm', async (c) => {
     conflicts: conflictCount,
     failed: failedCount,
     conflictStrategy,
+    redirectRulesRestored,
     completedAt,
   }));
 
@@ -504,6 +571,7 @@ importRoutes.post('/confirm', async (c) => {
     conflicts: conflictCount,
     failed: failedCount,
     conflictStrategy,
+    redirectRulesRestored,
     completedAt,
   });
 });

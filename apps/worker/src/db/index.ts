@@ -1,4 +1,4 @@
-import type { ApiToken, ApiTokenScope, AuditLog, Backup, Domain, Link, Tag, ImportJob, Setting, Visit } from '@linkora/shared';
+import type { ApiToken, ApiTokenScope, AuditLog, Backup, Domain, Link, RedirectRule, Tag, ImportJob, Setting, Visit } from '@linkora/shared';
 import type { Env } from '../types';
 
 export interface ApiTokenRecord {
@@ -518,6 +518,13 @@ export async function getAllTags(env: Env): Promise<Tag[]> {
   return result.results ?? [];
 }
 
+export async function getAllRedirectRules(env: Env): Promise<RedirectRule[]> {
+  const result = await env.DB.prepare(
+    'SELECT * FROM redirect_rules ORDER BY link_id ASC, priority ASC, created_at ASC'
+  ).all<RedirectRule>();
+  return result.results ?? [];
+}
+
 export async function getAllLinkTagNames(env: Env): Promise<string[]> {
   const result = await env.DB.prepare('SELECT tags FROM links WHERE tags IS NOT NULL AND tags != ""').all<{ tags: string }>();
   const tags = new Set<string>();
@@ -688,6 +695,51 @@ export async function setDefaultDomain(env: Env, id: string, updatedAt: string):
 
 export async function deleteDomain(env: Env, id: string): Promise<void> {
   await env.DB.prepare('DELETE FROM domains WHERE id = ?').bind(id).run();
+}
+
+export async function listRedirectRules(env: Env, linkId?: string): Promise<RedirectRule[]> {
+  const query = linkId
+    ? env.DB.prepare('SELECT * FROM redirect_rules WHERE link_id = ? ORDER BY priority ASC, created_at ASC').bind(linkId)
+    : env.DB.prepare('SELECT * FROM redirect_rules ORDER BY created_at DESC');
+  const result = await query.all<RedirectRule>();
+  return result.results ?? [];
+}
+
+export async function getRedirectRuleById(env: Env, id: string): Promise<RedirectRule | null> {
+  const result = await env.DB.prepare('SELECT * FROM redirect_rules WHERE id = ? LIMIT 1')
+    .bind(id)
+    .first<RedirectRule>();
+  return result ?? null;
+}
+
+export async function getRedirectRulesForLink(env: Env, linkId: string): Promise<RedirectRule[]> {
+  return listRedirectRules(env, linkId);
+}
+
+export async function createRedirectRule(env: Env, rule: RedirectRule): Promise<void> {
+  await env.DB.prepare(
+    'INSERT INTO redirect_rules (id, link_id, rule_type, rule_config, priority, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  )
+    .bind(rule.id, rule.link_id, rule.rule_type, rule.rule_config, rule.priority, rule.created_at, rule.updated_at)
+    .run();
+}
+
+export async function updateRedirectRule(
+  env: Env,
+  id: string,
+  fields: Pick<RedirectRule, 'rule_type' | 'rule_config' | 'priority' | 'updated_at'>
+): Promise<void> {
+  await env.DB.prepare('UPDATE redirect_rules SET rule_type = ?, rule_config = ?, priority = ?, updated_at = ? WHERE id = ?')
+    .bind(fields.rule_type, fields.rule_config, fields.priority, fields.updated_at, id)
+    .run();
+}
+
+export async function deleteRedirectRule(env: Env, id: string): Promise<void> {
+  await env.DB.prepare('DELETE FROM redirect_rules WHERE id = ?').bind(id).run();
+}
+
+export async function deleteRedirectRulesForLink(env: Env, linkId: string): Promise<void> {
+  await env.DB.prepare('DELETE FROM redirect_rules WHERE link_id = ?').bind(linkId).run();
 }
 
 export async function getSettings(env: Env): Promise<Record<string, string>> {

@@ -16,6 +16,7 @@ import { Analytics } from './pages/Analytics';
 import { Backups } from './pages/Backups';
 import { ApiTokens } from './pages/ApiTokens';
 import { Domains } from './pages/Domains';
+import { RedirectRules } from './pages/RedirectRules';
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { authenticated, loading } = useAuth();
@@ -49,6 +50,7 @@ export function App() {
         <Route path="links/:id/edit" element={<EditLink />} />
         <Route path="analytics" element={<Analytics />} />
         <Route path="domains" element={<Domains />} />
+        <Route path="redirect-rules" element={<RedirectRules />} />
         <Route path="tags" element={<Tags />} />
         <Route path="import-export" element={<ImportExport />} />
         <Route path="backups" element={<Backups />} />

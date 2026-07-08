@@ -1,9 +1,19 @@
-import type { ImportAdapter, ImportValidationResult, Link, NormalizedImportItem, Tag } from '@linkora/shared';
+import type {
+  ImportAdapter,
+  ImportValidationResult,
+  Link,
+  NormalizedImportItem,
+  RedirectRule,
+  RedirectRuleType,
+  Tag,
+} from '@linkora/shared';
 import { validateLongUrl, validateSlug } from '@linkora/shared';
 
 interface SourceRow {
   [key: string]: unknown;
 }
+
+const REDIRECT_RULE_TYPES: RedirectRuleType[] = ['country', 'device', 'browser', 'referer', 'language', 'weighted'];
 
 function asString(value: unknown): string | undefined {
   if (value === undefined || value === null) return undefined;
@@ -15,6 +25,12 @@ function asNumber(value: unknown): number | undefined {
   if (value === undefined || value === null || value === '') return undefined;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function asRedirectRuleType(value: unknown): RedirectRuleType | undefined {
+  return typeof value === 'string' && REDIRECT_RULE_TYPES.includes(value as RedirectRuleType)
+    ? value as RedirectRuleType
+    : undefined;
 }
 
 function asTags(value: unknown): string[] {
@@ -181,6 +197,16 @@ function safeJsonParse(value: string): unknown {
   }
 }
 
+function normalizeRedirectRuleConfig(value: unknown): string | undefined {
+  if (typeof value === 'string') {
+    const parsed = safeJsonParse(value);
+    return parsed && typeof parsed === 'object' ? JSON.stringify(parsed) : undefined;
+  }
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? JSON.stringify(value)
+    : undefined;
+}
+
 export const LinkoraBackupAdapter: ImportAdapter = {
   source: 'linkora-backup',
 
@@ -217,4 +243,38 @@ export function extractLinkoraBackupTags(input: unknown): Tag[] {
       created_at: asString(tag.created_at) ?? new Date().toISOString(),
       updated_at: asString(tag.updated_at) ?? new Date().toISOString(),
     }));
+}
+
+export function extractLinkoraBackupRedirectRules(input: unknown): RedirectRule[] {
+  const parsed = parseJsonish(input);
+  if (typeof parsed !== 'object' || parsed === null) return [];
+
+  const obj = parsed as { redirectRules?: unknown; redirect_rules?: unknown };
+  const rows = Array.isArray(obj.redirectRules)
+    ? obj.redirectRules
+    : Array.isArray(obj.redirect_rules)
+      ? obj.redirect_rules
+      : [];
+
+  const ts = new Date().toISOString();
+  return rows
+    .map((row) => row as Partial<RedirectRule> & { ruleConfig?: unknown })
+    .map((rule) => {
+      const linkId = asString(rule.link_id);
+      const ruleType = asRedirectRuleType(rule.rule_type);
+      const ruleConfig = normalizeRedirectRuleConfig(rule.rule_config ?? rule.ruleConfig);
+      if (!linkId || !ruleType || !ruleConfig) return null;
+
+      const priority = asNumber(rule.priority);
+      return {
+        id: asString(rule.id) ?? '',
+        link_id: linkId,
+        rule_type: ruleType,
+        rule_config: ruleConfig,
+        priority: Number.isInteger(priority) && Number(priority) >= 0 ? Number(priority) : 100,
+        created_at: asString(rule.created_at) ?? ts,
+        updated_at: asString(rule.updated_at) ?? ts,
+      } satisfies RedirectRule;
+    })
+    .filter((rule): rule is RedirectRule => rule !== null);
 }

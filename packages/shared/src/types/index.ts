@@ -98,6 +98,30 @@ export interface Backup {
   created_at: string;
 }
 
+export type RedirectRuleType = 'country' | 'device' | 'browser' | 'referer' | 'language' | 'weighted';
+
+export interface RedirectRuleTarget {
+  url: string;
+  weight?: number;
+}
+
+export interface RedirectRuleConfig {
+  enabled?: boolean;
+  values?: string[];
+  targetUrl?: string;
+  targets?: RedirectRuleTarget[];
+}
+
+export interface RedirectRule {
+  id: string;
+  link_id: string;
+  rule_type: RedirectRuleType;
+  rule_config: string;
+  priority: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export type ApiTokenScope = 'read' | 'write' | 'admin';
 
 export interface ApiToken {

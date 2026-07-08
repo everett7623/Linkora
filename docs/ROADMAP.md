@@ -61,8 +61,17 @@ Done:
 
 ## V4: Smart Redirects And Operations
 
-- Country/device/browser/referer redirect rules
+Status: in progress.
+
+Done:
+
+- Country/device/browser/referer/language redirect rules
 - A/B tests and weighted traffic splitting
+- Admin Redirect Rules page
+- Redirect rules in `backup.json` export and restore
+
+Remaining:
+
 - Campaign or project grouping
 - Link health checks
 - AI slug and title suggestions

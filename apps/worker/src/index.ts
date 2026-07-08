@@ -15,6 +15,7 @@ import analyticsRoutes from './routes/analytics';
 import backupRoutes from './routes/backups';
 import tokenRoutes from './routes/tokens';
 import webhookRoutes from './routes/webhooks';
+import redirectRuleRoutes from './routes/redirectRules';
 import { processVisitQueueBatch } from './analytics/index';
 import { createR2Backup } from './backups/index';
 import { emitWebhook } from './webhooks/index';
@@ -84,6 +85,9 @@ app.route('/api/tokens', tokenRoutes);
 
 // Webhooks
 app.route('/api/webhooks', webhookRoutes);
+
+// Smart redirect rules
+app.route('/api/redirect-rules', redirectRuleRoutes);
 
 // Overview stats
 app.get('/api/overview', async (c) => {

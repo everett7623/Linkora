@@ -9,7 +9,7 @@ Linkora supports manual exports, pre-import backup downloads, and R2 backup snap
 | `GET /api/export/links.csv` | Link records as CSV |
 | `GET /api/export/links.json` | Link records as JSON |
 | `GET /api/export/visits.csv` | Visit records as CSV |
-| `GET /api/export/backup.json` | Links, tags, and settings |
+| `GET /api/export/backup.json` | Links, tags, redirect rules, and settings |
 
 All export endpoints require `Authorization: Bearer <ADMIN_TOKEN>`.
 
@@ -62,6 +62,7 @@ Authenticated API endpoints:
   "exportedAt": "2026-07-01T00:00:00.000Z",
   "links": [],
   "tags": [],
+  "redirectRules": [],
   "settings": {}
 }
 ```
@@ -70,10 +71,12 @@ Authenticated API endpoints:
 
 Linkora `backup.json` files can be imported from the Admin Import / Export page by selecting `Linkora backup.json`.
 
-Restore imports links and tag catalog entries. Conflict handling follows the selected import strategy:
+Restore imports links, tag catalog entries, and redirect rules for links that are imported or overwritten. Conflict handling follows the selected import strategy:
 
 - `skip` leaves existing slugs untouched.
 - `rename` imports conflicting links with a new slug suffix.
 - `overwrite` updates existing links.
+
+Redirect rules for skipped links are skipped. Redirect rules for renamed links are attached to the new link ID. Redirect rules for overwritten links replace that link's existing rules.
 
 Keep exported backups and D1 backups for disaster recovery, especially before using overwrite.

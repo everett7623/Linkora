@@ -15,7 +15,7 @@ Last updated: 2026-07-08
 | Database schema | ✅ Complete      | Local and production D1 migrations applied      |
 | Documentation   | ✅ Complete      | README, root runbooks, and `docs/` reference set |
 | Deployment      | ✅ Deployed      | Worker on `go.y8o.de`, Admin on `admin.y8o.de`; GitHub Actions deploy workflow added |
-| End-to-end test | ✅ V1 passed | Production Worker, Admin auth, Links CRUD, Settings, Import/Export, and Shlink import passed |
+| End-to-end test | ✅ V1-V4 slice passed | Full V1-V3 production regression passed; V4 smart redirect production smoke passed on `go.y8o.de` |
 
 ---
 
@@ -91,7 +91,7 @@ Last updated: 2026-07-08
 ## Next Steps
 
 1. Revoke or rotate the Shlink API key used during migration
-2. Start V4 smart redirects when ready
+2. Continue remaining V4 modules: campaign/project grouping, AI suggestions, and link health checks
 3. Cut over `s.y8o.de` from Shlink to Linkora when ready
 
 ---
@@ -122,9 +122,9 @@ Last updated: 2026-07-08
 |---------|-------------|
 | V2      | ✅ Done |
 | V3      | ✅ Done |
-| V4      | Not started |
+| V4      | 🟡 In progress |
 
-Database columns for V2–V4 are already present in `migrations/0001_init.sql` to avoid future migration complexity. They are not used by V1 code.
+Database columns for V2–V4 are already present in `migrations/0001_init.sql` to avoid future migration complexity.
 
 ### V2 Progress
 
@@ -167,3 +167,16 @@ Database columns for V2–V4 are already present in `migrations/0001_init.sql` t
 | Cloudflare Queues for async stats | ✅ Done | Redirects enqueue visit snapshots when `VISITS_QUEUE` exists; max-click links and queue failures fall back to direct `ctx.waitUntil()` recording |
 | Multi-domain support | ✅ Done | Admin can manage short domains; links store a selected domain; redirects resolve by request host plus slug with legacy domainless fallback |
 | Webhook notifications | ✅ Done | Admin configures signed webhook deliveries for link, import, and backup events; delivery runs asynchronously and never blocks primary flows |
+
+### V4 Progress
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Smart redirect evaluator | ✅ Done | Redirects can resolve country, device, browser, referer, language, and weighted/A-B rules with default long URL fallback on any rule failure |
+| Redirect Rules API | ✅ Done | `/api/redirect-rules` supports list, create, update, and delete with auth and audit logs |
+| Admin Redirect Rules page | ✅ Done | Admin can create, edit, filter, and delete rules by link |
+| Backup / restore for rules | ✅ Done | `backup.json` includes `redirectRules`; Linkora backup restore reattaches rules to restored or overwritten links |
+| V4 production validation | ✅ Done | 21-check production smoke plus backup restore smoke passed; temporary `lk-v4-*` links cleaned up |
+| Campaign / project grouping | ⏳ Pending | Not started |
+| AI slug suggestions | ⏳ Pending | Not started |
+| Link health checker | ⏳ Pending | Not started |

@@ -1,6 +1,6 @@
 import type { Backup } from '@linkora/shared';
 import type { Env } from '../types';
-import { createBackupRecord, getAllLinks, getAllTags, getSettings } from '../db/index';
+import { createBackupRecord, getAllLinks, getAllRedirectRules, getAllTags, getSettings } from '../db/index';
 import { generateId, now } from '../utils/id';
 
 export interface LinkoraBackupPayload {
@@ -9,15 +9,17 @@ export interface LinkoraBackupPayload {
   exportedAt: string;
   links: Awaited<ReturnType<typeof getAllLinks>>;
   tags: Awaited<ReturnType<typeof getAllTags>>;
+  redirectRules: Awaited<ReturnType<typeof getAllRedirectRules>>;
   settings: Record<string, string>;
 }
 
 export type BackupTrigger = 'manual' | 'scheduled';
 
 export async function buildBackupPayload(env: Env): Promise<LinkoraBackupPayload> {
-  const [links, tags, settings] = await Promise.all([
+  const [links, tags, redirectRules, settings] = await Promise.all([
     getAllLinks(env),
     getAllTags(env),
+    getAllRedirectRules(env),
     getSettings(env),
   ]);
 
@@ -27,6 +29,7 @@ export async function buildBackupPayload(env: Env): Promise<LinkoraBackupPayload
     exportedAt: now(),
     links,
     tags,
+    redirectRules,
     settings: redactBackupSettings(settings),
   };
 }

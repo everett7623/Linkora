@@ -67,6 +67,58 @@ Domain endpoints require admin access. Link creation and update payloads can inc
 | `DELETE` | `/api/domains/:id` | Delete a domain catalog entry |
 | `POST` | `/api/domains/:id/set-default` | Mark a domain as the default |
 
+## Redirect Rules
+
+Redirect rule endpoints require admin access. Rules are evaluated by ascending `priority`; if no enabled rule matches, or if rule evaluation fails, the redirect uses the link's default `long_url`.
+
+Supported `rule_type` values:
+
+```txt
+country
+device
+browser
+referer
+language
+weighted
+```
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/redirect-rules` | List all redirect rules |
+| `GET` | `/api/redirect-rules?linkId=:id` | List rules for one link |
+| `GET` | `/api/redirect-rules/:id` | Read one rule |
+| `POST` | `/api/redirect-rules` | Create a rule |
+| `PUT` | `/api/redirect-rules/:id` | Update a rule |
+| `DELETE` | `/api/redirect-rules/:id` | Delete a rule |
+
+Non-weighted rule payload:
+
+```json
+{
+  "link_id": "link-id",
+  "rule_type": "country",
+  "priority": 10,
+  "enabled": true,
+  "values": ["us", "ca"],
+  "targetUrl": "https://example.com/north-america"
+}
+```
+
+Weighted/A-B rule payload:
+
+```json
+{
+  "link_id": "link-id",
+  "rule_type": "weighted",
+  "priority": 20,
+  "enabled": true,
+  "targets": [
+    { "url": "https://example.com/a", "weight": 70 },
+    { "url": "https://example.com/b", "weight": 30 }
+  ]
+}
+```
+
 ## Webhooks
 
 Webhook endpoints require admin access. Deliveries are sent asynchronously and do not block link, import, backup, or redirect flows.
