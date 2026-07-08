@@ -18,6 +18,17 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       LINKORA_API_URL: ${{ vars.LINKORA_API_URL }}
       LINKORA_PAGES_PROJECT: ${{ vars.LINKORA_PAGES_PROJECT }}
+      LINKORA_WORKER_NAME: ${{ vars.LINKORA_WORKER_NAME }}
+      LINKORA_SHORT_DOMAIN: ${{ vars.LINKORA_SHORT_DOMAIN }}
+      LINKORA_COMPATIBILITY_DATE: ${{ vars.LINKORA_COMPATIBILITY_DATE }}
+      LINKORA_VERSION: ${{ vars.LINKORA_VERSION }}
+      LINKORA_D1_DATABASE_NAME: ${{ vars.LINKORA_D1_DATABASE_NAME }}
+      LINKORA_D1_DATABASE_ID: ${{ vars.LINKORA_D1_DATABASE_ID }}
+      LINKORA_KV_NAMESPACE_ID: ${{ vars.LINKORA_KV_NAMESPACE_ID }}
+      LINKORA_KV_PREVIEW_ID: ${{ vars.LINKORA_KV_PREVIEW_ID }}
+      LINKORA_R2_BUCKET: ${{ vars.LINKORA_R2_BUCKET }}
+      LINKORA_R2_PREVIEW_BUCKET: ${{ vars.LINKORA_R2_PREVIEW_BUCKET }}
+      LINKORA_VISITS_QUEUE: ${{ vars.LINKORA_VISITS_QUEUE }}
 
     steps:
       - name: Checkout
@@ -40,8 +51,52 @@ jobs:
         env:
           VITE_API_URL: ${{ env.LINKORA_API_URL }}
 
+      - name: Generate Worker config
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' && env.LINKORA_WORKER_NAME != '' && env.LINKORA_SHORT_DOMAIN != '' && env.LINKORA_D1_DATABASE_NAME != '' && env.LINKORA_D1_DATABASE_ID != '' && env.LINKORA_KV_NAMESPACE_ID != '' && env.LINKORA_KV_PREVIEW_ID != '' && env.LINKORA_R2_BUCKET != '' && env.LINKORA_R2_PREVIEW_BUCKET != '' && env.LINKORA_VISITS_QUEUE != ''
+        run: |
+          cat > apps/worker/wrangler.toml <<EOF
+          name = "${LINKORA_WORKER_NAME}"
+          main = "src/index.ts"
+          compatibility_date = "${LINKORA_COMPATIBILITY_DATE:-2026-07-08}"
+          compatibility_flags = ["nodejs_compat"]
+          routes = [
+            { pattern = "${LINKORA_SHORT_DOMAIN}", custom_domain = true }
+          ]
+
+          [vars]
+          LINKORA_VERSION = "${LINKORA_VERSION:-0.1.0}"
+
+          [[d1_databases]]
+          binding = "DB"
+          database_name = "${LINKORA_D1_DATABASE_NAME}"
+          database_id = "${LINKORA_D1_DATABASE_ID}"
+          migrations_dir = "../../migrations"
+
+          [[kv_namespaces]]
+          binding = "KV"
+          id = "${LINKORA_KV_NAMESPACE_ID}"
+          preview_id = "${LINKORA_KV_PREVIEW_ID}"
+
+          [[r2_buckets]]
+          binding = "BACKUPS"
+          bucket_name = "${LINKORA_R2_BUCKET}"
+          preview_bucket_name = "${LINKORA_R2_PREVIEW_BUCKET}"
+
+          [[queues.producers]]
+          binding = "VISITS_QUEUE"
+          queue = "${LINKORA_VISITS_QUEUE}"
+
+          [[queues.consumers]]
+          queue = "${LINKORA_VISITS_QUEUE}"
+          max_batch_size = 10
+          max_batch_timeout = 5
+
+          [triggers]
+          crons = ["0 18 * * *"]
+          EOF
+
       - name: Deploy Worker
-        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' && env.LINKORA_WORKER_NAME != '' && env.LINKORA_SHORT_DOMAIN != '' && env.LINKORA_D1_DATABASE_NAME != '' && env.LINKORA_D1_DATABASE_ID != '' && env.LINKORA_KV_NAMESPACE_ID != '' && env.LINKORA_KV_PREVIEW_ID != '' && env.LINKORA_R2_BUCKET != '' && env.LINKORA_R2_PREVIEW_BUCKET != '' && env.LINKORA_VISITS_QUEUE != ''
         run: npx wrangler deploy
         working-directory: apps/worker
 
@@ -54,6 +109,12 @@ jobs:
         run: |
           echo "Cloudflare deploy skipped because CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID is not configured."
           echo "Type-check and Admin build completed successfully."
+
+      - name: Skip Worker deploy
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' && (env.LINKORA_WORKER_NAME == '' || env.LINKORA_SHORT_DOMAIN == '' || env.LINKORA_D1_DATABASE_NAME == '' || env.LINKORA_D1_DATABASE_ID == '' || env.LINKORA_KV_NAMESPACE_ID == '' || env.LINKORA_KV_PREVIEW_ID == '' || env.LINKORA_R2_BUCKET == '' || env.LINKORA_R2_PREVIEW_BUCKET == '' || env.LINKORA_VISITS_QUEUE == '')
+        run: |
+          echo "Worker deploy skipped because one or more LINKORA_* Worker repository variables are not configured."
+          echo "See docs/SELF_HOSTING.md for the required variable list."
 
       - name: Skip Admin deploy
         if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' && (env.LINKORA_API_URL == '' || env.LINKORA_PAGES_PROJECT == '')

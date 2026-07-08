@@ -373,9 +373,19 @@ It deploys Admin only when the Cloudflare secrets and these repository variables
 |------|---------|---------|
 | `LINKORA_API_URL` | `https://go.example.com` | Builds Admin with the Worker short/API origin |
 | `LINKORA_PAGES_PROJECT` | `linkora-admin` | Selects the Cloudflare Pages project |
+| `LINKORA_WORKER_NAME` | `linkora-worker` | Generates the Worker config name |
+| `LINKORA_SHORT_DOMAIN` | `go.example.com` | Generates the Worker custom domain route |
+| `LINKORA_D1_DATABASE_NAME` | `linkora-db` | Generates the D1 binding database name |
+| `LINKORA_D1_DATABASE_ID` | `<id>` | Generates the D1 binding database ID |
+| `LINKORA_KV_NAMESPACE_ID` | `<id>` | Generates the production KV binding ID |
+| `LINKORA_KV_PREVIEW_ID` | `<id>` | Generates the preview KV binding ID |
+| `LINKORA_R2_BUCKET` | `linkora-backups` | Generates the R2 backup bucket binding |
+| `LINKORA_R2_PREVIEW_BUCKET` | `linkora-backups-dev` | Generates the preview R2 bucket binding |
+| `LINKORA_VISITS_QUEUE` | `linkora-visits` | Generates queue producer and consumer bindings |
 
 If either Cloudflare secret is missing, the workflow skips all Cloudflare deploy steps and leaves manual Wrangler deployment as the source of production updates.
-If either Linkora variable is missing, the workflow still builds Admin but skips the Pages deploy so it does not publish a build with the wrong API URL.
+If either Admin variable is missing, the workflow still builds Admin but skips the Pages deploy so it does not publish a build with the wrong API URL.
+If any Worker config variable is missing, the workflow skips Worker deploy instead of relying on a committed production `wrangler.toml`.
 
 ---
 

@@ -182,9 +182,25 @@ Add repository variables:
 ```txt
 LINKORA_API_URL=https://go.example.com
 LINKORA_PAGES_PROJECT=linkora-admin
+LINKORA_WORKER_NAME=linkora-worker
+LINKORA_SHORT_DOMAIN=go.example.com
+LINKORA_D1_DATABASE_NAME=linkora-db
+LINKORA_D1_DATABASE_ID=<your-d1-database-id>
+LINKORA_KV_NAMESPACE_ID=<your-kv-namespace-id>
+LINKORA_KV_PREVIEW_ID=<your-kv-preview-id>
+LINKORA_R2_BUCKET=linkora-backups
+LINKORA_R2_PREVIEW_BUCKET=linkora-backups-dev
+LINKORA_VISITS_QUEUE=linkora-visits
 ```
 
-The workflow still type-checks and builds when Cloudflare secrets are missing, but Cloudflare deployment is skipped.
+Optional variables:
+
+```txt
+LINKORA_VERSION=0.1.0
+LINKORA_COMPATIBILITY_DATE=2026-07-08
+```
+
+The workflow still type-checks and builds when Cloudflare secrets are missing, but Cloudflare deployment is skipped. Worker deployment uses these variables to generate `apps/worker/wrangler.toml` during CI, so your Cloudflare resource IDs do not need to be committed.
 
 ## 9. First Login
 

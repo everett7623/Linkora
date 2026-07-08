@@ -29,7 +29,7 @@ Deployment experience:
 - [x] Add post-deploy smoke test commands for health, auth rejection, create/edit/delete, redirect, import preview, and export
 - [x] Isolate personal deployment values from public docs and reusable GitHub Actions defaults
 - [x] Improve first-run Admin guidance for system status and missing setup checks
-- [ ] Move maintainer production Worker config out of the public default path, or generate it from deployment variables
+- [x] Move maintainer production Worker config out of the public default path, or generate it from deployment variables
 
 ---
 

@@ -34,6 +34,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Added V4 local smart link suggestions for slugs, titles, descriptions, and tags from URL/page metadata.
 - Added V5 self-hosting documentation, a public `wrangler.toml` template, Admin env example, and reusable GitHub Actions variables for open-source deployments.
 - Added an Admin Setup page that summarizes API reachability, short-domain configuration, domain catalog, backups, and first-link readiness for self-hosted installs.
+- Removed the tracked production Worker config and made GitHub Actions generate `wrangler.toml` from repository variables before deploy.
 
 ---
 

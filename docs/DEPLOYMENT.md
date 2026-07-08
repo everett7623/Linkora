@@ -73,12 +73,22 @@ Add these GitHub repository variables:
 ```txt
 LINKORA_API_URL=https://go.example.com
 LINKORA_PAGES_PROJECT=linkora-admin
+LINKORA_WORKER_NAME=linkora-worker
+LINKORA_SHORT_DOMAIN=go.example.com
+LINKORA_D1_DATABASE_NAME=linkora-db
+LINKORA_D1_DATABASE_ID=<your-d1-database-id>
+LINKORA_KV_NAMESPACE_ID=<your-kv-namespace-id>
+LINKORA_KV_PREVIEW_ID=<your-kv-preview-id>
+LINKORA_R2_BUCKET=linkora-backups
+LINKORA_R2_PREVIEW_BUCKET=linkora-backups-dev
+LINKORA_VISITS_QUEUE=linkora-visits
 ```
 
 The Cloudflare API token needs Workers, D1, KV, R2, Queues, and Pages deployment permissions for the account that owns Linkora.
 
 If either secret is missing, the workflow intentionally skips Cloudflare deployment after the type-check and Admin build pass. Use manual Wrangler deploys until the secrets are configured.
-If either variable is missing, the workflow still builds Admin but skips the Pages deploy so it does not publish a build with the wrong API URL.
+If an Admin variable is missing, the workflow still builds Admin but skips the Pages deploy so it does not publish a build with the wrong API URL.
+If a Worker variable is missing, the workflow skips Worker deploy rather than relying on a committed production `wrangler.toml`.
 
 ## Smoke Checks
 

@@ -177,6 +177,15 @@ Variables:
 ```txt
 LINKORA_API_URL=https://go.example.com
 LINKORA_PAGES_PROJECT=linkora-admin
+LINKORA_WORKER_NAME=linkora-worker
+LINKORA_SHORT_DOMAIN=go.example.com
+LINKORA_D1_DATABASE_NAME=linkora-db
+LINKORA_D1_DATABASE_ID=<your-d1-database-id>
+LINKORA_KV_NAMESPACE_ID=<your-kv-namespace-id>
+LINKORA_KV_PREVIEW_ID=<your-kv-preview-id>
+LINKORA_R2_BUCKET=linkora-backups
+LINKORA_R2_PREVIEW_BUCKET=linkora-backups-dev
+LINKORA_VISITS_QUEUE=linkora-visits
 ```
 
 ### Worker
