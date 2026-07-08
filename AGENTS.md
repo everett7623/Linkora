@@ -12,7 +12,7 @@ Linkora is a **self-hosted short link system** built as a TypeScript monorepo:
 - `apps/admin` — React + Vite + Tailwind CSS admin panel
 - `packages/shared` — shared TypeScript types and validators
 
-The full project spec lives in `Linkora 完整项目开发文档.md`. **Read it before making major changes.**
+Public progress and planning live in `PROGRESS.md`, `TASKS.md`, and `docs/ROADMAP.md`. **Read them before making major changes.**
 
 ---
 

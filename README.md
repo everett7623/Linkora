@@ -251,4 +251,4 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for details.
 
 ## License
 
-MIT
+[MIT](LICENSE)

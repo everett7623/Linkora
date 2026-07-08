@@ -10,3 +10,4 @@ apps/worker/wrangler.toml
 !apps/worker/wrangler.toml.example
 *.db
 *.db-journal
+Linkora 完整项目开发文档.md
