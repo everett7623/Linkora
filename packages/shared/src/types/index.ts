@@ -108,6 +108,8 @@ export interface NormalizedImportItem {
   raw?: unknown;
 }
 
+export type ImportFieldMapping = Partial<Record<keyof NormalizedImportItem, string | string[]>>;
+
 export interface ImportValidationResult {
   valid: boolean;
   errors: string[];

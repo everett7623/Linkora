@@ -51,6 +51,11 @@ Redirect analytics are recorded asynchronously. Stats failures must not block re
 | `POST` | `/api/links/:id/restore` |
 | `POST` | `/api/links/bulk` |
 | `POST` | `/api/links/bulk-tag` |
+| `POST` | `/api/links/bulk-create` |
+
+`GET /api/links` supports search, pagination, status, tag, source, domain, created date range, password, warning, limits, and sort query parameters.
+
+`POST /api/links/bulk-create` accepts `{ "items": [...] }` with up to 100 create-link payloads. Existing slugs are not overwritten.
 
 ## Import
 
@@ -62,6 +67,19 @@ Redirect analytics are recorded asynchronously. Stats failures must not block re
 | `GET` | `/api/import/jobs` |
 | `GET` | `/api/import/jobs/:id` |
 | `GET` | `/api/import/jobs/:id/report.csv` |
+
+Generic CSV / JSON import preview and confirm requests can include `fieldMapping`, for example:
+
+```json
+{
+  "source": "generic-csv",
+  "content": "Code,Destination\nhello,https://example.com",
+  "fieldMapping": {
+    "slug": "Code",
+    "longUrl": "Destination"
+  }
+}
+```
 
 ## Export
 
@@ -94,3 +112,11 @@ Redirect analytics are recorded asynchronously. Stats failures must not block re
 | Method | Path | Description |
 |--------|------|-------------|
 | `GET` | `/api/audit` | List admin action and import audit events |
+
+## Analytics
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/analytics` | Click totals, daily trend, top dimensions, and recent visits |
+
+`GET /api/analytics?days=30` limits the summary window. Visit writes keep using `ctx.waitUntil()` so analytics failures do not block redirects.

@@ -1,5 +1,5 @@
 import { apiPost, apiGet, downloadFile } from './client';
-import type { ImportJob } from '@linkora/shared';
+import type { ImportFieldMapping, ImportJob } from '@linkora/shared';
 
 export interface PreviewResult {
   source: string;
@@ -17,8 +17,12 @@ export interface PreviewResult {
   }>;
 }
 
-export function previewImport(content: string, source?: string): Promise<PreviewResult> {
-  return apiPost('/api/import/preview', { content, source });
+export function previewImport(
+  content: string,
+  source?: string,
+  fieldMapping?: ImportFieldMapping
+): Promise<PreviewResult> {
+  return apiPost('/api/import/preview', { content, source, fieldMapping });
 }
 
 export interface ConfirmResult {
@@ -38,9 +42,10 @@ export function confirmImport(
   content: string,
   source?: string,
   filename?: string,
-  conflictStrategy: ImportConflictStrategy = 'skip'
+  conflictStrategy: ImportConflictStrategy = 'skip',
+  fieldMapping?: ImportFieldMapping
 ): Promise<ConfirmResult> {
-  return apiPost('/api/import/confirm', { content, source, filename, conflictStrategy });
+  return apiPost('/api/import/confirm', { content, source, filename, conflictStrategy, fieldMapping });
 }
 
 export function fetchShlinkApi(baseUrl: string, apiKey: string): Promise<{

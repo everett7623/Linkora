@@ -6,6 +6,12 @@ export interface ListLinksParams {
   tag?: string;
   status?: string;
   source?: string;
+  domain?: string;
+  createdFrom?: string;
+  createdTo?: string;
+  hasPassword?: string;
+  warning?: string;
+  limits?: string;
   sort?: string;
   page?: number;
   pageSize?: number;
@@ -17,6 +23,12 @@ export function listLinks(params: ListLinksParams = {}): Promise<PaginatedResult
   if (params.tag) q.set('tag', params.tag);
   if (params.status) q.set('status', params.status);
   if (params.source) q.set('source', params.source);
+  if (params.domain) q.set('domain', params.domain);
+  if (params.createdFrom) q.set('createdFrom', params.createdFrom);
+  if (params.createdTo) q.set('createdTo', params.createdTo);
+  if (params.hasPassword) q.set('hasPassword', params.hasPassword);
+  if (params.warning) q.set('warning', params.warning);
+  if (params.limits) q.set('limits', params.limits);
   if (params.sort) q.set('sort', params.sort);
   if (params.page) q.set('page', String(params.page));
   if (params.pageSize) q.set('pageSize', String(params.pageSize));
@@ -42,6 +54,16 @@ export interface CreateLinkPayload {
 
 export function createLink(payload: CreateLinkPayload): Promise<Link> {
   return apiPost('/api/links', payload);
+}
+
+export function bulkCreateLinks(payload: CreateLinkPayload[]): Promise<{
+  total: number;
+  success: number;
+  failed: number;
+  items: Link[];
+  results: Array<{ index: number; status: 'created' | 'failed'; slug?: string; id?: string; error?: string }>;
+}> {
+  return apiPost('/api/links/bulk-create', { items: payload });
 }
 
 export function updateLink(id: string, payload: Partial<CreateLinkPayload>): Promise<Link> {

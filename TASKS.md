@@ -179,11 +179,15 @@ _(none currently)_
 - [x] Linkora backup.json restore import
 - [x] Shlink API pull import
 - [x] Local V2 security smoke test: password page, warning page, normal redirect, audit log write
+- [x] Bulk create links
+- [x] Links advanced filters
+- [x] Generic CSV field mapping enhancements
+- [x] Generic JSON / JSONL field mapping enhancements
 
 ## 🔵 Backlog — V3
 
-- [ ] Advanced analytics dashboard
-- [ ] Daily stats aggregation (`daily_stats` table)
+- [x] Advanced analytics dashboard
+- [x] Daily stats aggregation (`daily_stats` table)
 - [ ] Auto-backup to Cloudflare R2
 - [ ] API Token management page
 - [ ] Cloudflare Queues for async stats

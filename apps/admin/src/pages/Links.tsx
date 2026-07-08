@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import {
   Search, Plus, Copy, Pencil, Trash2, PowerOff, Power,
   Archive, RotateCcw, ExternalLink, ChevronLeft, ChevronRight,
-  QrCode, Download, Tag, KeyRound, ShieldAlert,
+  QrCode, Download, Tag, KeyRound, ShieldAlert, SlidersHorizontal,
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import {
@@ -64,26 +64,47 @@ export function Links() {
   const keyword = searchParams.get('keyword') ?? '';
   const tag = searchParams.get('tag') ?? '';
   const status = searchParams.get('status') ?? '';
+  const source = searchParams.get('source') ?? '';
+  const domain = searchParams.get('domain') ?? '';
+  const createdFrom = searchParams.get('createdFrom') ?? '';
+  const createdTo = searchParams.get('createdTo') ?? '';
+  const hasPassword = searchParams.get('hasPassword') ?? '';
+  const warning = searchParams.get('warning') ?? '';
+  const limits = searchParams.get('limits') ?? '';
   const sort = searchParams.get('sort') ?? 'created_at_desc';
   const page = parseInt(searchParams.get('page') ?? '1', 10);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await listLinks({ keyword, tag, status, sort, page, pageSize: PAGE_SIZE });
+      const data = await listLinks({
+        keyword,
+        tag,
+        status,
+        source,
+        domain,
+        createdFrom,
+        createdTo,
+        hasPassword,
+        warning,
+        limits,
+        sort,
+        page,
+        pageSize: PAGE_SIZE,
+      });
       setResult(data);
     } catch {
       error('Failed to load links');
     } finally {
       setLoading(false);
     }
-  }, [keyword, tag, status, sort, page]);
+  }, [keyword, tag, status, source, domain, createdFrom, createdTo, hasPassword, warning, limits, sort, page]);
 
   useEffect(() => { load(); }, [load]);
 
   useEffect(() => {
     setSelectedIds(new Set());
-  }, [keyword, tag, status, sort, page]);
+  }, [keyword, tag, status, source, domain, createdFrom, createdTo, hasPassword, warning, limits, sort, page]);
 
   useEffect(() => {
     getSettings()
@@ -95,6 +116,12 @@ export function Links() {
     const p = new URLSearchParams(searchParams);
     if (value) p.set(key, value); else p.delete(key);
     if (key !== 'page') p.delete('page');
+    setSearchParams(p);
+  };
+
+  const clearFilters = () => {
+    const p = new URLSearchParams();
+    if (sort) p.set('sort', sort);
     setSearchParams(p);
   };
 
@@ -284,7 +311,84 @@ export function Links() {
           <option value="created_at_asc">Oldest First</option>
           <option value="clicks_desc">Most Clicks</option>
           <option value="last_clicked_at_desc">Recently Clicked</option>
+          <option value="last_clicked_at_asc">Least Recently Clicked</option>
+          <option value="updated_at_desc">Recently Updated</option>
+          <option value="updated_at_asc">Oldest Updated</option>
         </select>
+      </div>
+
+      <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-sm font-semibold text-slate-300">
+            <SlidersHorizontal size={15} className="text-brand-400" />
+            Advanced Filters
+          </div>
+          <button type="button" onClick={clearFilters} className="text-xs text-slate-500 hover:text-slate-300">
+            Clear
+          </button>
+        </div>
+        <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
+          <input
+            type="text"
+            placeholder="Tag"
+            value={tag}
+            onChange={(e) => setParam('tag', e.target.value)}
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+          />
+          <input
+            type="text"
+            placeholder="Source"
+            value={source}
+            onChange={(e) => setParam('source', e.target.value)}
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+          />
+          <input
+            type="text"
+            placeholder="Domain"
+            value={domain}
+            onChange={(e) => setParam('domain', e.target.value)}
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+          />
+          <select
+            value={hasPassword}
+            onChange={(e) => setParam('hasPassword', e.target.value)}
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
+            <option value="">Any Password</option>
+            <option value="yes">Password Protected</option>
+            <option value="no">No Password</option>
+          </select>
+          <select
+            value={warning}
+            onChange={(e) => setParam('warning', e.target.value)}
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
+            <option value="">Any Warning</option>
+            <option value="yes">Warning Enabled</option>
+            <option value="no">Warning Disabled</option>
+          </select>
+          <select
+            value={limits}
+            onChange={(e) => setParam('limits', e.target.value)}
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
+            <option value="">Any Limits</option>
+            <option value="yes">Has Limits</option>
+            <option value="no">No Limits</option>
+          </select>
+          <input
+            type="date"
+            value={createdFrom}
+            onChange={(e) => setParam('createdFrom', e.target.value)}
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+          />
+          <input
+            type="date"
+            value={createdTo}
+            onChange={(e) => setParam('createdTo', e.target.value)}
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+          />
+        </div>
       </div>
 
       {selectedCount > 0 && (

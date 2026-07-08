@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-  LayoutDashboard, Link2, PlusCircle, ArrowLeftRight,
+  LayoutDashboard, Link2, PlusCircle, ArrowLeftRight, BarChart3,
   Tags, Settings, LogOut, Zap, ClipboardList,
 } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -17,6 +17,8 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/overview', icon: <LayoutDashboard size={18} />, label: 'Overview' },
   { to: '/links', icon: <Link2 size={18} />, label: 'Links' },
   { to: '/links/create', icon: <PlusCircle size={18} />, label: 'Create Link' },
+  { to: '/links/bulk-create', icon: <PlusCircle size={18} />, label: 'Bulk Create' },
+  { to: '/analytics', icon: <BarChart3 size={18} />, label: 'Analytics' },
   { to: '/tags', icon: <Tags size={18} />, label: 'Tags' },
   { to: '/import-export', icon: <ArrowLeftRight size={18} />, label: 'Import / Export' },
   { to: '/audit-logs', icon: <ClipboardList size={18} />, label: 'Audit Logs' },

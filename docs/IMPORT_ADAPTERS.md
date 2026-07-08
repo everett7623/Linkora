@@ -21,9 +21,26 @@ export interface ImportAdapter {
 | Dub | `apps/worker/src/importers/platforms.ts` | JSON, JSONL |
 | Linkora backup | `apps/worker/src/importers/platforms.ts` | `backup.json` |
 | Generic CSV | `apps/worker/src/importers/generic.ts` | CSV |
-| Generic JSON | `apps/worker/src/importers/generic.ts` | JSON |
+| Generic JSON | `apps/worker/src/importers/generic.ts` | JSON, JSONL-style newline objects, wrapped arrays |
 
 Adapters are registered in `apps/worker/src/routes/importRoutes.ts`.
+
+## Generic Field Mapping
+
+Generic CSV and JSON import can accept a `fieldMapping` object in preview and confirm requests. Mapping keys use `NormalizedImportItem` fields such as `slug`, `longUrl`, `title`, `tags`, `createdAt`, `expiresAt`, and `maxClicks`; values are source column or property names.
+
+Example:
+
+```json
+{
+  "slug": "Code",
+  "longUrl": "Destination",
+  "title": "Name",
+  "tags": "Labels"
+}
+```
+
+The generic adapter still falls back to built-in aliases such as `code`, `alias`, `destination`, `url`, `labels`, and `categories`.
 
 ## Adding an Adapter
 

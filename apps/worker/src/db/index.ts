@@ -60,6 +60,12 @@ export interface ListLinksOptions {
   tag?: string;
   status?: string;
   source?: string;
+  domain?: string;
+  createdFrom?: string;
+  createdTo?: string;
+  hasPassword?: string;
+  warning?: string;
+  limits?: string;
   sort?: string;
   page?: number;
   pageSize?: number;
@@ -69,7 +75,21 @@ export async function listLinks(
   env: Env,
   options: ListLinksOptions = {}
 ): Promise<{ items: Link[]; total: number }> {
-  const { keyword, tag, status, source, sort = 'created_at_desc', page = 1, pageSize = 20 } = options;
+  const {
+    keyword,
+    tag,
+    status,
+    source,
+    domain,
+    createdFrom,
+    createdTo,
+    hasPassword,
+    warning,
+    limits,
+    sort = 'created_at_desc',
+    page = 1,
+    pageSize = 20,
+  } = options;
 
   const conditions: string[] = ['1=1'];
   const params: unknown[] = [];
@@ -103,6 +123,39 @@ export async function listLinks(
     params.push(source);
   }
 
+  if (domain) {
+    conditions.push('domain = ?');
+    params.push(domain);
+  }
+
+  if (createdFrom) {
+    conditions.push('created_at >= ?');
+    params.push(createdFrom);
+  }
+
+  if (createdTo) {
+    conditions.push('created_at <= ?');
+    params.push(createdTo);
+  }
+
+  if (hasPassword === 'yes') {
+    conditions.push('password_hash IS NOT NULL AND password_hash != ""');
+  } else if (hasPassword === 'no') {
+    conditions.push('(password_hash IS NULL OR password_hash = "")');
+  }
+
+  if (warning === 'yes') {
+    conditions.push('warning_enabled = 1');
+  } else if (warning === 'no') {
+    conditions.push('warning_enabled = 0');
+  }
+
+  if (limits === 'yes') {
+    conditions.push('(expires_at IS NOT NULL OR max_clicks IS NOT NULL)');
+  } else if (limits === 'no') {
+    conditions.push('expires_at IS NULL AND max_clicks IS NULL');
+  }
+
   const where = conditions.join(' AND ');
 
   const sortMap: Record<string, string> = {
@@ -111,6 +164,9 @@ export async function listLinks(
     clicks_desc: 'clicks DESC',
     clicks_asc: 'clicks ASC',
     last_clicked_at_desc: 'last_clicked_at DESC NULLS LAST',
+    last_clicked_at_asc: 'last_clicked_at ASC NULLS LAST',
+    updated_at_desc: 'updated_at DESC',
+    updated_at_asc: 'updated_at ASC',
   };
   const orderBy = sortMap[sort] ?? 'created_at DESC';
 
@@ -249,6 +305,47 @@ export async function insertVisit(
     .run();
 }
 
+export async function upsertDailyStats(
+  env: Env,
+  link: Link,
+  date: string,
+  country: string | undefined,
+  referer: string | undefined,
+  updatedAt: string
+): Promise<void> {
+  const dailyStatsId = `daily:${link.id}:${date}`;
+
+  await env.DB.prepare(
+    `INSERT OR IGNORE INTO daily_stats
+       (id, link_id, slug, date, clicks, unique_clicks, top_country, top_referer, created_at, updated_at)
+     VALUES (?, ?, ?, ?, 0, 0, ?, ?, ?, ?)`
+  )
+    .bind(
+      dailyStatsId,
+      link.id,
+      link.slug,
+      date,
+      country ?? null,
+      referer ?? null,
+      updatedAt,
+      updatedAt
+    )
+    .run();
+
+  await env.DB.prepare(
+    `UPDATE daily_stats
+     SET clicks = clicks + 1,
+         unique_clicks = unique_clicks + 1,
+         slug = ?,
+         top_country = COALESCE(?, top_country),
+         top_referer = COALESCE(?, top_referer),
+         updated_at = ?
+     WHERE id = ?`
+  )
+    .bind(link.slug, country ?? null, referer ?? null, updatedAt, dailyStatsId)
+    .run();
+}
+
 export async function getOverviewStats(env: Env): Promise<{
   totalLinks: number;
   totalClicks: number;
@@ -273,6 +370,112 @@ export async function getOverviewStats(env: Env): Promise<{
     todayClicks: todayClicksResult?.count ?? 0,
     recentLinks: recentLinksResult.results ?? [],
     topLinks: topLinksResult.results ?? [],
+  };
+}
+
+export interface AnalyticsRangeOptions {
+  days?: number;
+}
+
+export async function getAnalyticsSummary(
+  env: Env,
+  options: AnalyticsRangeOptions = {}
+): Promise<{
+  days: number;
+  totalClicks: number;
+  botClicks: number;
+  uniqueLinks: number;
+  daily: Array<{ date: string; clicks: number }>;
+  topLinks: Array<{ slug: string; title?: string | null; clicks: number }>;
+  topCountries: Array<{ country: string; clicks: number }>;
+  topReferrers: Array<{ referer: string; clicks: number }>;
+  topBrowsers: Array<{ browser: string; clicks: number }>;
+  topDevices: Array<{ device_type: string; clicks: number }>;
+  recentVisits: Visit[];
+}> {
+  const days = Math.max(1, Math.min(options.days ?? 30, 365));
+  const since = new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  const [
+    totalClicksResult,
+    botClicksResult,
+    uniqueLinksResult,
+    dailyResult,
+    topLinksResult,
+    topCountriesResult,
+    topReferrersResult,
+    topBrowsersResult,
+    topDevicesResult,
+    recentVisitsResult,
+  ] = await Promise.all([
+    env.DB.prepare('SELECT COUNT(*) as count FROM visits WHERE created_at >= ?').bind(since).first<{ count: number }>(),
+    env.DB.prepare('SELECT COUNT(*) as count FROM visits WHERE created_at >= ? AND is_bot = 1').bind(since).first<{ count: number }>(),
+    env.DB.prepare('SELECT COUNT(DISTINCT slug) as count FROM visits WHERE created_at >= ?').bind(since).first<{ count: number }>(),
+    env.DB.prepare(
+      `SELECT substr(created_at, 1, 10) as date, COUNT(*) as clicks
+       FROM visits
+       WHERE created_at >= ?
+       GROUP BY substr(created_at, 1, 10)
+       ORDER BY date ASC`
+    ).bind(since).all<{ date: string; clicks: number }>(),
+    env.DB.prepare(
+      `SELECT v.slug, l.title, COUNT(*) as clicks
+       FROM visits v
+       LEFT JOIN links l ON l.slug = v.slug
+       WHERE v.created_at >= ?
+       GROUP BY v.slug, l.title
+       ORDER BY clicks DESC
+       LIMIT 10`
+    ).bind(since).all<{ slug: string; title?: string | null; clicks: number }>(),
+    env.DB.prepare(
+      `SELECT COALESCE(country, 'Unknown') as country, COUNT(*) as clicks
+       FROM visits
+       WHERE created_at >= ?
+       GROUP BY COALESCE(country, 'Unknown')
+       ORDER BY clicks DESC
+       LIMIT 10`
+    ).bind(since).all<{ country: string; clicks: number }>(),
+    env.DB.prepare(
+      `SELECT COALESCE(referer, 'Direct') as referer, COUNT(*) as clicks
+       FROM visits
+       WHERE created_at >= ?
+       GROUP BY COALESCE(referer, 'Direct')
+       ORDER BY clicks DESC
+       LIMIT 10`
+    ).bind(since).all<{ referer: string; clicks: number }>(),
+    env.DB.prepare(
+      `SELECT COALESCE(browser, 'Other') as browser, COUNT(*) as clicks
+       FROM visits
+       WHERE created_at >= ?
+       GROUP BY COALESCE(browser, 'Other')
+       ORDER BY clicks DESC
+       LIMIT 10`
+    ).bind(since).all<{ browser: string; clicks: number }>(),
+    env.DB.prepare(
+      `SELECT COALESCE(device_type, 'unknown') as device_type, COUNT(*) as clicks
+       FROM visits
+       WHERE created_at >= ?
+       GROUP BY COALESCE(device_type, 'unknown')
+       ORDER BY clicks DESC
+       LIMIT 10`
+    ).bind(since).all<{ device_type: string; clicks: number }>(),
+    env.DB.prepare(
+      'SELECT * FROM visits WHERE created_at >= ? ORDER BY created_at DESC LIMIT 20'
+    ).bind(since).all<Visit>(),
+  ]);
+
+  return {
+    days,
+    totalClicks: totalClicksResult?.count ?? 0,
+    botClicks: botClicksResult?.count ?? 0,
+    uniqueLinks: uniqueLinksResult?.count ?? 0,
+    daily: dailyResult.results ?? [],
+    topLinks: topLinksResult.results ?? [],
+    topCountries: topCountriesResult.results ?? [],
+    topReferrers: topReferrersResult.results ?? [],
+    topBrowsers: topBrowsersResult.results ?? [],
+    topDevices: topDevicesResult.results ?? [],
+    recentVisits: recentVisitsResult.results ?? [],
   };
 }
 

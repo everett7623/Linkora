@@ -20,6 +20,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Added Sink, YOURLS, Dub, and Linkora `backup.json` import adapters.
 - Import confirm now supports `skip`, `rename`, and `overwrite` conflict strategies.
 - Added Shlink API pull import, password-protected links, safety warning pages, UTM templates, and Audit Logs.
+- Added bulk link creation, Links advanced filters, Generic CSV / JSON field mapping, and an Analytics dashboard backed by daily stats aggregation.
 
 ---
 

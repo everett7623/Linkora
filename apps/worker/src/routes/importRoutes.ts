@@ -25,7 +25,7 @@ import {
   SinkAdapter,
   YourlsAdapter,
 } from '../importers/platforms';
-import type { Link, NormalizedImportItem, ImportAdapter, KVCacheEntry } from '@linkora/shared';
+import type { ImportFieldMapping, Link, NormalizedImportItem, ImportAdapter, KVCacheEntry } from '@linkora/shared';
 
 const importRoutes = new Hono<{ Bindings: Env }>();
 
@@ -57,6 +57,24 @@ function detectAdapter(input: unknown, hint?: string): ImportAdapter | null {
 
 function parseConflictStrategy(value: unknown): ConflictStrategy {
   return value === 'rename' || value === 'overwrite' ? value : 'skip';
+}
+
+function parseFieldMapping(value: unknown): ImportFieldMapping | undefined {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return undefined;
+  const mapping: ImportFieldMapping = {};
+  for (const [key, rawValue] of Object.entries(value)) {
+    if (typeof rawValue === 'string') {
+      mapping[key as keyof NormalizedImportItem] = rawValue;
+    } else if (Array.isArray(rawValue)) {
+      mapping[key as keyof NormalizedImportItem] = rawValue.map(String).filter(Boolean);
+    }
+  }
+  return Object.keys(mapping).length > 0 ? mapping : undefined;
+}
+
+function inputForAdapter(input: unknown, adapter: ImportAdapter, fieldMapping?: ImportFieldMapping): unknown {
+  if (!fieldMapping || !adapter.source.startsWith('generic-')) return input;
+  return { input, fieldMapping };
 }
 
 function makeUniqueSlug(slug: string, existingSlugs: Set<string>): string {
@@ -302,7 +320,7 @@ importRoutes.post('/shlink-api/fetch', async (c) => {
 
 // POST /api/import/preview
 importRoutes.post('/preview', async (c) => {
-  let body: { content?: string; source?: string };
+  let body: { content?: string; source?: string; fieldMapping?: unknown };
   try {
     body = await c.req.json();
   } catch {
@@ -322,7 +340,8 @@ importRoutes.post('/preview', async (c) => {
   const adapter = detectAdapter(parsedInput, source);
   if (!adapter) return jsonError('Could not detect import format. Please specify source type.', 400);
 
-  const items = await adapter.parse(parsedInput);
+  const fieldMapping = parseFieldMapping(body.fieldMapping);
+  const items = await adapter.parse(inputForAdapter(parsedInput, adapter, fieldMapping));
   const result = await previewItems(c.env, items, adapter);
 
   return jsonOk({ source: adapter.source, ...result });
@@ -330,7 +349,7 @@ importRoutes.post('/preview', async (c) => {
 
 // POST /api/import/confirm
 importRoutes.post('/confirm', async (c) => {
-  let body: { content?: string; source?: string; filename?: string; conflictStrategy?: string };
+  let body: { content?: string; source?: string; filename?: string; conflictStrategy?: string; fieldMapping?: unknown };
   try {
     body = await c.req.json();
   } catch {
@@ -351,7 +370,8 @@ importRoutes.post('/confirm', async (c) => {
   const adapter = detectAdapter(parsedInput, source);
   if (!adapter) return jsonError('Could not detect import format.', 400);
 
-  const items = await adapter.parse(parsedInput);
+  const fieldMapping = parseFieldMapping(body.fieldMapping);
+  const items = await adapter.parse(inputForAdapter(parsedInput, adapter, fieldMapping));
   const domain = new URL(c.req.url).hostname;
 
   const jobId = generateId();

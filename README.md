@@ -11,10 +11,11 @@ A lightweight, stable, self-hosted short link system built on Cloudflare Workers
 - ⚡ Fast short link redirects via Cloudflare Workers + KV cache
 - 🔒 Admin panel with token authentication
 - 🔗 Create, edit, disable, archive, and delete short links
-- 🔍 Search by slug, URL, title; filter by tag and status
+- Bulk create short links and bulk update selected links
+- 🔍 Search by slug, URL, title; filter by tag, status, source, domain, created date, password, warning, and limits
 - 🏷️ Tag support and tag management
-- 📊 Basic click count tracking
-- 📥 Import from Shlink, Sink, YOURLS, Dub, Linkora backup, and generic CSV / JSON
+- 📊 Click tracking with analytics dashboard and daily aggregation
+- 📥 Import from Shlink, Sink, YOURLS, Dub, Linkora backup, and generic CSV / JSON with field mapping
 - 🧭 Import preview with skip, rename, or overwrite conflict handling
 - Password-protected links, safety warning pages, and UTM builder templates
 - Audit Logs page for admin actions and imports

@@ -10,6 +10,7 @@ import exportRoutes from './routes/export';
 import importRoutes from './routes/importRoutes';
 import metadataRoutes from './routes/metadata';
 import auditRoutes from './routes/audit';
+import analyticsRoutes from './routes/analytics';
 import { getOverviewStats } from './db/index';
 import { requireAuth } from './auth/index';
 import { jsonOk } from './utils/response';
@@ -60,6 +61,9 @@ app.route('/api/metadata', metadataRoutes);
 
 // Audit logs
 app.route('/api/audit', auditRoutes);
+
+// Analytics
+app.route('/api/analytics', analyticsRoutes);
 
 // Overview stats
 app.get('/api/overview', async (c) => {

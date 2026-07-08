@@ -6,8 +6,9 @@ import {
   downloadImportReport, fetchShlinkApi,
 } from '../api/importExport';
 import { Button } from '../components/ui/Button';
+import { Textarea } from '../components/ui/Input';
 import { useToast } from '../components/ui/Toast';
-import type { ImportJob } from '@linkora/shared';
+import type { ImportFieldMapping, ImportJob } from '@linkora/shared';
 import type { ImportConflictStrategy } from '../api/importExport';
 import dayjs from 'dayjs';
 
@@ -17,6 +18,7 @@ export function ImportExport() {
   const [content, setContent] = useState('');
   const [filename, setFilename] = useState('');
   const [source, setSource] = useState('');
+  const [fieldMappingText, setFieldMappingText] = useState('');
   const [shlinkBaseUrl, setShlinkBaseUrl] = useState('');
   const [shlinkApiKey, setShlinkApiKey] = useState('');
   const [shlinkFetching, setShlinkFetching] = useState(false);
@@ -31,6 +33,16 @@ export function ImportExport() {
     ? preview.valid + (conflictStrategy === 'skip' ? 0 : preview.conflicts)
     : 0;
   const hasImportableLinks = importableCount > 0;
+
+  const parseFieldMapping = (): ImportFieldMapping | undefined => {
+    const trimmed = fieldMappingText.trim();
+    if (!trimmed) return undefined;
+    try {
+      return JSON.parse(trimmed) as ImportFieldMapping;
+    } catch {
+      throw new Error('Field mapping must be valid JSON');
+    }
+  };
 
   const loadJobs = () => {
     listImportJobs()
@@ -77,7 +89,7 @@ export function ImportExport() {
     if (!content.trim()) { error('Please select a file or paste content'); return; }
     setPreviewing(true);
     try {
-      const result = await previewImport(content, source || undefined);
+      const result = await previewImport(content, source || undefined, parseFieldMapping());
       setPreview(result);
       setShowPreview(true);
     } catch (e) {
@@ -96,7 +108,7 @@ export function ImportExport() {
     setConfirming(true);
     try {
       await exportPreImportBackup();
-      const result = await confirmImport(content, source || undefined, filename || undefined, conflictStrategy);
+      const result = await confirmImport(content, source || undefined, filename || undefined, conflictStrategy, parseFieldMapping());
       success(`Backup downloaded. Import complete: ${result.success} imported, ${result.skipped} skipped, ${result.failed} failed`);
       setPreview(null);
       setContent('');
@@ -182,6 +194,17 @@ export function ImportExport() {
               Skip is safest. Overwrite updates existing links and requires a pre-import backup.
             </p>
           </div>
+
+          {(source === 'generic-csv' || source === 'generic-json') && (
+            <Textarea
+              label="Field Mapping (optional)"
+              rows={5}
+              value={fieldMappingText}
+              onChange={(e) => setFieldMappingText(e.target.value)}
+              placeholder={'{"slug":"code","longUrl":"destination","title":"name","tags":"labels"}'}
+              hint="JSON object mapping Linkora fields to your source columns. Supported fields include slug, longUrl, title, tags, clicks, createdAt, expiresAt, maxClicks."
+            />
+          )}
 
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1.5">Upload File</label>

@@ -3,6 +3,7 @@ import type { Env } from '../types';
 import { requireAuth } from '../auth/index';
 import {
   listLinks,
+  getLinkBySlug,
   getLinkById,
   getLinksByIds,
   createLink,
@@ -22,6 +23,10 @@ const links = new Hono<{ Bindings: Env }>();
 type BulkAction = 'disable' | 'enable' | 'archive' | 'restore' | 'delete';
 type BulkTagMode = 'add' | 'replace' | 'remove' | 'clear';
 type LinkBody = Partial<Link> & { tags?: string | string[]; password?: unknown };
+
+function parseLinkStatus(value: unknown): Link['status'] {
+  return value === 'disabled' || value === 'expired' || value === 'archived' ? value : 'active';
+}
 
 async function ensureTagRecords(env: Env, tags: string[], ts = now()): Promise<void> {
   if (tags.length === 0) return;
@@ -116,6 +121,91 @@ function sanitizeLinks(items: Link[]): Link[] {
   return items.map(sanitizeLink);
 }
 
+async function generateUniqueSlug(env: Env, reservedSlugs: Set<string>): Promise<string> {
+  const { generateSlug } = await import('../utils/id');
+  for (let i = 0; i < 20; i++) {
+    const slug = generateSlug(6);
+    if (reservedSlugs.has(slug)) continue;
+    const existing = await getLinkBySlug(env, slug);
+    if (!existing) return slug;
+  }
+  throw new Error('Could not generate a unique slug');
+}
+
+async function prepareNewLink(
+  env: Env,
+  requestUrl: string,
+  body: LinkBody,
+  reservedSlugs: Set<string>
+): Promise<{ link?: Link; tags?: string[]; error?: string; status?: number }> {
+  const { long_url, slug: rawSlug, title, description, redirect_type, status, source } = body;
+
+  if (!long_url) return { error: 'long_url is required', status: 400 };
+
+  const urlValidation = validateLongUrl(long_url);
+  if (!urlValidation.valid) return { error: urlValidation.error!, status: 400 };
+
+  let slug = rawSlug?.trim() ?? '';
+  if (!slug) {
+    slug = await generateUniqueSlug(env, reservedSlugs);
+  } else {
+    const slugValidation = validateSlug(slug);
+    if (!slugValidation.valid) return { error: slugValidation.error!, status: 400 };
+    const existing = await getLinkBySlug(env, slug);
+    if (existing || reservedSlugs.has(slug)) return { error: `Slug "${slug}" is already in use`, status: 409 };
+  }
+
+  const redirectType = redirect_type === 301 ? 301 : 302;
+  const linkStatus = parseLinkStatus(status);
+  const expiresAt = parseOptionalDate(body.expires_at, 'expires_at');
+  if (expiresAt.error) return { error: expiresAt.error, status: 400 };
+
+  const maxClicks = parseOptionalPositiveInteger(body.max_clicks, 'max_clicks');
+  if (maxClicks.error) return { error: maxClicks.error, status: 400 };
+
+  const passwordHash = await parsePasswordHash(body.password);
+  if (passwordHash.error) return { error: passwordHash.error, status: 400 };
+
+  const warningEnabled = parseOptionalBoolean(body.warning_enabled);
+  if (body.warning_enabled !== undefined && warningEnabled === undefined) {
+    return { error: 'warning_enabled must be a boolean', status: 400 };
+  }
+
+  const parsedTags = parseTagsInput(body.tags);
+  if (parsedTags.error) return { error: parsedTags.error, status: 400 };
+
+  const domain = new URL(requestUrl).hostname;
+  const id = generateId();
+  const ts = now();
+  const link: Link = {
+    id,
+    slug,
+    domain,
+    long_url,
+    short_url: `https://${domain}/${slug}`,
+    title: title ?? null,
+    description: description ?? null,
+    tags: parsedTags.tags.length > 0 ? JSON.stringify(parsedTags.tags) : null,
+    status: linkStatus,
+    redirect_type: redirectType,
+    clicks: 0,
+    source: source ?? null,
+    source_id: null,
+    created_at: ts,
+    updated_at: ts,
+    last_clicked_at: null,
+    expires_at: expiresAt.value,
+    max_clicks: maxClicks.value,
+    password_hash: passwordHash.value,
+    warning_enabled: warningEnabled ?? 0,
+    fallback_url: null,
+    archived: 0,
+  };
+
+  reservedSlugs.add(slug);
+  return { link, tags: parsedTags.tags };
+}
+
 function parseStoredTags(value?: string | null): string[] {
   if (!value) return [];
   try {
@@ -203,6 +293,12 @@ links.get('/', async (c) => {
   const tag = c.req.query('tag');
   const status = c.req.query('status');
   const source = c.req.query('source');
+  const domain = c.req.query('domain');
+  const createdFrom = c.req.query('createdFrom');
+  const createdTo = c.req.query('createdTo');
+  const hasPassword = c.req.query('hasPassword');
+  const warning = c.req.query('warning');
+  const limits = c.req.query('limits');
   const sort = c.req.query('sort');
   const page = parseInt(c.req.query('page') ?? '1', 10);
   const pageSize = Math.min(parseInt(c.req.query('pageSize') ?? '20', 10), 100);
@@ -212,6 +308,12 @@ links.get('/', async (c) => {
     tag,
     status,
     source,
+    domain,
+    createdFrom,
+    createdTo,
+    hasPassword,
+    warning,
+    limits,
     sort,
     page,
     pageSize,
@@ -235,90 +337,80 @@ links.post('/', async (c) => {
     return jsonError('Invalid JSON body', 400);
   }
 
-  const { long_url, slug: rawSlug, title, description, redirect_type, status, source } = body;
-
-  if (!long_url) return jsonError('long_url is required', 400);
-
-  const urlValidation = validateLongUrl(long_url);
-  if (!urlValidation.valid) return jsonError(urlValidation.error!, 400);
-
-  let slug = rawSlug ?? '';
-  if (!slug) {
-    // Auto-generate slug
-    const { generateSlug } = await import('../utils/id');
-    slug = generateSlug(6);
-    // Ensure uniqueness (simple retry)
-    for (let i = 0; i < 5; i++) {
-      const existing = await getLinkById(c.env, slug);
-      if (!existing) break;
-      slug = generateSlug(6);
-    }
-  } else {
-    const slugValidation = validateSlug(slug);
-    if (!slugValidation.valid) return jsonError(slugValidation.error!, 400);
-
-    // Check uniqueness
-    const { getLinkBySlug } = await import('../db/index');
-    const existing = await getLinkBySlug(c.env, slug);
-    if (existing) return jsonError(`Slug "${slug}" is already in use`, 409);
-  }
-
+  const prepared = await prepareNewLink(c.env, c.req.url, body, new Set<string>());
+  if (prepared.error || !prepared.link) return jsonError(prepared.error ?? 'Invalid link', prepared.status ?? 400);
   const domain = new URL(c.req.url).hostname;
-  const id = generateId();
-  const ts = now();
-  const redirectType = redirect_type === 301 ? 301 : 302;
-  const linkStatus = (status as Link['status']) ?? 'active';
-
-  const expiresAt = parseOptionalDate(body.expires_at, 'expires_at');
-  if (expiresAt.error) return jsonError(expiresAt.error, 400);
-
-  const maxClicks = parseOptionalPositiveInteger(body.max_clicks, 'max_clicks');
-  if (maxClicks.error) return jsonError(maxClicks.error, 400);
-
-  const passwordHash = await parsePasswordHash(body.password);
-  if (passwordHash.error) return jsonError(passwordHash.error, 400);
-
-  const warningEnabled = parseOptionalBoolean(body.warning_enabled);
-  if (body.warning_enabled !== undefined && warningEnabled === undefined) {
-    return jsonError('warning_enabled must be a boolean', 400);
-  }
-
-  const parsedTags = parseTagsInput(body.tags);
-  if (parsedTags.error) return jsonError(parsedTags.error, 400);
-  const tagsStr = parsedTags.tags.length > 0 ? JSON.stringify(parsedTags.tags) : null;
-
-  const link: Link = {
-    id,
-    slug,
-    domain,
-    long_url,
-    short_url: `https://${domain}/${slug}`,
-    title: title ?? null,
-    description: description ?? null,
-    tags: tagsStr,
-    status: linkStatus,
-    redirect_type: redirectType,
-    clicks: 0,
-    source: source ?? null,
-    source_id: null,
-    created_at: ts,
-    updated_at: ts,
-    last_clicked_at: null,
-    expires_at: expiresAt.value,
-    max_clicks: maxClicks.value,
-    password_hash: passwordHash.value,
-    warning_enabled: warningEnabled ?? 0,
-    fallback_url: null,
-    archived: 0,
-  };
+  const link = prepared.link;
 
   await createLink(c.env, link);
-  await ensureTagRecords(c.env, parsedTags.tags, ts);
+  await ensureTagRecords(c.env, prepared.tags ?? [], link.created_at);
 
   await refreshLinkCache(c.env, domain, link);
-  await recordAudit(c.env, c.req.raw, 'link.create', 'link', id, { slug });
+  await recordAudit(c.env, c.req.raw, 'link.create', 'link', link.id, { slug: link.slug });
 
   return jsonCreated(sanitizeLink(link));
+});
+
+// POST /api/links/bulk-create
+links.post('/bulk-create', async (c) => {
+  let body: { items?: unknown };
+  try {
+    body = await c.req.json();
+  } catch {
+    return jsonError('Invalid JSON body', 400);
+  }
+
+  const items = Array.isArray(body.items) ? body.items as LinkBody[] : [];
+  if (items.length === 0) return jsonError('items must be a non-empty array', 400);
+  if (items.length > 100) return jsonError('Bulk create supports up to 100 links at a time', 400);
+
+  const reservedSlugs = new Set<string>();
+  const domain = new URL(c.req.url).hostname;
+  const results: Array<{ index: number; status: 'created' | 'failed'; slug?: string; id?: string; error?: string }> = [];
+  const createdLinks: Link[] = [];
+  let successCount = 0;
+  let failedCount = 0;
+
+  for (let i = 0; i < items.length; i++) {
+    try {
+      const prepared = await prepareNewLink(c.env, c.req.url, items[i], reservedSlugs);
+      if (prepared.error || !prepared.link) {
+        failedCount++;
+        results.push({ index: i, status: 'failed', error: prepared.error ?? 'Invalid link' });
+        continue;
+      }
+
+      await createLink(c.env, prepared.link);
+      await ensureTagRecords(c.env, prepared.tags ?? [], prepared.link.created_at);
+      await refreshLinkCache(c.env, domain, prepared.link);
+      createdLinks.push(prepared.link);
+      successCount++;
+      results.push({
+        index: i,
+        status: 'created',
+        slug: prepared.link.slug,
+        id: prepared.link.id,
+      });
+    } catch (err) {
+      failedCount++;
+      results.push({ index: i, status: 'failed', error: String(err) });
+    }
+  }
+
+  await recordAudit(c.env, c.req.raw, 'link.bulk_create', 'link', undefined, {
+    total: items.length,
+    success: successCount,
+    failed: failedCount,
+    slugs: createdLinks.map((link) => link.slug),
+  });
+
+  return jsonOk({
+    total: items.length,
+    success: successCount,
+    failed: failedCount,
+    items: sanitizeLinks(createdLinks),
+    results,
+  }, successCount > 0 ? 201 : 400);
 });
 
 // POST /api/links/bulk

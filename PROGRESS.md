@@ -2,7 +2,7 @@
 
 Quick reference for what is done, what is in progress, and what is not started.
 
-Last updated: 2026-07-07
+Last updated: 2026-07-08
 
 ---
 
@@ -121,7 +121,7 @@ Last updated: 2026-07-07
 | Version | Status      |
 |---------|-------------|
 | V2      | In progress |
-| V3      | Not started |
+| V3      | In progress |
 | V4      | Not started |
 
 Database columns for V2–V4 are already present in `migrations/0001_init.sql` to avoid future migration complexity. They are not used by V1 code.
@@ -149,3 +149,14 @@ Database columns for V2–V4 are already present in `migrations/0001_init.sql` t
 | Dub importer adapter | ✅ Done | JSON / JSONL-style payloads supported; local smoke test passed |
 | Import conflict strategies | ✅ Done | `skip`, `rename`, and `overwrite` implemented; local smoke test passed |
 | Linkora backup.json restore import | ✅ Done | Restores backup links and tag catalog entries; local smoke test passed |
+| Bulk create links | ✅ Done | Admin page and `POST /api/links/bulk-create` create up to 100 links at a time |
+| Links advanced filters | ✅ Done | Links list filters by source, domain, password, warning, limits, and created date range |
+| Generic CSV field mapping | ✅ Done | Generic CSV import accepts explicit field mapping for non-standard headers |
+| Generic JSON / JSONL field mapping | ✅ Done | Generic JSON import accepts mapped fields and common wrapped arrays |
+
+### V3 Progress
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Advanced analytics dashboard | ✅ Done | Admin Analytics page shows click totals, daily trend, top links, countries, referrers, browsers, devices, and recent visits |
+| Daily stats aggregation | ✅ Done | Visit recording updates `daily_stats` asynchronously via `ctx.waitUntil()` alongside raw visits |

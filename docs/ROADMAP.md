@@ -41,17 +41,20 @@ Done:
 - Dub importer
 - Rename/overwrite import conflict strategies
 - `backup.json` restore import
-
-Backlog:
-
 - Bulk create links
 - Generic CSV field mapping enhancements
 - Generic JSON / JSONL field mapping enhancements
+- Links advanced filters
 
 ## V3: Analytics And Automation
 
+Done:
+
 - Advanced analytics dashboard
 - Daily stats aggregation
+
+Backlog:
+
 - R2 backups
 - API token management
 - Cloudflare Queues for async stats

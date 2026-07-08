@@ -1,7 +1,7 @@
 import type { Link, KVCacheEntry } from '@linkora/shared';
 import type { Env } from '../types';
 import { generateId, now, sha256 } from '../utils/id';
-import { incrementClicks, insertVisit } from '../db/index';
+import { incrementClicks, insertVisit, upsertDailyStats } from '../db/index';
 import { setCachedLink } from '../cache/index';
 
 const BOT_UA_PATTERNS = [
@@ -75,6 +75,7 @@ export async function recordVisit(
         is_bot: isBot,
         created_at: createdAt,
       }),
+      upsertDailyStats(env, link, createdAt.slice(0, 10), country, referer, createdAt),
     ]);
 
     if (link.password_hash) return;
