@@ -21,6 +21,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Import confirm now supports `skip`, `rename`, and `overwrite` conflict strategies.
 - Added Shlink API pull import, password-protected links, safety warning pages, UTM templates, and Audit Logs.
 - Added bulk link creation, Links advanced filters, Generic CSV / JSON field mapping, and an Analytics dashboard backed by daily stats aggregation.
+- Added R2 backup snapshots with manual Admin creation, download, backup records, and daily Worker cron scheduling.
 
 ---
 

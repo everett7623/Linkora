@@ -78,6 +78,17 @@ export interface AuditLog {
   created_at: string;
 }
 
+export type BackupStatus = 'processing' | 'completed' | 'failed';
+
+export interface Backup {
+  id: string;
+  filename: string;
+  storage: string;
+  size?: number | null;
+  status: BackupStatus;
+  created_at: string;
+}
+
 export interface Setting {
   key: string;
   value?: string | null;

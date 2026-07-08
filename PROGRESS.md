@@ -91,7 +91,7 @@ Last updated: 2026-07-08
 ## Next Steps
 
 1. Revoke or rotate the Shlink API key used during migration
-2. Continue V2 with password-protected links, safety warning page, or Tags management page
+2. Continue V3 with API Token management or Cloudflare Queues for async stats
 3. Cut over `s.y8o.de` from Shlink to Linkora when ready
 
 ---
@@ -160,3 +160,5 @@ Database columns for V2–V4 are already present in `migrations/0001_init.sql` t
 |---------|--------|-------|
 | Advanced analytics dashboard | ✅ Done | Admin Analytics page shows click totals, daily trend, top links, countries, referrers, browsers, devices, and recent visits |
 | Daily stats aggregation | ✅ Done | Visit recording updates `daily_stats` asynchronously via `ctx.waitUntil()` alongside raw visits |
+| Auto-backup to Cloudflare R2 | ✅ Done | Worker creates full backup snapshots in R2 through Admin and scheduled cron |
+| Cron Triggers for daily backup | ✅ Done | Wrangler cron runs daily at 18:00 UTC / 02:00 Asia/Shanghai |

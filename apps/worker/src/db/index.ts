@@ -1,4 +1,4 @@
-import type { AuditLog, Link, Tag, ImportJob, Setting, Visit } from '@linkora/shared';
+import type { AuditLog, Backup, Link, Tag, ImportJob, Setting, Visit } from '@linkora/shared';
 import type { Env } from '../types';
 
 export async function getLinkBySlug(env: Env, slug: string): Promise<Link | null> {
@@ -737,4 +737,29 @@ export async function listAuditLogs(
     .all<AuditLog>();
 
   return { items: result.results ?? [], total };
+}
+
+export async function createBackupRecord(env: Env, backup: Backup): Promise<void> {
+  await env.DB.prepare(
+    'INSERT INTO backups (id, filename, storage, size, status, created_at) VALUES (?, ?, ?, ?, ?, ?)'
+  )
+    .bind(
+      backup.id,
+      backup.filename,
+      backup.storage,
+      backup.size ?? null,
+      backup.status,
+      backup.created_at
+    )
+    .run();
+}
+
+export async function listBackups(env: Env): Promise<Backup[]> {
+  const result = await env.DB.prepare('SELECT * FROM backups ORDER BY created_at DESC LIMIT 100').all<Backup>();
+  return result.results ?? [];
+}
+
+export async function getBackupById(env: Env, id: string): Promise<Backup | null> {
+  const result = await env.DB.prepare('SELECT * FROM backups WHERE id = ? LIMIT 1').bind(id).first<Backup>();
+  return result ?? null;
 }

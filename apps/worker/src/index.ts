@@ -11,6 +11,8 @@ import importRoutes from './routes/importRoutes';
 import metadataRoutes from './routes/metadata';
 import auditRoutes from './routes/audit';
 import analyticsRoutes from './routes/analytics';
+import backupRoutes from './routes/backups';
+import { createR2Backup } from './backups/index';
 import { getOverviewStats } from './db/index';
 import { requireAuth } from './auth/index';
 import { jsonOk } from './utils/response';
@@ -65,6 +67,9 @@ app.route('/api/audit', auditRoutes);
 // Analytics
 app.route('/api/analytics', analyticsRoutes);
 
+// Backups
+app.route('/api/backups', backupRoutes);
+
 // Overview stats
 app.get('/api/overview', async (c) => {
   const authError = requireAuth(c);
@@ -95,4 +100,17 @@ app.get('/', (c) => {
   return jsonOk({ name: 'Linkora', version: c.env.LINKORA_VERSION ?? '0.1.0', status: 'ok' });
 });
 
-export default app;
+const handler: ExportedHandler<Env> = {
+  fetch(request, env, ctx) {
+    return app.fetch(request, env, ctx);
+  },
+  scheduled(_controller, env, ctx) {
+    ctx.waitUntil(
+      createR2Backup(env, 'scheduled').catch((error) => {
+        console.error('Scheduled Linkora backup failed', error);
+      })
+    );
+  },
+};
+
+export default handler;

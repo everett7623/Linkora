@@ -1,6 +1,6 @@
 # Backup And Restore
 
-Linkora currently supports manual exports and pre-import backup downloads.
+Linkora supports manual exports, pre-import backup downloads, and R2 backup snapshots.
 
 ## Available Exports
 
@@ -24,6 +24,34 @@ linkora-pre-import-backup-YYYY-MM-DD-HHMMSS.json
 ```
 
 The import only proceeds after that backup download request succeeds.
+
+## R2 Backups
+
+Create the R2 buckets before deploying a Worker that has the `BACKUPS` binding:
+
+```bash
+npx wrangler r2 bucket create linkora-backups
+npx wrangler r2 bucket create linkora-backups-dev
+```
+
+`apps/worker/wrangler.toml` binds production and preview buckets:
+
+```toml
+[[r2_buckets]]
+binding = "BACKUPS"
+bucket_name = "linkora-backups"
+preview_bucket_name = "linkora-backups-dev"
+```
+
+The Admin Backups page can create an immediate R2 snapshot and download completed snapshots. The Worker also runs a daily scheduled backup through Cloudflare Cron Triggers.
+
+Authenticated API endpoints:
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /api/backups` | List recent backup records |
+| `POST /api/backups/create` | Create an R2 backup now |
+| `GET /api/backups/:id/download` | Download a completed R2 backup |
 
 ## Backup Format
 

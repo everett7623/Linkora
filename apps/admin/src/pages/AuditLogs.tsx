@@ -75,6 +75,7 @@ export function AuditLogs() {
           <option value="link.delete">Link Delete</option>
           <option value="import.confirm">Import Confirm</option>
           <option value="import.shlink_api.fetch">Shlink API Fetch</option>
+          <option value="backup.create">Backup Create</option>
         </Select>
       </div>
 

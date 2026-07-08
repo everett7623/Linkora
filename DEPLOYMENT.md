@@ -127,7 +127,20 @@ KV is cache only. D1 remains the source of truth.
 
 ---
 
-## 5. Configure Worker
+## 5. Create Cloudflare R2 Backup Buckets
+
+Create the production and preview buckets used by the `BACKUPS` binding:
+
+```bash
+npx wrangler r2 bucket create linkora-backups
+npx wrangler r2 bucket create linkora-backups-dev
+```
+
+R2 stores scheduled and manually created `backup.json` snapshots. D1 remains the source of truth.
+
+---
+
+## 6. Configure Worker
 
 Edit `apps/worker/wrangler.toml`:
 
@@ -154,6 +167,14 @@ migrations_dir = "../../migrations"
 binding = "KV"
 id = "<your-kv-namespace-id>"
 preview_id = "<your-kv-preview-id>"
+
+[[r2_buckets]]
+binding = "BACKUPS"
+bucket_name = "linkora-backups"
+preview_bucket_name = "linkora-backups-dev"
+
+[triggers]
+crons = ["0 18 * * *"]
 ```
 
 Replace `go.example.com` with your short/API domain.
@@ -186,7 +207,7 @@ Expected response:
 
 ---
 
-## 6. Configure DNS for Short/API Domain
+## 7. Configure DNS for Short/API Domain
 
 If you use a Worker custom domain route, Cloudflare will attach the Worker to the hostname.
 
@@ -207,7 +228,7 @@ https://go.example.com/<slug>
 
 ---
 
-## 7. Build Admin Frontend
+## 8. Build Admin Frontend
 
 The Admin frontend needs the short/API domain at build time:
 
@@ -226,7 +247,7 @@ If Admin and Worker are on the same origin, `VITE_API_URL` can be empty. For the
 
 ---
 
-## 8. Deploy Admin to Cloudflare Pages
+## 9. Deploy Admin to Cloudflare Pages
 
 Create a Pages project and deploy `apps/admin/dist`:
 
@@ -260,7 +281,7 @@ Log in with `ADMIN_TOKEN`.
 
 ---
 
-## 9. Configure Linkora Settings
+## 10. Configure Linkora Settings
 
 In the Admin panel, open **Settings**.
 
@@ -281,7 +302,7 @@ For a Shlink migration:
 
 ---
 
-## 10. Required Environment Values
+## 11. Required Environment Values
 
 ### Worker Secrets
 
@@ -305,6 +326,7 @@ Defined in `apps/worker/wrangler.toml`:
 |---------|--------------------|---------|
 | `DB` | D1 | Source of truth |
 | `KV` | KV | Redirect cache |
+| `BACKUPS` | R2 | Backup snapshot storage |
 
 ### Admin Build Variable
 
@@ -314,7 +336,7 @@ Defined in `apps/worker/wrangler.toml`:
 
 ---
 
-## 11. Production Smoke Test
+## 12. Production Smoke Test
 
 Run these checks after deployment:
 
@@ -366,10 +388,11 @@ Login with `ADMIN_TOKEN`, then verify:
 - Copy/Open short link uses the configured short domain
 - Import preview reports conflicts instead of overwriting slugs
 - Export downloads a valid file
+- Backups page can create or list R2 backup records
 
 ---
 
-## 12. Shlink Cutover Checklist
+## 13. Shlink Cutover Checklist
 
 Use this when moving an existing Shlink domain to Linkora.
 

@@ -20,5 +20,14 @@ binding = "KV"
 id = "dd9c01217d07484db6fb702ada681527"
 preview_id = "40c763773cfb4565b0b45749c325f888"
 
+[[r2_buckets]]
+binding = "BACKUPS"
+bucket_name = "linkora-backups"
+preview_bucket_name = "linkora-backups-dev"
+
+[triggers]
+# Cloudflare cron uses UTC. 18:00 UTC runs at 02:00 Asia/Shanghai.
+crons = ["0 18 * * *"]
+
 # Secrets (set via: wrangler secret put ADMIN_TOKEN)
 # ADMIN_TOKEN = set via wrangler secret

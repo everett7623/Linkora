@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
 import type { Env } from '../types';
 import { requireAuth } from '../auth/index';
-import { getAllLinks, getAllTags, getAllVisits, getSettings } from '../db/index';
+import { getAllLinks, getAllVisits } from '../db/index';
+import { buildBackupPayload } from '../backups/index';
 import type { Link, Visit } from '@linkora/shared';
 
 const exportRoutes = new Hono<{ Bindings: Env }>();
@@ -82,21 +83,7 @@ exportRoutes.get('/visits.csv', async (c) => {
 });
 
 exportRoutes.get('/backup.json', async (c) => {
-  const [links, tags, settings] = await Promise.all([
-    getAllLinks(c.env),
-    getAllTags(c.env),
-    getSettings(c.env),
-  ]);
-
-  const backup = {
-    name: 'Linkora Backup',
-    version: '0.1.0',
-    exportedAt: new Date().toISOString(),
-    links,
-    tags,
-    settings,
-  };
-
+  const backup = await buildBackupPayload(c.env);
   const today = new Date().toISOString().slice(0, 10);
   return new Response(JSON.stringify(backup, null, 2), {
     headers: {

@@ -19,7 +19,7 @@ A lightweight, stable, self-hosted short link system built on Cloudflare Workers
 - 🧭 Import preview with skip, rename, or overwrite conflict handling
 - Password-protected links, safety warning pages, and UTM builder templates
 - Audit Logs page for admin actions and imports
-- 📤 Export links as CSV / JSON, visits as CSV, and full backups
+- 📤 Export links as CSV / JSON, visits as CSV, full backups, and R2 backup snapshots
 - ⚙️ System settings
 - 🏥 Health check endpoint (`/health`)
 
@@ -111,7 +111,16 @@ wrangler kv namespace create KV --preview
 
 Copy both IDs into `apps/worker/wrangler.toml`.
 
-### 4. Set Admin Token (Production)
+### 4. Create R2 Backup Buckets
+
+```bash
+wrangler r2 bucket create linkora-backups
+wrangler r2 bucket create linkora-backups-dev
+```
+
+The Worker binds these buckets as `BACKUPS` and runs a daily scheduled backup.
+
+### 5. Set Admin Token (Production)
 
 ```bash
 wrangler secret put ADMIN_TOKEN

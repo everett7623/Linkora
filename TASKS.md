@@ -188,10 +188,10 @@ _(none currently)_
 
 - [x] Advanced analytics dashboard
 - [x] Daily stats aggregation (`daily_stats` table)
-- [ ] Auto-backup to Cloudflare R2
+- [x] Auto-backup to Cloudflare R2
 - [ ] API Token management page
 - [ ] Cloudflare Queues for async stats
-- [ ] Cron Triggers for daily backup
+- [x] Cron Triggers for daily backup
 - [ ] Multi-domain support
 - [ ] Webhook notifications
 

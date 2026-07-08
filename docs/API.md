@@ -90,6 +90,16 @@ Generic CSV / JSON import preview and confirm requests can include `fieldMapping
 | `GET` | `/api/export/visits.csv` |
 | `GET` | `/api/export/backup.json` |
 
+## Backups
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/backups` | List recent R2 backup records |
+| `POST` | `/api/backups/create` | Create a full backup in R2 |
+| `GET` | `/api/backups/:id/download` | Download a completed R2 backup |
+
+Scheduled R2 backups are created by the Worker cron trigger configured in `apps/worker/wrangler.toml`.
+
 ## Tags And Settings
 
 | Method | Path |
