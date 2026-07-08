@@ -11,6 +11,27 @@ _(none currently)_
 
 ---
 
+## 🟡 Next — V5 Open Source Self-Hosted Release
+
+Product direction:
+
+- [ ] Keep Linkora free and open source first; do not add paid SaaS or subscription billing yet
+- [ ] Preserve a complete, practical self-hosted version for personal users and small teams
+- [ ] Treat paid deployment, migration help, hosted service, or support as future optional business models only
+
+Deployment experience:
+
+- [ ] Rewrite README for first-time external users
+- [ ] Add a clean self-hosted deployment guide with example domains only
+- [ ] Add `apps/worker/wrangler.toml.example`
+- [ ] Add GitHub Actions documentation using repo variables for API URL and Pages project name
+- [ ] Document Cloudflare resources required by a fresh install: Workers, D1, KV, R2, Queues, Pages, secrets, and custom domains
+- [ ] Add post-deploy smoke test commands for health, auth rejection, create/edit/delete, redirect, import preview, and export
+- [ ] Remove or isolate personal deployment values such as `go.y8o.de`, `admin.y8o.de`, and `linkora-admin`
+- [ ] Improve first-run Admin guidance for system status and missing setup checks
+
+---
+
 ## 🟡 Pending — V1 Remaining
 
 ### Backend

@@ -78,3 +78,25 @@ Future optional enhancements:
 - Bulk UTM automation
 - Target failure alerts and periodic status monitoring
 - Public stats pages, OpenGraph previews, link notes, and long-idle auto-archive
+
+## V5: Open Source Release And Self-Hosted Deployment
+
+Status: next recommended phase.
+
+Product direction:
+
+- Keep Linkora free and open source first
+- Prioritize self-hosted deployment on the user's own Cloudflare account
+- Do not add paid SaaS, subscription billing, or multi-tenant hosting complexity yet
+- Preserve a complete, practical free self-hosted version even if paid services are considered later
+
+Planned:
+
+- Rewrite README for first-time external users
+- Add a clean self-hosted deployment guide with example domains only
+- Add `wrangler.toml.example` and clear copy/edit instructions
+- Parameterize GitHub Actions with repository variables instead of project-specific domains
+- Document all Cloudflare resources: Workers, D1, KV, R2, Queues, Pages, secrets, and custom domains
+- Add post-deploy smoke test commands
+- Remove or isolate personal deployment values such as `go.y8o.de`, `admin.y8o.de`, and `linkora-admin`
+- Improve first-run guidance in Admin so new self-hosters can verify system status quickly
