@@ -50,7 +50,14 @@ const ADAPTERS: ImportAdapter[] = [
   GenericJsonAdapter,
 ];
 type ConflictStrategy = 'skip' | 'rename' | 'overwrite';
-type ShlinkApiPagination = { currentPage?: number; pagesTotal?: number; totalItems?: number };
+type ShlinkApiPagination = {
+  currentPage?: number;
+  pagesTotal?: number;
+  pagesCount?: number;
+  totalPages?: number;
+  totalItems?: number;
+  itemsPerPage?: number;
+};
 
 function detectAdapter(input: unknown, hint?: string): ImportAdapter | null {
   if (hint) {
@@ -325,12 +332,20 @@ async function fetchShlinkApiItems(baseUrl: string, apiKey: string): Promise<unk
     const { items: pageItems, pagination } = extractShlinkShortUrls(payload);
     items.push(...pageItems);
 
-    const pagesTotal = pagination?.pagesTotal;
-    if (!pagesTotal || page >= pagesTotal || pageItems.length === 0) break;
+    const pagesTotal = shlinkPagesTotal(pagination);
+    if (pageItems.length === 0) break;
+    if (pagesTotal && page >= pagesTotal) break;
+    if (!pagesTotal && pageItems.length < pageSize) break;
+    if (pagination?.totalItems && items.length >= pagination.totalItems) break;
     if (items.length >= 5000) break;
   }
 
   return items;
+}
+
+function shlinkPagesTotal(pagination?: ShlinkApiPagination): number | undefined {
+  const value = pagination?.pagesTotal ?? pagination?.pagesCount ?? pagination?.totalPages;
+  return Number.isFinite(value) && Number(value) > 0 ? Number(value) : undefined;
 }
 
 // POST /api/import/shlink-api/fetch
