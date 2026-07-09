@@ -48,7 +48,7 @@ _(none currently)_
 
 ## ✅ Completed — Project Consistency Cleanup
 
-- [x] Bump Linkora package/runtime version to `0.7.2`
+- [x] Bump Linkora package/runtime version to `0.7.3`
 - [x] Add shared version constant for Worker and Admin displays
 - [x] Update GitHub Actions version resolution and repository `LINKORA_VERSION` variable
 - [x] Update docs, env examples, wrangler example, changelog, and package lock
@@ -119,7 +119,7 @@ Deployment experience:
 - [x] Isolate personal deployment values from public docs and reusable GitHub Actions defaults
 - [x] Improve first-run Admin guidance for system status and missing setup checks
 - [x] Move maintainer production Worker config out of the public default path, or generate it from deployment variables
-- [x] Add MIT license and public repository readiness cleanup
+- [x] Change project license to GPL-3.0-only and keep public repository readiness cleanup
 - [x] Document current dashboard/analytics coverage and next tracking gaps
 
 ---

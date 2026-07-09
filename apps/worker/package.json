@@ -1,6 +1,7 @@
 {
   "name": "@linkora/worker",
-  "version": "0.7.2",
+  "version": "0.7.3",
+  "license": "GPL-3.0-only",
   "private": true,
   "scripts": {
     "dev": "wrangler dev",

@@ -13,6 +13,14 @@ _(none)_
 
 ---
 
+## [0.7.3] — 2026-07-09
+
+### Changed
+- Changed Linkora's open-source license from MIT to GNU GPL v3 only (`GPL-3.0-only`).
+- Updated package metadata, repository license notice, README, roadmap, and release tracking to reflect GPL-3.0-only licensing.
+
+---
+
 ## [0.7.2] — 2026-07-09
 
 ### Changed
@@ -56,7 +64,7 @@ _(none)_
 - Added V5 self-hosting documentation, a public `wrangler.toml` template, Admin env example, and reusable GitHub Actions variables for open-source deployments.
 - Added an Admin Setup page that summarizes API reachability, short-domain configuration, domain catalog, backups, and first-link readiness for self-hosted installs.
 - Removed the tracked production Worker config and made GitHub Actions generate `wrangler.toml` from repository variables before deploy.
-- Added MIT licensing, public repository cleanup, analytics documentation, and clearer local self-hosting bootstrap instructions.
+- Added open-source licensing, public repository cleanup, analytics documentation, and clearer local self-hosting bootstrap instructions.
 - Analytics now reports approximate unique visitors and operating system breakdowns, and the Admin Analytics page displays device and OS breakdown cards.
 - Added V6 analytics depth: filterable Analytics dashboard, single-link analytics page, UTM breakdowns, redirect target/A-B statistics, conversion events, Analytics CSV export, and scheduled raw analytics retention.
 - Added V7 R2 backup restore preview, one-click restore, conflict strategies, pre-restore backup, and restore reporting.

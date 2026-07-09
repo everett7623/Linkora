@@ -13,7 +13,7 @@ routes = [
 ]
 
 [vars]
-LINKORA_VERSION = "0.7.2"
+LINKORA_VERSION = "0.7.3"
 
 [[d1_databases]]
 binding = "DB"

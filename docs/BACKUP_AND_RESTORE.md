@@ -60,7 +60,7 @@ Authenticated API endpoints:
 ```json
 {
   "name": "Linkora Backup",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "exportedAt": "2026-07-01T00:00:00.000Z",
   "links": [],
   "tags": [],

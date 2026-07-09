@@ -272,4 +272,4 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for details.
 
 ## License
 
-[MIT](LICENSE)
+[GPL-3.0-only](LICENSE)

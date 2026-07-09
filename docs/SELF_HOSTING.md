@@ -149,7 +149,7 @@ curl https://go.example.com/health
 Expected shape:
 
 ```json
-{"success":true,"data":{"status":"ok","name":"Linkora","version":"0.7.2"}}
+{"success":true,"data":{"status":"ok","name":"Linkora","version":"0.7.3"}}
 ```
 
 ## 7. Build and Deploy Admin
@@ -206,7 +206,7 @@ LINKORA_VISITS_QUEUE=linkora-visits
 Optional variables:
 
 ```txt
-LINKORA_VERSION=0.7.2
+LINKORA_VERSION=0.7.3
 LINKORA_COMPATIBILITY_DATE=2026-07-08
 ```
 
