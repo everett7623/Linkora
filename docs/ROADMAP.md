@@ -75,9 +75,7 @@ Done:
 
 Future optional enhancements:
 
-- Bulk UTM automation
-- Target failure alerts and periodic status monitoring
-- Public stats pages, OpenGraph previews, link notes, and long-idle auto-archive
+- Moved into V7 and V9 planning below: target failure alerts, periodic monitoring, bulk URL/UTM operations, public stats pages, OpenGraph previews, link notes, and long-idle auto-archive
 
 ## V5: Open Source Release And Self-Hosted Deployment
 
@@ -131,3 +129,90 @@ Future optional enhancements:
 - Better bot classification
 - Public read-only stats pages
 - Session or visitor-level conversion attribution
+
+## Long-Term Product Principles
+
+Linkora is intended to remain useful for long-term self-hosted operation, not just a one-time migration tool.
+
+- Redirect stability stays higher priority than dashboards, automation, and integrations
+- The free self-hosted version should remain complete enough for personal sites, small teams, SEO projects, affiliate operations, and campaign tracking
+- Advanced features should be progressive, optional, and easy to hide for users who only need simple short links
+- Operational features should prefer safe previews, backups, dry runs, and reversible changes before mutation
+- Public or shared views must be privacy-first and disabled by default
+- Paid hosting, paid migration help, or managed support can be considered later, but should not weaken the self-hosted product
+
+## V7: Operations, Recovery, And Monitoring
+
+Status: in progress. R2 backup restore preview, one-click restore, pre-restore backup, and restore reporting are implemented.
+
+Goal: make Linkora safer to operate for years, with stronger recovery paths and proactive monitoring.
+
+Planned:
+
+- Done: one-click restore from R2 backup records in the Backups page
+- Done: restore dry-run preview, conflict summary, pre-restore backup, and restore report
+- Backup retention policy for R2 objects and D1 backup records, starting with a 30-day default and configurable retention
+- Periodic target health monitoring through Cron, with manual checks kept available
+- Target status history for links, including last status code, last checked time, and failure count
+- Target failure alerts through Admin notices and optional signed webhooks
+- Alert controls, including retry windows, suppression, and recovery notifications
+- First-class `fallback_url` editing in Create/Edit Link and redirect behavior where appropriate
+- Custom 404, expired, disabled, and warning page templates with safe defaults
+- Operations dashboard for backup freshness, monitoring status, failed targets, queue health, and deployment health
+- Better bot classification for analytics and monitoring noise reduction
+
+## V8: Usability Modes And Internationalization
+
+Status: planned.
+
+Goal: keep the product approachable for simple users while preserving advanced tools for power users.
+
+Planned:
+
+- Simple / Advanced mode toggle in Admin
+- Simple mode hides or de-emphasizes advanced navigation such as Redirect Rules, Webhooks, API Tokens, advanced Analytics filters, backup internals, and bulk tooling
+- Advanced mode exposes the full operator interface
+- Instance-level feature visibility settings for optional modules
+- Per-browser or per-admin preference for sidebar density, table density, and advanced panels
+- First-run setup wizard for new self-hosters, separate from the current Setup status page
+- Language switcher with English and Simplified Chinese first
+- i18n foundation for labels, navigation, validation messages, empty states, errors, and documentation links
+- Locale-aware date, time zone, number, and CSV/export formatting settings
+- Help text that explains advanced fields only when advanced mode is enabled
+
+## V9: Growth Tools, Reporting, And Link Intelligence
+
+Status: planned.
+
+Goal: support ongoing campaign, SEO, affiliate, and content operations without compromising redirect stability.
+
+Planned:
+
+- Bulk replace destination URLs with preview and rollback guidance
+- Bulk append or normalize UTM parameters
+- Saved UTM templates and campaign presets
+- Link notes and affiliate/internal notes
+- OpenGraph preview cards for destination pages
+- Public read-only stats pages with privacy controls, share tokens, and per-link enablement
+- Scheduled analytics report exports
+- Saved Analytics filters and reusable report views
+- Session or visitor-level conversion attribution where privacy-safe
+- More conversion attribution fields, such as external campaign IDs and client-provided visitor IDs
+- Long-idle auto-archive rules with review queue and dry-run mode
+- Additional import adapters when demand is clear, such as Bitly
+
+## V10: Collaboration And Governance
+
+Status: future optional.
+
+Goal: support teams only when the single-admin self-hosted product is stable enough to justify the added complexity.
+
+Potential scope:
+
+- Multi-user accounts
+- Roles and permissions
+- Team or workspace separation
+- API token ownership and rotation policies
+- Audit log export and retention policies
+- Per-project access controls
+- Optional managed hosting, migration services, or support offerings while preserving the free self-hosted edition

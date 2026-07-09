@@ -8,7 +8,9 @@ A lightweight, stable, self-hosted short link system built on Cloudflare Workers
 
 ## Product Direction
 
-Linkora is free and open source first. The project prioritizes self-hosting on your own Cloudflare account, data ownership, migration safety, and stable redirects over SaaS complexity.
+Linkora is free and open source first. The project prioritizes self-hosting on your own Cloudflare account, data ownership, migration safety, stable redirects, and long-term operation over SaaS complexity.
+
+Advanced capabilities are planned as optional layers. The Admin should stay comfortable for simple short-link use, while power users can enable advanced operations, analytics, automation, and campaign tooling as needed.
 
 For a first-time deployment, start with [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md).
 
@@ -33,6 +35,7 @@ For a first-time deployment, start with [docs/SELF_HOSTING.md](docs/SELF_HOSTING
 - Password-protected links, safety warning pages, and UTM builder templates
 - Audit Logs page for admin actions and imports
 - 📤 Export links as CSV / JSON, visits as CSV, full backups, and R2 backup snapshots
+- R2 backup restore preview and one-click restore with pre-restore snapshots
 - ⚙️ System settings
 - 🏥 Health check endpoint (`/health`)
 
@@ -141,7 +144,7 @@ wrangler r2 bucket create linkora-backups
 wrangler r2 bucket create linkora-backups-dev
 ```
 
-The Worker binds these buckets as `BACKUPS` and runs a daily scheduled backup.
+The Worker binds these buckets as `BACKUPS`, runs a daily scheduled backup, and supports preview-first one-click restore from completed snapshots.
 
 ### 5. Create Queue for Visit Stats
 
@@ -259,6 +262,10 @@ The Admin includes an **Overview** dashboard, a filterable **Analytics** dashboa
 | **V4** ✅ | Smart redirects (country/device/browser/referer/language/A-B), local smart suggestions, UTM templates, campaigns, health checks |
 | **V5** ✅ | Open-source packaging, self-hosting docs, template config, reusable deploy workflow |
 | **V6** ✅ | Analytics depth: per-link pages, filters, UTM, A/B targets, conversions, reports, retention |
+| **V7** In Progress | Operations: one-click restore, backup retention, target monitoring, alerts, custom status pages |
+| **V8** Planned | Usability: Simple / Advanced mode, feature visibility, language switching, i18n |
+| **V9** Planned | Growth: bulk URL/UTM operations, public stats, notes, OpenGraph previews, scheduled reports |
+| **V10** Future | Collaboration: multi-user, roles, teams, governance, optional managed services |
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for details.
 

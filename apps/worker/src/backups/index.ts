@@ -13,7 +13,7 @@ export interface LinkoraBackupPayload {
   settings: Record<string, string>;
 }
 
-export type BackupTrigger = 'manual' | 'scheduled';
+export type BackupTrigger = 'manual' | 'scheduled' | 'pre-restore';
 
 export async function buildBackupPayload(env: Env): Promise<LinkoraBackupPayload> {
   const [links, tags, redirectRules, settings] = await Promise.all([

@@ -211,8 +211,27 @@ Generic CSV / JSON import preview and confirm requests can include `fieldMapping
 | `GET` | `/api/backups` | List recent R2 backup records |
 | `POST` | `/api/backups/create` | Create a full backup in R2 |
 | `GET` | `/api/backups/:id/download` | Download a completed R2 backup |
+| `POST` | `/api/backups/:id/restore-preview` | Preview a restore plan without mutating data |
+| `POST` | `/api/backups/:id/restore` | Restore a completed R2 backup after confirmation |
 
 Scheduled R2 backups are created by the Worker cron trigger configured in `apps/worker/wrangler.toml`.
+
+Restore preview payload:
+
+```json
+{
+  "conflictStrategy": "skip"
+}
+```
+
+`conflictStrategy` can be `skip`, `rename`, or `overwrite`. The restore endpoint requires an explicit confirmation and creates a `pre-restore` R2 snapshot before mutating D1:
+
+```json
+{
+  "conflictStrategy": "rename",
+  "confirm": true
+}
+```
 
 ## Groups
 

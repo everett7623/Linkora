@@ -12,10 +12,10 @@ Last updated: 2026-07-09
 |-----------------|----------------|------------------------------------------------|
 | Worker backend  | ✅ Code complete | Local type-check passing; deployed on Cloudflare Workers |
 | Admin frontend  | ✅ Code complete | Production build passing; deployed on Cloudflare Pages |
-| Database schema | ✅ Complete      | Local migrations applied; production needs `0002_analytics_depth.sql` applied before V6 deploy      |
-| Documentation   | ✅ Complete      | README, self-hosting guide, analytics guide, root runbooks, and `docs/` reference set |
+| Database schema | ✅ Complete      | V6 analytics migration applied in production through GitHub Actions      |
+| Documentation   | ✅ Complete      | README, self-hosting guide, analytics guide, backup restore guide, root runbooks, `docs/` reference set, and V7-V10 long-term roadmap |
 | Deployment      | ✅ Deployed      | Worker and Admin deployed; GitHub Actions deploy workflow added |
-| End-to-end test | ✅ V1-V4 slices passed | Full V1-V3 regression passed; V4 smart redirects, groups, health checks, and smart suggestions production smoke passed; final V4 core regression passed |
+| End-to-end test | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed |
 
 ---
 
@@ -91,8 +91,9 @@ Last updated: 2026-07-09
 ## Next Steps
 
 1. Revoke or rotate the Shlink API key used during migration
-2. Apply the V6 analytics migration and deploy the Worker/Admin build to production
-3. Cut over the legacy short domain from Shlink to Linkora when ready
+2. Cut over the legacy short domain from Shlink to Linkora when ready
+3. Continue V7 operations work: backup retention, target monitoring, and failure alerts
+4. Start V8 usability work: Simple / Advanced mode and English / Simplified Chinese language switching
 
 ---
 
@@ -116,7 +117,7 @@ Last updated: 2026-07-09
 
 ---
 
-## V2 / V3 / V4 Status
+## Version Status
 
 | Version | Status      |
 |---------|-------------|
@@ -124,7 +125,11 @@ Last updated: 2026-07-09
 | V3      | ✅ Done |
 | V4      | ✅ Done |
 | V5      | ✅ Done |
-| V6      | ✅ First pass complete |
+| V6      | ✅ Done |
+| V7      | In Progress |
+| V8      | Planned |
+| V9      | Planned |
+| V10     | Future optional |
 
 Database columns for V2–V4 are already present in `migrations/0001_init.sql` to avoid future migration complexity.
 
@@ -189,9 +194,29 @@ Database columns for V2–V4 are already present in `migrations/0001_init.sql` t
 |---------|--------|-------|
 | Single-link analytics page | ✅ Done | `/analytics/links/:id` shows per-link trend, referrers, devices, targets, UTM, and conversions |
 | Analytics filters | ✅ Done | API/Admin filters cover link, slug, domain, tag, campaign, project, country, device, browser, referer, and UTM values |
-| UTM breakdown | ✅ Done | Summary includes top UTM sources, mediums, and campaigns |
+| UTM breakdown | ✅ Done | Summary includes top UTM sources, mediums, campaigns, terms, and contents |
 | A/B target statistics | ✅ Done | Redirect target decisions are stored in `visit_targets` without changing redirect behavior |
 | Conversion events | ✅ Done | `POST /api/conversions` records authenticated goal events |
 | Analytics report export | ✅ Done | `/api/export/analytics.csv` exports summary report sections |
 | Raw analytics retention | ✅ Done | `analytics_retention_days` setting is enforced by scheduled Worker cleanup |
-| V6 validation | ✅ Local passed | Worker type-check, Admin production build, and local D1 migration passed |
+| V6 validation | ✅ Production passed | GitHub Actions migration/deploy passed; production smoke covered health, auth rejection, redirects, filters, single-link analytics, conversions, Analytics CSV export, retention setting, and cleanup |
+
+### V7 Progress
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| R2 restore preview | ✅ Done | `POST /api/backups/:id/restore-preview` returns create, overwrite, rename, skip, invalid, and redirect-rule counts |
+| R2 one-click restore | ✅ Done | Admin Backups page can restore completed R2 snapshots with `skip`, `rename`, or `overwrite` |
+| Pre-restore backup | ✅ Done | Restore creates a fresh `pre-restore` R2 snapshot before mutating D1 |
+| Restore report | ✅ Done | Restore result includes created, overwritten, renamed, skipped, failed, redirect-rule counts, and a CSV-style report |
+| Backup retention | Planned | Configurable retention and cleanup still pending |
+| Target monitoring and alerts | Planned | Periodic checks, status history, and alerts still pending |
+
+### V7-V10 Planning
+
+| Version | Scope | Status |
+|---------|-------|--------|
+| V7 Operations, Recovery, And Monitoring | R2 restore, backup retention, periodic target monitoring, alerts, fallback URL UI, custom status pages, operations dashboard, better bot classification | In progress |
+| V8 Usability Modes And Internationalization | Simple / Advanced mode, feature visibility, first-run wizard, English and Simplified Chinese language switcher, locale-aware formatting | Planned |
+| V9 Growth Tools, Reporting, And Link Intelligence | Bulk URL and UTM operations, link notes, OpenGraph previews, public stats pages, scheduled reports, saved analytics views, conversion attribution, long-idle auto-archive | Planned |
+| V10 Collaboration And Governance | Multi-user, roles, teams, token governance, audit retention, per-project access, optional managed services | Future optional |

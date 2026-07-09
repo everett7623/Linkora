@@ -43,7 +43,7 @@ bucket_name = "linkora-backups"
 preview_bucket_name = "linkora-backups-dev"
 ```
 
-The Admin Backups page can create an immediate R2 snapshot and download completed snapshots. The Worker also runs a daily scheduled backup through Cloudflare Cron Triggers.
+The Admin Backups page can create an immediate R2 snapshot, download completed snapshots, preview restores, and restore a snapshot back into D1. The Worker also runs a daily scheduled backup through Cloudflare Cron Triggers.
 
 Authenticated API endpoints:
 
@@ -52,6 +52,8 @@ Authenticated API endpoints:
 | `GET /api/backups` | List recent backup records |
 | `POST /api/backups/create` | Create an R2 backup now |
 | `GET /api/backups/:id/download` | Download a completed R2 backup |
+| `POST /api/backups/:id/restore-preview` | Preview restore counts and conflicts |
+| `POST /api/backups/:id/restore` | Restore a completed R2 backup after confirmation |
 
 ## Backup Format
 
@@ -78,5 +80,16 @@ Restore imports links, tag catalog entries, and redirect rules for links that ar
 - `overwrite` updates existing links.
 
 Redirect rules for skipped links are skipped. Redirect rules for renamed links are attached to the new link ID. Redirect rules for overwritten links replace that link's existing rules.
+
+## R2 One-Click Restore
+
+The Admin Backups page can restore a completed R2 snapshot with a preview-first flow:
+
+1. Choose `Restore` on a completed backup record.
+2. Select `skip`, `rename`, or `overwrite`.
+3. Review the dry-run summary for creates, overwrites, renames, skips, invalid rows, and redirect rules.
+4. Confirm the restore.
+
+Before applying a restore, Linkora creates a fresh `pre-restore` R2 snapshot. If the selected backup is too large for one-click restore, the API rejects it with a clear error so the operator can download and restore manually.
 
 Keep exported backups and D1 backups for disaster recovery, especially before using overwrite.

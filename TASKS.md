@@ -11,16 +11,47 @@ _(none currently)_
 
 ---
 
-## 🟡 Next — V6 Production Validation
+## 🟡 Next — Operations And UX Planning
 
-- [ ] Apply `migrations/0002_analytics_depth.sql` to production D1
-- [ ] Deploy Worker and Admin with V6 analytics changes
-- [ ] Production smoke test Analytics filters and single-link analytics
-- [ ] Production smoke test `POST /api/conversions`
-- [ ] Production smoke test `/api/export/analytics.csv`
-- [ ] Confirm scheduled retention setting is saved
-- [ ] Consider public read-only stats pages
-- [ ] Improve bot classification
+- [ ] V7: Add configurable backup retention, starting with a 30-day default
+- [ ] V7: Add periodic target health monitoring and failure alerts
+- [ ] V8: Add Simple / Advanced Admin mode toggle
+- [ ] V8: Add language switcher and i18n foundation, starting with English and Simplified Chinese
+- [ ] V9: Add public read-only stats pages with privacy controls
+- [ ] V9: Improve bot classification and conversion attribution
+
+---
+
+## ✅ Completed — V7 R2 Backup Restore
+
+- [x] Add one-click restore from completed R2 backup records in the Backups page
+- [x] Add restore dry-run preview with conflict summary
+- [x] Add `skip`, `rename`, and `overwrite` restore conflict strategies
+- [x] Create a fresh `pre-restore` R2 snapshot before mutating data
+- [x] Return restore summary and CSV-style restore report
+- [x] Preserve restored link domains and refresh KV cache for restored links
+- [x] Document the restore API and operator workflow
+
+---
+
+## ✅ Completed — V6 Production Validation
+
+- [x] Apply `migrations/0002_analytics_depth.sql` to production D1
+- [x] Deploy Worker and Admin with V6 analytics changes
+- [x] Production smoke test Analytics filters and single-link analytics
+- [x] Production smoke test `POST /api/conversions`
+- [x] Production smoke test `/api/export/analytics.csv`
+- [x] Confirm scheduled retention setting is saved
+- [x] Clean up temporary `lk-v6-*` smoke links
+
+---
+
+## ✅ Completed — Formal Roadmap Sync
+
+- [x] Compare the private full development document against the public project docs
+- [x] Move remaining private-plan gaps into the formal roadmap instead of treating them as completed work
+- [x] Add long-term operations, recovery, monitoring, usability, i18n, growth, and collaboration planning
+- [x] Keep V1-V6 completion status scoped to the features that are actually implemented
 
 ---
 
@@ -264,3 +295,57 @@ Deployment experience:
 - [x] V4 smart suggestions production validation
 - [x] Link health checker
 - [x] V4 link health checker production validation
+
+## 🔵 Backlog — V7 Operations, Recovery, And Monitoring
+
+- [x] One-click restore from R2 backup records in the Backups page
+- [x] Restore dry-run preview with conflict summary
+- [x] Pre-restore backup and restore report
+- [ ] Configurable R2 backup retention with a 30-day default
+- [ ] Retention cleanup for old backup records and R2 objects
+- [ ] Periodic target health monitoring through Cron
+- [ ] Target status history with last status code, last checked time, and failure count
+- [ ] Target failure alerts through Admin notices and optional webhooks
+- [ ] Alert controls for retry windows, suppression, and recovery notifications
+- [ ] First-class `fallback_url` editing in Create/Edit Link
+- [ ] Custom 404, expired, disabled, and warning page templates
+- [ ] Operations dashboard for backup freshness, monitoring status, failed targets, queue health, and deployment health
+- [ ] Better bot classification for analytics and monitoring noise reduction
+
+## 🔵 Backlog — V8 Usability Modes And Internationalization
+
+- [ ] Simple / Advanced Admin mode toggle
+- [ ] Simple mode hides advanced navigation and dense operator controls
+- [ ] Advanced mode exposes Redirect Rules, Webhooks, API Tokens, advanced Analytics filters, backups internals, and bulk tooling
+- [ ] Instance-level feature visibility settings for optional modules
+- [ ] Per-browser or per-admin preferences for sidebar density, table density, and advanced panels
+- [ ] First-run setup wizard for new self-hosters
+- [ ] Language switcher with English and Simplified Chinese first
+- [ ] i18n foundation for labels, navigation, validation messages, empty states, errors, and documentation links
+- [ ] Locale-aware date, time zone, number, and CSV/export formatting settings
+- [ ] Contextual help text for advanced fields only when advanced mode is enabled
+
+## 🔵 Backlog — V9 Growth Tools, Reporting, And Link Intelligence
+
+- [ ] Bulk replace destination URLs with preview and rollback guidance
+- [ ] Bulk append or normalize UTM parameters
+- [ ] Saved UTM templates and campaign presets
+- [ ] Link notes and affiliate/internal notes
+- [ ] OpenGraph preview cards for destination pages
+- [ ] Public read-only stats pages with privacy controls, share tokens, and per-link enablement
+- [ ] Scheduled analytics report exports
+- [ ] Saved Analytics filters and reusable report views
+- [ ] Privacy-safe session or visitor-level conversion attribution
+- [ ] Additional conversion attribution fields, such as external campaign IDs and client-provided visitor IDs
+- [ ] Long-idle auto-archive rules with review queue and dry-run mode
+- [ ] Additional import adapters when demand is clear, such as Bitly
+
+## 🔵 Backlog — V10 Collaboration And Governance
+
+- [ ] Multi-user accounts
+- [ ] Roles and permissions
+- [ ] Team or workspace separation
+- [ ] API token ownership and rotation policies
+- [ ] Audit log export and retention policies
+- [ ] Per-project access controls
+- [ ] Optional managed hosting, migration services, or support offerings while preserving the free self-hosted edition

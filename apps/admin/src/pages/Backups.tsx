@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, Archive, CheckCircle, Cloud, Download, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Archive, CheckCircle, Cloud, Download, RefreshCw, RotateCcw } from 'lucide-react';
 import { createBackup, downloadBackup, listBackups, type BackupsList } from '../api/backups';
 import { Button } from '../components/ui/Button';
+import { RestoreBackupModal } from '../components/backups/RestoreBackupModal';
 import { useToast } from '../components/ui/Toast';
 import type { Backup } from '@linkora/shared';
 import dayjs from 'dayjs';
@@ -37,6 +38,7 @@ export function Backups() {
   const [data, setData] = useState<BackupsList | null>(null);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [restoreTarget, setRestoreTarget] = useState<Backup | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -161,16 +163,27 @@ export function Backups() {
                     <td className="px-4 py-3 text-xs uppercase text-slate-500">{backup.storage}</td>
                     <td className="px-4 py-3 text-right text-slate-400">{formatBytes(backup.size)}</td>
                     <td className="px-4 py-3"><StatusPill status={backup.status} /></td>
-                    <td className="px-4 py-3 text-right">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        icon={<Download size={14} />}
-                        disabled={backup.status !== 'completed'}
-                        onClick={() => downloadBackup(backup).catch((e) => error(String(e)))}
-                      >
-                        Download
-                      </Button>
+                    <td className="px-4 py-3">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          icon={<RotateCcw size={14} />}
+                          disabled={backup.status !== 'completed'}
+                          onClick={() => setRestoreTarget(backup)}
+                        >
+                          Restore
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          icon={<Download size={14} />}
+                          disabled={backup.status !== 'completed'}
+                          onClick={() => downloadBackup(backup).catch((e) => error(String(e)))}
+                        >
+                          Download
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -179,6 +192,13 @@ export function Backups() {
           </div>
         )}
       </div>
+
+      <RestoreBackupModal
+        backup={restoreTarget}
+        open={!!restoreTarget}
+        onClose={() => setRestoreTarget(null)}
+        onRestored={load}
+      />
     </div>
   );
 }
