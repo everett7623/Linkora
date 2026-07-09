@@ -16,7 +16,7 @@ Last updated: 2026-07-09
 | Documentation   | ✅ Complete      | README, self-hosting guide, analytics guide, backup/reset guide, root runbooks, `docs/` reference set, and V7-V10 long-term roadmap |
 | Deployment      | ✅ Deployed      | Worker and Admin deployed; GitHub Actions deploy workflow added |
 | End-to-end test | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed |
-| Current version | ✅ 0.7.0 | Package versions, Worker fallback, Admin display, examples, docs, changelog, and GitHub Actions variable are synchronized |
+| Current version | ✅ 0.7.1 | Package versions, Worker fallback, Admin display, examples, docs, changelog, and GitHub Actions variable are synchronized |
 | Shlink migration readiness | ✅ Complete | Shlink imports preserve original short domains from `shortUrl`, so a reset followed by `s.y8o.de` migration can keep legacy short URLs |
 
 ---

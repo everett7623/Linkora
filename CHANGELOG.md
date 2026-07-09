@@ -13,6 +13,14 @@ _(none)_
 
 ---
 
+## [0.7.1] — 2026-07-09
+
+### Fixed
+- Shlink API import now fetches all pages by supporting `pagesTotal`, `pagesCount`, and `totalPages`.
+- Shlink API import continues fetching full pages when the API omits total page count, preventing first-page-only migrations.
+
+---
+
 ## [0.7.0] — 2026-07-09
 
 ### Added

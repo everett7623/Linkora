@@ -48,7 +48,7 @@ _(none currently)_
 
 ## ✅ Completed — Project Consistency Cleanup
 
-- [x] Bump Linkora package/runtime version to `0.7.0`
+- [x] Bump Linkora package/runtime version to `0.7.1`
 - [x] Add shared version constant for Worker and Admin displays
 - [x] Update GitHub Actions version resolution and repository `LINKORA_VERSION` variable
 - [x] Update docs, env examples, wrangler example, changelog, and package lock

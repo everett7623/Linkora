@@ -1,1 +1,1 @@
-export const LINKORA_VERSION = '0.7.0';
+export const LINKORA_VERSION = '0.7.1';

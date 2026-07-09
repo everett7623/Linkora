@@ -11,6 +11,7 @@ The Admin Shlink API fetch preview only showed 100 links, which indicates the fe
 - [x] Shlink API pagination now accepts `pagesTotal`, `pagesCount`, and `totalPages`.
 - [x] If page count is missing, fetching continues while pages are full and stops on an empty or short page.
 - [x] Fetch still caps at 5000 items for safety.
+- [x] Bumped Linkora patch version to `0.7.1` for this migration-critical fix.
 
 ## Verification
 
