@@ -70,12 +70,27 @@ async function mockAdminApi(page: Page) {
           default_domain: 'go.example.com',
           default_redirect_type: '302',
           analytics_retention_days: '0',
+          backup_retention_days: '30',
+          health_monitoring_enabled: 'false',
+          health_monitoring_limit: '20',
         })
       );
       return;
     }
     if (path === '/api/settings' && request.method() === 'PUT') {
       await route.fulfill(apiResponse({ message: 'Settings saved' }));
+      return;
+    }
+    if (path === '/api/webhooks/config' && request.method() === 'GET') {
+      await route.fulfill(
+        apiResponse({
+          enabled: false,
+          url: '',
+          events: [],
+          has_secret: false,
+          available_events: ['health_check.failed'],
+        })
+      );
       return;
     }
     if (path === '/api/links' && request.method() === 'GET') {
@@ -128,14 +143,14 @@ async function mockAdminApi(page: Page) {
   });
 }
 
-async function authenticate(page: Page, locale: Locale) {
+async function authenticate(page: Page, locale: Locale, mode: 'simple' | 'advanced' = 'simple') {
   await page.addInitScript(
-    ({ nextLocale }) => {
+    ({ nextLocale, nextMode }) => {
       window.localStorage.setItem('linkora_token', 'smoke-token');
       window.localStorage.setItem('linkora.locale', nextLocale);
-      window.localStorage.setItem('linkora_admin_mode', 'simple');
+      window.localStorage.setItem('linkora_admin_mode', nextMode);
     },
-    { nextLocale: locale }
+    { nextLocale: locale, nextMode: mode }
   );
 }
 
@@ -164,7 +179,7 @@ test('login page switches between English and Simplified Chinese', async ({ page
 });
 
 test('English core workflow renders overview, links, create link, and settings', async ({ page }) => {
-  await authenticate(page, 'en');
+  await authenticate(page, 'en', 'advanced');
   await page.goto('/overview');
 
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
@@ -177,6 +192,7 @@ test('English core workflow renders overview, links, create link, and settings',
 
   await page.getByRole('main').getByRole('link', { name: messages.en.createLink }).click();
   await expect(page.getByRole('heading', { name: messages.en.createLink })).toBeVisible();
+  await expect(page.getByLabel(messages.en.fallbackUrlOptional)).toBeVisible();
   await page.getByLabel(messages.en.destinationUrl).fill('https://example.com/new');
   await page.getByLabel(messages.en.customSlug).fill('new-docs');
   await page.getByRole('button', { name: messages.en.createLink }).click();
@@ -190,7 +206,7 @@ test('English core workflow renders overview, links, create link, and settings',
 });
 
 test('Simplified Chinese core workflow renders localized navigation and forms', async ({ page }) => {
-  await authenticate(page, 'zh-CN');
+  await authenticate(page, 'zh-CN', 'advanced');
   await page.goto('/overview');
 
   await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
@@ -207,6 +223,7 @@ test('Simplified Chinese core workflow renders localized navigation and forms', 
   await page.getByRole('main').getByRole('link', { name: messages['zh-CN'].createLink }).click();
   await expect(page.getByRole('heading', { name: messages['zh-CN'].createLink })).toBeVisible();
   await expect(page.getByLabel(messages['zh-CN'].destinationUrl)).toBeVisible();
+  await expect(page.getByLabel(messages['zh-CN'].fallbackUrlOptional)).toBeVisible();
 
   await page.getByRole('navigation').getByRole('link', { name: messages['zh-CN'].settings }).click();
   await expect(page.getByRole('heading', { name: messages['zh-CN'].settings })).toBeVisible();

@@ -19,6 +19,7 @@ import { jsonOk, jsonError, jsonCreated } from '../utils/response';
 import { generateId, now, sha256 } from '../utils/id';
 import { validateSlug, validateLongUrl, validateDomain } from '@linkora/shared';
 import type { Link, KVCacheEntry } from '@linkora/shared';
+import { normalizeFallbackUrl } from '../links/fallbackUrl';
 
 const links = new Hono<{ Bindings: Env }>();
 
@@ -204,6 +205,9 @@ async function prepareNewLink(
   const passwordHash = await parsePasswordHash(body.password);
   if (passwordHash.error) return { error: passwordHash.error, status: 400 };
 
+  const fallbackUrl = normalizeFallbackUrl(body.fallback_url);
+  if (fallbackUrl.error) return { error: fallbackUrl.error, status: 400 };
+
   const warningEnabled = parseOptionalBoolean(body.warning_enabled);
   if (body.warning_enabled !== undefined && warningEnabled === undefined) {
     return { error: 'warning_enabled must be a boolean', status: 400 };
@@ -239,7 +243,7 @@ async function prepareNewLink(
     max_clicks: maxClicks.value,
     password_hash: passwordHash.value,
     warning_enabled: warningEnabled ?? 0,
-    fallback_url: null,
+    fallback_url: fallbackUrl.value,
     archived: 0,
   };
 
@@ -677,6 +681,12 @@ links.put('/:id', async (c) => {
     const warningEnabled = parseOptionalBoolean(body.warning_enabled);
     if (warningEnabled === undefined) return jsonError('warning_enabled must be a boolean', 400);
     fields.warning_enabled = warningEnabled;
+  }
+
+  if (body.fallback_url !== undefined) {
+    const fallbackUrl = normalizeFallbackUrl(body.fallback_url);
+    if (fallbackUrl.error) return jsonError(fallbackUrl.error, 400);
+    fields.fallback_url = fallbackUrl.value;
   }
 
   if (body.tags !== undefined) {

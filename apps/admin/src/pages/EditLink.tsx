@@ -51,6 +51,7 @@ export function EditLink() {
     password: '',
     clear_password: false,
     warning_enabled: false,
+    fallback_url: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -74,6 +75,7 @@ export function EditLink() {
           password: '',
           clear_password: false,
           warning_enabled: l.warning_enabled === 1,
+          fallback_url: l.fallback_url ?? '',
         });
       })
       .catch(() => error(t('linkLoadFailed')))
@@ -104,6 +106,8 @@ export function EditLink() {
     if (!form.slug.trim()) errs.slug = t('slugRequired');
     else if (!/^[a-zA-Z0-9_-]+$/.test(form.slug)) errs.slug = t('invalidSlug');
     if (form.description.length > 240) errs.description = t('descriptionTooLong');
+    if (form.fallback_url && !/^https?:\/\//i.test(form.fallback_url.trim()))
+      errs.fallback_url = t('invalidHttpUrl');
     if (form.expires_at && Number.isNaN(new Date(form.expires_at).getTime()))
       errs.expires_at = t('invalidDateTime');
     if (form.max_clicks) {
@@ -211,6 +215,7 @@ export function EditLink() {
         expires_at: expiresAt,
         max_clicks: maxClicks,
         warning_enabled: form.warning_enabled ? 1 : 0,
+        fallback_url: form.fallback_url.trim() || null,
       } as const;
       await updateLink(id, {
         ...payload,
@@ -407,6 +412,15 @@ export function EditLink() {
               />
               {t('showWarning')}
             </label>
+
+            <Input
+              label={t('fallbackUrlOptional')}
+              placeholder="https://status.example.com/unavailable"
+              value={form.fallback_url}
+              onChange={(e) => set('fallback_url', e.target.value)}
+              error={errors.fallback_url}
+              hint={t('fallbackUrlHint')}
+            />
 
             <Input
               label={t(link.password_protected ? 'newPasswordOptional' : 'passwordOptional')}

@@ -16,7 +16,7 @@ Last updated: 2026-07-11
 | Documentation              | ✅ Complete            | README, self-hosting guide, analytics guide, backup/reset guide, root runbooks, `docs/` reference set, and V7-V10 long-term roadmap    |
 | Deployment                 | ✅ Deployed            | Worker and Admin deployed; GitHub Actions deploy workflow added                                                                        |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                       |
-| Current version            | ✅ 0.8.4               | V7 opt-in Cron target monitoring and signed anomaly Webhook summaries are available                                                   |
+| Current version            | ✅ 0.8.5               | V7 fallback URL creation/editing is available with shared HTTP(S) validation and no redirect behavior change                          |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`, so a reset followed by `s.y8o.de` migration can keep legacy short URLs |
 
 ---
@@ -215,6 +215,7 @@ Database columns for V2–V4 are already present in `migrations/0001_init.sql` t
 | Factory reset                | ✅ Done | Admin Settings danger zone previews affected rows, requires `RESET LINKORA`, creates optional `pre-reset` R2 backup, clears KV cache, and preserves backup records plus `ADMIN_TOKEN` |
 | Backup retention             | ✅ Done | Advanced Settings configures 1-3650 days (default 30); Cron deletes expired R2 objects before their D1 records and preserves records when R2 is unavailable                           |
 | Target monitoring and alerts | In progress | Opt-in Cron checks 1-50 active links and emits signed anomaly summaries; persisted status history, retry/suppression, and recovery alerts remain pending                         |
+| Fallback URL editing         | ✅ Done | Create/Edit Link can set or clear a validated HTTP(S) fallback URL for monitoring and future workflows; public redirect behavior remains unchanged                                      |
 
 ### V7-V10 Planning
 

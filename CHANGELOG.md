@@ -13,6 +13,20 @@ _(none)_
 
 ---
 
+## [0.8.5] - 2026-07-11
+
+### Added
+
+- Added bilingual fallback URL fields to Create Link and Edit Link in Advanced mode.
+- Added shared Worker validation and normalization for optional HTTP(S) fallback URLs, including explicit clearing support.
+- Added Worker tests for accepted, normalized, cleared, invalid, and unsafe fallback URL values.
+
+### Notes
+
+- Fallback URLs are stored for health monitoring and future workflows; this release does not change public redirect behavior.
+
+---
+
 ## [0.8.4] - 2026-07-11
 
 ### Added

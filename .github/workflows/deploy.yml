@@ -121,7 +121,7 @@ jobs:
             ']',
             '',
             '[vars]',
-            `LINKORA_VERSION = "${env.RESOLVED_LINKORA_VERSION || '0.8.4'}"`,
+            `LINKORA_VERSION = "${env.RESOLVED_LINKORA_VERSION || '0.8.5'}"`,
             '',
             '[[d1_databases]]',
             'binding = "DB"',

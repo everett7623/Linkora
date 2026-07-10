@@ -377,7 +377,7 @@ Deployment experience:
 - [ ] Target status history with last status code, last checked time, and failure count
 - [ ] Target failure alerts through Admin notices and optional webhooks
 - [ ] Alert controls for retry windows, suppression, and recovery notifications
-- [ ] First-class `fallback_url` editing in Create/Edit Link
+- [x] First-class `fallback_url` editing in Create/Edit Link
 - [ ] Custom 404, expired, disabled, and warning page templates
 - [ ] Operations dashboard for backup freshness, monitoring status, failed targets, queue health, and deployment health
 - [ ] Better bot classification for analytics and monitoring noise reduction

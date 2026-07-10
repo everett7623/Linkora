@@ -38,6 +38,7 @@ export function CreateLink() {
     max_clicks: '',
     password: '',
     warning_enabled: false,
+    fallback_url: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -72,6 +73,8 @@ export function CreateLink() {
     else if (!/^https?:\/\//i.test(form.long_url.trim())) errs.long_url = t('invalidHttpUrl');
     if (form.slug && !/^[a-zA-Z0-9_-]+$/.test(form.slug)) errs.slug = t('invalidSlug');
     if (form.description.length > 240) errs.description = t('descriptionTooLong');
+    if (form.fallback_url && !/^https?:\/\//i.test(form.fallback_url.trim()))
+      errs.fallback_url = t('invalidHttpUrl');
     if (form.expires_at && Number.isNaN(new Date(form.expires_at).getTime()))
       errs.expires_at = t('invalidDateTime');
     if (form.max_clicks) {
@@ -179,6 +182,7 @@ export function CreateLink() {
         max_clicks: maxClicks,
         password: form.password.trim() || undefined,
         warning_enabled: form.warning_enabled ? 1 : 0,
+        fallback_url: form.fallback_url.trim() || null,
       });
       success(t('linkCreated', { slug: link.slug }));
       navigate('/links');
@@ -359,6 +363,15 @@ export function CreateLink() {
               />
               {t('showWarning')}
             </label>
+
+            <Input
+              label={t('fallbackUrlOptional')}
+              placeholder="https://status.example.com/unavailable"
+              value={form.fallback_url}
+              onChange={(e) => set('fallback_url', e.target.value)}
+              error={errors.fallback_url}
+              hint={t('fallbackUrlHint')}
+            />
 
             <Input
               label={t('passwordOptional')}
