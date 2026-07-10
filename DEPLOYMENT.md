@@ -2,13 +2,14 @@
 
 This guide deploys Linkora as a self-hosted short link system on Cloudflare.
 
-Linkora uses three public roles:
+Linkora supports one to three public roles. The recommended basic deployment uses one custom Worker domain and the default Pages hostname:
 
 | Domain type | Purpose | Example |
 |-------------|---------|---------|
-| Admin domain | React admin panel | `admin.example.com` |
-| API domain | Stable Worker API for Admin | `go.example.com` |
-| Short-link domain | Public short-link redirects | `s.example.com` |
+| Worker domain | Short links and `/api/*` | `go.example.com` |
+| Admin URL | React admin panel | `linkora-admin.pages.dev` |
+
+Advanced deployments may add a branded `admin.example.com` hostname or split the Worker into `go.example.com` for API access and `s.example.com` for public short links.
 
 Do not hard-code these example domains for another deployment. Replace them with your own domains.
 
@@ -36,18 +37,17 @@ npm install
 
 ## 2. Choose Domains
 
-Pick three hostnames:
+For the basic profile, pick one hostname:
 
 ```txt
-Admin domain:      admin.example.com
-API domain:        go.example.com
-Short-link domain: s.example.com
+Worker domain: go.example.com
+Admin URL:     linkora-admin.pages.dev
 ```
 
-The short-link domain is the domain users will share, for example:
+The Worker domain is the domain users will share, for example:
 
 ```txt
-https://s.example.com/my-link
+https://go.example.com/my-link
 ```
 
 The Admin frontend calls the Worker API through the stable API domain:
@@ -56,7 +56,7 @@ The Admin frontend calls the Worker API through the stable API domain:
 https://go.example.com/api/*
 ```
 
-For a Shlink migration, keep the API domain stable and only cut over the old Shlink short domain after testing:
+For a Shlink migration, optionally use the advanced split-domain profile so the API stays stable while the old short domain is cut over:
 
 ```txt
 Admin domain:      admin.example.com
@@ -157,12 +157,11 @@ compatibility_date = "2024-07-01"
 compatibility_flags = ["nodejs_compat"]
 
 routes = [
-  { pattern = "go.example.com", custom_domain = true },
-  { pattern = "s.example.com", custom_domain = true }
+  { pattern = "go.example.com", custom_domain = true }
 ]
 
 [vars]
-LINKORA_VERSION = "0.7.4"
+LINKORA_VERSION = "0.8.0"
 
 [[d1_databases]]
 binding = "DB"
@@ -175,25 +174,10 @@ binding = "KV"
 id = "<your-kv-namespace-id>"
 preview_id = "<your-kv-preview-id>"
 
-[[r2_buckets]]
-binding = "BACKUPS"
-bucket_name = "linkora-backups"
-preview_bucket_name = "linkora-backups-dev"
-
-[[queues.producers]]
-binding = "VISITS_QUEUE"
-queue = "linkora-visits"
-
-[[queues.consumers]]
-queue = "linkora-visits"
-max_batch_size = 10
-max_batch_timeout = 5
-
-[triggers]
-crons = ["0 18 * * *"]
+# Add R2, Queue, Cron, or more routes only for advanced features.
 ```
 
-Replace `go.example.com` with your stable API domain and `s.example.com` with your public short-link domain.
+Replace `go.example.com` with the hostname selected for short links and the Worker API.
 
 Set the production admin token:
 
@@ -218,7 +202,7 @@ curl https://go.example.com/health
 Expected response:
 
 ```json
-{"success":true,"data":{"status":"ok","name":"Linkora","version":"0.7.4"}}
+{"success":true,"data":{"status":"ok","name":"Linkora","version":"0.8.0"}}
 ```
 
 ---
@@ -259,7 +243,7 @@ On macOS/Linux:
 VITE_API_URL=https://go.example.com npm run build --workspace=apps/admin
 ```
 
-If Admin and Worker are on the same origin, `VITE_API_URL` can be empty. For the recommended three-role setup, set it to the stable API domain.
+Set `VITE_API_URL` to the Worker domain when Admin is hosted on Pages. It can be empty only when Admin and Worker intentionally share the same origin.
 
 ---
 
@@ -332,7 +316,7 @@ Defined in `apps/worker/wrangler.toml`:
 
 | Name | Example |
 |------|---------|
-| `LINKORA_VERSION` | `0.7.4` |
+| `LINKORA_VERSION` | `0.8.0` |
 
 ### Worker Bindings
 
@@ -375,13 +359,13 @@ It deploys Admin only when the Cloudflare secrets and these repository variables
 | `LINKORA_D1_DATABASE_ID` | `<id>` | Generates the D1 binding database ID |
 | `LINKORA_KV_NAMESPACE_ID` | `<id>` | Generates the production KV binding ID |
 | `LINKORA_KV_PREVIEW_ID` | `<id>` | Generates the preview KV binding ID |
-| `LINKORA_R2_BUCKET` | `linkora-backups` | Generates the R2 backup bucket binding |
-| `LINKORA_R2_PREVIEW_BUCKET` | `linkora-backups-dev` | Generates the preview R2 bucket binding |
-| `LINKORA_VISITS_QUEUE` | `linkora-visits` | Generates queue producer and consumer bindings |
+| `LINKORA_R2_BUCKET` | `linkora-backups` | Optional: generates the R2 backup bucket binding |
+| `LINKORA_R2_PREVIEW_BUCKET` | `linkora-backups-dev` | Optional: generates the preview R2 bucket binding |
+| `LINKORA_VISITS_QUEUE` | `linkora-visits` | Optional: generates queue producer and consumer bindings |
 
 If either Cloudflare secret is missing, the workflow skips all Cloudflare migration/deploy steps and leaves manual Wrangler deployment as the source of production updates.
 If either Admin variable is missing, the workflow still builds Admin but skips the Pages deploy so it does not publish a build with the wrong API URL.
-If any Worker config variable is missing, the workflow skips Worker deploy instead of relying on a committed production `wrangler.toml`.
+If any core Worker variable is missing, the workflow skips Worker deploy instead of relying on a committed production `wrangler.toml`. Missing R2 and Queue variables only disable those advanced bindings.
 
 ---
 

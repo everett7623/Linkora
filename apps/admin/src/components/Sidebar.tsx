@@ -1,40 +1,68 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-  LayoutDashboard, Link2, PlusCircle, ArrowLeftRight, BarChart3,
-  Tags, Settings, LogOut, Zap, ClipboardList, Archive, KeyRound,
-  Globe2, Shuffle, Folder, Activity, ShieldCheck,
+  LayoutDashboard,
+  Link2,
+  PlusCircle,
+  ArrowLeftRight,
+  BarChart3,
+  Tags,
+  Settings,
+  LogOut,
+  Zap,
+  ClipboardList,
+  Archive,
+  KeyRound,
+  Globe2,
+  Shuffle,
+  Folder,
+  Activity,
+  ShieldCheck,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useAuth } from '../contexts/AuthContext';
+import { useAdminMode } from '../contexts/AdminModeContext';
+import { isFeatureVisible } from '../utils/adminMode';
+import { useLocale } from '../contexts/LocaleContext';
+import { LanguageSwitcher } from './LanguageSwitcher';
+import type { MessageKey } from '../i18n/messages';
 
 interface NavItem {
   to: string;
   icon: React.ReactNode;
-  label: string;
+  label: MessageKey;
+  advanced?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/overview', icon: <LayoutDashboard size={18} />, label: 'Overview' },
-  { to: '/setup', icon: <ShieldCheck size={18} />, label: 'Setup' },
-  { to: '/links', icon: <Link2 size={18} />, label: 'Links' },
-  { to: '/links/create', icon: <PlusCircle size={18} />, label: 'Create Link' },
-  { to: '/links/bulk-create', icon: <PlusCircle size={18} />, label: 'Bulk Create' },
-  { to: '/analytics', icon: <BarChart3 size={18} />, label: 'Analytics' },
-  { to: '/domains', icon: <Globe2 size={18} />, label: 'Domains' },
-  { to: '/redirect-rules', icon: <Shuffle size={18} />, label: 'Redirect Rules' },
-  { to: '/groups', icon: <Folder size={18} />, label: 'Groups' },
-  { to: '/health-checks', icon: <Activity size={18} />, label: 'Health Checks' },
-  { to: '/tags', icon: <Tags size={18} />, label: 'Tags' },
-  { to: '/import-export', icon: <ArrowLeftRight size={18} />, label: 'Import / Export' },
-  { to: '/backups', icon: <Archive size={18} />, label: 'Backups' },
-  { to: '/api-tokens', icon: <KeyRound size={18} />, label: 'API Tokens' },
-  { to: '/audit-logs', icon: <ClipboardList size={18} />, label: 'Audit Logs' },
-  { to: '/settings', icon: <Settings size={18} />, label: 'Settings' },
+  { to: '/overview', icon: <LayoutDashboard size={18} />, label: 'overview' },
+  { to: '/setup', icon: <ShieldCheck size={18} />, label: 'setup' },
+  { to: '/links', icon: <Link2 size={18} />, label: 'links' },
+  { to: '/links/create', icon: <PlusCircle size={18} />, label: 'createLink' },
+  {
+    to: '/links/bulk-create',
+    icon: <PlusCircle size={18} />,
+    label: 'bulkCreate',
+    advanced: true,
+  },
+  { to: '/analytics', icon: <BarChart3 size={18} />, label: 'analytics', advanced: true },
+  { to: '/domains', icon: <Globe2 size={18} />, label: 'domains', advanced: true },
+  { to: '/redirect-rules', icon: <Shuffle size={18} />, label: 'redirectRules', advanced: true },
+  { to: '/groups', icon: <Folder size={18} />, label: 'groups', advanced: true },
+  { to: '/health-checks', icon: <Activity size={18} />, label: 'healthChecks', advanced: true },
+  { to: '/tags', icon: <Tags size={18} />, label: 'tags' },
+  { to: '/import-export', icon: <ArrowLeftRight size={18} />, label: 'importExport' },
+  { to: '/backups', icon: <Archive size={18} />, label: 'backups', advanced: true },
+  { to: '/api-tokens', icon: <KeyRound size={18} />, label: 'apiTokens', advanced: true },
+  { to: '/audit-logs', icon: <ClipboardList size={18} />, label: 'auditLogs', advanced: true },
+  { to: '/settings', icon: <Settings size={18} />, label: 'settings' },
 ];
 
 export function Sidebar() {
   const { logout } = useAuth();
+  const { isAdvanced, mode, setMode } = useAdminMode();
+  const { t } = useLocale();
+  const visibleItems = NAV_ITEMS.filter((item) => isFeatureVisible(mode, item.advanced));
 
   return (
     <aside className="flex flex-col w-60 shrink-0 bg-slate-900 border-r border-slate-800 h-full">
@@ -48,7 +76,7 @@ export function Sidebar() {
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto scrollbar-thin">
-        {NAV_ITEMS.map((item) => (
+        {visibleItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
@@ -62,19 +90,32 @@ export function Sidebar() {
             }
           >
             {item.icon}
-            {item.label}
+            {t(item.label)}
           </NavLink>
         ))}
       </nav>
 
       {/* Footer */}
       <div className="px-3 py-4 border-t border-slate-800">
+        <div className="mb-2 px-3">
+          <LanguageSwitcher compact />
+        </div>
+        <button
+          type="button"
+          onClick={() => setMode(isAdvanced ? 'simple' : 'advanced')}
+          className="mb-1 flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-100"
+        >
+          <span>{t('interfaceMode')}</span>
+          <span className="rounded bg-slate-800 px-2 py-1 text-[10px] uppercase text-brand-400">
+            {t(mode)}
+          </span>
+        </button>
         <button
           onClick={logout}
           className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors"
         >
           <LogOut size={18} />
-          Logout
+          {t('logout')}
         </button>
       </div>
     </aside>

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { login as apiLogin, checkMe } from '../api/auth';
+import { login as apiLogin, checkMe, type AuthResult } from '../api/auth';
 import { getApiBaseOverride, getBuildApiBase, setApiBaseOverride } from '../api/client';
 
 interface AuthState {
@@ -8,7 +8,7 @@ interface AuthState {
 }
 
 interface AuthContextValue extends AuthState {
-  login: (token: string) => Promise<boolean>;
+  login: (token: string) => Promise<AuthResult>;
   logout: () => void;
 }
 
@@ -23,28 +23,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setState({ authenticated: false, loading: false });
       return;
     }
-    checkMe().then(async (ok) => {
+    checkMe().then(async (result) => {
       const overrideApiBase = getApiBaseOverride();
       const buildApiBase = getBuildApiBase();
-      if (!ok && overrideApiBase && buildApiBase && overrideApiBase !== buildApiBase) {
-        setApiBaseOverride('');
-        ok = await checkMe();
+      if (
+        result === 'unreachable' &&
+        overrideApiBase &&
+        buildApiBase &&
+        overrideApiBase !== buildApiBase
+      ) {
+        const buildResult = await checkMe(buildApiBase);
+        if (buildResult === 'authenticated') {
+          setApiBaseOverride('');
+          result = buildResult;
+        }
       }
-      setState({ authenticated: ok, loading: false });
-      if (!ok) localStorage.removeItem('linkora_token');
+      setState({ authenticated: result === 'authenticated', loading: false });
+      if (result === 'unauthorized') localStorage.removeItem('linkora_token');
     });
   }, []);
 
-  const login = useCallback(async (token: string): Promise<boolean> => {
+  const login = useCallback(async (token: string): Promise<AuthResult> => {
     localStorage.setItem('linkora_token', token);
-    const ok = await apiLogin(token);
-    if (ok) {
+    const result = await apiLogin(token);
+    if (result === 'authenticated') {
       setState({ authenticated: true, loading: false });
     } else {
       localStorage.removeItem('linkora_token');
       setState({ authenticated: false, loading: false });
     }
-    return ok;
+    return result;
   }, []);
 
   const logout = useCallback(() => {
@@ -53,9 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ ...state, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ ...state, login, logout }}>{children}</AuthContext.Provider>
   );
 }
 

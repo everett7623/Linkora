@@ -1,28 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import {
-  AlertTriangle,
-  Archive,
-  CheckCircle2,
-  ExternalLink,
-  Globe2,
-  Link2,
-  RefreshCw,
-  Settings,
-  ShieldCheck,
-  XCircle,
-} from 'lucide-react';
+import { ExternalLink, RefreshCw } from 'lucide-react';
 import { listBackups, type BackupsList } from '../api/backups';
 import { listDomains } from '../api/domains';
 import { getOverview } from '../api/links';
 import { getSettings } from '../api/settings';
-import { getAdminApiOrigin } from '../api/system';
-import { Badge } from '../components/ui/Badge';
+import { getAdminApiOrigin, getDeploymentCapabilities } from '../api/system';
 import { Button } from '../components/ui/Button';
 import { useToast } from '../components/ui/Toast';
-import type { Domain, Link as LinkType } from '@linkora/shared';
-
-type CheckStatus = 'ok' | 'warn' | 'fail';
+import type { DeploymentCapabilities, Domain, Link as LinkType } from '@linkora/shared';
+import { useAdminMode } from '../contexts/AdminModeContext';
+import { SetupQuickLinks } from '../components/setup/SetupQuickLinks';
+import { SetupCheckList, SetupSummary, type SetupCheck } from '../components/setup/SetupStatus';
+import { AdvancedCapabilitiesPanel } from '../components/setup/AdvancedCapabilitiesPanel';
+import { FirstRunWizard } from '../components/setup/FirstRunWizard';
+import { useLocale } from '../contexts/LocaleContext';
 
 interface SetupState {
   settings: Record<string, string>;
@@ -35,14 +26,7 @@ interface SetupState {
     recentLinks: LinkType[];
     topLinks: LinkType[];
   } | null;
-}
-
-interface SetupCheck {
-  title: string;
-  detail: string;
-  status: CheckStatus;
-  actionLabel?: string;
-  actionTo?: string;
+  capabilities: DeploymentCapabilities | null;
 }
 
 const emptyState: SetupState = {
@@ -50,70 +34,27 @@ const emptyState: SetupState = {
   domains: [],
   backups: null,
   overview: null,
+  capabilities: null,
 };
-
-function statusVariant(status: CheckStatus): 'green' | 'yellow' | 'red' {
-  if (status === 'ok') return 'green';
-  if (status === 'warn') return 'yellow';
-  return 'red';
-}
-
-function StatusIcon({ status }: { status: CheckStatus }) {
-  if (status === 'ok') return <CheckCircle2 size={17} className="text-emerald-400" />;
-  if (status === 'warn') return <AlertTriangle size={17} className="text-yellow-400" />;
-  return <XCircle size={17} className="text-red-400" />;
-}
-
-function CheckRow({ check }: { check: SetupCheck }) {
-  return (
-    <div className="flex flex-wrap items-center gap-3 border-b border-slate-800 px-5 py-4 last:border-0">
-      <StatusIcon status={check.status} />
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <h3 className="text-sm font-medium text-slate-100">{check.title}</h3>
-          <Badge variant={statusVariant(check.status)}>{check.status}</Badge>
-        </div>
-        <p className="mt-0.5 text-sm text-slate-400">{check.detail}</p>
-      </div>
-      {check.actionTo && check.actionLabel && (
-        <Link
-          to={check.actionTo}
-          className="inline-flex items-center justify-center rounded-lg bg-slate-700 px-3 py-1.5 text-xs font-medium text-slate-100 transition-colors hover:bg-slate-600"
-        >
-          {check.actionLabel}
-        </Link>
-      )}
-    </div>
-  );
-}
-
-function Metric({ label, value, icon }: { label: string; value: string; icon: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-sm text-slate-400">{label}</span>
-        {icon}
-      </div>
-      <div className="mt-3 truncate text-lg font-semibold text-slate-100">{value}</div>
-    </div>
-  );
-}
 
 export function Setup() {
   const { error } = useToast();
+  const { isAdvanced } = useAdminMode();
+  const { locale, t } = useLocale();
   const [data, setData] = useState<SetupState>(emptyState);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [settings, domains, backups, overview] = await Promise.all([
+      const [settings, domains, backups, overview, capabilities] = await Promise.all([
         getSettings(),
         listDomains(),
         listBackups(),
         getOverview(),
+        getDeploymentCapabilities(),
       ]);
-      setData({ settings, domains, backups, overview });
+      setData({ settings, domains, backups, overview, capabilities });
     } catch (e) {
       error(String(e));
     } finally {
@@ -121,7 +62,9 @@ export function Setup() {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const apiOrigin = getAdminApiOrigin();
   const defaultDomain = data.settings.default_domain ?? '';
@@ -131,63 +74,76 @@ export function Setup() {
   const checks = useMemo<SetupCheck[]>(() => {
     const defaultDomainKnown = !!defaultDomain.trim();
     const catalogHasDefault = !!defaultCatalogDomain;
-    const defaultDomainRegistered = !defaultDomainKnown
-      || data.domains.some((domain) => domain.domain === defaultDomain && domain.status === 'active');
+    const defaultDomainRegistered =
+      !defaultDomainKnown ||
+      data.domains.some((domain) => domain.domain === defaultDomain && domain.status === 'active');
     const apiReady = !!data.overview;
 
-    return [
+    const coreChecks: SetupCheck[] = [
       {
-        title: 'Worker API',
-        detail: apiReady
-          ? 'Authenticated API requests are responding'
-          : 'Authenticated API requests are not responding',
+        title: t('workerApi'),
+        detail: t(apiReady ? 'apiResponding' : 'apiNotResponding'),
         status: apiReady ? 'ok' : 'fail',
       },
       {
-        title: 'Admin API origin',
+        title: t('adminApiOrigin'),
         detail: apiOrigin,
-        status: apiOrigin.startsWith('https://') || apiOrigin.startsWith('http://localhost') ? 'ok' : 'warn',
+        status:
+          apiOrigin.startsWith('https://') || apiOrigin.startsWith('http://localhost')
+            ? 'ok'
+            : 'warn',
       },
       {
-        title: 'Default short domain',
-        detail: defaultDomainKnown ? defaultDomain : 'No default domain saved',
+        title: t('defaultShortDomain'),
+        detail: defaultDomainKnown ? defaultDomain : t('noDefaultDomain'),
         status: defaultDomainKnown ? (defaultDomainRegistered ? 'ok' : 'warn') : 'warn',
-        actionLabel: 'Open Settings',
+        actionLabel: t('openSettings'),
         actionTo: '/settings',
       },
       {
-        title: 'Domain catalog',
-        detail: activeDomains.length > 0
-          ? `${activeDomains.length.toLocaleString()} active domain${activeDomains.length === 1 ? '' : 's'}`
-          : 'No active domains registered',
-        status: activeDomains.length > 0 && catalogHasDefault ? 'ok' : 'warn',
-        actionLabel: 'Open Domains',
-        actionTo: '/domains',
-      },
-      {
-        title: 'R2 backups',
-        detail: data.backups?.r2Configured
-          ? `${data.backups.total.toLocaleString()} backup record${data.backups.total === 1 ? '' : 's'}`
-          : 'R2 backup binding is not available',
-        status: data.backups?.r2Configured ? 'ok' : 'warn',
-        actionLabel: 'Open Backups',
-        actionTo: '/backups',
-      },
-      {
-        title: 'First link',
-        detail: data.overview && data.overview.totalLinks > 0
-          ? `${data.overview.totalLinks.toLocaleString()} link${data.overview.totalLinks === 1 ? '' : 's'} created`
-          : 'No links created yet',
+        title: t('firstLink'),
+        detail:
+          data.overview && data.overview.totalLinks > 0
+            ? t('linksCreated', { count: data.overview.totalLinks.toLocaleString(locale) })
+            : t('noLinks'),
         status: data.overview && data.overview.totalLinks > 0 ? 'ok' : 'warn',
-        actionLabel: data.overview && data.overview.totalLinks > 0 ? 'Open Links' : 'Create Link',
+        actionLabel: t(data.overview && data.overview.totalLinks > 0 ? 'openLinks' : 'createLink'),
         actionTo: data.overview && data.overview.totalLinks > 0 ? '/links' : '/links/create',
       },
     ];
-  }, [activeDomains.length, apiOrigin, data, defaultCatalogDomain, defaultDomain]);
-
-  const okCount = checks.filter((check) => check.status === 'ok').length;
-  const failCount = checks.filter((check) => check.status === 'fail').length;
-  const warnCount = checks.filter((check) => check.status === 'warn').length;
+    if (!isAdvanced) return coreChecks;
+    return [
+      ...coreChecks,
+      {
+        title: t('domainCatalog'),
+        detail:
+          activeDomains.length > 0
+            ? t('activeDomains', { count: activeDomains.length.toLocaleString(locale) })
+            : t('noActiveDomains'),
+        status: activeDomains.length > 0 && catalogHasDefault ? 'ok' : 'warn',
+        actionLabel: t('openDomains'),
+        actionTo: '/domains',
+      },
+      {
+        title: t('r2Backups'),
+        detail: data.backups?.r2Configured
+          ? t('backupRecords', { count: data.backups.total.toLocaleString(locale) })
+          : t('r2Unavailable'),
+        status: data.backups?.r2Configured ? 'ok' : 'warn',
+        actionLabel: t('openBackups'),
+        actionTo: '/backups',
+      },
+    ];
+  }, [
+    activeDomains.length,
+    apiOrigin,
+    data,
+    defaultCatalogDomain,
+    defaultDomain,
+    isAdvanced,
+    locale,
+    t,
+  ]);
 
   if (loading) {
     return (
@@ -201,12 +157,17 @@ export function Setup() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Setup</h1>
-          <p className="mt-0.5 text-sm text-slate-400">Instance status for this deployment</p>
+          <h1 className="text-2xl font-bold text-slate-100">{t('setup')}</h1>
+          <p className="mt-0.5 text-sm text-slate-400">{t('instanceStatus')}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="secondary" icon={<RefreshCw size={15} />} onClick={load} loading={loading}>
-            Refresh
+          <Button
+            variant="secondary"
+            icon={<RefreshCw size={15} />}
+            onClick={load}
+            loading={loading}
+          >
+            {t('refresh')}
           </Button>
           <a
             href="https://github.com/everett7623/Linkora/blob/main/docs/SELF_HOSTING.md"
@@ -214,44 +175,33 @@ export function Setup() {
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-700 px-4 py-2 text-sm font-medium text-slate-100 shadow-sm transition-colors hover:bg-slate-600"
           >
-            <ExternalLink size={15} /> Self-hosting
+            <ExternalLink size={15} /> {t('selfHosting')}
           </a>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-4">
-        <Metric label="Checks OK" value={okCount.toLocaleString()} icon={<CheckCircle2 size={17} className="text-emerald-400" />} />
-        <Metric label="Warnings" value={warnCount.toLocaleString()} icon={<AlertTriangle size={17} className="text-yellow-400" />} />
-        <Metric label="Failures" value={failCount.toLocaleString()} icon={<XCircle size={17} className="text-red-400" />} />
-        <Metric label="API Origin" value={apiOrigin} icon={<ShieldCheck size={17} className="text-brand-400" />} />
-      </div>
+      <FirstRunWizard
+        apiReady={Boolean(data.overview)}
+        defaultDomain={defaultDomain}
+        totalLinks={data.overview?.totalLinks ?? 0}
+        isAdvanced={isAdvanced}
+      />
 
-      <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
-        {checks.map((check) => <CheckRow key={check.title} check={check} />)}
-      </div>
+      <SetupSummary checks={checks} apiOrigin={apiOrigin} />
 
-      <div className="grid gap-4 md:grid-cols-4">
-        <Link to="/settings" className="rounded-xl border border-slate-800 bg-slate-900 p-5 transition-colors hover:border-slate-700">
-          <Settings size={18} className="text-brand-400" />
-          <div className="mt-3 text-sm font-medium text-slate-100">Settings</div>
-          <div className="mt-1 text-xs text-slate-500">{defaultDomain || 'No default domain'}</div>
-        </Link>
-        <Link to="/domains" className="rounded-xl border border-slate-800 bg-slate-900 p-5 transition-colors hover:border-slate-700">
-          <Globe2 size={18} className="text-emerald-400" />
-          <div className="mt-3 text-sm font-medium text-slate-100">Domains</div>
-          <div className="mt-1 text-xs text-slate-500">{activeDomains.length.toLocaleString()} active</div>
-        </Link>
-        <Link to="/links/create" className="rounded-xl border border-slate-800 bg-slate-900 p-5 transition-colors hover:border-slate-700">
-          <Link2 size={18} className="text-yellow-400" />
-          <div className="mt-3 text-sm font-medium text-slate-100">Create Link</div>
-          <div className="mt-1 text-xs text-slate-500">{data.overview?.totalLinks.toLocaleString() ?? '0'} total</div>
-        </Link>
-        <Link to="/backups" className="rounded-xl border border-slate-800 bg-slate-900 p-5 transition-colors hover:border-slate-700">
-          <Archive size={18} className="text-purple-400" />
-          <div className="mt-3 text-sm font-medium text-slate-100">Backups</div>
-          <div className="mt-1 text-xs text-slate-500">{data.backups?.r2Configured ? 'R2 ready' : 'R2 unavailable'}</div>
-        </Link>
-      </div>
+      <SetupCheckList checks={checks} />
+
+      {isAdvanced && data.capabilities && (
+        <AdvancedCapabilitiesPanel capabilities={data.capabilities} />
+      )}
+
+      <SetupQuickLinks
+        isAdvanced={isAdvanced}
+        defaultDomain={defaultDomain}
+        activeDomainCount={activeDomains.length}
+        totalLinks={data.overview?.totalLinks ?? 0}
+        r2Configured={data.backups?.r2Configured ?? false}
+      />
     </div>
   );
 }

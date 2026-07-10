@@ -6,16 +6,14 @@ main = "src/index.ts"
 compatibility_date = "2026-07-08"
 compatibility_flags = ["nodejs_compat"]
 
-# Worker custom domains. Use one stable API domain for Admin and one public
-# short-link domain for users when you want to keep Admin/API independent from
-# short-domain migrations.
+# Basic deployment: use one domain for both short links and /api/*.
+# Advanced deployment: add a second domain when API isolation or migration requires it.
 routes = [
-  { pattern = "<your-api-domain>", custom_domain = true },
   { pattern = "<your-short-domain>", custom_domain = true }
 ]
 
 [vars]
-LINKORA_VERSION = "0.7.4"
+LINKORA_VERSION = "0.8.0"
 
 [[d1_databases]]
 binding = "DB"
@@ -28,23 +26,10 @@ binding = "KV"
 id = "<your-kv-namespace-id>"
 preview_id = "<your-kv-preview-id>"
 
-[[r2_buckets]]
-binding = "BACKUPS"
-bucket_name = "linkora-backups"
-preview_bucket_name = "linkora-backups-dev"
-
-[[queues.producers]]
-binding = "VISITS_QUEUE"
-queue = "linkora-visits"
-
-[[queues.consumers]]
-queue = "linkora-visits"
-max_batch_size = 10
-max_batch_timeout = 5
-
-[triggers]
-# Cloudflare cron uses UTC. 18:00 UTC is 02:00 in Asia/Shanghai.
-crons = ["0 18 * * *"]
+# Advanced optional bindings are documented in docs/SELF_HOSTING.md:
+# - R2 enables scheduled backups and one-click restore.
+# - Queue enables asynchronous visit processing.
+# - Additional custom domains enable separate API and public short-link hosts.
 
 # Secrets are set outside this file:
 #   cd apps/worker

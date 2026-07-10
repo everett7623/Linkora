@@ -1,5 +1,7 @@
 import React from 'react';
 import { clsx } from 'clsx';
+import { useLocale } from '../../contexts/LocaleContext';
+import type { MessageKey } from '../../i18n/messages';
 
 type BadgeVariant = 'green' | 'red' | 'yellow' | 'blue' | 'gray' | 'purple';
 
@@ -10,11 +12,11 @@ interface BadgeProps {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  green:  'bg-emerald-500/15 text-emerald-400 ring-emerald-500/20',
-  red:    'bg-red-500/15 text-red-400 ring-red-500/20',
+  green: 'bg-emerald-500/15 text-emerald-400 ring-emerald-500/20',
+  red: 'bg-red-500/15 text-red-400 ring-red-500/20',
   yellow: 'bg-yellow-500/15 text-yellow-400 ring-yellow-500/20',
-  blue:   'bg-blue-500/15 text-blue-400 ring-blue-500/20',
-  gray:   'bg-slate-500/15 text-slate-400 ring-slate-500/20',
+  blue: 'bg-blue-500/15 text-blue-400 ring-blue-500/20',
+  gray: 'bg-slate-500/15 text-slate-400 ring-slate-500/20',
   purple: 'bg-purple-500/15 text-purple-400 ring-purple-500/20',
 };
 
@@ -33,11 +35,20 @@ export function Badge({ variant = 'gray', children, className }: BadgeProps) {
 }
 
 export function StatusBadge({ status }: { status: string }) {
+  const { t } = useLocale();
   const map: Record<string, BadgeVariant> = {
     active: 'green',
     disabled: 'red',
     expired: 'yellow',
     archived: 'gray',
   };
-  return <Badge variant={map[status] ?? 'gray'}>{status}</Badge>;
+  const labels: Record<string, MessageKey> = {
+    active: 'activeStatus',
+    disabled: 'disabledStatus',
+    expired: 'expiredStatus',
+    archived: 'archivedStatus',
+  };
+  return (
+    <Badge variant={map[status] ?? 'gray'}>{labels[status] ? t(labels[status]) : status}</Badge>
+  );
 }

@@ -9,6 +9,8 @@ import { buildShortUrl } from '../utils/shortUrl';
 import type { Link as LinkType } from '@linkora/shared';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/zh-cn';
+import { useLocale } from '../contexts/LocaleContext';
 
 dayjs.extend(relativeTime);
 
@@ -33,10 +35,11 @@ function StatCard({ label, value, icon, color }: StatCardProps) {
 
 function LinkRow({ link, defaultDomain }: { link: LinkType; defaultDomain: string }) {
   const { success } = useToast();
+  const { locale, t } = useLocale();
   const shortUrl = buildShortUrl(link, defaultDomain);
   const copy = () => {
     navigator.clipboard.writeText(shortUrl);
-    success('Copied to clipboard');
+    success(t('copiedClipboard'));
   };
 
   return (
@@ -49,15 +52,28 @@ function LinkRow({ link, defaultDomain }: { link: LinkType; defaultDomain: strin
         <p className="text-xs text-slate-500 truncate mt-0.5">{link.long_url}</p>
       </div>
       <div className="text-right shrink-0">
-        <div className="text-sm font-medium text-slate-300">{link.clicks.toLocaleString()} clicks</div>
-        <div className="text-xs text-slate-600">{dayjs(link.created_at).fromNow()}</div>
+        <div className="text-sm font-medium text-slate-300">
+          {t('clicksCount', { count: link.clicks.toLocaleString(locale) })}
+        </div>
+        <div className="text-xs text-slate-600">
+          {dayjs(link.created_at)
+            .locale(locale === 'zh-CN' ? 'zh-cn' : 'en')
+            .fromNow()}
+        </div>
       </div>
       <div className="flex gap-1 shrink-0">
-        <button onClick={copy} className="p-1.5 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-slate-800 transition-colors">
+        <button
+          onClick={copy}
+          className="p-1.5 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-slate-800 transition-colors"
+        >
           <Copy size={14} />
         </button>
-        <a href={shortUrl} target="_blank" rel="noopener noreferrer"
-          className="p-1.5 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-slate-800 transition-colors">
+        <a
+          href={shortUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-1.5 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-slate-800 transition-colors"
+        >
           <ExternalLink size={14} />
         </a>
       </div>
@@ -76,6 +92,7 @@ export function Overview() {
   const [defaultDomain, setDefaultDomain] = useState('');
   const [loading, setLoading] = useState(true);
   const { error } = useToast();
+  const { t } = useLocale();
 
   useEffect(() => {
     Promise.all([getOverview(), getSettings()])
@@ -83,7 +100,7 @@ export function Overview() {
         setStats(overview);
         setDefaultDomain(settings.default_domain ?? '');
       })
-      .catch(() => error('Failed to load overview stats'))
+      .catch(() => error(t('overviewLoadFailed')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -99,33 +116,33 @@ export function Overview() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Overview</h1>
-          <p className="text-sm text-slate-400 mt-0.5">Your Linkora dashboard</p>
+          <h1 className="text-2xl font-bold text-slate-100">{t('overview')}</h1>
+          <p className="text-sm text-slate-400 mt-0.5">{t('dashboardSubtitle')}</p>
         </div>
         <Link
           to="/links/create"
           className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-sm font-medium rounded-lg transition-colors"
         >
-          <Plus size={16} /> Create Link
+          <Plus size={16} /> {t('createLink')}
         </Link>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard
-          label="Total Links"
+          label={t('totalLinks')}
           value={stats?.totalLinks ?? 0}
           icon={<Link2 size={16} className="text-brand-400" />}
           color="bg-brand-500/10"
         />
         <StatCard
-          label="Total Clicks"
+          label={t('totalClicks')}
           value={stats?.totalClicks ?? 0}
           icon={<MousePointerClick size={16} className="text-emerald-400" />}
           color="bg-emerald-500/10"
         />
         <StatCard
-          label="Today's Clicks"
+          label={t('todayClicks')}
           value={stats?.todayClicks ?? 0}
           icon={<TrendingUp size={16} className="text-yellow-400" />}
           color="bg-yellow-500/10"
@@ -136,26 +153,42 @@ export function Overview() {
         {/* Recent Links */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-slate-300">Recently Created</h2>
-            <Link to="/links" className="text-xs text-brand-400 hover:text-brand-300">View all →</Link>
+            <h2 className="text-sm font-semibold text-slate-300">{t('recentlyCreated')}</h2>
+            <Link to="/links" className="text-xs text-brand-400 hover:text-brand-300">
+              {t('viewAll')}
+            </Link>
           </div>
           {stats?.recentLinks.length === 0 ? (
-            <p className="text-sm text-slate-500 py-4 text-center">No links yet. <Link to="/links/create" className="text-brand-400">Create one →</Link></p>
+            <p className="text-sm text-slate-500 py-4 text-center">
+              {t('noLinksYet')}{' '}
+              <Link to="/links/create" className="text-brand-400">
+                {t('createOne')}
+              </Link>
+            </p>
           ) : (
-            stats?.recentLinks.map((l) => <LinkRow key={l.id} link={l} defaultDomain={defaultDomain} />)
+            stats?.recentLinks.map((l) => (
+              <LinkRow key={l.id} link={l} defaultDomain={defaultDomain} />
+            ))
           )}
         </div>
 
         {/* Top Links */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-slate-300">Top Links by Clicks</h2>
-            <Link to="/links?sort=clicks_desc" className="text-xs text-brand-400 hover:text-brand-300">View all →</Link>
+            <h2 className="text-sm font-semibold text-slate-300">{t('topLinks')}</h2>
+            <Link
+              to="/links?sort=clicks_desc"
+              className="text-xs text-brand-400 hover:text-brand-300"
+            >
+              {t('viewAll')}
+            </Link>
           </div>
           {stats?.topLinks.length === 0 ? (
-            <p className="text-sm text-slate-500 py-4 text-center">No clicks recorded yet.</p>
+            <p className="text-sm text-slate-500 py-4 text-center">{t('noClicksYet')}</p>
           ) : (
-            stats?.topLinks.map((l) => <LinkRow key={l.id} link={l} defaultDomain={defaultDomain} />)
+            stats?.topLinks.map((l) => (
+              <LinkRow key={l.id} link={l} defaultDomain={defaultDomain} />
+            ))
           )}
         </div>
       </div>

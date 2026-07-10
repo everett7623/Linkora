@@ -4,6 +4,7 @@ import { getWebhookConfig, testWebhook, updateWebhookConfig } from '../../api/we
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { useToast } from '../ui/Toast';
+import { useLocale } from '../../contexts/LocaleContext';
 
 function eventLabel(event: string): string {
   return event
@@ -14,6 +15,7 @@ function eventLabel(event: string): string {
 
 export function WebhookSettingsPanel() {
   const { success, error } = useToast();
+  const { t } = useLocale();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
@@ -38,7 +40,7 @@ export function WebhookSettingsPanel() {
           available_events: config.available_events,
         });
       })
-      .catch(() => error('Failed to load webhook settings'))
+      .catch(() => error(t('webhookLoadFailed')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -73,7 +75,7 @@ export function WebhookSettingsPanel() {
         events: updated.events,
         available_events: updated.available_events,
       });
-      success('Webhook settings saved');
+      success(t('webhookSaved'));
     } catch (e) {
       error(String(e));
     } finally {
@@ -85,7 +87,7 @@ export function WebhookSettingsPanel() {
     setTesting(true);
     try {
       await testWebhook();
-      success('Webhook test delivered');
+      success(t('webhookDelivered'));
     } catch (e) {
       error(String(e));
     } finally {
@@ -102,8 +104,13 @@ export function WebhookSettingsPanel() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-slate-800 bg-slate-900 p-6">
-      <h2 className="border-b border-slate-800 pb-1 text-sm font-semibold uppercase tracking-wider text-slate-400">Webhooks</h2>
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-5 rounded-xl border border-slate-800 bg-slate-900 p-6"
+    >
+      <h2 className="border-b border-slate-800 pb-1 text-sm font-semibold uppercase tracking-wider text-slate-400">
+        {t('webhooks')}
+      </h2>
 
       <label className="flex items-center gap-3 text-sm text-slate-300">
         <input
@@ -112,25 +119,33 @@ export function WebhookSettingsPanel() {
           onChange={(e) => setField('enabled', e.target.checked)}
           className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-brand-600 focus:ring-brand-500"
         />
-        Enable webhook delivery
+        {t('enableWebhook')}
       </label>
 
-      <Input label="Webhook URL" placeholder="https://example.com/linkora/webhook" value={webhook.url} onChange={(e) => setField('url', e.target.value)} />
+      <Input
+        label={t('webhookUrl')}
+        placeholder="https://example.com/linkora/webhook"
+        value={webhook.url}
+        onChange={(e) => setField('url', e.target.value)}
+      />
 
       <Input
-        label="Signing Secret"
+        label={t('signingSecret')}
         type="password"
-        placeholder={webhook.has_secret ? 'Secret already configured' : 'Optional'}
+        placeholder={webhook.has_secret ? t('secretConfigured') : t('optional')}
         value={webhook.secret}
         onChange={(e) => setField('secret', e.target.value)}
-        hint={webhook.has_secret ? 'Leave blank to keep the current secret.' : undefined}
+        hint={webhook.has_secret ? t('keepSecret') : undefined}
       />
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-300">Events</label>
+        <label className="text-sm font-medium text-slate-300">{t('webhookEvents')}</label>
         <div className="grid gap-2 sm:grid-cols-2">
           {webhook.available_events.map((event) => (
-            <label key={event} className="flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300">
+            <label
+              key={event}
+              className="flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300"
+            >
               <input
                 type="checkbox"
                 checked={webhook.events.includes(event)}
@@ -145,10 +160,17 @@ export function WebhookSettingsPanel() {
 
       <div className="flex flex-wrap gap-3 pt-2">
         <Button type="submit" icon={<Save size={15} />} loading={saving}>
-          Save Webhook
+          {t('saveWebhook')}
         </Button>
-        <Button type="button" variant="secondary" icon={<Send size={15} />} loading={testing} disabled={!webhook.url.trim() || saving} onClick={handleTest}>
-          Send Test
+        <Button
+          type="button"
+          variant="secondary"
+          icon={<Send size={15} />}
+          loading={testing}
+          disabled={!webhook.url.trim() || saving}
+          onClick={handleTest}
+        >
+          {t('sendTest')}
         </Button>
       </div>
     </form>

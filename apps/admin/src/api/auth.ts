@@ -1,6 +1,8 @@
-import { apiFetch } from './client';
+import { ApiError, apiFetch } from './client';
 
-export async function login(token: string): Promise<boolean> {
+export type AuthResult = 'authenticated' | 'unauthorized' | 'unreachable';
+
+export async function login(token: string): Promise<AuthResult> {
   try {
     const res = await apiFetch<{ success: boolean; data: { authenticated: boolean } }>(
       '/api/auth/login',
@@ -10,17 +12,21 @@ export async function login(token: string): Promise<boolean> {
         body: JSON.stringify({ token }),
       }
     );
-    return res.success && res.data?.authenticated === true;
-  } catch {
-    return false;
+    return res.success && res.data?.authenticated === true ? 'authenticated' : 'unauthorized';
+  } catch (error) {
+    return error instanceof ApiError && (error.status === 400 || error.status === 401)
+      ? 'unauthorized'
+      : 'unreachable';
   }
 }
 
-export async function checkMe(): Promise<boolean> {
+export async function checkMe(apiBase?: string): Promise<AuthResult> {
   try {
-    const res = await apiFetch<{ success: boolean }>('/api/auth/me');
-    return res.success;
-  } catch {
-    return false;
+    const res = await apiFetch<{ success: boolean }>('/api/auth/me', {}, apiBase);
+    return res.success ? 'authenticated' : 'unauthorized';
+  } catch (error) {
+    return error instanceof ApiError && (error.status === 401 || error.status === 403)
+      ? 'unauthorized'
+      : 'unreachable';
   }
 }

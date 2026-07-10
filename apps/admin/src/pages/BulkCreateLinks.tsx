@@ -5,6 +5,7 @@ import { bulkCreateLinks, type CreateLinkPayload } from '../api/links';
 import { Button } from '../components/ui/Button';
 import { Textarea } from '../components/ui/Input';
 import { useToast } from '../components/ui/Toast';
+import { useLocale } from '../contexts/LocaleContext';
 
 function parseCsvLine(line: string): string[] {
   const parts: string[] = [];
@@ -51,22 +52,35 @@ function parseLine(line: string): CreateLinkPayload | null {
     long_url: longUrl,
     slug: slug || undefined,
     title: title || undefined,
-    tags: tags ? tags.split(/[|;]/).map((tag) => tag.trim()).filter(Boolean) : undefined,
+    tags: tags
+      ? tags
+          .split(/[|;]/)
+          .map((tag) => tag.trim())
+          .filter(Boolean)
+      : undefined,
   };
 }
 
 export function BulkCreateLinks() {
   const navigate = useNavigate();
   const { success, error } = useToast();
+  const { t } = useLocale();
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Awaited<ReturnType<typeof bulkCreateLinks>> | null>(null);
 
-  const rows = useMemo(() => content.split('\n').map(parseLine).filter((row): row is CreateLinkPayload => row !== null), [content]);
+  const rows = useMemo(
+    () =>
+      content
+        .split('\n')
+        .map(parseLine)
+        .filter((row): row is CreateLinkPayload => row !== null),
+    [content]
+  );
 
   const handleSubmit = async () => {
     if (rows.length === 0) {
-      error('Enter at least one link');
+      error(t('enterOneLink'));
       return;
     }
 
@@ -74,7 +88,7 @@ export function BulkCreateLinks() {
     try {
       const response = await bulkCreateLinks(rows);
       setResult(response);
-      success(`Created ${response.success} links`);
+      success(t('createdLinks', { count: response.success }));
     } catch (e) {
       error(String(e));
     } finally {
@@ -85,31 +99,43 @@ export function BulkCreateLinks() {
   return (
     <div className="max-w-4xl space-y-6">
       <div className="flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors"
+        >
           <ArrowLeft size={18} />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Bulk Create Links</h1>
-          <p className="text-sm text-slate-400 mt-0.5">Create up to 100 links from pasted rows</p>
+          <h1 className="text-2xl font-bold text-slate-100">{t('bulkCreateLinks')}</h1>
+          <p className="text-sm text-slate-400 mt-0.5">{t('bulkCreateHelp')}</p>
         </div>
       </div>
 
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-5">
         <Textarea
-          label="Rows"
+          label={t('rows')}
           rows={12}
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder={'https://example.com/page,my-slug,Title,tag1|tag2\nhttps://example.com/another,,Another title,marketing'}
-          hint="CSV-style rows: long_url, slug, title, tags. Slug is optional; tags use | or ; between names."
+          placeholder={
+            'https://example.com/page,my-slug,Title,tag1|tag2\nhttps://example.com/another,,Another title,marketing'
+          }
+          hint={t('rowsHint')}
         />
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-slate-500">{rows.length} parsed rows</p>
+          <p className="text-sm text-slate-500">{t('parsedRows', { count: rows.length })}</p>
           <div className="flex gap-3">
-            <Button type="button" variant="secondary" onClick={() => navigate('/links')}>Cancel</Button>
-            <Button type="button" onClick={handleSubmit} loading={loading} icon={<PlusCircle size={16} />}>
-              Create Links
+            <Button type="button" variant="secondary" onClick={() => navigate('/links')}>
+              {t('cancel')}
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSubmit}
+              loading={loading}
+              icon={<PlusCircle size={16} />}
+            >
+              {t('createLinks')}
             </Button>
           </div>
         </div>
@@ -118,9 +144,15 @@ export function BulkCreateLinks() {
       {result && (
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
           <div className="flex flex-wrap gap-4 text-sm">
-            <span className="text-slate-300">Total: {result.total}</span>
-            <span className="text-emerald-400">Created: {result.success}</span>
-            <span className="text-red-400">Failed: {result.failed}</span>
+            <span className="text-slate-300">
+              {t('totalLabel')}: {result.total}
+            </span>
+            <span className="text-emerald-400">
+              {t('createdLabel')}: {result.success}
+            </span>
+            <span className="text-red-400">
+              {t('failed')}: {result.failed}
+            </span>
           </div>
           <div className="max-h-72 overflow-y-auto scrollbar-thin divide-y divide-slate-800">
             {result.results.map((row) => (
@@ -131,7 +163,9 @@ export function BulkCreateLinks() {
                 ) : (
                   <span className="flex-1 text-red-400">{row.error}</span>
                 )}
-                <span className={row.status === 'created' ? 'text-emerald-400' : 'text-red-400'}>{row.status}</span>
+                <span className={row.status === 'created' ? 'text-emerald-400' : 'text-red-400'}>
+                  {row.status}
+                </span>
               </div>
             ))}
           </div>

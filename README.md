@@ -42,13 +42,13 @@ For a first-time deployment, start with [docs/SELF_HOSTING.md](docs/SELF_HOSTING
 
 ## Tech Stack
 
-| Layer       | Technology                            |
-|-------------|---------------------------------------|
-| Backend     | Cloudflare Workers + TypeScript       |
-| Database    | Cloudflare D1 (SQLite)                |
-| Cache       | Cloudflare KV                         |
-| Frontend    | React + Vite + Tailwind CSS           |
-| Shared      | TypeScript monorepo (`packages/shared`) |
+| Layer    | Technology                              |
+| -------- | --------------------------------------- |
+| Backend  | Cloudflare Workers + TypeScript         |
+| Database | Cloudflare D1 (SQLite)                  |
+| Cache    | Cloudflare KV                           |
+| Frontend | React + Vite + Tailwind CSS             |
+| Shared   | TypeScript monorepo (`packages/shared`) |
 
 ## Project Structure
 
@@ -165,15 +165,26 @@ wrangler secret put ADMIN_TOKEN
 
 See `.env.example`, `apps/worker/.dev.vars.example`, and `apps/admin/.env.example` for all required variables.
 
-| Variable           | Description                             |
-|--------------------|-----------------------------------------|
-| `ADMIN_TOKEN`      | Bearer token for admin API auth         |
-| `LINKORA_VERSION`  | Current version string (optional)       |
-| `VITE_API_URL`     | API base URL for admin frontend         |
+| Variable          | Description                       |
+| ----------------- | --------------------------------- |
+| `ADMIN_TOKEN`     | Bearer token for admin API auth   |
+| `LINKORA_VERSION` | Current version string (optional) |
+| `VITE_API_URL`    | API base URL for admin frontend   |
 
 ## Deploy
 
 Pushing to `main` can deploy automatically through GitHub Actions after the Cloudflare secrets in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) are configured.
+
+### Quick deployment (recommended)
+
+Start with one custom hostname for both short links and `/api/*`. The Admin can use the default Cloudflare Pages hostname, so no separate Admin or API custom domain is required.
+
+```txt
+go.example.com          Short links + Worker API
+linkora-admin.pages.dev Admin UI
+```
+
+The basic profile requires Worker, D1, KV, Pages, and `ADMIN_TOKEN`. R2 backups, Queues, Cron, multiple Worker domains, and a branded Admin domain are optional advanced features.
 
 For a reusable open-source setup, configure these GitHub repository values:
 
@@ -190,15 +201,14 @@ Variables:
 LINKORA_API_URL=https://go.example.com
 LINKORA_PAGES_PROJECT=linkora-admin
 LINKORA_WORKER_NAME=linkora-worker
-LINKORA_WORKER_DOMAINS=go.example.com,s.example.com
+LINKORA_SHORT_DOMAIN=go.example.com
 LINKORA_D1_DATABASE_NAME=linkora-db
 LINKORA_D1_DATABASE_ID=<your-d1-database-id>
 LINKORA_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKORA_KV_PREVIEW_ID=<your-kv-preview-id>
-LINKORA_R2_BUCKET=linkora-backups
-LINKORA_R2_PREVIEW_BUCKET=linkora-backups-dev
-LINKORA_VISITS_QUEUE=linkora-visits
 ```
+
+For the advanced profile, optionally add `LINKORA_WORKER_DOMAINS`, R2 bucket variables, and `LINKORA_VISITS_QUEUE` as described in [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md).
 
 ### Worker
 
@@ -221,13 +231,14 @@ For production builds where Admin and Worker use separate domains, set `VITE_API
 VITE_API_URL=https://go.example.com npm run build --workspace=apps/admin
 ```
 
-For migrations, keep `go.example.com` as the stable Admin API domain and add the public short-link domain, such as `s.example.com`, through `LINKORA_WORKER_DOMAINS`. This keeps the Admin reachable while the short-link domain is being cut over.
+For migrations or strict operational isolation, keep `go.example.com` as the stable Admin API domain and add the public short-link domain, such as `s.example.com`, through `LINKORA_WORKER_DOMAINS`. Three public roles are an advanced option, not a basic deployment requirement.
 
 ## Shlink Import
 
 See [docs/IMPORT_SHLINK.md](docs/IMPORT_SHLINK.md) for the full import guide.
 
 Quick steps:
+
 1. Export from Shlink, or enter Shlink URL + API key in Linkora Admin.
 2. In Linkora Admin → **Import / Export** → upload file or click **Fetch Shlink**.
 3. Select source: **Shlink** when uploading manually.
@@ -241,6 +252,7 @@ Original `shortCode` values are preserved as slugs. Conflicts are skipped by def
 See [docs/MIGRATION_FROM_SHLINK.md](docs/MIGRATION_FROM_SHLINK.md).
 
 **Summary:**
+
 1. Deploy Linkora to `go.example.com` as the stable API domain
 2. Import Shlink data and verify old slugs work
 3. Run for 1–2 weeks in parallel
@@ -257,18 +269,18 @@ The Admin includes an **Overview** dashboard, a filterable **Analytics** dashboa
 
 ## Roadmap
 
-| Version | Focus |
-|---------|-------|
-| **V1** ✅ | Stable redirects, CRUD, Shlink import, basic stats, export |
-| **V2** ✅ | Bulk ops, expiry, password, QR codes, Sink/YOURLS/Dub import, audit logs |
-| **V3** ✅ | Advanced analytics, auto R2 backup, API tokens, multi-domain, Webhooks, Queues, Cron |
-| **V4** ✅ | Smart redirects (country/device/browser/referer/language/A-B), local smart suggestions, UTM templates, campaigns, health checks |
-| **V5** ✅ | Open-source packaging, self-hosting docs, template config, reusable deploy workflow |
-| **V6** ✅ | Analytics depth: per-link pages, filters, UTM, A/B targets, conversions, reports, retention |
-| **V7** In Progress | Operations: one-click restore, backup retention, target monitoring, alerts, custom status pages |
-| **V8** Planned | Usability: Simple / Advanced mode, feature visibility, language switching, i18n |
-| **V9** Planned | Growth: bulk URL/UTM operations, public stats, notes, OpenGraph previews, scheduled reports |
-| **V10** Future | Collaboration: multi-user, roles, teams, governance, optional managed services |
+| Version            | Focus                                                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| **V1** ✅          | Stable redirects, CRUD, Shlink import, basic stats, export                                                                      |
+| **V2** ✅          | Bulk ops, expiry, password, QR codes, Sink/YOURLS/Dub import, audit logs                                                        |
+| **V3** ✅          | Advanced analytics, auto R2 backup, API tokens, multi-domain, Webhooks, Queues, Cron                                            |
+| **V4** ✅          | Smart redirects (country/device/browser/referer/language/A-B), local smart suggestions, UTM templates, campaigns, health checks |
+| **V5** ✅          | Open-source packaging, self-hosting docs, template config, reusable deploy workflow                                             |
+| **V6** ✅          | Analytics depth: per-link pages, filters, UTM, A/B targets, conversions, reports, retention                                     |
+| **V7** In Progress | Operations: one-click restore, backup retention, target monitoring, alerts, custom status pages                                 |
+| **V8** In Progress | Usability: Simple / Advanced mode, required first-run wizard, and default-English EN/ZH foundation implemented                  |
+| **V9** Planned     | Growth: bulk URL/UTM operations, public stats, notes, OpenGraph previews, scheduled reports                                     |
+| **V10** Future     | Collaboration: multi-user, roles, teams, governance, optional managed services                                                  |
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for details.
 

@@ -164,7 +164,7 @@ Planned:
 
 ## V8: Usability Modes And Internationalization
 
-Status: planned.
+Status: in progress. Simple / Advanced mode and the first English / Simplified Chinese Admin foundation are implemented.
 
 Goal: keep the product approachable for simple users while preserving advanced tools for power users.
 
@@ -175,9 +175,10 @@ Planned:
 - Advanced mode exposes the full operator interface
 - Instance-level feature visibility settings for optional modules
 - Per-browser or per-admin preference for sidebar density, table density, and advanced panels
-- First-run setup wizard for new self-hosters, separate from the current Setup status page
-- Language switcher with English and Simplified Chinese first
-- i18n foundation for labels, navigation, validation messages, empty states, errors, and documentation links
+- Done: required first-run setup wizard verifies API readiness, one default short domain, and the first link from real instance state
+- In progress: language switcher with English as the default and Simplified Chinese as an option
+- In progress: i18n foundation covers core and advanced link management, deployment, operations, audit, backup/restore, and analytics workflows
+- Done: public 404, disabled, expired, password, and warning pages support English and Simplified Chinese without changing redirect semantics
 - Locale-aware date, time zone, number, and CSV/export formatting settings
 - Help text that explains advanced fields only when advanced mode is enabled
 

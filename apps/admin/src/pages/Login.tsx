@@ -6,6 +6,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/Button';
 import { useToast } from '../components/ui/Toast';
 import { getApiBase, getBuildApiBase, normalizeApiBase, setApiBaseOverride } from '../api/client';
+import { useLocale } from '../contexts/LocaleContext';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 export function Login() {
   const [token, setToken] = useState('');
@@ -15,23 +17,26 @@ export function Login() {
   const { login } = useAuth();
   const { error } = useToast();
   const navigate = useNavigate();
+  const { t } = useLocale();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token.trim()) return;
     const normalizedApiOrigin = normalizeApiBase(apiOrigin);
     if (apiOrigin.trim() && !normalizedApiOrigin) {
-      error('Invalid API origin. Use a full URL like https://go.example.com.');
+      error(t('invalidOrigin'));
       return;
     }
     setApiBaseOverride(apiOrigin);
     setLoading(true);
-    const ok = await login(token.trim());
+    const result = await login(token.trim());
     setLoading(false);
-    if (ok) {
+    if (result === 'authenticated') {
       navigate('/overview', { replace: true });
+    } else if (result === 'unreachable') {
+      error(t('unreachableApi'));
     } else {
-      error('Invalid token. Please check your ADMIN_TOKEN.');
+      error(t('invalidToken'));
     }
   };
 
@@ -44,21 +49,24 @@ export function Login() {
             <Zap size={28} className="text-white" />
           </div>
           <h1 className="text-2xl font-bold text-slate-100">Linkora Admin</h1>
-          <p className="text-sm text-slate-400 mt-1">Enter your admin token to continue</p>
+          <p className="text-sm text-slate-400 mt-1">{t('adminSubtitle')}</p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl"
+        >
           <div className="mb-5">
             <label className="block text-sm font-medium text-slate-300 mb-1.5">
-              Admin Token
+              {t('adminToken')}
             </label>
             <div className="relative">
               <input
                 type={showToken ? 'text' : 'password'}
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
-                placeholder="Enter your admin token"
+                placeholder={t('enterToken')}
                 autoFocus
                 className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 pr-10 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-colors"
               />
@@ -74,7 +82,7 @@ export function Login() {
 
           <div className="mb-5">
             <label className="block text-sm font-medium text-slate-300 mb-1.5">
-              API Origin
+              {t('apiOrigin')}
             </label>
             <input
               type="url"
@@ -84,18 +92,28 @@ export function Login() {
               className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-colors"
             />
             <p className="mt-1.5 text-xs text-slate-500">
-              {getBuildApiBase() ? `Default: ${getBuildApiBase()}` : 'Default: same origin'}
+              {getBuildApiBase()
+                ? t('defaultValue', { value: getBuildApiBase() })
+                : t('defaultSameOrigin')}
             </p>
           </div>
 
-          <Button type="submit" className="w-full justify-center" loading={loading} disabled={!token.trim()}>
-            Sign In
+          <Button
+            type="submit"
+            className="w-full justify-center"
+            loading={loading}
+            disabled={!token.trim()}
+          >
+            {t('signIn')}
           </Button>
         </form>
 
         <p className="text-center text-xs text-slate-600 mt-6">
-          Linkora v{LINKORA_VERSION} — Self-hosted link management
+          Linkora v{LINKORA_VERSION} — {t('selfHosted')}
         </p>
+        <div className="mx-auto mt-4 w-44">
+          <LanguageSwitcher />
+        </div>
       </div>
     </div>
   );

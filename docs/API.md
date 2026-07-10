@@ -46,6 +46,29 @@ Redirect analytics are recorded asynchronously. Stats failures must not block re
 
 Admin login still uses `ADMIN_TOKEN`. API tokens are for API requests and are managed from the Admin panel.
 
+## System Capabilities
+
+| Method | Path | Scope | Description |
+|--------|------|-------|-------------|
+| `GET` | `/api/system/capabilities` | `read` | Report core and optional deployment capabilities |
+
+Response data has a stable shape:
+
+```json
+{
+  "profile": "advanced",
+  "core": { "d1": true, "kv": true },
+  "advanced": {
+    "r2Backups": true,
+    "visitQueue": true,
+    "configuredDomains": 2,
+    "multipleDomains": true
+  }
+}
+```
+
+The endpoint reports runtime bindings and the domain catalog. It does not expose resource IDs, bucket names, queue names, secrets, or Cloudflare account metadata.
+
 ## API Tokens
 
 | Method | Path | Description |

@@ -2,13 +2,14 @@
 
 This guide is for people who fork or clone Linkora and want to deploy it to their own Cloudflare account.
 
-Linkora is free and open source first. The recommended setup uses two hostnames:
+Linkora is free and open source first. The recommended basic setup requires one custom hostname:
 
 | Hostname | Purpose | Example |
 |----------|---------|---------|
-| Admin domain | React admin panel | `admin.example.com` |
-| API domain | Stable Worker API for Admin | `go.example.com` |
-| Short-link domain | Public short-link redirects | `s.example.com` |
+| Worker domain | Short-link redirects and `/api/*` | `go.example.com` |
+| Admin URL | React Admin on the default Pages hostname | `linkora-admin.pages.dev` |
+
+Advanced deployments can add `admin.example.com` for a branded Admin, or split `go.example.com` and `s.example.com` when migrations or API isolation require separate Worker domains.
 
 Use your own domains everywhere below. Do not copy another deployment's domains, resource IDs, or secrets.
 
@@ -33,18 +34,16 @@ Pick values before creating resources:
 Worker name:       linkora-worker
 D1 database:       linkora-db
 KV namespace:      KV
-R2 bucket:         linkora-backups
-R2 preview bucket: linkora-backups-dev
-Queue:             linkora-visits
 Pages project:     linkora-admin
-Admin domain:      admin.example.com
-API domain:        go.example.com
-Short-link domain: s.example.com
+Worker domain:     go.example.com
+Admin URL:         linkora-admin.pages.dev
 ```
+
+Advanced optional names include the `linkora-backups` R2 buckets, `linkora-visits` Queue, a branded Admin domain, and a separate public short-link domain.
 
 For the easiest first deployment, keep the resource names above. You can rename them, but then you must update `apps/worker/wrangler.toml`, GitHub repository variables, and any direct Wrangler commands that include the resource name.
 
-Always keep the binding names in `wrangler.toml` unchanged:
+When optional advanced bindings are enabled, keep their binding names unchanged:
 
 ```txt
 DB
@@ -68,14 +67,14 @@ npx wrangler kv namespace create KV
 npx wrangler kv namespace create KV --preview
 ```
 
-Create R2 buckets:
+Advanced optional: create R2 buckets for scheduled backups and one-click restore:
 
 ```bash
 npx wrangler r2 bucket create linkora-backups
 npx wrangler r2 bucket create linkora-backups-dev
 ```
 
-Create the visit queue:
+Advanced optional: create the visit queue for asynchronous analytics:
 
 ```bash
 npx wrangler queues create linkora-visits --message-retention-period-secs 60
@@ -99,8 +98,7 @@ Edit `apps/worker/wrangler.toml` and replace:
 
 | Placeholder | Value |
 |-------------|-------|
-| `<your-api-domain>` | Your stable API hostname, for example `go.example.com` |
-| `<your-short-domain>` | Your public short-link hostname, for example `s.example.com` |
+| `<your-short-domain>` | Your short-link and API hostname, for example `go.example.com` |
 | `<your-d1-database-id>` | The `database_id` returned by `wrangler d1 create` |
 | `<your-kv-namespace-id>` | The production KV namespace ID |
 | `<your-kv-preview-id>` | The preview KV namespace ID |
@@ -152,7 +150,7 @@ curl https://go.example.com/health
 Expected shape:
 
 ```json
-{"success":true,"data":{"status":"ok","name":"Linkora","version":"0.7.4"}}
+{"success":true,"data":{"status":"ok","name":"Linkora","version":"0.8.0"}}
 ```
 
 ## 7. Build and Deploy Admin
@@ -196,22 +194,25 @@ Add repository variables:
 LINKORA_API_URL=https://go.example.com
 LINKORA_PAGES_PROJECT=linkora-admin
 LINKORA_WORKER_NAME=linkora-worker
-LINKORA_WORKER_DOMAINS=go.example.com,s.example.com
+LINKORA_SHORT_DOMAIN=go.example.com
 LINKORA_D1_DATABASE_NAME=linkora-db
 LINKORA_D1_DATABASE_ID=<your-d1-database-id>
 LINKORA_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKORA_KV_PREVIEW_ID=<your-kv-preview-id>
-LINKORA_R2_BUCKET=linkora-backups
-LINKORA_R2_PREVIEW_BUCKET=linkora-backups-dev
-LINKORA_VISITS_QUEUE=linkora-visits
 ```
 
 Optional variables:
 
 ```txt
-LINKORA_VERSION=0.7.4
+LINKORA_VERSION=0.8.0
 LINKORA_COMPATIBILITY_DATE=2026-07-08
+LINKORA_WORKER_DOMAINS=go.example.com,s.example.com
+LINKORA_R2_BUCKET=linkora-backups
+LINKORA_R2_PREVIEW_BUCKET=linkora-backups-dev
+LINKORA_VISITS_QUEUE=linkora-visits
 ```
+
+`LINKORA_WORKER_DOMAINS` replaces the single-domain fallback when set. Configure both R2 variables together. Queue and R2 are independent advanced capabilities; leaving them unset no longer blocks the basic Worker deployment.
 
 The workflow still type-checks and builds when Cloudflare secrets are missing, but Cloudflare migration and deployment are skipped. Worker deployment uses these variables to generate `apps/worker/wrangler.toml` during CI, so your Cloudflare resource IDs do not need to be committed.
 
@@ -232,6 +233,8 @@ Log in with `ADMIN_TOKEN`, then open Settings and set:
 | Default Redirect Type | `302` |
 
 Then open **Setup** in the sidebar. It summarizes whether the Admin can reach the API, whether a default short domain is configured, whether the domain catalog has an active default, whether R2 backups are available, and whether the first link has been created.
+
+The Admin starts in **Simple mode**. Switch to **Advanced mode** from the sidebar or Settings to reveal Analytics, Domains, Redirect Rules, R2 Backups, API Tokens, Audit Logs, and other operator tools. This interface switch does not create Cloudflare resources.
 
 ## 10. Smoke Test
 

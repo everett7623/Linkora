@@ -2,22 +2,22 @@
 
 Quick reference for what is done, what is in progress, and what is not started.
 
-Last updated: 2026-07-09
+Last updated: 2026-07-10
 
 ---
 
 ## Overall Status
 
-| Layer           | Status         | Notes                                          |
-|-----------------|----------------|------------------------------------------------|
-| Worker backend  | ✅ Code complete | Local type-check passing; deployed on Cloudflare Workers |
-| Admin frontend  | ✅ Code complete | Production build passing; deployed on Cloudflare Pages |
-| Database schema | ✅ Complete      | V6 analytics migration applied in production through GitHub Actions      |
-| Documentation   | ✅ Complete      | README, self-hosting guide, analytics guide, backup/reset guide, root runbooks, `docs/` reference set, and V7-V10 long-term roadmap |
-| Deployment      | ✅ Deployed      | Worker and Admin deployed; GitHub Actions deploy workflow added |
-| End-to-end test | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed |
-| Current version | ✅ 0.7.4 | Package versions, Worker fallback, Admin display, examples, docs, changelog, and GitHub Actions variable are synchronized |
-| Shlink migration readiness | ✅ Complete | Shlink imports preserve original short domains from `shortUrl`, so a reset followed by `s.y8o.de` migration can keep legacy short URLs |
+| Layer                      | Status                 | Notes                                                                                                                                  |
+| -------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Worker backend             | ✅ Code complete       | Local type-check passing; deployed on Cloudflare Workers                                                                               |
+| Admin frontend             | 🟡 i18n in progress    | Default-English EN/ZH covers Admin workflows and public status pages; browser smoke and locale formatting remain                       |
+| Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                    |
+| Documentation              | ✅ Complete            | README, self-hosting guide, analytics guide, backup/reset guide, root runbooks, `docs/` reference set, and V7-V10 long-term roadmap    |
+| Deployment                 | ✅ Deployed            | Worker and Admin deployed; GitHub Actions deploy workflow added                                                                        |
+| End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                       |
+| Current version            | ✅ 0.8.0               | Simple / Advanced mode, required first-run wizard, default-English EN/ZH foundation, and one-domain deployment are synchronized        |
+| Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`, so a reset followed by `s.y8o.de` migration can keep legacy short URLs |
 
 ---
 
@@ -26,67 +26,67 @@ Last updated: 2026-07-09
 ### Core
 
 | Feature                         | Code | Tested |
-|---------------------------------|------|--------|
-| `GET /health`                   | ✅    | ✅     |
-| `GET /:slug` redirect           | ✅    | ✅     |
-| KV cache (read / write / clear) | ✅    | ✅     |
-| D1 fallback on KV miss          | ✅    | ✅     |
-| 404 HTML page                   | ✅    | ✅     |
-| Disabled link HTML page         | ✅    | ✅     |
-| Async visit recording           | ✅    | ✅     |
+| ------------------------------- | ---- | ------ |
+| `GET /health`                   | ✅   | ✅     |
+| `GET /:slug` redirect           | ✅   | ✅     |
+| KV cache (read / write / clear) | ✅   | ✅     |
+| D1 fallback on KV miss          | ✅   | ✅     |
+| 404 HTML page                   | ✅   | ✅     |
+| Disabled link HTML page         | ✅   | ✅     |
+| Async visit recording           | ✅   | ✅     |
 
 ### Admin API
 
-| Endpoint                          | Code | Tested |
-|-----------------------------------|------|--------|
-| `POST /api/auth/login`            | ✅    | ✅     |
-| `GET  /api/auth/me`               | ✅    | ✅     |
-| `GET    /api/links`               | ✅    | ✅     |
-| `POST   /api/links`               | ✅    | ✅     |
-| `GET    /api/links/:id`           | ✅    | ✅     |
-| `PUT    /api/links/:id`           | ✅    | ✅     |
-| `DELETE /api/links/:id`           | ✅    | ✅     |
-| `POST   /api/links/:id/disable`   | ✅    | ✅     |
-| `POST   /api/links/:id/enable`    | ✅    | ✅     |
-| `POST   /api/links/:id/archive`   | ✅    | ✅     |
-| `POST   /api/links/:id/restore`   | ✅    | ✅     |
-| `GET    /api/tags`                | ✅    | ✅     |
-| `POST   /api/tags`                | ✅    | ✅     |
-| `PUT    /api/tags/:id`            | ✅    | ✅     |
-| `DELETE /api/tags/:id`            | ✅    | ✅     |
-| `GET    /api/settings`            | ✅    | ✅     |
-| `PUT    /api/settings`            | ✅    | ✅     |
-| `GET    /api/export/links.csv`    | ✅    | ✅     |
-| `GET    /api/export/links.json`   | ✅    | ✅     |
-| `GET    /api/export/backup.json`  | ✅    | ✅     |
-| `GET    /api/export/visits.csv`   | ✅    | ✅     |
-| Pre-import backup download         | ✅    | ⏳     |
-| `POST   /api/import/preview`      | ✅    | ✅     |
-| `POST   /api/import/confirm`      | ✅    | ✅     |
-| `GET    /api/import/jobs`         | ✅    | ✅     |
+| Endpoint                         | Code | Tested |
+| -------------------------------- | ---- | ------ |
+| `POST /api/auth/login`           | ✅   | ✅     |
+| `GET  /api/auth/me`              | ✅   | ✅     |
+| `GET    /api/links`              | ✅   | ✅     |
+| `POST   /api/links`              | ✅   | ✅     |
+| `GET    /api/links/:id`          | ✅   | ✅     |
+| `PUT    /api/links/:id`          | ✅   | ✅     |
+| `DELETE /api/links/:id`          | ✅   | ✅     |
+| `POST   /api/links/:id/disable`  | ✅   | ✅     |
+| `POST   /api/links/:id/enable`   | ✅   | ✅     |
+| `POST   /api/links/:id/archive`  | ✅   | ✅     |
+| `POST   /api/links/:id/restore`  | ✅   | ✅     |
+| `GET    /api/tags`               | ✅   | ✅     |
+| `POST   /api/tags`               | ✅   | ✅     |
+| `PUT    /api/tags/:id`           | ✅   | ✅     |
+| `DELETE /api/tags/:id`           | ✅   | ✅     |
+| `GET    /api/settings`           | ✅   | ✅     |
+| `PUT    /api/settings`           | ✅   | ✅     |
+| `GET    /api/export/links.csv`   | ✅   | ✅     |
+| `GET    /api/export/links.json`  | ✅   | ✅     |
+| `GET    /api/export/backup.json` | ✅   | ✅     |
+| `GET    /api/export/visits.csv`  | ✅   | ✅     |
+| Pre-import backup download       | ✅   | ⏳     |
+| `POST   /api/import/preview`     | ✅   | ✅     |
+| `POST   /api/import/confirm`     | ✅   | ✅     |
+| `GET    /api/import/jobs`        | ✅   | ✅     |
 
 ### Import Adapters
 
-| Adapter                  | Code | Tested |
-|--------------------------|------|--------|
-| Shlink JSON              | ✅    | ✅     |
-| Shlink JSONL             | ✅    | ⏳     |
-| Shlink CSV               | ✅    | ⏳     |
-| Generic CSV              | ✅    | ⏳     |
-| Generic JSON             | ✅    | ⏳     |
+| Adapter      | Code | Tested |
+| ------------ | ---- | ------ |
+| Shlink JSON  | ✅   | ✅     |
+| Shlink JSONL | ✅   | ⏳     |
+| Shlink CSV   | ✅   | ⏳     |
+| Generic CSV  | ✅   | ⏳     |
+| Generic JSON | ✅   | ⏳     |
 
 ### Admin Frontend Pages
 
 | Page            | Code | Tested |
-|-----------------|------|--------|
-| Login           | ✅    | ✅     |
-| Overview        | ✅    | ✅     |
-| Links list      | ✅    | ✅     |
-| Create Link     | ✅    | ✅     |
-| Edit Link       | ✅    | ✅     |
-| Import / Export | ✅    | ✅     |
-| Settings        | ✅    | ✅     |
-| Tags            | ✅    | ⏳     |
+| --------------- | ---- | ------ |
+| Login           | ✅   | ✅     |
+| Overview        | ✅   | ✅     |
+| Links list      | ✅   | ✅     |
+| Create Link     | ✅   | ✅     |
+| Edit Link       | ✅   | ✅     |
+| Import / Export | ✅   | ✅     |
+| Settings        | ✅   | ✅     |
+| Tags            | ✅   | ⏳     |
 
 ---
 
@@ -95,131 +95,132 @@ Last updated: 2026-07-09
 1. Revoke or rotate the Shlink API key used during migration
 2. Cut over the legacy short domain from Shlink to Linkora when ready
 3. Continue V7 operations work: backup retention, target monitoring, and failure alerts
-4. Start V8 usability work: Simple / Advanced mode and English / Simplified Chinese language switching
+4. Continue V8 English / Simplified Chinese coverage after completing the required first-run deployment wizard
 
 ---
 
 ## Known Issues
 
-| Issue                                | Status  | Notes                                            |
-|--------------------------------------|---------|--------------------------------------------------|
-| Browser plugin instability           | ℹ️ Not blocking | API and production smoke checks completed; browser plugin not required for remaining cutover |
-| Admin API on `workers.dev` unavailable | ℹ️ Not blocking | Admin should be built with the configured Worker/API origin |
-| Wrangler v3 update warning           | ℹ️ Not blocking | Local checks passed; consider upgrade separately |
-| KV stale active entry after admin changes | ✅ Fixed | Redirect handler now re-checks D1 on KV hits and preserves active KV only if D1 is unavailable |
+| Issue                                               | Status          | Notes                                                                                           |
+| --------------------------------------------------- | --------------- | ----------------------------------------------------------------------------------------------- |
+| Browser plugin instability                          | ℹ️ Not blocking | API and production smoke checks completed; browser plugin not required for remaining cutover    |
+| Admin API on `workers.dev` unavailable              | ℹ️ Not blocking | Admin should be built with the configured Worker/API origin                                     |
+| Wrangler v3 update warning                          | ℹ️ Not blocking | Local checks passed; consider upgrade separately                                                |
+| KV stale active entry after admin changes           | ✅ Fixed        | Redirect handler now re-checks D1 on KV hits and preserves active KV only if D1 is unavailable  |
+| API Origin override cleared after transient failure | ✅ Fixed        | Admin only persists fallback to the build-time API after that origin authenticates successfully |
 
 ## Migration Status
 
-| Source | Status | Notes |
-|--------|--------|-------|
-| Shlink API | ✅ Imported | 195 links imported into production Linkora, 0 failed, 0 skipped |
-| Duplicate import safety | ✅ Verified | Re-preview after import reports 195 conflicts and 0 valid imports |
-| Imported redirect spot-check | ✅ Verified | Sample slugs return 302 from production Worker |
-| Legacy short-domain cutover plan | ✅ Prepared | See `CUTOVER.md`; cutover not executed yet |
+| Source                           | Status      | Notes                                                             |
+| -------------------------------- | ----------- | ----------------------------------------------------------------- |
+| Shlink API                       | ✅ Imported | 195 links imported into production Linkora, 0 failed, 0 skipped   |
+| Duplicate import safety          | ✅ Verified | Re-preview after import reports 195 conflicts and 0 valid imports |
+| Imported redirect spot-check     | ✅ Verified | Sample slugs return 302 from production Worker                    |
+| Legacy short-domain cutover plan | ✅ Prepared | See `CUTOVER.md`; cutover not executed yet                        |
 
 ---
 
 ## Version Status
 
-| Version | Status      |
-|---------|-------------|
-| V2      | ✅ Done |
-| V3      | ✅ Done |
-| V4      | ✅ Done |
-| V5      | ✅ Done |
-| V6      | ✅ Done |
-| V7      | In Progress |
-| V8      | Planned |
-| V9      | Planned |
+| Version | Status          |
+| ------- | --------------- |
+| V2      | ✅ Done         |
+| V3      | ✅ Done         |
+| V4      | ✅ Done         |
+| V5      | ✅ Done         |
+| V6      | ✅ Done         |
+| V7      | In Progress     |
+| V8      | In Progress     |
+| V9      | Planned         |
 | V10     | Future optional |
 
 Database columns for V2–V4 are already present in `migrations/0001_init.sql` to avoid future migration complexity.
 
 ### V2 Progress
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| QR code generation | ✅ Done | Links table action opens QR preview and downloads PNG |
-| Bulk actions | ✅ Done | Links table supports multi-select disable, enable, archive, restore, and delete |
-| Bulk tag assignment | ✅ Done | Links table supports multi-select add, replace, remove, and clear tag modes |
-| Expiry / max clicks | ✅ Done | Create/Edit forms support `expires_at` and `max_clicks`; redirects return expired page when limits are reached |
-| Auto-fetch page title | ✅ Done | Create/Edit forms can fetch the target page title through an authenticated Worker metadata endpoint |
-| Visits CSV export | ✅ Done | `/api/export/visits.csv` and Admin download button added; local API smoke test passed |
-| Tags management page | ✅ Done | Admin page supports tag create, edit, search, color, description, and delete |
-| Link tag catalog sync | ✅ Done | Link tags auto-create catalog entries; local rename/delete sync smoke test passed |
-| Link form tag picker | ✅ Done | Create/Edit forms load Tags catalog and offer clickable tag chips |
-| Password-protected links | ✅ Done | Create/Edit forms set password hashes; redirect requires password and does not cache protected links |
-| Safety warning page | ✅ Done | Links can show a confirmation page before redirecting |
-| UTM templates | ✅ Done | Create/Edit forms include newsletter, social, ads, affiliate, and custom UTM builder |
-| Audit logs page | ✅ Done | Admin page lists link and import audit events |
-| Shlink API pull import | ✅ Done | Admin Import / Export can fetch Shlink links via URL + API key without storing the key |
-| Sink importer adapter | ✅ Done | JSON / JSONL-style payloads supported; local smoke test passed |
-| YOURLS importer adapter | ✅ Done | JSON / JSONL-style payloads supported; local smoke test passed |
-| Dub importer adapter | ✅ Done | JSON / JSONL-style payloads supported; local smoke test passed |
-| Import conflict strategies | ✅ Done | `skip`, `rename`, and `overwrite` implemented; local smoke test passed |
-| Linkora backup.json restore import | ✅ Done | Restores backup links and tag catalog entries; local smoke test passed |
-| Bulk create links | ✅ Done | Admin page and `POST /api/links/bulk-create` create up to 100 links at a time |
-| Links advanced filters | ✅ Done | Links list filters by source, domain, password, warning, limits, and created date range |
-| Generic CSV field mapping | ✅ Done | Generic CSV import accepts explicit field mapping for non-standard headers |
-| Generic JSON / JSONL field mapping | ✅ Done | Generic JSON import accepts mapped fields and common wrapped arrays |
-| V2 production regression | ✅ Done | 49 production checks passed; temporary `lk-v2-reg-*` links cleaned up |
+| Feature                            | Status  | Notes                                                                                                          |
+| ---------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------- |
+| QR code generation                 | ✅ Done | Links table action opens QR preview and downloads PNG                                                          |
+| Bulk actions                       | ✅ Done | Links table supports multi-select disable, enable, archive, restore, and delete                                |
+| Bulk tag assignment                | ✅ Done | Links table supports multi-select add, replace, remove, and clear tag modes                                    |
+| Expiry / max clicks                | ✅ Done | Create/Edit forms support `expires_at` and `max_clicks`; redirects return expired page when limits are reached |
+| Auto-fetch page title              | ✅ Done | Create/Edit forms can fetch the target page title through an authenticated Worker metadata endpoint            |
+| Visits CSV export                  | ✅ Done | `/api/export/visits.csv` and Admin download button added; local API smoke test passed                          |
+| Tags management page               | ✅ Done | Admin page supports tag create, edit, search, color, description, and delete                                   |
+| Link tag catalog sync              | ✅ Done | Link tags auto-create catalog entries; local rename/delete sync smoke test passed                              |
+| Link form tag picker               | ✅ Done | Create/Edit forms load Tags catalog and offer clickable tag chips                                              |
+| Password-protected links           | ✅ Done | Create/Edit forms set password hashes; redirect requires password and does not cache protected links           |
+| Safety warning page                | ✅ Done | Links can show a confirmation page before redirecting                                                          |
+| UTM templates                      | ✅ Done | Create/Edit forms include newsletter, social, ads, affiliate, and custom UTM builder                           |
+| Audit logs page                    | ✅ Done | Admin page lists link and import audit events                                                                  |
+| Shlink API pull import             | ✅ Done | Admin Import / Export can fetch Shlink links via URL + API key without storing the key                         |
+| Sink importer adapter              | ✅ Done | JSON / JSONL-style payloads supported; local smoke test passed                                                 |
+| YOURLS importer adapter            | ✅ Done | JSON / JSONL-style payloads supported; local smoke test passed                                                 |
+| Dub importer adapter               | ✅ Done | JSON / JSONL-style payloads supported; local smoke test passed                                                 |
+| Import conflict strategies         | ✅ Done | `skip`, `rename`, and `overwrite` implemented; local smoke test passed                                         |
+| Linkora backup.json restore import | ✅ Done | Restores backup links and tag catalog entries; local smoke test passed                                         |
+| Bulk create links                  | ✅ Done | Admin page and `POST /api/links/bulk-create` create up to 100 links at a time                                  |
+| Links advanced filters             | ✅ Done | Links list filters by source, domain, password, warning, limits, and created date range                        |
+| Generic CSV field mapping          | ✅ Done | Generic CSV import accepts explicit field mapping for non-standard headers                                     |
+| Generic JSON / JSONL field mapping | ✅ Done | Generic JSON import accepts mapped fields and common wrapped arrays                                            |
+| V2 production regression           | ✅ Done | 49 production checks passed; temporary `lk-v2-reg-*` links cleaned up                                          |
 
 ### V3 Progress
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Advanced analytics dashboard | ✅ Done | Admin Analytics page shows click totals, approximate unique visitors, daily trend, top links, countries, referrers, browsers, devices, operating systems, bot metrics, and recent visits |
-| Daily stats aggregation | ✅ Done | Visit recording updates `daily_stats` asynchronously via `ctx.waitUntil()` alongside raw visits |
-| Auto-backup to Cloudflare R2 | ✅ Done | Worker creates full backup snapshots in R2 through Admin and scheduled cron |
-| Cron Triggers for daily backup | ✅ Done | Wrangler cron runs daily at 18:00 UTC / 02:00 Asia/Shanghai |
-| API Token management page | ✅ Done | Admin can create/revoke scoped tokens; Worker stores hashes and authorizes API requests by scope |
-| Cloudflare Queues for async stats | ✅ Done | Redirects enqueue visit snapshots when `VISITS_QUEUE` exists; max-click links and queue failures fall back to direct `ctx.waitUntil()` recording |
-| Multi-domain support | ✅ Done | Admin can manage short domains; links store a selected domain; redirects resolve by request host plus slug with legacy domainless fallback |
-| Webhook notifications | ✅ Done | Admin configures signed webhook deliveries for link, import, and backup events; delivery runs asynchronously and never blocks primary flows |
+| Feature                           | Status  | Notes                                                                                                                                                                                    |
+| --------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Advanced analytics dashboard      | ✅ Done | Admin Analytics page shows click totals, approximate unique visitors, daily trend, top links, countries, referrers, browsers, devices, operating systems, bot metrics, and recent visits |
+| Daily stats aggregation           | ✅ Done | Visit recording updates `daily_stats` asynchronously via `ctx.waitUntil()` alongside raw visits                                                                                          |
+| Auto-backup to Cloudflare R2      | ✅ Done | Worker creates full backup snapshots in R2 through Admin and scheduled cron                                                                                                              |
+| Cron Triggers for daily backup    | ✅ Done | Wrangler cron runs daily at 18:00 UTC / 02:00 Asia/Shanghai                                                                                                                              |
+| API Token management page         | ✅ Done | Admin can create/revoke scoped tokens; Worker stores hashes and authorizes API requests by scope                                                                                         |
+| Cloudflare Queues for async stats | ✅ Done | Redirects enqueue visit snapshots when `VISITS_QUEUE` exists; max-click links and queue failures fall back to direct `ctx.waitUntil()` recording                                         |
+| Multi-domain support              | ✅ Done | Admin can manage short domains; links store a selected domain; redirects resolve by request host plus slug with legacy domainless fallback                                               |
+| Webhook notifications             | ✅ Done | Admin configures signed webhook deliveries for link, import, and backup events; delivery runs asynchronously and never blocks primary flows                                              |
 
 ### V4 Progress
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Smart redirect evaluator | ✅ Done | Redirects can resolve country, device, browser, referer, language, and weighted/A-B rules with default long URL fallback on any rule failure |
-| Redirect Rules API | ✅ Done | `/api/redirect-rules` supports list, create, update, and delete with auth and audit logs |
-| Admin Redirect Rules page | ✅ Done | Admin can create, edit, filter, and delete rules by link |
-| Backup / restore for rules | ✅ Done | `backup.json` includes `redirectRules`; Linkora backup restore reattaches rules to restored or overwritten links |
-| V4 production validation | ✅ Done | 21-check production smoke plus backup restore smoke passed; temporary `lk-v4-*` links cleaned up |
-| Campaign / project grouping | ✅ Done | Admin Groups page and `/api/groups` manage `campaign:*` / `project:*` tags; 15-check production smoke passed and temporary groups cleaned up |
+| Feature                      | Status  | Notes                                                                                                                                                                                                                                                                               |
+| ---------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Smart redirect evaluator     | ✅ Done | Redirects can resolve country, device, browser, referer, language, and weighted/A-B rules with default long URL fallback on any rule failure                                                                                                                                        |
+| Redirect Rules API           | ✅ Done | `/api/redirect-rules` supports list, create, update, and delete with auth and audit logs                                                                                                                                                                                            |
+| Admin Redirect Rules page    | ✅ Done | Admin can create, edit, filter, and delete rules by link                                                                                                                                                                                                                            |
+| Backup / restore for rules   | ✅ Done | `backup.json` includes `redirectRules`; Linkora backup restore reattaches rules to restored or overwritten links                                                                                                                                                                    |
+| V4 production validation     | ✅ Done | 21-check production smoke plus backup restore smoke passed; temporary `lk-v4-*` links cleaned up                                                                                                                                                                                    |
+| Campaign / project grouping  | ✅ Done | Admin Groups page and `/api/groups` manage `campaign:*` / `project:*` tags; 15-check production smoke passed and temporary groups cleaned up                                                                                                                                        |
 | Local smart link suggestions | ✅ Done | Authenticated `/api/metadata/suggestions` suggests slugs, title, description, and tags from URL/page metadata; Create/Edit forms can apply suggestions; 8-check production smoke plus 10-check core regression passed and temporary `lk-v4-ai-*` / `lk-v4-final-*` links cleaned up |
-| Link health checker | ✅ Done | Manual URL, single-link, and capped active-link batch checks; 15-check production smoke passed and temporary `lk-v4-health-*` links cleaned up |
+| Link health checker          | ✅ Done | Manual URL, single-link, and capped active-link batch checks; 15-check production smoke passed and temporary `lk-v4-health-*` links cleaned up                                                                                                                                      |
 
 ### V6 Progress
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Single-link analytics page | ✅ Done | `/analytics/links/:id` shows per-link trend, referrers, devices, targets, UTM, and conversions |
-| Analytics filters | ✅ Done | API/Admin filters cover link, slug, domain, tag, campaign, project, country, device, browser, referer, and UTM values |
-| UTM breakdown | ✅ Done | Summary includes top UTM sources, mediums, campaigns, terms, and contents |
-| A/B target statistics | ✅ Done | Redirect target decisions are stored in `visit_targets` without changing redirect behavior |
-| Conversion events | ✅ Done | `POST /api/conversions` records authenticated goal events |
-| Analytics report export | ✅ Done | `/api/export/analytics.csv` exports summary report sections |
-| Raw analytics retention | ✅ Done | `analytics_retention_days` setting is enforced by scheduled Worker cleanup |
-| V6 validation | ✅ Production passed | GitHub Actions migration/deploy passed; production smoke covered health, auth rejection, redirects, filters, single-link analytics, conversions, Analytics CSV export, retention setting, and cleanup |
+| Feature                    | Status               | Notes                                                                                                                                                                                                 |
+| -------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Single-link analytics page | ✅ Done              | `/analytics/links/:id` shows per-link trend, referrers, devices, targets, UTM, and conversions                                                                                                        |
+| Analytics filters          | ✅ Done              | API/Admin filters cover link, slug, domain, tag, campaign, project, country, device, browser, referer, and UTM values                                                                                 |
+| UTM breakdown              | ✅ Done              | Summary includes top UTM sources, mediums, campaigns, terms, and contents                                                                                                                             |
+| A/B target statistics      | ✅ Done              | Redirect target decisions are stored in `visit_targets` without changing redirect behavior                                                                                                            |
+| Conversion events          | ✅ Done              | `POST /api/conversions` records authenticated goal events                                                                                                                                             |
+| Analytics report export    | ✅ Done              | `/api/export/analytics.csv` exports summary report sections                                                                                                                                           |
+| Raw analytics retention    | ✅ Done              | `analytics_retention_days` setting is enforced by scheduled Worker cleanup                                                                                                                            |
+| V6 validation              | ✅ Production passed | GitHub Actions migration/deploy passed; production smoke covered health, auth rejection, redirects, filters, single-link analytics, conversions, Analytics CSV export, retention setting, and cleanup |
 
 ### V7 Progress
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| R2 restore preview | ✅ Done | `POST /api/backups/:id/restore-preview` returns create, overwrite, rename, skip, invalid, and redirect-rule counts |
-| R2 one-click restore | ✅ Done | Admin Backups page can restore completed R2 snapshots with `skip`, `rename`, or `overwrite` |
-| Pre-restore backup | ✅ Done | Restore creates a fresh `pre-restore` R2 snapshot before mutating D1 |
-| Restore report | ✅ Done | Restore result includes created, overwritten, renamed, skipped, failed, redirect-rule counts, and a CSV-style report |
-| Factory reset | ✅ Done | Admin Settings danger zone previews affected rows, requires `RESET LINKORA`, creates optional `pre-reset` R2 backup, clears KV cache, and preserves backup records plus `ADMIN_TOKEN` |
-| Backup retention | Planned | Configurable retention and cleanup still pending |
-| Target monitoring and alerts | Planned | Periodic checks, status history, and alerts still pending |
+| Feature                      | Status  | Notes                                                                                                                                                                                 |
+| ---------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R2 restore preview           | ✅ Done | `POST /api/backups/:id/restore-preview` returns create, overwrite, rename, skip, invalid, and redirect-rule counts                                                                    |
+| R2 one-click restore         | ✅ Done | Admin Backups page can restore completed R2 snapshots with `skip`, `rename`, or `overwrite`                                                                                           |
+| Pre-restore backup           | ✅ Done | Restore creates a fresh `pre-restore` R2 snapshot before mutating D1                                                                                                                  |
+| Restore report               | ✅ Done | Restore result includes created, overwritten, renamed, skipped, failed, redirect-rule counts, and a CSV-style report                                                                  |
+| Factory reset                | ✅ Done | Admin Settings danger zone previews affected rows, requires `RESET LINKORA`, creates optional `pre-reset` R2 backup, clears KV cache, and preserves backup records plus `ADMIN_TOKEN` |
+| Backup retention             | Planned | Configurable retention and cleanup still pending                                                                                                                                      |
+| Target monitoring and alerts | Planned | Periodic checks, status history, and alerts still pending                                                                                                                             |
 
 ### V7-V10 Planning
 
-| Version | Scope | Status |
-|---------|-------|--------|
-| V7 Operations, Recovery, And Monitoring | R2 restore, backup retention, periodic target monitoring, alerts, fallback URL UI, custom status pages, operations dashboard, better bot classification | In progress |
-| V8 Usability Modes And Internationalization | Simple / Advanced mode, feature visibility, first-run wizard, English and Simplified Chinese language switcher, locale-aware formatting | Planned |
-| V9 Growth Tools, Reporting, And Link Intelligence | Bulk URL and UTM operations, link notes, OpenGraph previews, public stats pages, scheduled reports, saved analytics views, conversion attribution, long-idle auto-archive | Planned |
-| V10 Collaboration And Governance | Multi-user, roles, teams, token governance, audit retention, per-project access, optional managed services | Future optional |
+| Version                                           | Scope                                                                                                                                                                                  | Status          |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| V7 Operations, Recovery, And Monitoring           | R2 restore, backup retention, periodic target monitoring, alerts, fallback URL UI, custom status pages, operations dashboard, better bot classification                                | In progress     |
+| V8 Usability Modes And Internationalization       | Simple / Advanced mode, deployment capability reporting, required first-run wizard, and default-English EN/ZH foundation are implemented; full-page and locale-aware formatting remain | In progress     |
+| V9 Growth Tools, Reporting, And Link Intelligence | Bulk URL and UTM operations, link notes, OpenGraph previews, public stats pages, scheduled reports, saved analytics views, conversion attribution, long-idle auto-archive              | Planned         |
+| V10 Collaboration And Governance                  | Multi-user, roles, teams, token governance, audit retention, per-project access, optional managed services                                                                             | Future optional |

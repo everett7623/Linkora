@@ -15,6 +15,7 @@ import { Button } from '../components/ui/Button';
 import { Input, Select, Textarea } from '../components/ui/Input';
 import { ConfirmDialog, Modal } from '../components/ui/Modal';
 import { useToast } from '../components/ui/Toast';
+import { useLocale } from '../contexts/LocaleContext';
 
 interface GroupForm {
   type: LinkGroupType;
@@ -71,13 +72,16 @@ function formatLastClicked(group: LinkGroup): string {
 }
 
 function GroupIcon({ type }: { type: LinkGroupType }) {
-  return type === 'campaign'
-    ? <Flag size={15} className="text-sky-400" />
-    : <Folder size={15} className="text-violet-400" />;
+  return type === 'campaign' ? (
+    <Flag size={15} className="text-sky-400" />
+  ) : (
+    <Folder size={15} className="text-violet-400" />
+  );
 }
 
 export function Groups() {
   const { success, error } = useToast();
+  const { locale, t } = useLocale();
   const [groups, setGroups] = useState<LinkGroup[]>([]);
   const [filterType, setFilterType] = useState<LinkGroupType | ''>('');
   const [loading, setLoading] = useState(true);
@@ -93,20 +97,25 @@ export function Groups() {
       const result = await listGroups(filterType);
       setGroups(result.items);
     } catch {
-      error('Failed to load groups');
+      error(t('groupsLoadFailed'));
     } finally {
       setLoading(false);
     }
   }, [filterType]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
-  const summary = useMemo(() => ({
-    campaigns: groups.filter((group) => group.type === 'campaign').length,
-    projects: groups.filter((group) => group.type === 'project').length,
-    links: groups.reduce((sum, group) => sum + group.linkCount, 0),
-    clicks: groups.reduce((sum, group) => sum + group.totalClicks, 0),
-  }), [groups]);
+  const summary = useMemo(
+    () => ({
+      campaigns: groups.filter((group) => group.type === 'campaign').length,
+      projects: groups.filter((group) => group.type === 'project').length,
+      links: groups.reduce((sum, group) => sum + group.linkCount, 0),
+      clicks: groups.reduce((sum, group) => sum + group.totalClicks, 0),
+    }),
+    [groups]
+  );
 
   const openCreate = (type: LinkGroupType = 'campaign') => {
     setEditing(null);
@@ -139,7 +148,7 @@ export function Groups() {
     e.preventDefault();
     const payload = toPayload(form);
     if (!payload.name) {
-      error('Name is required');
+      error(t('nameRequired'));
       return;
     }
 
@@ -147,10 +156,10 @@ export function Groups() {
     try {
       if (editing) {
         await updateGroup(editing.id, payload);
-        success('Group updated');
+        success(t('groupUpdated'));
       } else {
         await createGroup(payload);
-        success('Group created');
+        success(t('groupCreated'));
       }
       closeModal();
       await load();
@@ -166,7 +175,7 @@ export function Groups() {
     setSaving(true);
     try {
       await deleteGroup(deleteTarget.id);
-      success('Group deleted');
+      success(t('groupDeleted'));
       setDeleteTarget(null);
       await load();
     } catch (e) {
@@ -180,20 +189,29 @@ export function Groups() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Groups</h1>
+          <h1 className="text-2xl font-bold text-slate-100">{t('groups')}</h1>
           <p className="mt-0.5 text-sm text-slate-400">
-            {groups.length.toLocaleString()} campaign and project groups
+            {t('groupsSummary', { count: groups.length.toLocaleString(locale) })}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="secondary" icon={<RefreshCw size={15} />} onClick={load} disabled={loading || saving}>
-            Refresh
+          <Button
+            variant="secondary"
+            icon={<RefreshCw size={15} />}
+            onClick={load}
+            disabled={loading || saving}
+          >
+            {t('refresh')}
           </Button>
-          <Button variant="secondary" icon={<Folder size={15} />} onClick={() => openCreate('project')}>
-            Add Project
+          <Button
+            variant="secondary"
+            icon={<Folder size={15} />}
+            onClick={() => openCreate('project')}
+          >
+            {t('addProject')}
           </Button>
           <Button icon={<Plus size={15} />} onClick={() => openCreate('campaign')}>
-            Add Campaign
+            {t('addCampaign')}
           </Button>
         </div>
       </div>
@@ -201,44 +219,52 @@ export function Groups() {
       <div className="grid gap-4 md:grid-cols-4">
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-400">Campaigns</span>
+            <span className="text-sm text-slate-400">{t('campaigns')}</span>
             <Flag size={17} className="text-sky-400" />
           </div>
-          <div className="mt-3 text-2xl font-bold text-slate-100">{summary.campaigns.toLocaleString()}</div>
+          <div className="mt-3 text-2xl font-bold text-slate-100">
+            {summary.campaigns.toLocaleString()}
+          </div>
         </div>
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-400">Projects</span>
+            <span className="text-sm text-slate-400">{t('projects')}</span>
             <Folder size={17} className="text-violet-400" />
           </div>
-          <div className="mt-3 text-2xl font-bold text-slate-100">{summary.projects.toLocaleString()}</div>
+          <div className="mt-3 text-2xl font-bold text-slate-100">
+            {summary.projects.toLocaleString()}
+          </div>
         </div>
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-400">Grouped Links</span>
+            <span className="text-sm text-slate-400">{t('groupedLinks')}</span>
             <Tags size={17} className="text-brand-400" />
           </div>
-          <div className="mt-3 text-2xl font-bold text-slate-100">{summary.links.toLocaleString()}</div>
+          <div className="mt-3 text-2xl font-bold text-slate-100">
+            {summary.links.toLocaleString()}
+          </div>
         </div>
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-400">Clicks</span>
+            <span className="text-sm text-slate-400">{t('clicks')}</span>
             <Tags size={17} className="text-emerald-400" />
           </div>
-          <div className="mt-3 text-2xl font-bold text-slate-100">{summary.clicks.toLocaleString()}</div>
+          <div className="mt-3 text-2xl font-bold text-slate-100">
+            {summary.clicks.toLocaleString()}
+          </div>
         </div>
       </div>
 
       <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
         <div className="max-w-xs">
           <Select
-            label="Type"
+            label={t('type')}
             value={filterType}
             onChange={(e) => setFilterType(e.target.value as LinkGroupType | '')}
           >
-            <option value="">All groups</option>
-            <option value="campaign">Campaigns</option>
-            <option value="project">Projects</option>
+            <option value="">{t('allGroups')}</option>
+            <option value="campaign">{t('campaigns')}</option>
+            <option value="project">{t('projects')}</option>
           </Select>
         </div>
       </div>
@@ -251,9 +277,9 @@ export function Groups() {
         ) : groups.length === 0 ? (
           <div className="flex h-48 flex-col items-center justify-center gap-3 text-slate-400">
             <Tags size={26} className="text-slate-600" />
-            <p className="text-sm">No groups found</p>
+            <p className="text-sm">{t('noGroups')}</p>
             <Button size="sm" icon={<Plus size={14} />} onClick={() => openCreate('campaign')}>
-              Add Campaign
+              {t('addCampaign')}
             </Button>
           </div>
         ) : (
@@ -261,14 +287,14 @@ export function Groups() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-800 text-xs uppercase tracking-wider text-slate-500">
-                  <th className="px-4 py-3 text-left">Group</th>
-                  <th className="px-4 py-3 text-left">Tag</th>
-                  <th className="px-4 py-3 text-right">Links</th>
-                  <th className="px-4 py-3 text-right">Active</th>
-                  <th className="px-4 py-3 text-right">Clicks</th>
-                  <th className="px-4 py-3 text-left">Last Clicked</th>
-                  <th className="px-4 py-3 text-left">Updated</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
+                  <th className="px-4 py-3 text-left">{t('group')}</th>
+                  <th className="px-4 py-3 text-left">{t('tag')}</th>
+                  <th className="px-4 py-3 text-right">{t('links')}</th>
+                  <th className="px-4 py-3 text-right">{t('activeStatus')}</th>
+                  <th className="px-4 py-3 text-right">{t('clicks')}</th>
+                  <th className="px-4 py-3 text-left">{t('lastClicked')}</th>
+                  <th className="px-4 py-3 text-left">{t('updated')}</th>
+                  <th className="px-4 py-3 text-right">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
@@ -286,7 +312,10 @@ export function Groups() {
                             <span className="font-medium text-slate-100">{group.name}</span>
                           </div>
                           {group.description && (
-                            <p className="mt-0.5 max-w-xs truncate text-xs text-slate-500" title={group.description}>
+                            <p
+                              className="mt-0.5 max-w-xs truncate text-xs text-slate-500"
+                              title={group.description}
+                            >
                               {group.description}
                             </p>
                           )}
@@ -294,16 +323,27 @@ export function Groups() {
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <Badge variant={group.type === 'campaign' ? 'blue' : 'purple'}>{group.tagName}</Badge>
+                      <Badge variant={group.type === 'campaign' ? 'blue' : 'purple'}>
+                        {group.tagName}
+                      </Badge>
                     </td>
                     <td className="px-4 py-3 text-right text-slate-300">
-                      <Link to={linksPath(group)} className="font-medium text-brand-400 hover:text-brand-300">
+                      <Link
+                        to={linksPath(group)}
+                        className="font-medium text-brand-400 hover:text-brand-300"
+                      >
                         {group.linkCount.toLocaleString()}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-right text-slate-300">{group.activeLinkCount.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-right text-slate-300">{group.totalClicks.toLocaleString()}</td>
-                    <td className="whitespace-nowrap px-4 py-3 text-xs text-slate-500">{formatLastClicked(group)}</td>
+                    <td className="px-4 py-3 text-right text-slate-300">
+                      {group.activeLinkCount.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-right text-slate-300">
+                      {group.totalClicks.toLocaleString()}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-xs text-slate-500">
+                      {formatLastClicked(group)}
+                    </td>
                     <td className="whitespace-nowrap px-4 py-3 text-xs text-slate-500">
                       {dayjs(group.updated_at).format('YYYY-MM-DD HH:mm')}
                     </td>
@@ -311,7 +351,7 @@ export function Groups() {
                       <div className="flex justify-end gap-1">
                         <Link
                           to={linksPath(group)}
-                          title="View links"
+                          title={t('viewLinks')}
                           className="rounded p-1.5 text-slate-500 transition-colors hover:bg-slate-700 hover:text-slate-200"
                         >
                           <Tags size={14} />
@@ -319,7 +359,7 @@ export function Groups() {
                         <button
                           type="button"
                           onClick={() => openEdit(group)}
-                          title="Edit"
+                          title={t('edit')}
                           className="rounded p-1.5 text-slate-500 transition-colors hover:bg-slate-700 hover:text-slate-200"
                         >
                           <Edit2 size={14} />
@@ -327,7 +367,7 @@ export function Groups() {
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(group)}
-                          title="Delete"
+                          title={t('delete')}
                           className="rounded p-1.5 text-slate-500 transition-colors hover:bg-slate-700 hover:text-red-400"
                         >
                           <Trash2 size={14} />
@@ -342,15 +382,22 @@ export function Groups() {
         )}
       </div>
 
-      <Modal open={modalOpen} onClose={closeModal} title={editing ? 'Edit Group' : 'Create Group'} size="md">
+      <Modal
+        open={modalOpen}
+        onClose={closeModal}
+        title={t(editing ? 'editGroup' : 'createGroup')}
+        size="md"
+      >
         <form onSubmit={handleSave} className="space-y-4">
           <Select
-            label="Type"
+            label={t('type')}
             value={form.type}
             onChange={(e) => setField('type', e.target.value as LinkGroupType)}
           >
             {TYPE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>{option.label}</option>
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
             ))}
           </Select>
 
@@ -369,11 +416,11 @@ export function Groups() {
                 value={form.color}
                 onChange={(e) => setField('color', e.target.value)}
                 className="h-14 w-14 -translate-x-1 -translate-y-1 cursor-pointer border-0 bg-transparent p-0"
-                aria-label="Group color"
+                aria-label={t('groupColor')}
               />
             </label>
             <Input
-              label="Color"
+              label={t('color')}
               value={form.color}
               onChange={(e) => setField('color', e.target.value)}
               placeholder={DEFAULT_COLORS[form.type]}
@@ -382,7 +429,7 @@ export function Groups() {
           </div>
 
           <Textarea
-            label="Description"
+            label={t('description')}
             value={form.description}
             onChange={(e) => setField('description', e.target.value)}
             rows={3}
@@ -390,11 +437,17 @@ export function Groups() {
           />
 
           <div className="flex justify-end gap-3 pt-2">
-            <Button type="button" variant="secondary" size="sm" onClick={closeModal} disabled={saving}>
-              Cancel
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={closeModal}
+              disabled={saving}
+            >
+              {t('cancel')}
             </Button>
             <Button type="submit" size="sm" loading={saving} icon={<Check size={14} />}>
-              Save
+              {t('save')}
             </Button>
           </div>
         </form>
@@ -404,13 +457,18 @@ export function Groups() {
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
-        title="Delete Group"
+        title={t('deleteGroup')}
         message={
           deleteTarget
-            ? `Delete ${deleteTarget.type} "${deleteTarget.name}"? The ${deleteTarget.tagName} tag will also be removed from ${deleteTarget.linkCount} links.`
+            ? t('deleteGroupConfirm', {
+                type: deleteTarget.type,
+                name: deleteTarget.name,
+                tag: deleteTarget.tagName,
+                count: deleteTarget.linkCount,
+              })
             : ''
         }
-        confirmLabel="Delete"
+        confirmLabel={t('delete')}
         confirmVariant="danger"
         loading={saving}
       />

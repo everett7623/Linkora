@@ -1,9 +1,25 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
-  Search, Plus, Copy, Pencil, Trash2, PowerOff, Power,
-  Archive, RotateCcw, ExternalLink, ChevronLeft, ChevronRight,
-  QrCode, Download, Tag, KeyRound, ShieldAlert, SlidersHorizontal, BarChart3,
+  Search,
+  Plus,
+  Copy,
+  Pencil,
+  Trash2,
+  PowerOff,
+  Power,
+  Archive,
+  RotateCcw,
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+  QrCode,
+  Download,
+  Tag,
+  KeyRound,
+  ShieldAlert,
+  SlidersHorizontal,
+  BarChart3,
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import {
@@ -28,6 +44,9 @@ import { buildShortUrl } from '../utils/shortUrl';
 import { downloadDataUrl } from '../utils/download';
 import type { Link as LinkType, PaginatedResult } from '@linkora/shared';
 import dayjs from 'dayjs';
+import { useAdminMode } from '../contexts/AdminModeContext';
+import { stripAdvancedLinkFilters } from '../utils/linkFilters';
+import { useLocale } from '../contexts/LocaleContext';
 
 const PAGE_SIZE = 20;
 
@@ -60,6 +79,8 @@ export function Links() {
   const [qr, setQr] = useState<{ link: LinkType; url: string; dataUrl: string } | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const { success, error } = useToast();
+  const { isAdvanced } = useAdminMode();
+  const { locale, t } = useLocale();
 
   const keyword = searchParams.get('keyword') ?? '';
   const tag = searchParams.get('tag') ?? '';
@@ -94,17 +115,46 @@ export function Links() {
       });
       setResult(data);
     } catch {
-      error('Failed to load links');
+      error(t('linksLoadFailed'));
     } finally {
       setLoading(false);
     }
-  }, [keyword, tag, status, source, domain, createdFrom, createdTo, hasPassword, warning, limits, sort, page]);
+  }, [
+    keyword,
+    tag,
+    status,
+    source,
+    domain,
+    createdFrom,
+    createdTo,
+    hasPassword,
+    warning,
+    limits,
+    sort,
+    page,
+    t,
+  ]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   useEffect(() => {
     setSelectedIds(new Set());
-  }, [keyword, tag, status, source, domain, createdFrom, createdTo, hasPassword, warning, limits, sort, page]);
+  }, [
+    keyword,
+    tag,
+    status,
+    source,
+    domain,
+    createdFrom,
+    createdTo,
+    hasPassword,
+    warning,
+    limits,
+    sort,
+    page,
+  ]);
 
   useEffect(() => {
     getSettings()
@@ -112,9 +162,16 @@ export function Links() {
       .catch(() => undefined);
   }, []);
 
+  useEffect(() => {
+    if (isAdvanced) return;
+    const next = stripAdvancedLinkFilters(searchParams);
+    if (next) setSearchParams(next, { replace: true });
+  }, [isAdvanced, searchParams, setSearchParams]);
+
   const setParam = (key: string, value: string) => {
     const p = new URLSearchParams(searchParams);
-    if (value) p.set(key, value); else p.delete(key);
+    if (value) p.set(key, value);
+    else p.delete(key);
     if (key !== 'page') p.delete('page');
     setSearchParams(p);
   };
@@ -127,7 +184,7 @@ export function Links() {
 
   const copyLink = (link: LinkType) => {
     navigator.clipboard.writeText(buildShortUrl(link, defaultDomain));
-    success('Copied!');
+    success(t('copied'));
   };
 
   const showQr = async (link: LinkType) => {
@@ -144,24 +201,35 @@ export function Links() {
       });
       setQr({ link, url, dataUrl });
     } catch {
-      error('Failed to generate QR code');
+      error(t('qrFailed'));
     }
   };
 
   const downloadQr = () => {
     if (!qr) return;
     downloadDataUrl(qr.dataUrl, `linkora-qr-${qr.link.slug}.png`);
-    success('QR code downloaded');
+    success(t('qrDownloaded'));
   };
 
   const runAction = async (type: string, link: LinkType) => {
     setActionLoading(true);
     try {
-      if (type === 'delete') { await deleteLink(link.id); success('Link deleted'); }
-      else if (type === 'disable') { await disableLink(link.id); success('Link disabled'); }
-      else if (type === 'enable') { await enableLink(link.id); success('Link enabled'); }
-      else if (type === 'archive') { await archiveLink(link.id); success('Link archived'); }
-      else if (type === 'restore') { await restoreLink(link.id); success('Link restored'); }
+      if (type === 'delete') {
+        await deleteLink(link.id);
+        success(t('linkDeleted'));
+      } else if (type === 'disable') {
+        await disableLink(link.id);
+        success(t('linkDisabled'));
+      } else if (type === 'enable') {
+        await enableLink(link.id);
+        success(t('linkEnabled'));
+      } else if (type === 'archive') {
+        await archiveLink(link.id);
+        success(t('linkArchived'));
+      } else if (type === 'restore') {
+        await restoreLink(link.id);
+        success(t('linkRestored'));
+      }
       await load();
     } catch (e) {
       error(String(e));
@@ -188,7 +256,8 @@ export function Links() {
   const toggleSelected = (id: string) => {
     setSelectedIds((current) => {
       const next = new Set(current);
-      if (next.has(id)) next.delete(id); else next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
@@ -212,7 +281,7 @@ export function Links() {
     setActionLoading(true);
     try {
       const result = await bulkLinkAction(ids, action);
-      success(`Bulk ${action}: ${result.success} updated`);
+      success(t('bulkUpdated', { action: t(action), count: result.success }));
       setSelectedIds(new Set());
       await load();
     } catch (e) {
@@ -243,16 +312,19 @@ export function Links() {
     const ids = [...selectedIds];
     if (ids.length === 0) return;
 
-    const tags = tagInput.split(',').map((tag) => tag.trim()).filter(Boolean);
+    const tags = tagInput
+      .split(',')
+      .map((tag) => tag.trim())
+      .filter(Boolean);
     if (tagMode !== 'clear' && tags.length === 0) {
-      error('Enter at least one tag');
+      error(t('enterTag'));
       return;
     }
 
     setActionLoading(true);
     try {
       const result = await bulkTagLinks(ids, tags, tagMode);
-      success(`Tags updated on ${result.success} links`);
+      success(t('tagsUpdated', { count: result.success }));
       setSelectedIds(new Set());
       setTagModalOpen(false);
       setTagInput('');
@@ -269,13 +341,13 @@ export function Links() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Links</h1>
+          <h1 className="text-2xl font-bold text-slate-100">{t('links')}</h1>
           <p className="text-sm text-slate-400 mt-0.5">
-            {result ? `${result.total.toLocaleString()} links` : '—'}
+            {result ? t('linksCount', { count: result.total.toLocaleString(locale) }) : '—'}
           </p>
         </div>
         <Link to="/links/create">
-          <Button icon={<Plus size={16} />}>Create Link</Button>
+          <Button icon={<Plus size={16} />}>{t('createLink')}</Button>
         </Link>
       </div>
 
@@ -285,7 +357,7 @@ export function Links() {
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
-            placeholder="Search slug, URL, title…"
+            placeholder={t('searchLinks')}
             value={keyword}
             onChange={(e) => setParam('keyword', e.target.value)}
             className="w-full pl-9 pr-3 py-2 text-sm bg-slate-900 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -296,122 +368,166 @@ export function Links() {
           onChange={(e) => setParam('status', e.target.value)}
           className="px-3 py-2 text-sm bg-slate-900 border border-slate-700 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
-          <option value="">All Status</option>
-          <option value="active">Active</option>
-          <option value="disabled">Disabled</option>
-          <option value="expired">Expired</option>
-          <option value="archived">Archived</option>
+          <option value="">{t('allStatus')}</option>
+          <option value="active">{t('activeStatus')}</option>
+          <option value="disabled">{t('disabledStatus')}</option>
+          <option value="expired">{t('expiredStatus')}</option>
+          <option value="archived">{t('archivedStatus')}</option>
         </select>
         <select
           value={sort}
           onChange={(e) => setParam('sort', e.target.value)}
           className="px-3 py-2 text-sm bg-slate-900 border border-slate-700 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
-          <option value="created_at_desc">Newest First</option>
-          <option value="created_at_asc">Oldest First</option>
-          <option value="clicks_desc">Most Clicks</option>
-          <option value="last_clicked_at_desc">Recently Clicked</option>
-          <option value="last_clicked_at_asc">Least Recently Clicked</option>
-          <option value="updated_at_desc">Recently Updated</option>
-          <option value="updated_at_asc">Oldest Updated</option>
+          <option value="created_at_desc">{t('newestFirst')}</option>
+          <option value="created_at_asc">{t('oldestFirst')}</option>
+          <option value="clicks_desc">{t('mostClicks')}</option>
+          <option value="last_clicked_at_desc">{t('recentlyClicked')}</option>
+          <option value="last_clicked_at_asc">{t('leastRecentlyClicked')}</option>
+          <option value="updated_at_desc">{t('recentlyUpdated')}</option>
+          <option value="updated_at_asc">{t('oldestUpdated')}</option>
         </select>
       </div>
 
-      <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-sm font-semibold text-slate-300">
-            <SlidersHorizontal size={15} className="text-brand-400" />
-            Advanced Filters
+      {isAdvanced && (
+        <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-sm font-semibold text-slate-300">
+              <SlidersHorizontal size={15} className="text-brand-400" />
+              {t('advancedFilters')}
+            </div>
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="text-xs text-slate-500 hover:text-slate-300"
+            >
+              {t('clear')}
+            </button>
           </div>
-          <button type="button" onClick={clearFilters} className="text-xs text-slate-500 hover:text-slate-300">
-            Clear
-          </button>
+          <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
+            <input
+              type="text"
+              placeholder={t('tag')}
+              value={tag}
+              onChange={(e) => setParam('tag', e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            />
+            <input
+              type="text"
+              placeholder={t('sourcePlaceholder')}
+              value={source}
+              onChange={(e) => setParam('source', e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            />
+            <input
+              type="text"
+              placeholder={t('domain')}
+              value={domain}
+              onChange={(e) => setParam('domain', e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            />
+            <select
+              value={hasPassword}
+              onChange={(e) => setParam('hasPassword', e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            >
+              <option value="">{t('anyPassword')}</option>
+              <option value="yes">{t('passwordProtected')}</option>
+              <option value="no">{t('noPassword')}</option>
+            </select>
+            <select
+              value={warning}
+              onChange={(e) => setParam('warning', e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            >
+              <option value="">{t('anyWarning')}</option>
+              <option value="yes">{t('warningEnabled')}</option>
+              <option value="no">{t('warningDisabled')}</option>
+            </select>
+            <select
+              value={limits}
+              onChange={(e) => setParam('limits', e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            >
+              <option value="">{t('anyLimits')}</option>
+              <option value="yes">{t('hasLimits')}</option>
+              <option value="no">{t('noLimits')}</option>
+            </select>
+            <input
+              type="date"
+              value={createdFrom}
+              onChange={(e) => setParam('createdFrom', e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            />
+            <input
+              type="date"
+              value={createdTo}
+              onChange={(e) => setParam('createdTo', e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            />
+          </div>
         </div>
-        <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
-          <input
-            type="text"
-            placeholder="Tag"
-            value={tag}
-            onChange={(e) => setParam('tag', e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
-          />
-          <input
-            type="text"
-            placeholder="Source"
-            value={source}
-            onChange={(e) => setParam('source', e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
-          />
-          <input
-            type="text"
-            placeholder="Domain"
-            value={domain}
-            onChange={(e) => setParam('domain', e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
-          />
-          <select
-            value={hasPassword}
-            onChange={(e) => setParam('hasPassword', e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
-          >
-            <option value="">Any Password</option>
-            <option value="yes">Password Protected</option>
-            <option value="no">No Password</option>
-          </select>
-          <select
-            value={warning}
-            onChange={(e) => setParam('warning', e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
-          >
-            <option value="">Any Warning</option>
-            <option value="yes">Warning Enabled</option>
-            <option value="no">Warning Disabled</option>
-          </select>
-          <select
-            value={limits}
-            onChange={(e) => setParam('limits', e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
-          >
-            <option value="">Any Limits</option>
-            <option value="yes">Has Limits</option>
-            <option value="no">No Limits</option>
-          </select>
-          <input
-            type="date"
-            value={createdFrom}
-            onChange={(e) => setParam('createdFrom', e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
-          />
-          <input
-            type="date"
-            value={createdTo}
-            onChange={(e) => setParam('createdTo', e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
-          />
-        </div>
-      </div>
+      )}
 
-      {selectedCount > 0 && (
+      {isAdvanced && selectedCount > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-700 bg-slate-900 px-4 py-3">
-          <span className="text-sm text-slate-300">{selectedCount} selected</span>
+          <span className="text-sm text-slate-300">
+            {t('selectedCount', { count: selectedCount })}
+          </span>
           <div className="flex flex-wrap gap-2">
-            <Button size="sm" variant="secondary" icon={<PowerOff size={14} />} onClick={() => requestBulkAction('disable')} loading={actionLoading}>
-              Disable
+            <Button
+              size="sm"
+              variant="secondary"
+              icon={<PowerOff size={14} />}
+              onClick={() => requestBulkAction('disable')}
+              loading={actionLoading}
+            >
+              {t('disable')}
             </Button>
-            <Button size="sm" variant="secondary" icon={<Power size={14} />} onClick={() => requestBulkAction('enable')} loading={actionLoading}>
-              Enable
+            <Button
+              size="sm"
+              variant="secondary"
+              icon={<Power size={14} />}
+              onClick={() => requestBulkAction('enable')}
+              loading={actionLoading}
+            >
+              {t('enable')}
             </Button>
-            <Button size="sm" variant="secondary" icon={<Archive size={14} />} onClick={() => requestBulkAction('archive')} loading={actionLoading}>
-              Archive
+            <Button
+              size="sm"
+              variant="secondary"
+              icon={<Archive size={14} />}
+              onClick={() => requestBulkAction('archive')}
+              loading={actionLoading}
+            >
+              {t('archive')}
             </Button>
-            <Button size="sm" variant="secondary" icon={<RotateCcw size={14} />} onClick={() => requestBulkAction('restore')} loading={actionLoading}>
-              Restore
+            <Button
+              size="sm"
+              variant="secondary"
+              icon={<RotateCcw size={14} />}
+              onClick={() => requestBulkAction('restore')}
+              loading={actionLoading}
+            >
+              {t('restore')}
             </Button>
-            <Button size="sm" variant="secondary" icon={<Tag size={14} />} onClick={openTagModal} loading={actionLoading}>
-              Tags
+            <Button
+              size="sm"
+              variant="secondary"
+              icon={<Tag size={14} />}
+              onClick={openTagModal}
+              loading={actionLoading}
+            >
+              {t('tags')}
             </Button>
-            <Button size="sm" variant="danger" icon={<Trash2 size={14} />} onClick={() => requestBulkAction('delete')} loading={actionLoading}>
-              Delete
+            <Button
+              size="sm"
+              variant="danger"
+              icon={<Trash2 size={14} />}
+              onClick={() => requestBulkAction('delete')}
+              loading={actionLoading}
+            >
+              {t('delete')}
             </Button>
           </div>
         </div>
@@ -425,114 +541,225 @@ export function Links() {
           </div>
         ) : result?.items.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-48 gap-3">
-            <p className="text-slate-400">No links found</p>
-            <Link to="/links/create"><Button size="sm" icon={<Plus size={14} />}>Create your first link</Button></Link>
+            <p className="text-slate-400">{t('noLinksFound')}</p>
+            <Link to="/links/create">
+              <Button size="sm" icon={<Plus size={14} />}>
+                {t('createFirstLink')}
+              </Button>
+            </Link>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-800 text-xs text-slate-500 uppercase tracking-wider">
-                  <th className="w-10 px-4 py-3">
-                    <input
-                      type="checkbox"
-                      checked={allVisibleSelected}
-                      onChange={toggleAllVisible}
-                      aria-label="Select all visible links"
-                      className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-brand-600 focus:ring-brand-500"
-                    />
-                  </th>
-                  <th className="text-left px-4 py-3">Short Link</th>
-                  <th className="text-left px-4 py-3">Destination</th>
-                  <th className="text-left px-4 py-3">Tags</th>
-                  <th className="text-right px-4 py-3">Clicks</th>
-                  <th className="text-left px-4 py-3">Limits</th>
-                  <th className="text-left px-4 py-3">Status</th>
-                  <th className="text-left px-4 py-3">Created</th>
-                  <th className="text-right px-4 py-3">Actions</th>
+                  {isAdvanced && (
+                    <th className="w-10 px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={allVisibleSelected}
+                        onChange={toggleAllVisible}
+                        aria-label="Select all visible links"
+                        className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-brand-600 focus:ring-brand-500"
+                      />
+                    </th>
+                  )}
+                  <th className="text-left px-4 py-3">{t('shortLink')}</th>
+                  <th className="text-left px-4 py-3">{t('destination')}</th>
+                  <th className="text-left px-4 py-3">{t('tags')}</th>
+                  <th className="text-right px-4 py-3">{t('clicks')}</th>
+                  {isAdvanced && <th className="text-left px-4 py-3">{t('limitsLabel')}</th>}
+                  <th className="text-left px-4 py-3">{t('status')}</th>
+                  <th className="text-left px-4 py-3">{t('created')}</th>
+                  <th className="text-right px-4 py-3">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
                 {result?.items.map((link) => {
                   const tags = link.tags ? (JSON.parse(link.tags) as string[]) : [];
                   const effectiveStatus = getEffectiveStatus(link);
-                  const expiredByTime = !!link.expires_at && dayjs(link.expires_at).isBefore(dayjs());
-                  const expiredByClicks = hasMaxClicks(link) && link.clicks >= Number(link.max_clicks);
+                  const expiredByTime =
+                    !!link.expires_at && dayjs(link.expires_at).isBefore(dayjs());
+                  const expiredByClicks =
+                    hasMaxClicks(link) && link.clicks >= Number(link.max_clicks);
                   return (
                     <tr key={link.id} className="hover:bg-slate-800/50 transition-colors">
-                      <td className="px-4 py-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.has(link.id)}
-                          onChange={() => toggleSelected(link.id)}
-                          aria-label={`Select /${link.slug}`}
-                          className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-brand-600 focus:ring-brand-500"
-                        />
-                      </td>
+                      {isAdvanced && (
+                        <td className="px-4 py-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.has(link.id)}
+                            onChange={() => toggleSelected(link.id)}
+                            aria-label={`Select /${link.slug}`}
+                            className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-brand-600 focus:ring-brand-500"
+                          />
+                        </td>
+                      )}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <span className="font-mono text-brand-400">/{link.slug}</span>
                           {link.source && (
-                            <span className="text-xs text-slate-600 bg-slate-800 px-1.5 py-0.5 rounded">{link.source}</span>
+                            <span className="text-xs text-slate-600 bg-slate-800 px-1.5 py-0.5 rounded">
+                              {link.source}
+                            </span>
                           )}
                           {link.password_protected && (
-                            <span title="Password protected" className="inline-flex text-slate-500"><KeyRound size={13} /></span>
+                            <span
+                              title={t('passwordProtected')}
+                              className="inline-flex text-slate-500"
+                            >
+                              <KeyRound size={13} />
+                            </span>
                           )}
                           {link.warning_enabled === 1 && (
-                            <span title="Safety warning enabled" className="inline-flex text-yellow-500"><ShieldAlert size={13} /></span>
+                            <span
+                              title={t('safetyWarningEnabled')}
+                              className="inline-flex text-yellow-500"
+                            >
+                              <ShieldAlert size={13} />
+                            </span>
                           )}
                         </div>
                       </td>
                       <td className="px-4 py-3 max-w-xs">
-                        <p className="truncate text-slate-300" title={link.long_url}>{link.long_url}</p>
-                        {link.title && <p className="text-xs text-slate-500 truncate">{link.title}</p>}
+                        <p className="truncate text-slate-300" title={link.long_url}>
+                          {link.long_url}
+                        </p>
+                        {link.title && (
+                          <p className="text-xs text-slate-500 truncate">{link.title}</p>
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-1">
                           {tags.slice(0, 3).map((t) => (
-                            <span key={t} className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">{t}</span>
+                            <span
+                              key={t}
+                              className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full"
+                            >
+                              {t}
+                            </span>
                           ))}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-right text-slate-300 font-medium">{link.clicks.toLocaleString()}</td>
-                      <td className="px-4 py-3 text-xs">
-                        {link.expires_at || hasMaxClicks(link) ? (
-                          <div className="space-y-1">
-                            {link.expires_at && (
-                              <div className={expiredByTime ? 'text-yellow-400' : 'text-slate-500'}>
-                                Until {dayjs(link.expires_at).format('MMM D, YYYY HH:mm')}
-                              </div>
-                            )}
-                            {hasMaxClicks(link) && (
-                              <div className={expiredByClicks ? 'text-yellow-400' : 'text-slate-500'}>
-                                {link.clicks.toLocaleString()} / {Number(link.max_clicks).toLocaleString()}
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-slate-600">None</span>
-                        )}
+                      <td className="px-4 py-3 text-right text-slate-300 font-medium">
+                        {link.clicks.toLocaleString()}
                       </td>
-                      <td className="px-4 py-3"><StatusBadge status={effectiveStatus} /></td>
-                      <td className="px-4 py-3 text-slate-500 text-xs">{dayjs(link.created_at).format('MMM D, YYYY')}</td>
+                      {isAdvanced && (
+                        <td className="px-4 py-3 text-xs">
+                          {link.expires_at || hasMaxClicks(link) ? (
+                            <div className="space-y-1">
+                              {link.expires_at && (
+                                <div
+                                  className={expiredByTime ? 'text-yellow-400' : 'text-slate-500'}
+                                >
+                                  {t('until', {
+                                    date: dayjs(link.expires_at).format('MMM D, YYYY HH:mm'),
+                                  })}
+                                </div>
+                              )}
+                              {hasMaxClicks(link) && (
+                                <div
+                                  className={expiredByClicks ? 'text-yellow-400' : 'text-slate-500'}
+                                >
+                                  {link.clicks.toLocaleString()} /{' '}
+                                  {Number(link.max_clicks).toLocaleString()}
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-slate-600">{t('none')}</span>
+                          )}
+                        </td>
+                      )}
+                      <td className="px-4 py-3">
+                        <StatusBadge status={effectiveStatus} />
+                      </td>
+                      <td className="px-4 py-3 text-slate-500 text-xs">
+                        {dayjs(link.created_at).format('MMM D, YYYY')}
+                      </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => copyLink(link)} title="Copy" className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"><Copy size={14} /></button>
-                          <a href={buildShortUrl(link, defaultDomain)} target="_blank" rel="noopener noreferrer" title="Open" className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"><ExternalLink size={14} /></a>
-                          <button onClick={() => showQr(link)} title="QR Code" className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"><QrCode size={14} /></button>
-                          <Link to={`/analytics/links/${link.id}`} title="Analytics" className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"><BarChart3 size={14} /></Link>
-                          <Link to={`/links/${link.id}/edit`} title="Edit" className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"><Pencil size={14} /></Link>
-                          {link.status === 'active'
-                            ? <button onClick={() => confirmAction('disable', link)} title="Disable" className="p-1.5 text-slate-500 hover:text-yellow-400 hover:bg-slate-700 rounded transition-colors"><PowerOff size={14} /></button>
-                            : link.status === 'disabled'
-                            ? <button onClick={() => confirmAction('enable', link)} title="Enable" className="p-1.5 text-slate-500 hover:text-emerald-400 hover:bg-slate-700 rounded transition-colors"><Power size={14} /></button>
-                            : null
-                          }
-                          {link.archived === 0
-                            ? <button onClick={() => confirmAction('archive', link)} title="Archive" className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"><Archive size={14} /></button>
-                            : <button onClick={() => confirmAction('restore', link)} title="Restore" className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"><RotateCcw size={14} /></button>
-                          }
-                          <button onClick={() => confirmAction('delete', link)} title="Delete" className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-700 rounded transition-colors"><Trash2 size={14} /></button>
+                          <button
+                            onClick={() => copyLink(link)}
+                            title={t('copy')}
+                            className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"
+                          >
+                            <Copy size={14} />
+                          </button>
+                          <a
+                            href={buildShortUrl(link, defaultDomain)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title={t('open')}
+                            className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"
+                          >
+                            <ExternalLink size={14} />
+                          </a>
+                          <button
+                            onClick={() => showQr(link)}
+                            title={t('qrCode')}
+                            className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"
+                          >
+                            <QrCode size={14} />
+                          </button>
+                          {isAdvanced && (
+                            <Link
+                              to={`/analytics/links/${link.id}`}
+                              title={t('analytics')}
+                              className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"
+                            >
+                              <BarChart3 size={14} />
+                            </Link>
+                          )}
+                          <Link
+                            to={`/links/${link.id}/edit`}
+                            title={t('edit')}
+                            className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"
+                          >
+                            <Pencil size={14} />
+                          </Link>
+                          {link.status === 'active' ? (
+                            <button
+                              onClick={() => confirmAction('disable', link)}
+                              title={t('disable')}
+                              className="p-1.5 text-slate-500 hover:text-yellow-400 hover:bg-slate-700 rounded transition-colors"
+                            >
+                              <PowerOff size={14} />
+                            </button>
+                          ) : link.status === 'disabled' ? (
+                            <button
+                              onClick={() => confirmAction('enable', link)}
+                              title={t('enable')}
+                              className="p-1.5 text-slate-500 hover:text-emerald-400 hover:bg-slate-700 rounded transition-colors"
+                            >
+                              <Power size={14} />
+                            </button>
+                          ) : null}
+                          {isAdvanced &&
+                            (link.archived === 0 ? (
+                              <button
+                                onClick={() => confirmAction('archive', link)}
+                                title={t('archive')}
+                                className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"
+                              >
+                                <Archive size={14} />
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => confirmAction('restore', link)}
+                                title={t('restore')}
+                                className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"
+                              >
+                                <RotateCcw size={14} />
+                              </button>
+                            ))}
+                          <button
+                            onClick={() => confirmAction('delete', link)}
+                            title={t('delete')}
+                            className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-700 rounded transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -547,12 +774,25 @@ export function Links() {
       {/* Pagination */}
       {result && result.totalPages > 1 && (
         <div className="flex items-center justify-between text-sm">
-          <span className="text-slate-500">Page {page} of {result.totalPages}</span>
+          <span className="text-slate-500">{t('pageOf', { page, total: result.totalPages })}</span>
           <div className="flex gap-2">
-            <Button variant="secondary" size="sm" icon={<ChevronLeft size={14} />} disabled={page <= 1}
-              onClick={() => setParam('page', String(page - 1))}>Prev</Button>
-            <Button variant="secondary" size="sm" disabled={page >= result.totalPages}
-              onClick={() => setParam('page', String(page + 1))}>Next <ChevronRight size={14} /></Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<ChevronLeft size={14} />}
+              disabled={page <= 1}
+              onClick={() => setParam('page', String(page - 1))}
+            >
+              {t('previous')}
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              disabled={page >= result.totalPages}
+              onClick={() => setParam('page', String(page + 1))}
+            >
+              {t('next')} <ChevronRight size={14} />
+            </Button>
           </div>
         </div>
       )}
@@ -562,73 +802,104 @@ export function Links() {
         open={!!confirm}
         onClose={() => setConfirm(null)}
         onConfirm={() => confirm && runAction(confirm.type, confirm.link)}
-        title={confirm?.type === 'delete' ? 'Delete Link' : confirm?.type === 'disable' ? 'Disable Link' : 'Archive Link'}
+        title={t(
+          confirm?.type === 'delete'
+            ? 'deleteLink'
+            : confirm?.type === 'disable'
+              ? 'disableLink'
+              : 'archiveLink'
+        )}
         message={
           confirm?.type === 'delete'
-            ? `Are you sure you want to permanently delete "/${confirm.link.slug}"? This cannot be undone.`
+            ? t('deleteLinkConfirm', { slug: confirm.link.slug })
             : confirm?.type === 'disable'
-            ? `Disable "/${confirm?.link.slug}"? The short link will stop working.`
-            : `Archive "/${confirm?.link.slug}"?`
+              ? t('disableLinkConfirm', { slug: confirm?.link.slug ?? '' })
+              : t('archiveLinkConfirm', { slug: confirm?.link.slug ?? '' })
         }
-        confirmLabel={confirm?.type === 'delete' ? 'Delete' : confirm?.type === 'disable' ? 'Disable' : 'Archive'}
+        confirmLabel={t(
+          confirm?.type === 'delete'
+            ? 'delete'
+            : confirm?.type === 'disable'
+              ? 'disable'
+              : 'archive'
+        )}
         confirmVariant={confirm?.type === 'delete' ? 'danger' : 'primary'}
         loading={actionLoading}
       />
 
-      <ConfirmDialog
-        open={!!bulkConfirm}
-        onClose={() => setBulkConfirm(null)}
-        onConfirm={() => bulkConfirm && runBulkAction(bulkConfirm)}
-        title={bulkConfirm === 'delete' ? 'Delete Links' : bulkConfirm === 'disable' ? 'Disable Links' : 'Archive Links'}
-        message={
-          bulkConfirm === 'delete'
-            ? `Delete ${selectedCount} selected links? This cannot be undone.`
-            : bulkConfirm === 'disable'
-            ? `Disable ${selectedCount} selected links? They will stop redirecting.`
-            : `Archive ${selectedCount} selected links?`
-        }
-        confirmLabel={bulkConfirm === 'delete' ? 'Delete' : bulkConfirm === 'disable' ? 'Disable' : 'Archive'}
-        confirmVariant={bulkConfirm === 'delete' ? 'danger' : 'primary'}
-        loading={actionLoading}
-      />
+      {isAdvanced && (
+        <ConfirmDialog
+          open={!!bulkConfirm}
+          onClose={() => setBulkConfirm(null)}
+          onConfirm={() => bulkConfirm && runBulkAction(bulkConfirm)}
+          title={t(
+            bulkConfirm === 'delete'
+              ? 'deleteLinks'
+              : bulkConfirm === 'disable'
+                ? 'disableLinks'
+                : 'archiveLinks'
+          )}
+          message={
+            bulkConfirm === 'delete'
+              ? t('deleteLinksConfirm', { count: selectedCount })
+              : bulkConfirm === 'disable'
+                ? t('disableLinksConfirm', { count: selectedCount })
+                : t('archiveLinksConfirm', { count: selectedCount })
+          }
+          confirmLabel={t(
+            bulkConfirm === 'delete' ? 'delete' : bulkConfirm === 'disable' ? 'disable' : 'archive'
+          )}
+          confirmVariant={bulkConfirm === 'delete' ? 'danger' : 'primary'}
+          loading={actionLoading}
+        />
+      )}
 
-      <Modal
-        open={tagModalOpen}
-        onClose={() => setTagModalOpen(false)}
-        title="Bulk Edit Tags"
-        size="md"
-      >
-        <div className="space-y-4">
-          <Select
-            label="Mode"
-            value={tagMode}
-            onChange={(e) => setTagMode(e.target.value as BulkTagMode)}
-          >
-            <option value="add">Add to existing tags</option>
-            <option value="replace">Replace existing tags</option>
-            <option value="remove">Remove matching tags</option>
-            <option value="clear">Clear all tags</option>
-          </Select>
+      {isAdvanced && (
+        <Modal
+          open={tagModalOpen}
+          onClose={() => setTagModalOpen(false)}
+          title={t('bulkEditTags')}
+          size="md"
+        >
+          <div className="space-y-4">
+            <Select
+              label={t('mode')}
+              value={tagMode}
+              onChange={(e) => setTagMode(e.target.value as BulkTagMode)}
+            >
+              <option value="add">{t('addTagsMode')}</option>
+              <option value="replace">{t('replaceTagsMode')}</option>
+              <option value="remove">{t('removeTagsMode')}</option>
+              <option value="clear">{t('clearTagsMode')}</option>
+            </Select>
 
-          <Input
-            label="Tags"
-            placeholder="vpn, card, campaign"
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            disabled={tagMode === 'clear'}
-            hint={tagMode === 'clear' ? `${selectedCount} selected links will have all tags removed` : 'Comma-separated tags'}
-          />
+            <Input
+              label={t('tags')}
+              placeholder="vpn, card, campaign"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              disabled={tagMode === 'clear'}
+              hint={
+                tagMode === 'clear' ? t('clearTagsHint', { count: selectedCount }) : t('commaTags')
+              }
+            />
 
-          <div className="flex justify-end gap-3 pt-2">
-            <Button variant="secondary" size="sm" onClick={() => setTagModalOpen(false)} disabled={actionLoading}>
-              Cancel
-            </Button>
-            <Button size="sm" onClick={runBulkTagAction} loading={actionLoading}>
-              Apply Tags
-            </Button>
+            <div className="flex justify-end gap-3 pt-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setTagModalOpen(false)}
+                disabled={actionLoading}
+              >
+                {t('cancel')}
+              </Button>
+              <Button size="sm" onClick={runBulkTagAction} loading={actionLoading}>
+                {t('applyTags')}
+              </Button>
+            </div>
           </div>
-        </div>
-      </Modal>
+        </Modal>
+      )}
 
       <Modal
         open={!!qr}
@@ -643,11 +914,16 @@ export function Links() {
             </div>
             <p className="break-all font-mono text-xs text-slate-400">{qr.url}</p>
             <div className="flex justify-end gap-3">
-              <Button variant="secondary" size="sm" onClick={() => copyLink(qr.link)} icon={<Copy size={14} />}>
-                Copy Link
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => copyLink(qr.link)}
+                icon={<Copy size={14} />}
+              >
+                {t('copyLink')}
               </Button>
               <Button size="sm" onClick={downloadQr} icon={<Download size={14} />}>
-                Download PNG
+                {t('downloadPng')}
               </Button>
             </div>
           </div>

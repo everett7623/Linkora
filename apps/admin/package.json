@@ -1,12 +1,13 @@
 {
   "name": "@linkora/admin",
-  "version": "0.7.4",
+  "version": "0.8.0",
   "license": "GPL-3.0-only",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "test": "node --experimental-strip-types --test src/utils/adminMode.test.ts",
     "preview": "vite preview"
   },
   "dependencies": {

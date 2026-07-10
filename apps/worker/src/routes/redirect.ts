@@ -1,10 +1,16 @@
 import type { Context } from 'hono';
 import type { Env } from '../types';
 import { getCachedLink, setCachedLink } from '../cache/index';
-import { getDomainlessLinkBySlug, getLinkByDomainAndSlug, getRedirectRulesForLink } from '../db/index';
+import {
+  getDomainlessLinkBySlug,
+  getLinkByDomainAndSlug,
+  getRedirectRulesForLink,
+} from '../db/index';
 import { queueOrRecordVisit } from '../analytics/index';
 import { resolveRedirectDecision, type RedirectDecision } from '../redirectRules/index';
 import { notFound, disabledPage, expiredPage, passwordPage, warningPage } from '../utils/response';
+import { resolvePublicLocale, type PublicLocale } from '../utils/publicPages';
+import { redirectResponse } from '../utils/redirectResponse';
 import { sha256 } from '../utils/id';
 import type { KVCacheEntry, Link } from '@linkora/shared';
 
@@ -22,19 +28,19 @@ function toCacheEntry(link: Link): KVCacheEntry {
   };
 }
 
-function redirectForLink(link: Link): Response | null {
-  if (link.status === 'disabled') return disabledPage();
+function redirectForLink(link: Link, locale: PublicLocale): Response | null {
+  if (link.status === 'disabled') return disabledPage(locale);
   if (link.status === 'expired') {
-    return expiredPage();
+    return expiredPage(locale);
   }
   if (link.status === 'archived') {
-    return notFound('The short link you are looking for does not exist.');
+    return notFound(undefined, locale);
   }
   if (link.expires_at && new Date(link.expires_at) < new Date()) {
-    return expiredPage();
+    return expiredPage(locale);
   }
   if (link.max_clicks !== null && link.max_clicks !== undefined && link.clicks >= link.max_clicks) {
-    return expiredPage();
+    return expiredPage(locale);
   }
   return null;
 }
@@ -62,12 +68,21 @@ async function getRedirectLink(env: Env, domain: string, slug: string): Promise<
   return (await getLinkByDomainAndSlug(env, domain, slug)) ?? getDomainlessLinkBySlug(env, slug);
 }
 
-async function getSmartRedirectDecision(env: Env, link: Link, request: Request): Promise<RedirectDecision> {
+async function getSmartRedirectDecision(
+  env: Env,
+  link: Link,
+  request: Request
+): Promise<RedirectDecision> {
   try {
     const rules = await getRedirectRulesForLink(env, link.id);
     return resolveRedirectDecision(link, rules, request);
   } catch {
-    return { targetUrl: link.long_url, redirectRuleId: null, redirectRuleType: null, matched: false };
+    return {
+      targetUrl: link.long_url,
+      redirectRuleId: null,
+      redirectRuleType: null,
+      matched: false,
+    };
   }
 }
 
@@ -94,20 +109,21 @@ async function passwordMatches(storedHash: string, password: string): Promise<bo
 
 async function accessGate(
   c: Context<{ Bindings: Env }>,
-  link: Link
+  link: Link,
+  locale: PublicLocale
 ): Promise<Response | null> {
-  const inactiveResponse = redirectForLink(link);
+  const inactiveResponse = redirectForLink(link, locale);
   if (inactiveResponse) return inactiveResponse;
 
   if (link.password_hash) {
     const submittedPassword = await readSubmittedPassword(c);
     if (!submittedPassword || !(await passwordMatches(link.password_hash, submittedPassword))) {
-      return passwordPage(link.slug, c.req.method === 'POST');
+      return passwordPage(link.slug, c.req.method === 'POST', locale);
     }
   }
 
   if (link.warning_enabled === 1 && !warningConfirmed(c)) {
-    return warningPage(link.slug, link.long_url, !!link.password_hash);
+    return warningPage(link.slug, link.long_url, !!link.password_hash, locale);
   }
 
   return null;
@@ -115,8 +131,9 @@ async function accessGate(
 
 export async function handleRedirect(c: Context<{ Bindings: Env }>): Promise<Response> {
   const slug = c.req.param('slug');
+  const locale = resolvePublicLocale(c.req.header('Accept-Language'));
   if (!slug) {
-    return notFound('The short link you are looking for does not exist.');
+    return notFound(undefined, locale);
   }
 
   const domain = new URL(c.req.url).hostname.toLowerCase();
@@ -128,10 +145,10 @@ export async function handleRedirect(c: Context<{ Bindings: Env }>): Promise<Res
     // Fallback to D1
     const link = await getRedirectLink(c.env, domain, slug);
     if (!link) {
-      return notFound('The short link you are looking for does not exist.');
+      return notFound(undefined, locale);
     }
 
-    const gatedResponse = await accessGate(c, link);
+    const gatedResponse = await accessGate(c, link, locale);
     if (gatedResponse) return gatedResponse;
 
     cached = toCacheEntry(link);
@@ -144,16 +161,15 @@ export async function handleRedirect(c: Context<{ Bindings: Env }>): Promise<Res
     const decision = await getSmartRedirectDecision(c.env, link, c.req.raw);
 
     // Async: record visit (stats failure must NOT block redirect)
-    c.executionCtx.waitUntil(queueOrRecordVisit(c.env, link, c.req.raw, domain, {
-      url: decision.targetUrl,
-      redirect_rule_id: decision.redirectRuleId,
-      redirect_rule_type: decision.redirectRuleType,
-    }));
+    c.executionCtx.waitUntil(
+      queueOrRecordVisit(c.env, link, c.req.raw, domain, {
+        url: decision.targetUrl,
+        redirect_rule_id: decision.redirectRuleId,
+        redirect_rule_type: decision.redirectRuleType,
+      })
+    );
 
-    return new Response(null, {
-      status: link.redirect_type,
-      headers: { Location: decision.targetUrl },
-    });
+    return redirectResponse(decision.targetUrl, link.redirect_type);
   }
 
   // Re-check D1 on cache hits. This keeps admin changes authoritative even if
@@ -161,10 +177,10 @@ export async function handleRedirect(c: Context<{ Bindings: Env }>): Promise<Res
   try {
     const link = await getRedirectLink(c.env, domain, slug);
     if (!link) {
-      return notFound('The short link you are looking for does not exist.');
+      return notFound(undefined, locale);
     }
 
-    const gatedResponse = await accessGate(c, link);
+    const gatedResponse = await accessGate(c, link, locale);
     if (gatedResponse) return gatedResponse;
 
     const freshCache = toCacheEntry(link);
@@ -174,16 +190,15 @@ export async function handleRedirect(c: Context<{ Bindings: Env }>): Promise<Res
 
     const decision = await getSmartRedirectDecision(c.env, link, c.req.raw);
 
-    c.executionCtx.waitUntil(queueOrRecordVisit(c.env, link, c.req.raw, domain, {
-      url: decision.targetUrl,
-      redirect_rule_id: decision.redirectRuleId,
-      redirect_rule_type: decision.redirectRuleType,
-    }));
+    c.executionCtx.waitUntil(
+      queueOrRecordVisit(c.env, link, c.req.raw, domain, {
+        url: decision.targetUrl,
+        redirect_rule_id: decision.redirectRuleId,
+        redirect_rule_type: decision.redirectRuleType,
+      })
+    );
 
-    return new Response(null, {
-      status: link.redirect_type,
-      headers: { Location: decision.targetUrl },
-    });
+    return redirectResponse(decision.targetUrl, link.redirect_type);
   } catch {
     // If D1 is temporarily unavailable but KV has an active entry, preserve the redirect.
     if (
@@ -192,15 +207,12 @@ export async function handleRedirect(c: Context<{ Bindings: Env }>): Promise<Res
       (cached.maxClicks === undefined || cached.maxClicks === null)
     ) {
       if (cached.warningEnabled && !warningConfirmed(c)) {
-        return warningPage(cached.slug, cached.longUrl);
+        return warningPage(cached.slug, cached.longUrl, false, locale);
       }
 
-      return new Response(null, {
-        status: cached.redirectType,
-        headers: { Location: cached.longUrl },
-      });
+      return redirectResponse(cached.longUrl, cached.redirectType);
     }
   }
 
-  return notFound('The short link you are looking for does not exist.');
+  return notFound(undefined, locale);
 }

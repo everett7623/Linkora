@@ -1,8 +1,9 @@
 {
   "name": "@linkora/worker",
-  "version": "0.7.4",
+  "version": "0.8.0",
   "license": "GPL-3.0-only",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
@@ -11,7 +12,8 @@
     "db:create": "wrangler d1 create linkora-db",
     "kv:create": "wrangler kv namespace create LINKORA_KV",
     "queue:create": "wrangler queues create linkora-visits --message-retention-period-secs 60",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test src/utils/publicPages.test.mjs"
   },
   "dependencies": {
     "@linkora/shared": "*",

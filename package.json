@@ -1,6 +1,6 @@
 {
   "name": "linkora",
-  "version": "0.7.4",
+  "version": "0.8.0",
   "license": "GPL-3.0-only",
   "private": true,
   "workspaces": [
@@ -11,6 +11,8 @@
     "dev:worker": "npm run dev --workspace=apps/worker",
     "dev:admin": "npm run dev --workspace=apps/admin",
     "build:admin": "npm run build --workspace=apps/admin",
+    "test:admin": "npm run test --workspace=apps/admin",
+    "test:worker": "npm run test --workspace=apps/worker",
     "deploy:worker": "npm run deploy --workspace=apps/worker",
     "db:migrate:local": "npm run db:migrate:local --workspace=apps/worker",
     "db:migrate:remote": "npm run db:migrate:remote --workspace=apps/worker"

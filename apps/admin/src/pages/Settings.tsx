@@ -4,12 +4,18 @@ import { LINKORA_VERSION } from '@linkora/shared';
 import { getSettings, updateSettings } from '../api/settings';
 import { ResetSettingsPanel } from '../components/settings/ResetSettingsPanel';
 import { WebhookSettingsPanel } from '../components/settings/WebhookSettingsPanel';
+import { AdminModePanel } from '../components/settings/AdminModePanel';
 import { Button } from '../components/ui/Button';
 import { Input, Select } from '../components/ui/Input';
 import { useToast } from '../components/ui/Toast';
+import { useAdminMode } from '../contexts/AdminModeContext';
+import { useLocale } from '../contexts/LocaleContext';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 export function Settings() {
   const { success, error } = useToast();
+  const { isAdvanced } = useAdminMode();
+  const { t } = useLocale();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
@@ -29,7 +35,7 @@ export function Settings() {
           analytics_retention_days: s.analytics_retention_days ?? '0',
         });
       })
-      .catch(() => error('Failed to load settings'))
+      .catch(() => error(t('loadSettingsFailed')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -40,7 +46,7 @@ export function Settings() {
     setSaving(true);
     try {
       await updateSettings(form);
-      success('Settings saved');
+      success(t('settingsSaved'));
     } catch (e) {
       error(String(e));
     } finally {
@@ -59,62 +65,95 @@ export function Settings() {
   return (
     <div className="max-w-2xl space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-100">Settings</h1>
-        <p className="mt-0.5 text-sm text-slate-400">Configure your Linkora instance</p>
+        <h1 className="text-2xl font-bold text-slate-100">{t('settings')}</h1>
+        <p className="mt-0.5 text-sm text-slate-400">{t('configureInstance')}</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-slate-800 bg-slate-900 p-6">
-        <h2 className="border-b border-slate-800 pb-1 text-sm font-semibold uppercase tracking-wider text-slate-400">General</h2>
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-5 rounded-xl border border-slate-800 bg-slate-900 p-6"
+      >
+        <h2 className="border-b border-slate-800 pb-1 text-sm font-semibold uppercase tracking-wider text-slate-400">
+          {t('general')}
+        </h2>
 
         <Input
-          label="Site Name"
+          label={t('siteName')}
           value={form.site_name}
           onChange={(e) => set('site_name', e.target.value)}
-          hint="Displayed in the admin panel title"
+          hint={t('siteNameHint')}
         />
 
         <Input
-          label="Default Domain"
+          label={t('defaultDomain')}
           placeholder="go.example.com"
           value={form.default_domain}
           onChange={(e) => set('default_domain', e.target.value)}
-          hint="Used to construct short_url. Leave blank to use request hostname."
+          hint={t('defaultDomainHint')}
         />
 
-        <Select label="Default Redirect Type" value={form.default_redirect_type} onChange={(e) => set('default_redirect_type', e.target.value)}>
-          <option value="302">302 Temporary</option>
-          <option value="301">301 Permanent</option>
+        <Select
+          label={t('redirectType')}
+          value={form.default_redirect_type}
+          onChange={(e) => set('default_redirect_type', e.target.value)}
+        >
+          <option value="302">302 {t('temporary')}</option>
+          <option value="301">301 {t('permanent')}</option>
         </Select>
 
-        <Input
-          label="Analytics Retention Days"
-          type="number"
-          min="0"
-          max="3650"
-          value={form.analytics_retention_days}
-          onChange={(e) => set('analytics_retention_days', e.target.value)}
-          hint="0 keeps analytics indefinitely."
-        />
+        {isAdvanced && (
+          <Input
+            label={t('retentionDays')}
+            type="number"
+            min="0"
+            max="3650"
+            value={form.analytics_retention_days}
+            onChange={(e) => set('analytics_retention_days', e.target.value)}
+            hint={t('retentionHint')}
+          />
+        )}
 
         <div className="pt-2">
           <Button type="submit" icon={<Save size={15} />} loading={saving}>
-            Save Settings
+            {t('saveSettings')}
           </Button>
         </div>
       </form>
 
-      <WebhookSettingsPanel />
+      <AdminModePanel />
 
-      <ResetSettingsPanel />
+      <section className="space-y-3 rounded-xl border border-slate-800 bg-slate-900 p-6">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
+          {t('language')}
+        </h2>
+        <div className="max-w-xs">
+          <LanguageSwitcher />
+        </div>
+      </section>
+
+      {isAdvanced && <WebhookSettingsPanel />}
+
+      {isAdvanced && <ResetSettingsPanel />}
 
       <div className="space-y-3 rounded-xl border border-slate-800 bg-slate-900 p-6">
-        <h2 className="border-b border-slate-800 pb-1 text-sm font-semibold uppercase tracking-wider text-slate-400">About</h2>
+        <h2 className="border-b border-slate-800 pb-1 text-sm font-semibold uppercase tracking-wider text-slate-400">
+          {t('about')}
+        </h2>
         <div className="space-y-1 text-sm text-slate-400">
-          <p>Version: <span className="font-mono text-slate-200">{LINKORA_VERSION}</span></p>
-          <p>Platform: <span className="text-slate-200">Cloudflare Workers + D1 + KV</span></p>
           <p>
-            Documentation:{' '}
-            <a href="https://github.com/everett7623/Linkora" target="_blank" rel="noopener noreferrer" className="text-brand-400 hover:text-brand-300">
+            {t('version')}: <span className="font-mono text-slate-200">{LINKORA_VERSION}</span>
+          </p>
+          <p>
+            {t('platform')}: <span className="text-slate-200">Cloudflare Workers + D1 + KV</span>
+          </p>
+          <p>
+            {t('documentation')}:{' '}
+            <a
+              href="https://github.com/everett7623/Linkora"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-brand-400 hover:text-brand-300"
+            >
               GitHub
             </a>
           </p>

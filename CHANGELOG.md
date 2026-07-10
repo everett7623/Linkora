@@ -13,14 +13,70 @@ _(none)_
 
 ---
 
+## [0.8.0] — 2026-07-10
+
+### Added
+
+- Added default-English, `Accept-Language`-aware English/Simplified Chinese public 404, disabled, expired, password, and safety-warning pages.
+- Added Worker regression tests for locale negotiation, HTML escaping, and unchanged bodyless 301/302 redirect semantics, executed in deployment CI.
+
+- Added Admin i18n coverage documentation and automated English/Chinese catalog parity and message interpolation tests.
+- Added bilingual Bulk Create, Webhook controls, and complete factory-reset safety guidance while preserving the exact confirmation phrase.
+
+- Added bilingual Analytics filters, metrics, chart headings, recent visits, exports, and per-link analytics navigation and feedback.
+- Added bilingual Audit Logs and a dedicated observability message catalog for the upcoming Analytics pass.
+- Added complete bilingual restore preview, conflict strategy, overwrite warning, pre-restore backup guidance, and result summaries.
+- Added bilingual API Token dialogs and the first Backups page pass, while keeping restore safety text grouped for a dedicated pass.
+- Added bilingual Redirect Rules editing and validation, Health status values, and the first API Tokens pass.
+- Added bilingual Groups operation details, Health Check result headings, and the first Redirect Rules page pass.
+
+- Added the first bilingual operations pass for Domains, Groups, and manual Health Checks.
+
+- Added bilingual import previews/history, advanced Links filters and bulk actions, smart suggestion controls, and UTM builder guidance.
+
+- Added the first English and Simplified Chinese pass for Edit Link, Tags management, and Import/Export core workflows.
+
+- Added English and Simplified Chinese coverage for Overview, the basic Links workflow, the basic Create Link workflow, shared status badges, validation, confirmations, and core feedback.
+
+- Added a required quick deployment wizard that verifies the authenticated API, one default short domain, and the first short link from real instance state.
+- Added bilingual Setup checks and Advanced capability labels, with direct actions for unfinished deployment steps.
+- Expanded the Sink comparison into an adoption plan for basic, advanced, testing, OpenGraph, OpenAPI, performance, AI, real-time analytics, and future client integrations.
+
+- Added a persistent English / Simplified Chinese language switcher, with English as the default.
+- Added bilingual Login, global navigation, Simple / Advanced mode controls, and core Settings content.
+- Added a prioritized official Sink feature-gap comparison for future product planning.
+- Added a browser-local Simple / Advanced Admin mode switch in Settings and the sidebar.
+- Added mode-aware navigation and setup checks while preserving direct access and all existing data.
+- Added automated tests for mode visibility and API Origin normalization, executed during deployment CI.
+- Added authenticated `/api/system/capabilities` reporting for D1/KV, R2 backups, visit Queue, and multi-domain readiness.
+- Added an Advanced deployment capabilities panel with direct configuration guidance.
+- Added one-domain quick deployment guidance using a shared short-link/API hostname and the default Pages Admin URL.
+
+### Changed
+
+- R2, Queues, Cron, multiple Worker domains, and a branded Admin domain are now optional advanced deployment capabilities.
+- GitHub Actions can deploy the basic Worker with only D1, KV, one Worker domain, and the required Cloudflare credentials.
+- Advanced settings panels and operator navigation are hidden by default until Advanced mode is selected.
+- Simple mode now hides advanced filters, bulk actions, analytics shortcuts, multi-domain selection, smart suggestions, limits, password/warning controls, and UTM tools.
+- Switching to Simple mode clears hidden advanced link filters so the list cannot remain invisibly constrained.
+
+### Fixed
+
+- Authentication bootstrap no longer clears a valid API Origin override after a transient network, CORS, timeout, or server failure.
+- Login now distinguishes an unreachable API Origin from an invalid Admin token.
+
+---
+
 ## [0.7.4] — 2026-07-09
 
 ### Added
+
 - GitHub Actions Worker deployment now supports multiple custom domains through `LINKORA_WORKER_DOMAINS`, so a stable API domain and a public short-link domain can be bound at the same time.
 - Admin login now allows an API Origin override stored in the browser, providing a recovery path when the Admin was built with the wrong API URL.
 - Admin authentication bootstrap now falls back from a stale browser API Origin override to the build-time API URL.
 
 ### Changed
+
 - Deployment docs now recommend separating `admin`, `go` API, and `s` short-link domains for safer Shlink cutovers.
 
 ---
@@ -28,6 +84,7 @@ _(none)_
 ## [0.7.3] — 2026-07-09
 
 ### Changed
+
 - Changed Linkora's open-source license from MIT to GNU GPL v3 only (`GPL-3.0-only`).
 - Updated package metadata, repository license notice, README, roadmap, and release tracking to reflect GPL-3.0-only licensing.
 
@@ -36,6 +93,7 @@ _(none)_
 ## [0.7.2] — 2026-07-09
 
 ### Changed
+
 - Added a project release hygiene rule requiring every intentional change to update version metadata, changelog, and progress/task records together.
 
 ---
@@ -43,6 +101,7 @@ _(none)_
 ## [0.7.1] — 2026-07-09
 
 ### Fixed
+
 - Shlink API import now fetches all pages by supporting `pagesTotal`, `pagesCount`, and `totalPages`.
 - Shlink API import continues fetching full pages when the API omits total page count, preventing first-page-only migrations.
 
@@ -51,6 +110,7 @@ _(none)_
 ## [0.7.0] — 2026-07-09
 
 ### Added
+
 - Admin import confirmation now downloads a pre-import `backup.json` before mutating link data.
 - Visits can now be exported from `GET /api/export/visits.csv` and the Admin Import / Export page.
 - Added the `docs/` reference set for deployment, imports, migration, backup, API, roadmap, and security.
@@ -83,6 +143,7 @@ _(none)_
 - Added factory reset with reset preview, exact confirmation phrase, pre-reset R2 backup, KV cache clearing, and default settings restoration.
 
 ### Changed
+
 - Bumped Linkora package and runtime version to `0.7.0`.
 - Added a shared `LINKORA_VERSION` constant used by Worker fallbacks and Admin version display.
 - GitHub Actions now resolves the deployment version from `package.json` when `LINKORA_VERSION` is not explicitly set.
@@ -96,6 +157,7 @@ Initial V1 release — full code complete, awaiting first production deployment.
 ### Added
 
 #### Worker (Backend)
+
 - `GET /health` — health check endpoint returning `{ status, name, version }`
 - `GET /:slug` — short link redirect with KV cache + D1 fallback
 - Async visit recording via `ctx.waitUntil()` (stats never block redirects)
@@ -117,6 +179,7 @@ Initial V1 release — full code complete, awaiting first production deployment.
 - ID and slug generation utilities (`src/utils/id.ts`)
 
 #### Admin (Frontend)
+
 - Login page with token authentication
 - Overview dashboard — total links, total clicks, today's clicks, recent/top links
 - Links list — search, filter by status/tag, sort, pagination, copy/open/edit/disable/archive/delete
@@ -130,15 +193,18 @@ Initial V1 release — full code complete, awaiting first production deployment.
 - React Router v6 routing with `RequireAuth` guard
 
 #### Shared Package
+
 - TypeScript interfaces: `Link`, `Visit`, `Tag`, `ImportJob`, `Setting`, `PaginatedResult`, `NormalizedImportItem`, `ImportAdapter`
 - Validators: `isValidUrl`, `isValidSlug`, `RESERVED_SLUGS`
 
 #### Database
+
 - `migrations/0001_init.sql` — complete D1 schema for V1–V4
 - V1 active tables: `links`, `visits`, `tags`, `import_jobs`, `settings`
 - V2–V4 tables pre-created (not used): `daily_stats`, `domains`, `api_tokens`, `audit_logs`, `backups`, `redirect_rules`
 
 #### Documentation
+
 - `README.md` — project overview, setup, deployment, Shlink migration guide
 - `AGENTS.md` — AI agent instructions and golden rules
 - `DEVELOPMENT_GUIDE.md` — local setup, architecture, conventions
@@ -152,8 +218,8 @@ Initial V1 release — full code complete, awaiting first production deployment.
 
 ## Version History Summary
 
-| Version | Date       | Description                              |
-|---------|------------|------------------------------------------|
+| Version | Date       | Description                               |
+| ------- | ---------- | ----------------------------------------- |
 | 0.1.0   | 2026-07-01 | V1 code complete — full feature set built |
 
 ---
@@ -161,10 +227,12 @@ Initial V1 release — full code complete, awaiting first production deployment.
 ## Upcoming
 
 ### V1.1 (patch)
+
 - Production deployment + acceptance testing
 - Fix any issues found during first real-world use
 
 ### V2.0
+
 - Bulk operations (delete, disable, tag)
 - Link expiry (`expires_at`) and max clicks (`max_clicks`)
 - Password-protected links
@@ -175,6 +243,7 @@ Initial V1 release — full code complete, awaiting first production deployment.
 - See `TASKS.md` for full V2 backlog
 
 ### V3.0
+
 - Advanced analytics with daily_stats aggregation
 - Auto-backup to Cloudflare R2
 - API Token management
@@ -182,6 +251,7 @@ Initial V1 release — full code complete, awaiting first production deployment.
 - Cron triggers for scheduled backup
 
 ### V4.0
+
 - Smart redirect rules (country, device, browser, A/B, weighted)
 - Local smart slug / title / description / tag suggestions
 - Campaign and project grouping

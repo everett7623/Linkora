@@ -1,3 +1,7 @@
+import { normalizeApiBase } from '../utils/apiBase';
+
+export { normalizeApiBase } from '../utils/apiBase';
+
 const API_BASE_STORAGE_KEY = 'linkora_api_base';
 const BUILD_API_BASE = normalizeApiBase(import.meta.env.VITE_API_URL ?? '');
 const API_TIMEOUT_MS = 15_000;
@@ -9,19 +13,6 @@ export class ApiError extends Error {
   ) {
     super(message);
     this.name = 'ApiError';
-  }
-}
-
-export function normalizeApiBase(value: string): string {
-  const trimmed = value.trim().replace(/\/+$/, '');
-  if (!trimmed) return '';
-  const withProtocol = /^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
-  try {
-    const url = new URL(withProtocol);
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') return '';
-    return url.origin;
-  } catch {
-    return '';
   }
 }
 
@@ -55,7 +46,10 @@ export function setApiBaseOverride(value: string): string {
   return normalized;
 }
 
-async function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+async function fetchWithTimeout(
+  input: RequestInfo | URL,
+  init: RequestInit = {}
+): Promise<Response> {
   const controller = new AbortController();
   const timeoutId = globalThis.setTimeout(() => controller.abort(), API_TIMEOUT_MS);
   try {
@@ -67,7 +61,8 @@ async function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit = {}
 
 export async function apiFetch<T>(
   path: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  apiBase = getApiBase()
 ): Promise<T> {
   const token = localStorage.getItem('linkora_token');
   const headers: Record<string, string> = {
@@ -78,12 +73,12 @@ export async function apiFetch<T>(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetchWithTimeout(`${getApiBase()}${path}`, { ...options, headers });
+  const res = await fetchWithTimeout(`${apiBase}${path}`, { ...options, headers });
 
   if (!res.ok) {
     let message = `HTTP ${res.status}`;
     try {
-      const body = await res.json() as { error?: string };
+      const body = (await res.json()) as { error?: string };
       message = body.error ?? message;
     } catch {
       // ignore

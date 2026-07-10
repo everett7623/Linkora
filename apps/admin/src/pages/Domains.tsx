@@ -13,6 +13,7 @@ import { ConfirmDialog, Modal } from '../components/ui/Modal';
 import { useToast } from '../components/ui/Toast';
 import type { Domain } from '@linkora/shared';
 import dayjs from 'dayjs';
+import { useLocale } from '../contexts/LocaleContext';
 
 interface DomainForm {
   domain: string;
@@ -28,6 +29,7 @@ const EMPTY_FORM: DomainForm = {
 
 export function Domains() {
   const { success, error } = useToast();
+  const { locale, t } = useLocale();
   const [domains, setDomains] = useState<Domain[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -41,13 +43,15 @@ export function Domains() {
     try {
       setDomains(await listDomains());
     } catch {
-      error('Failed to load domains');
+      error(t('domainsLoadFailed'));
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const activeCount = domains.filter((domain) => domain.status === 'active').length;
   const defaultDomain = domains.find((domain) => domain.is_default === 1);
@@ -78,7 +82,7 @@ export function Domains() {
   const handleSave = async () => {
     const domain = form.domain.trim();
     if (!domain) {
-      error('Domain is required');
+      error(t('domainRequired'));
       return;
     }
 
@@ -90,14 +94,14 @@ export function Domains() {
           is_default: form.is_default,
           status: form.status,
         });
-        success('Domain updated');
+        success(t('domainUpdated'));
       } else {
         await createDomain({
           domain,
           is_default: form.is_default,
           status: form.status,
         });
-        success('Domain created');
+        success(t('domainCreated'));
       }
       closeModal();
       await load();
@@ -112,7 +116,7 @@ export function Domains() {
     setSaving(true);
     try {
       await setDefaultDomain(domain.id);
-      success('Default domain updated');
+      success(t('defaultDomainUpdated'));
       await load();
     } catch (e) {
       error(String(e));
@@ -126,7 +130,7 @@ export function Domains() {
     setSaving(true);
     try {
       await deleteDomain(deleteTarget.id);
-      success('Domain deleted');
+      success(t('domainDeleted'));
       setDeleteTarget(null);
       await load();
     } catch (e) {
@@ -140,35 +144,39 @@ export function Domains() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Domains</h1>
+          <h1 className="text-2xl font-bold text-slate-100">{t('domains')}</h1>
           <p className="text-sm text-slate-400 mt-0.5">
-            {activeCount.toLocaleString()} active domains
-            {defaultDomain ? ` · default ${defaultDomain.domain}` : ''}
+            {t('activeDomainSummary', { count: activeCount.toLocaleString(locale) })}
+            {defaultDomain ? ` · ${t('defaultLabel')} ${defaultDomain.domain}` : ''}
           </p>
         </div>
         <Button icon={<Plus size={15} />} onClick={openCreate}>
-          Add Domain
+          {t('addDomain')}
         </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-400">Registered</span>
+            <span className="text-sm text-slate-400">{t('registered')}</span>
             <Globe2 size={17} className="text-brand-400" />
           </div>
-          <div className="mt-3 text-2xl font-bold text-slate-100">{domains.length.toLocaleString()}</div>
+          <div className="mt-3 text-2xl font-bold text-slate-100">
+            {domains.length.toLocaleString()}
+          </div>
         </div>
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-400">Active</span>
+            <span className="text-sm text-slate-400">{t('activeStatus')}</span>
             <Globe2 size={17} className="text-emerald-400" />
           </div>
-          <div className="mt-3 text-2xl font-bold text-slate-100">{activeCount.toLocaleString()}</div>
+          <div className="mt-3 text-2xl font-bold text-slate-100">
+            {activeCount.toLocaleString()}
+          </div>
         </div>
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-400">Default</span>
+            <span className="text-sm text-slate-400">{t('defaultLabel')}</span>
             <Star size={17} className="text-yellow-400" />
           </div>
           <div className="mt-3 truncate text-lg font-semibold text-slate-100">
@@ -184,19 +192,21 @@ export function Domains() {
           </div>
         ) : domains.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-48 gap-3">
-            <p className="text-slate-400">No domains registered</p>
-            <Button size="sm" icon={<Plus size={14} />} onClick={openCreate}>Add Domain</Button>
+            <p className="text-slate-400">{t('noDomains')}</p>
+            <Button size="sm" icon={<Plus size={14} />} onClick={openCreate}>
+              {t('addDomain')}
+            </Button>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-800 text-xs text-slate-500 uppercase tracking-wider">
-                  <th className="text-left px-4 py-3">Domain</th>
-                  <th className="text-left px-4 py-3">Default</th>
-                  <th className="text-left px-4 py-3">Status</th>
-                  <th className="text-left px-4 py-3">Created</th>
-                  <th className="text-right px-4 py-3">Actions</th>
+                  <th className="text-left px-4 py-3">{t('domain')}</th>
+                  <th className="text-left px-4 py-3">{t('defaultLabel')}</th>
+                  <th className="text-left px-4 py-3">{t('status')}</th>
+                  <th className="text-left px-4 py-3">{t('created')}</th>
+                  <th className="text-right px-4 py-3">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
@@ -211,7 +221,7 @@ export function Domains() {
                     <td className="px-4 py-3">
                       {domain.is_default === 1 ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-yellow-500/15 px-2 py-0.5 text-xs font-medium text-yellow-300">
-                          <Star size={12} /> Default
+                          <Star size={12} /> {t('defaultLabel')}
                         </span>
                       ) : (
                         <Button
@@ -221,14 +231,18 @@ export function Domains() {
                           disabled={saving}
                           onClick={() => handleSetDefault(domain)}
                         >
-                          Set Default
+                          {t('setDefault')}
                         </Button>
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                        domain.status === 'active' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-slate-700 text-slate-400'
-                      }`}>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                          domain.status === 'active'
+                            ? 'bg-emerald-500/15 text-emerald-400'
+                            : 'bg-slate-700 text-slate-400'
+                        }`}
+                      >
                         {domain.status}
                       </span>
                     </td>
@@ -240,7 +254,7 @@ export function Domains() {
                         <button
                           type="button"
                           onClick={() => openEdit(domain)}
-                          title="Edit"
+                          title={t('edit')}
                           className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"
                         >
                           <Edit2 size={14} />
@@ -248,7 +262,7 @@ export function Domains() {
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(domain)}
-                          title="Delete"
+                          title={t('delete')}
                           className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-700 rounded transition-colors"
                         >
                           <Trash2 size={14} />
@@ -263,22 +277,29 @@ export function Domains() {
         )}
       </div>
 
-      <Modal open={modalOpen} onClose={closeModal} title={editing ? 'Edit Domain' : 'Add Domain'} size="md">
+      <Modal
+        open={modalOpen}
+        onClose={closeModal}
+        title={t(editing ? 'editDomain' : 'addDomain')}
+        size="md"
+      >
         <div className="space-y-5">
           <Input
-            label="Domain"
+            label={t('domain')}
             placeholder="go.example.com"
             value={form.domain}
             onChange={(e) => setForm((current) => ({ ...current, domain: e.target.value }))}
           />
 
           <Select
-            label="Status"
+            label={t('status')}
             value={form.status}
-            onChange={(e) => setForm((current) => ({ ...current, status: e.target.value as Domain['status'] }))}
+            onChange={(e) =>
+              setForm((current) => ({ ...current, status: e.target.value as Domain['status'] }))
+            }
           >
-            <option value="active">Active</option>
-            <option value="disabled">Disabled</option>
+            <option value="active">{t('activeStatus')}</option>
+            <option value="disabled">{t('disabledStatus')}</option>
           </Select>
 
           <label className="flex items-center gap-3 text-sm text-slate-300">
@@ -288,15 +309,15 @@ export function Domains() {
               onChange={(e) => setForm((current) => ({ ...current, is_default: e.target.checked }))}
               className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-brand-600 focus:ring-brand-500"
             />
-            Use as default short domain
+            {t('useDefaultDomain')}
           </label>
 
           <div className="flex justify-end gap-3">
             <Button variant="secondary" onClick={closeModal} disabled={saving}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button onClick={handleSave} loading={saving}>
-              {editing ? 'Save' : 'Create'}
+              {editing ? t('save') : t('create')}
             </Button>
           </div>
         </div>
@@ -306,9 +327,9 @@ export function Domains() {
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
-        title="Delete Domain"
-        message={`Delete "${deleteTarget?.domain ?? ''}" from the domain catalog? Existing links keep their stored domain value.`}
-        confirmLabel="Delete"
+        title={t('deleteDomain')}
+        message={t('deleteDomainConfirm', { domain: deleteTarget?.domain ?? '' })}
+        confirmLabel={t('delete')}
         loading={saving}
       />
     </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { AlertTriangle, Check, Sparkles } from 'lucide-react';
 import type { LinkSuggestionResult } from '@linkora/shared';
 import { Button } from './ui/Button';
+import { useLocale } from '../contexts/LocaleContext';
 
 interface LinkSuggestionsPanelProps {
   suggestions: LinkSuggestionResult | null;
@@ -20,6 +21,7 @@ export function LinkSuggestionsPanel({
   onApplyTags,
   onApplyAll,
 }: LinkSuggestionsPanelProps) {
+  const { t } = useLocale();
   if (!suggestions) return null;
 
   const hasContent = Boolean(
@@ -34,10 +36,16 @@ export function LinkSuggestionsPanel({
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm font-semibold text-slate-200">
           <Sparkles size={15} className="text-brand-400" />
-          Suggestions
+          {t('suggestions')}
         </div>
-        <Button size="sm" variant="secondary" icon={<Check size={14} />} onClick={onApplyAll} disabled={!hasContent}>
-          Apply All
+        <Button
+          size="sm"
+          variant="secondary"
+          icon={<Check size={14} />}
+          onClick={onApplyAll}
+          disabled={!hasContent}
+        >
+          {t('applyAll')}
         </Button>
       </div>
 
@@ -51,7 +59,9 @@ export function LinkSuggestionsPanel({
       <div className="space-y-4">
         {suggestions.slugs.length > 0 && (
           <div>
-            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-500">Slugs</p>
+            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-500">
+              {t('slugs')}
+            </p>
             <div className="flex flex-wrap gap-2">
               {suggestions.slugs.map((slug) => (
                 <button
@@ -69,7 +79,9 @@ export function LinkSuggestionsPanel({
 
         {suggestions.title && (
           <div>
-            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-500">Title</p>
+            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-500">
+              {t('titleOptional')}
+            </p>
             <button
               type="button"
               onClick={() => onApplyTitle(suggestions.title!)}
@@ -82,7 +94,9 @@ export function LinkSuggestionsPanel({
 
         {suggestions.description && (
           <div>
-            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-500">Description</p>
+            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-500">
+              {t('description')}
+            </p>
             <button
               type="button"
               onClick={() => onApplyDescription(suggestions.description!)}
@@ -95,7 +109,9 @@ export function LinkSuggestionsPanel({
 
         {suggestions.tags.length > 0 && (
           <div>
-            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-500">Tags</p>
+            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-500">
+              {t('tags')}
+            </p>
             <div className="flex flex-wrap gap-2">
               {suggestions.tags.map((tag) => (
                 <button
@@ -112,7 +128,7 @@ export function LinkSuggestionsPanel({
                 onClick={() => onApplyTags(suggestions.tags)}
                 className="rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-xs font-medium text-slate-200 transition-colors hover:border-slate-600"
               >
-                Add all
+                {t('addAll')}
               </button>
             </div>
           </div>

@@ -12,10 +12,14 @@ import { Button } from '../components/ui/Button';
 import { Input, Select, Textarea } from '../components/ui/Input';
 import { useToast } from '../components/ui/Toast';
 import type { Domain, LinkSuggestionResult, Tag } from '@linkora/shared';
+import { useAdminMode } from '../contexts/AdminModeContext';
+import { useLocale } from '../contexts/LocaleContext';
 
 export function CreateLink() {
   const navigate = useNavigate();
   const { success, error } = useToast();
+  const { isAdvanced } = useAdminMode();
+  const { t } = useLocale();
   const [loading, setLoading] = useState(false);
   const [titleLoading, setTitleLoading] = useState(false);
   const [suggestionLoading, setSuggestionLoading] = useState(false);
@@ -47,7 +51,9 @@ export function CreateLink() {
     listDomains()
       .then((items) => {
         setDomains(items);
-        const defaultDomain = items.find((domain) => domain.is_default === 1 && domain.status === 'active');
+        const defaultDomain = items.find(
+          (domain) => domain.is_default === 1 && domain.status === 'active'
+        );
         if (defaultDomain) {
           setForm((current) => ({ ...current, domain: defaultDomain.domain }));
         }
@@ -62,16 +68,17 @@ export function CreateLink() {
 
   const validate = () => {
     const errs: Record<string, string> = {};
-    if (!form.long_url.trim()) errs.long_url = 'Destination URL is required';
-    else if (!/^https?:\/\//i.test(form.long_url.trim())) errs.long_url = 'URL must start with http:// or https://';
-    if (form.slug && !/^[a-zA-Z0-9_-]+$/.test(form.slug)) errs.slug = 'Slug can only contain letters, numbers, _ and -';
-    if (form.description.length > 240) errs.description = 'Description must be 240 characters or less';
-    if (form.expires_at && Number.isNaN(new Date(form.expires_at).getTime())) errs.expires_at = 'Enter a valid date and time';
+    if (!form.long_url.trim()) errs.long_url = t('destinationRequired');
+    else if (!/^https?:\/\//i.test(form.long_url.trim())) errs.long_url = t('invalidHttpUrl');
+    if (form.slug && !/^[a-zA-Z0-9_-]+$/.test(form.slug)) errs.slug = t('invalidSlug');
+    if (form.description.length > 240) errs.description = t('descriptionTooLong');
+    if (form.expires_at && Number.isNaN(new Date(form.expires_at).getTime()))
+      errs.expires_at = t('invalidDateTime');
     if (form.max_clicks) {
       const maxClicks = Number(form.max_clicks);
-      if (!Number.isInteger(maxClicks) || maxClicks < 1) errs.max_clicks = 'Max clicks must be a positive integer';
+      if (!Number.isInteger(maxClicks) || maxClicks < 1) errs.max_clicks = t('invalidMaxClicks');
     }
-    if (form.password && form.password.trim().length < 4) errs.password = 'Password must be at least 4 characters';
+    if (form.password && form.password.trim().length < 4) errs.password = t('shortPassword');
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -79,11 +86,11 @@ export function CreateLink() {
   const handleFetchTitle = async () => {
     const url = form.long_url.trim();
     if (!url) {
-      setErrors((e) => ({ ...e, long_url: 'Destination URL is required' }));
+      setErrors((e) => ({ ...e, long_url: t('destinationRequired') }));
       return;
     }
     if (!/^https?:\/\//i.test(url)) {
-      setErrors((e) => ({ ...e, long_url: 'URL must start with http:// or https://' }));
+      setErrors((e) => ({ ...e, long_url: t('invalidHttpUrl') }));
       return;
     }
 
@@ -91,7 +98,7 @@ export function CreateLink() {
     try {
       const result = await fetchPageTitle(url);
       set('title', result.title);
-      success('Title fetched');
+      success(t('titleFetched'));
     } catch (e) {
       error(String(e));
     } finally {
@@ -102,11 +109,11 @@ export function CreateLink() {
   const handleSuggest = async () => {
     const url = form.long_url.trim();
     if (!url) {
-      setErrors((e) => ({ ...e, long_url: 'Destination URL is required' }));
+      setErrors((e) => ({ ...e, long_url: t('destinationRequired') }));
       return;
     }
     if (!/^https?:\/\//i.test(url)) {
-      setErrors((e) => ({ ...e, long_url: 'URL must start with http:// or https://' }));
+      setErrors((e) => ({ ...e, long_url: t('invalidHttpUrl') }));
       return;
     }
 
@@ -114,7 +121,7 @@ export function CreateLink() {
     try {
       const result = await fetchLinkSuggestions(url);
       setSuggestions(result);
-      success('Suggestions ready');
+      success(t('suggestionsReady'));
     } catch (e) {
       error(String(e));
     } finally {
@@ -123,7 +130,12 @@ export function CreateLink() {
   };
 
   const mergeTags = (incoming: string[]) => {
-    const current = form.tags ? form.tags.split(',').map((t) => t.trim()).filter(Boolean) : [];
+    const current = form.tags
+      ? form.tags
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean)
+      : [];
     const merged = [...current];
     for (const tag of incoming) {
       if (!merged.some((existing) => existing.toLowerCase() === tag.toLowerCase())) {
@@ -147,7 +159,12 @@ export function CreateLink() {
     if (!validate()) return;
     setLoading(true);
     try {
-      const tags = form.tags ? form.tags.split(',').map((t) => t.trim()).filter(Boolean) : [];
+      const tags = form.tags
+        ? form.tags
+            .split(',')
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : [];
       const expiresAt = form.expires_at ? new Date(form.expires_at).toISOString() : undefined;
       const maxClicks = form.max_clicks ? Number(form.max_clicks) : undefined;
       const link = await createLink({
@@ -163,7 +180,7 @@ export function CreateLink() {
         password: form.password.trim() || undefined,
         warning_enabled: form.warning_enabled ? 1 : 0,
       });
-      success(`Link /${link.slug} created!`);
+      success(t('linkCreated', { slug: link.slug }));
       navigate('/links');
     } catch (e) {
       error(String(e));
@@ -175,75 +192,88 @@ export function CreateLink() {
   return (
     <div className="max-w-2xl">
       <div className="flex items-center gap-3 mb-8">
-        <button onClick={() => navigate(-1)} className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors"
+        >
           <ArrowLeft size={18} />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Create Link</h1>
-          <p className="text-sm text-slate-400 mt-0.5">Add a new short link</p>
+          <h1 className="text-2xl font-bold text-slate-100">{t('createLink')}</h1>
+          <p className="text-sm text-slate-400 mt-0.5">{t('addShortLink')}</p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-5">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-5"
+      >
         <Input
-          label="Destination URL *"
+          label={t('destinationUrl')}
           placeholder="https://example.com/long/path"
           value={form.long_url}
           onChange={(e) => set('long_url', e.target.value)}
           error={errors.long_url}
-          hint="The URL this short link will redirect to"
+          hint={t('destinationHint')}
           autoFocus
         />
 
-        <div className="flex justify-end">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={handleSuggest}
-            loading={suggestionLoading}
-            disabled={loading}
-            icon={<Sparkles size={14} />}
-          >
-            Suggest
-          </Button>
-        </div>
+        {isAdvanced && (
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleSuggest}
+              loading={suggestionLoading}
+              disabled={loading}
+              icon={<Sparkles size={14} />}
+            >
+              Suggest
+            </Button>
+          </div>
+        )}
 
-        <LinkSuggestionsPanel
-          suggestions={suggestions}
-          onApplySlug={(slug) => set('slug', slug)}
-          onApplyTitle={(title) => set('title', title)}
-          onApplyDescription={(description) => set('description', description)}
-          onApplyTags={mergeTags}
-          onApplyAll={applyAllSuggestions}
-        />
+        {isAdvanced && (
+          <LinkSuggestionsPanel
+            suggestions={suggestions}
+            onApplySlug={(slug) => set('slug', slug)}
+            onApplyTitle={(title) => set('title', title)}
+            onApplyDescription={(description) => set('description', description)}
+            onApplyTags={mergeTags}
+            onApplyAll={applyAllSuggestions}
+          />
+        )}
 
         <Input
-          label="Custom Slug (optional)"
+          label={t('customSlug')}
           placeholder="my-link"
           value={form.slug}
           onChange={(e) => set('slug', e.target.value)}
           error={errors.slug}
-          hint="Leave blank to auto-generate. Letters, numbers, - and _ only."
+          hint={t('customSlugHint')}
         />
 
-        <Select
-          label="Short Domain"
-          value={form.domain}
-          onChange={(e) => set('domain', e.target.value)}
-        >
-          <option value="">API host</option>
-          {domains
-            .filter((domain) => domain.status === 'active')
-            .map((domain) => (
-              <option key={domain.id} value={domain.domain}>
-                {domain.domain}{domain.is_default === 1 ? ' (default)' : ''}
-              </option>
-            ))}
-        </Select>
+        {isAdvanced && (
+          <Select
+            label={t('shortDomain')}
+            value={form.domain}
+            onChange={(e) => set('domain', e.target.value)}
+          >
+            <option value="">{t('apiHost')}</option>
+            {domains
+              .filter((domain) => domain.status === 'active')
+              .map((domain) => (
+                <option key={domain.id} value={domain.domain}>
+                  {domain.domain}
+                  {domain.is_default === 1 ? ' (default)' : ''}
+                </option>
+              ))}
+          </Select>
+        )}
 
         <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
           <Input
-            label="Title (optional)"
+            label={t('titleOptional')}
             placeholder="My awesome link"
             value={form.title}
             onChange={(e) => set('title', e.target.value)}
@@ -257,26 +287,28 @@ export function CreateLink() {
             icon={<RefreshCw size={14} />}
             className="sm:mb-0.5"
           >
-            Fetch Title
+            {t('fetchTitle')}
           </Button>
         </div>
 
-        <Textarea
-          label="Description (optional)"
-          placeholder="Short internal note or page summary"
-          value={form.description}
-          onChange={(e) => set('description', e.target.value)}
-          error={errors.description}
-          rows={3}
-          maxLength={240}
-        />
+        {isAdvanced && (
+          <Textarea
+            label={t('descriptionOptional')}
+            placeholder="Short internal note or page summary"
+            value={form.description}
+            onChange={(e) => set('description', e.target.value)}
+            error={errors.description}
+            rows={3}
+            maxLength={240}
+          />
+        )}
 
         <Input
-          label="Tags (optional)"
+          label={t('tagsOptional')}
           placeholder="marketing, campaign, product"
           value={form.tags}
           onChange={(e) => set('tags', e.target.value)}
-          hint="Comma-separated tags. Existing catalog tags are available below."
+          hint={t('tagsHint')}
         />
         <TagSuggestions
           tags={tagCatalog}
@@ -285,65 +317,75 @@ export function CreateLink() {
         />
 
         <Select
-          label="Redirect Type"
+          label={t('redirectTypeLabel')}
           value={form.redirect_type}
           onChange={(e) => set('redirect_type', e.target.value as '301' | '302')}
         >
-          <option value="302">302 — Temporary (recommended)</option>
-          <option value="301">301 — Permanent (cached by browser)</option>
+          <option value="302">{t('redirect302')}</option>
+          <option value="301">{t('redirect301')}</option>
         </Select>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <Input
-            label="Expires At (optional)"
-            type="datetime-local"
-            value={form.expires_at}
-            onChange={(e) => set('expires_at', e.target.value)}
-            error={errors.expires_at}
-          />
-
-          <Input
-            label="Max Clicks (optional)"
-            type="number"
-            min={1}
-            step={1}
-            placeholder="1000"
-            value={form.max_clicks}
-            onChange={(e) => set('max_clicks', e.target.value)}
-            error={errors.max_clicks}
-          />
-        </div>
-
-        <div className="space-y-4 border-t border-slate-800 pt-5">
-          <label className="flex items-center gap-3 text-sm text-slate-300">
-            <input
-              type="checkbox"
-              checked={form.warning_enabled}
-              onChange={(e) => set('warning_enabled', e.target.checked)}
-              className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-brand-600 focus:ring-brand-500"
+        {isAdvanced && (
+          <div className="grid gap-4 md:grid-cols-2">
+            <Input
+              label={t('expiresAt')}
+              type="datetime-local"
+              value={form.expires_at}
+              onChange={(e) => set('expires_at', e.target.value)}
+              error={errors.expires_at}
             />
-            Show safety warning before redirect
-          </label>
 
-          <Input
-            label="Password (optional)"
-            type="password"
-            value={form.password}
-            onChange={(e) => set('password', e.target.value)}
-            error={errors.password}
-            hint="Visitors must enter this password before opening the destination."
+            <Input
+              label={t('maxClicks')}
+              type="number"
+              min={1}
+              step={1}
+              placeholder="1000"
+              value={form.max_clicks}
+              onChange={(e) => set('max_clicks', e.target.value)}
+              error={errors.max_clicks}
+            />
+          </div>
+        )}
+
+        {isAdvanced && (
+          <div className="space-y-4 border-t border-slate-800 pt-5">
+            <label className="flex items-center gap-3 text-sm text-slate-300">
+              <input
+                type="checkbox"
+                checked={form.warning_enabled}
+                onChange={(e) => set('warning_enabled', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-brand-600 focus:ring-brand-500"
+              />
+              Show safety warning before redirect
+            </label>
+
+            <Input
+              label={t('passwordOptional')}
+              type="password"
+              value={form.password}
+              onChange={(e) => set('password', e.target.value)}
+              error={errors.password}
+              hint="Visitors must enter this password before opening the destination."
+            />
+          </div>
+        )}
+
+        {isAdvanced && (
+          <UtmBuilder
+            longUrl={form.long_url}
+            onApply={(url) => set('long_url', url)}
+            disabled={loading}
           />
-        </div>
-
-        <UtmBuilder
-          longUrl={form.long_url}
-          onApply={(url) => set('long_url', url)}
-          disabled={loading}
-        />
+        )}
 
         <div className="flex gap-3 pt-2">
-          <Button type="submit" loading={loading}>Create Link</Button>
-          <Button type="button" variant="secondary" onClick={() => navigate('/links')}>Cancel</Button>
+          <Button type="submit" loading={loading}>
+            {t('createLink')}
+          </Button>
+          <Button type="button" variant="secondary" onClick={() => navigate('/links')}>
+            {t('cancel')}
+          </Button>
         </div>
       </form>
     </div>

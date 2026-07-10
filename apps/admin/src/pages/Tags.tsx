@@ -6,6 +6,7 @@ import { Button } from '../components/ui/Button';
 import { Input, Textarea } from '../components/ui/Input';
 import { ConfirmDialog, Modal } from '../components/ui/Modal';
 import { useToast } from '../components/ui/Toast';
+import { useLocale } from '../contexts/LocaleContext';
 
 const DEFAULT_COLOR = '#38bdf8';
 
@@ -33,6 +34,7 @@ function toPayload(form: TagForm): TagPayload {
 
 export function Tags() {
   const { success, error } = useToast();
+  const { locale, t } = useLocale();
   const [tags, setTags] = useState<TagType[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -47,20 +49,22 @@ export function Tags() {
     try {
       setTags(await listTags());
     } catch {
-      error('Failed to load tags');
+      error(t('tagsLoadFailed'));
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const filteredTags = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return tags;
-    return tags.filter((tag) =>
-      tag.name.toLowerCase().includes(q) ||
-      (tag.description ?? '').toLowerCase().includes(q)
+    return tags.filter(
+      (tag) =>
+        tag.name.toLowerCase().includes(q) || (tag.description ?? '').toLowerCase().includes(q)
     );
   }, [query, tags]);
 
@@ -84,7 +88,7 @@ export function Tags() {
     e.preventDefault();
     const payload = toPayload(form);
     if (!payload.name) {
-      error('Tag name is required');
+      error(t('tagNameRequired'));
       return;
     }
 
@@ -92,10 +96,10 @@ export function Tags() {
     try {
       if (editing) {
         await updateTag(editing.id, payload);
-        success('Tag updated');
+        success(t('tagUpdated'));
       } else {
         await createTag(payload);
-        success('Tag created');
+        success(t('tagCreated'));
       }
       setModalOpen(false);
       await load();
@@ -111,7 +115,7 @@ export function Tags() {
     setSaving(true);
     try {
       await deleteTag(deleteTarget.id);
-      success('Tag deleted');
+      success(t('tagDeleted'));
       setDeleteTarget(null);
       await load();
     } catch (e) {
@@ -125,10 +129,14 @@ export function Tags() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Tags</h1>
-          <p className="mt-0.5 text-sm text-slate-400">{tags.length.toLocaleString()} tags</p>
+          <h1 className="text-2xl font-bold text-slate-100">{t('tags')}</h1>
+          <p className="mt-0.5 text-sm text-slate-400">
+            {t('tagsCount', { count: tags.length.toLocaleString(locale) })}
+          </p>
         </div>
-        <Button icon={<Plus size={16} />} onClick={openCreate}>Create Tag</Button>
+        <Button icon={<Plus size={16} />} onClick={openCreate}>
+          {t('createTag')}
+        </Button>
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -137,7 +145,7 @@ export function Tags() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search tags"
+            placeholder={t('searchTags')}
             className="w-full rounded-lg border border-slate-700 bg-slate-900 py-2 pl-9 pr-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
@@ -151,17 +159,17 @@ export function Tags() {
         ) : filteredTags.length === 0 ? (
           <div className="flex h-48 flex-col items-center justify-center gap-3 text-slate-400">
             <TagsIcon size={26} className="text-slate-600" />
-            <p className="text-sm">No tags found</p>
+            <p className="text-sm">{t('noTagsFound')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-800 text-xs uppercase tracking-wider text-slate-500">
-                  <th className="px-4 py-3 text-left">Tag</th>
-                  <th className="px-4 py-3 text-left">Description</th>
-                  <th className="px-4 py-3 text-left">Updated</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
+                  <th className="px-4 py-3 text-left">{t('tag')}</th>
+                  <th className="px-4 py-3 text-left">{t('description')}</th>
+                  <th className="px-4 py-3 text-left">{t('updated')}</th>
+                  <th className="px-4 py-3 text-right">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
@@ -180,20 +188,20 @@ export function Tags() {
                       <span className="line-clamp-1">{tag.description || '-'}</span>
                     </td>
                     <td className="px-4 py-3 text-xs text-slate-500">
-                      {new Date(tag.updated_at).toLocaleDateString()}
+                      {new Date(tag.updated_at).toLocaleDateString(locale)}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
                         <button
                           onClick={() => openEdit(tag)}
-                          title="Edit"
+                          title={t('edit')}
                           className="rounded p-1.5 text-slate-500 transition-colors hover:bg-slate-700 hover:text-slate-200"
                         >
                           <Pencil size={14} />
                         </button>
                         <button
                           onClick={() => setDeleteTarget(tag)}
-                          title="Delete"
+                          title={t('delete')}
                           className="rounded p-1.5 text-slate-500 transition-colors hover:bg-slate-700 hover:text-red-400"
                         >
                           <Trash2 size={14} />
@@ -211,12 +219,12 @@ export function Tags() {
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editing ? 'Edit Tag' : 'Create Tag'}
+        title={t(editing ? 'editTag' : 'createTag')}
         size="md"
       >
         <form onSubmit={handleSave} className="space-y-4">
           <Input
-            label="Name"
+            label={t('name')}
             value={form.name}
             onChange={(e) => setField('name', e.target.value)}
             maxLength={50}
@@ -230,11 +238,11 @@ export function Tags() {
                 value={form.color}
                 onChange={(e) => setField('color', e.target.value)}
                 className="h-14 w-14 -translate-x-1 -translate-y-1 cursor-pointer border-0 bg-transparent p-0"
-                aria-label="Tag color"
+                aria-label={t('tagColor')}
               />
             </label>
             <Input
-              label="Color"
+              label={t('color')}
               value={form.color}
               onChange={(e) => setField('color', e.target.value)}
               placeholder="#38bdf8"
@@ -243,7 +251,7 @@ export function Tags() {
           </div>
 
           <Textarea
-            label="Description"
+            label={t('description')}
             value={form.description}
             onChange={(e) => setField('description', e.target.value)}
             maxLength={200}
@@ -251,11 +259,17 @@ export function Tags() {
           />
 
           <div className="flex justify-end gap-3 pt-2">
-            <Button type="button" variant="secondary" size="sm" onClick={() => setModalOpen(false)} disabled={saving}>
-              Cancel
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setModalOpen(false)}
+              disabled={saving}
+            >
+              {t('cancel')}
             </Button>
             <Button type="submit" size="sm" loading={saving} icon={<Check size={14} />}>
-              Save
+              {t('save')}
             </Button>
           </div>
         </form>
@@ -265,9 +279,9 @@ export function Tags() {
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
-        title="Delete Tag"
-        message={deleteTarget ? `Delete "${deleteTarget.name}"? It will also be removed from links that use it.` : ''}
-        confirmLabel="Delete"
+        title={t('deleteTag')}
+        message={deleteTarget ? t('deleteTagConfirm', { name: deleteTarget.name }) : ''}
+        confirmLabel={t('delete')}
         confirmVariant="danger"
         loading={saving}
       />

@@ -7,7 +7,7 @@ One item in "In Progress" at a time whenever possible.
 
 ## 🔴 In Progress
 
-_(none currently)_
+- [ ] V8: Continue English / Simplified Chinese localization across remaining basic and advanced pages
 
 ---
 
@@ -15,8 +15,24 @@ _(none currently)_
 
 - [ ] V7: Add configurable backup retention, starting with a 30-day default
 - [ ] V7: Add periodic target health monitoring and failure alerts
-- [ ] V8: Add Simple / Advanced Admin mode toggle
-- [ ] V8: Add language switcher and i18n foundation, starting with English and Simplified Chinese
+- [x] V8: Add Simple / Advanced Admin mode toggle
+- [x] V8: Add default-English language switcher and first i18n foundation for global/core Admin UI
+- [x] V8: Add required first-run deployment wizard for API, one domain, and the first short link
+- [x] V8: Localize Overview, Links basic workflow, Create Link basic workflow, and shared link statuses
+- [x] V8: Complete first EN/ZH pass for Edit Link, Import/Export, and Tags
+- [x] V8: Localize Import details, Links advanced filters/bulk actions, suggestions, and UTM builder
+- [x] V8: Complete first EN/ZH operations pass for Domains, Groups, and Health Checks
+- [x] V8: Localize Groups operations details, Health result headings, and Redirect Rules first pass
+- [x] V8: Localize Redirect Rules editor, Health statuses, and API Tokens first pass
+- [x] V8: Localize API Token dialogs and Backups first pass
+- [x] V8: Localize complete restore-preview and overwrite safety workflow
+- [x] V8: Localize Audit Logs and prepare Analytics observability messages
+- [x] V8: Localize Analytics filters, metrics, charts, visits, exports, and per-link analysis
+- [x] V8: Localize Bulk Create, Webhook controls, and complete reset safety workflow
+- [x] V8: Audit Admin i18n coverage and add catalog parity/interpolation tests
+- [x] V8: Localize public redirect/status templates with redirect regression coverage
+- [ ] V8: Add browser smoke tests for English and Simplified Chinese core workflows
+- [ ] V8: Localize remaining page content, redirect status pages, validation, dates, numbers, and exports
 - [ ] V9: Add public read-only stats pages with privacy controls
 - [ ] V9: Improve bot classification and conversion attribution
 
@@ -181,6 +197,7 @@ Deployment experience:
 ## 🟢 Completed — V1
 
 ### Project Setup
+
 - [x] Monorepo structure (`apps/worker`, `apps/admin`, `packages/shared`)
 - [x] Root `package.json` with workspaces
 - [x] `tsconfig.json` for all packages
@@ -189,6 +206,7 @@ Deployment experience:
 - [x] Git repository initialized and pushed to GitHub
 
 ### Backend — Worker
+
 - [x] `src/types.ts` — Env interface
 - [x] `src/utils/id.ts` — ID + slug generation
 - [x] `src/utils/response.ts` — JSON/HTML response helpers
@@ -208,6 +226,7 @@ Deployment experience:
 - [x] `src/index.ts` — Hono app entry point + route registration
 
 ### Frontend — Admin
+
 - [x] `package.json`, `vite.config.ts`, `tsconfig.json`, `tailwind.config.cjs`
 - [x] `index.html`, `src/main.tsx`, `src/App.tsx`, `src/index.css`
 - [x] `src/api/client.ts` — Base fetch + downloadFile
@@ -234,6 +253,7 @@ Deployment experience:
 - [x] `src/pages/Tags.tsx`
 
 ### Documentation
+
 - [x] `README.md`
 - [x] `DEPLOYMENT.md`
 - [x] `CUTOVER.md`
@@ -253,6 +273,7 @@ Deployment experience:
 - [x] `.env.example`
 
 ### Local Verification
+
 - [x] Ran `npm install` at repo root
 - [x] Worker type-check passes (`npm run type-check --workspace=apps/worker`)
 - [x] Admin production build passes (`npm run build --workspace=apps/admin`)
@@ -358,14 +379,16 @@ Deployment experience:
 
 ## 🔵 Backlog — V8 Usability Modes And Internationalization
 
-- [ ] Simple / Advanced Admin mode toggle
-- [ ] Simple mode hides advanced navigation and dense operator controls
-- [ ] Advanced mode exposes Redirect Rules, Webhooks, API Tokens, advanced Analytics filters, backups internals, and bulk tooling
+- [x] Simple / Advanced Admin mode toggle
+- [x] Simple mode hides advanced navigation and Settings operator panels
+- [x] Hide advanced controls inside link forms and the Links table when Simple mode is active
+- [x] Advanced mode exposes Redirect Rules, Webhooks, API Tokens, advanced Analytics filters, backups internals, and bulk tooling
+- [x] Advanced Setup reports R2, Queue, and multi-domain runtime capabilities
 - [ ] Instance-level feature visibility settings for optional modules
 - [ ] Per-browser or per-admin preferences for sidebar density, table density, and advanced panels
-- [ ] First-run setup wizard for new self-hosters
-- [ ] Language switcher with English and Simplified Chinese first
-- [ ] i18n foundation for labels, navigation, validation messages, empty states, errors, and documentation links
+- [x] Required first-run setup wizard for new self-hosters
+- [x] Language switcher with English as default and Simplified Chinese as an option
+- [ ] Complete i18n coverage for remaining labels, validation messages, empty states, errors, and documentation links
 - [ ] Locale-aware date, time zone, number, and CSV/export formatting settings
 - [ ] Contextual help text for advanced fields only when advanced mode is enabled
 
