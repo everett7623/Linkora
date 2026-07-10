@@ -150,7 +150,7 @@ curl https://go.example.com/health
 Expected shape:
 
 ```json
-{"success":true,"data":{"status":"ok","name":"Linkora","version":"0.8.0"}}
+{"success":true,"data":{"status":"ok","name":"Linkora","version":"0.8.2"}}
 ```
 
 ## 7. Build and Deploy Admin
@@ -204,7 +204,7 @@ LINKORA_KV_PREVIEW_ID=<your-kv-preview-id>
 Optional variables:
 
 ```txt
-LINKORA_VERSION=0.8.0
+LINKORA_VERSION=0.8.2
 LINKORA_COMPATIBILITY_DATE=2026-07-08
 LINKORA_WORKER_DOMAINS=go.example.com,s.example.com
 LINKORA_R2_BUCKET=linkora-backups

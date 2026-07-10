@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Check, Edit2, Flag, Folder, Plus, RefreshCw, Tags, Trash2 } from 'lucide-react';
-import dayjs from 'dayjs';
 import type { LinkGroup, LinkGroupType } from '@linkora/shared';
 import {
   createGroup,
@@ -16,6 +15,7 @@ import { Input, Select, Textarea } from '../components/ui/Input';
 import { ConfirmDialog, Modal } from '../components/ui/Modal';
 import { useToast } from '../components/ui/Toast';
 import { useLocale } from '../contexts/LocaleContext';
+import type { MessageKey } from '../i18n/messages';
 
 interface GroupForm {
   type: LinkGroupType;
@@ -36,14 +36,10 @@ const EMPTY_FORM: GroupForm = {
   description: '',
 };
 
-const TYPE_OPTIONS: Array<{ value: LinkGroupType; label: string }> = [
-  { value: 'campaign', label: 'Campaign' },
-  { value: 'project', label: 'Project' },
+const TYPE_OPTIONS: Array<{ value: LinkGroupType; labelKey: MessageKey }> = [
+  { value: 'campaign', labelKey: 'campaigns' },
+  { value: 'project', labelKey: 'projects' },
 ];
-
-function typeLabel(type: LinkGroupType): string {
-  return TYPE_OPTIONS.find((option) => option.value === type)?.label ?? type;
-}
 
 function toForm(group?: LinkGroup | null): GroupForm {
   return {
@@ -67,8 +63,8 @@ function linksPath(group: LinkGroup): string {
   return `/links?tag=${encodeURIComponent(group.tagName)}`;
 }
 
-function formatLastClicked(group: LinkGroup): string {
-  return group.lastClickedAt ? dayjs(group.lastClickedAt).format('YYYY-MM-DD HH:mm') : '-';
+function formatLastClicked(group: LinkGroup, formatter: Intl.DateTimeFormat): string {
+  return group.lastClickedAt ? formatter.format(new Date(group.lastClickedAt)) : '-';
 }
 
 function GroupIcon({ type }: { type: LinkGroupType }) {
@@ -90,6 +86,13 @@ export function Groups() {
   const [editing, setEditing] = useState<LinkGroup | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<LinkGroup | null>(null);
   const [form, setForm] = useState<GroupForm>(EMPTY_FORM);
+  const dateFormatter = new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -101,7 +104,7 @@ export function Groups() {
     } finally {
       setLoading(false);
     }
-  }, [filterType]);
+  }, [error, filterType, t]);
 
   useEffect(() => {
     load();
@@ -223,7 +226,7 @@ export function Groups() {
             <Flag size={17} className="text-sky-400" />
           </div>
           <div className="mt-3 text-2xl font-bold text-slate-100">
-            {summary.campaigns.toLocaleString()}
+            {summary.campaigns.toLocaleString(locale)}
           </div>
         </div>
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
@@ -232,7 +235,7 @@ export function Groups() {
             <Folder size={17} className="text-violet-400" />
           </div>
           <div className="mt-3 text-2xl font-bold text-slate-100">
-            {summary.projects.toLocaleString()}
+            {summary.projects.toLocaleString(locale)}
           </div>
         </div>
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
@@ -241,7 +244,7 @@ export function Groups() {
             <Tags size={17} className="text-brand-400" />
           </div>
           <div className="mt-3 text-2xl font-bold text-slate-100">
-            {summary.links.toLocaleString()}
+            {summary.links.toLocaleString(locale)}
           </div>
         </div>
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
@@ -250,7 +253,7 @@ export function Groups() {
             <Tags size={17} className="text-emerald-400" />
           </div>
           <div className="mt-3 text-2xl font-bold text-slate-100">
-            {summary.clicks.toLocaleString()}
+            {summary.clicks.toLocaleString(locale)}
           </div>
         </div>
       </div>
@@ -332,20 +335,20 @@ export function Groups() {
                         to={linksPath(group)}
                         className="font-medium text-brand-400 hover:text-brand-300"
                       >
-                        {group.linkCount.toLocaleString()}
+                        {group.linkCount.toLocaleString(locale)}
                       </Link>
                     </td>
                     <td className="px-4 py-3 text-right text-slate-300">
-                      {group.activeLinkCount.toLocaleString()}
+                      {group.activeLinkCount.toLocaleString(locale)}
                     </td>
                     <td className="px-4 py-3 text-right text-slate-300">
-                      {group.totalClicks.toLocaleString()}
+                      {group.totalClicks.toLocaleString(locale)}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-xs text-slate-500">
-                      {formatLastClicked(group)}
+                      {formatLastClicked(group, dateFormatter)}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-xs text-slate-500">
-                      {dayjs(group.updated_at).format('YYYY-MM-DD HH:mm')}
+                      {dateFormatter.format(new Date(group.updated_at))}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
@@ -396,13 +399,13 @@ export function Groups() {
           >
             {TYPE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {t(option.labelKey)}
               </option>
             ))}
           </Select>
 
           <Input
-            label={`${typeLabel(form.type)} Name`}
+            label={t('name')}
             value={form.name}
             onChange={(e) => setField('name', e.target.value)}
             maxLength={40}
@@ -461,7 +464,7 @@ export function Groups() {
         message={
           deleteTarget
             ? t('deleteGroupConfirm', {
-                type: deleteTarget.type,
+                type: t(deleteTarget.type === 'campaign' ? 'campaigns' : 'projects'),
                 name: deleteTarget.name,
                 tag: deleteTarget.tagName,
                 count: deleteTarget.linkCount,

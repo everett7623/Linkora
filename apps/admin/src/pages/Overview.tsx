@@ -22,13 +22,16 @@ interface StatCardProps {
 }
 
 function StatCard({ label, value, icon, color }: StatCardProps) {
+  const { locale } = useLocale();
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
       <div className="flex items-center justify-between mb-3">
         <span className="text-sm text-slate-400">{label}</span>
         <div className={`p-2 rounded-lg ${color}`}>{icon}</div>
       </div>
-      <div className="text-2xl font-bold text-slate-100">{value.toLocaleString()}</div>
+      <div className="text-2xl font-bold text-slate-100">
+        {typeof value === 'number' ? value.toLocaleString(locale) : value}
+      </div>
     </div>
   );
 }
@@ -102,7 +105,7 @@ export function Overview() {
       })
       .catch(() => error(t('overviewLoadFailed')))
       .finally(() => setLoading(false));
-  }, []);
+  }, [error, t]);
 
   if (loading) {
     return (

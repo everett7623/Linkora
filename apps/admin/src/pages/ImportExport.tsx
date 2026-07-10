@@ -25,12 +25,11 @@ import { Textarea } from '../components/ui/Input';
 import { useToast } from '../components/ui/Toast';
 import type { ImportFieldMapping, ImportJob } from '@linkora/shared';
 import type { ImportConflictStrategy } from '../api/importExport';
-import dayjs from 'dayjs';
 import { useLocale } from '../contexts/LocaleContext';
 
 export function ImportExport() {
   const { success, error } = useToast();
-  const { t } = useLocale();
+  const { locale, t } = useLocale();
   const fileRef = useRef<HTMLInputElement>(null);
   const [content, setContent] = useState('');
   const [filename, setFilename] = useState('');
@@ -50,6 +49,12 @@ export function ImportExport() {
     ? preview.valid + (conflictStrategy === 'skip' ? 0 : preview.conflicts)
     : 0;
   const hasImportableLinks = importableCount > 0;
+  const dateFormatter = new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   const parseFieldMapping = (): ImportFieldMapping | undefined => {
     const trimmed = fieldMappingText.trim();
@@ -184,9 +189,9 @@ export function ImportExport() {
               <option value="sink">Sink (JSON / JSONL)</option>
               <option value="yourls">YOURLS (JSON / JSONL)</option>
               <option value="dub">Dub (JSON / JSONL)</option>
-              <option value="linkora-backup">Linkora backup.json</option>
-              <option value="generic-csv">Generic CSV</option>
-              <option value="generic-json">Generic JSON / JSONL</option>
+              <option value="linkora-backup">{t('linkoraBackupFormat')}</option>
+              <option value="generic-csv">{t('genericCsvFormat')}</option>
+              <option value="generic-json">{t('genericJsonFormat')}</option>
             </select>
           </div>
 
@@ -247,7 +252,7 @@ export function ImportExport() {
               value={fieldMappingText}
               onChange={(e) => setFieldMappingText(e.target.value)}
               placeholder={'{"slug":"code","longUrl":"destination","title":"name","tags":"labels"}'}
-              hint="JSON object mapping Linkora fields to your source columns. Supported fields include slug, longUrl, title, tags, clicks, createdAt, expiresAt, maxClicks."
+              hint={t('fieldMappingHint')}
             />
           )}
 
@@ -273,8 +278,8 @@ export function ImportExport() {
           {content && (
             <p className="text-xs text-slate-500">
               {t('charsLoaded', {
-                count: content.length.toLocaleString(),
-                source: filename || 'input',
+                count: content.length.toLocaleString(locale),
+                source: filename || t('pastedInput'),
               })}
             </p>
           )}
@@ -311,13 +316,13 @@ export function ImportExport() {
                 <div className="p-3 space-y-1.5 text-xs max-h-60 overflow-y-auto scrollbar-thin">
                   <div className="grid grid-cols-3 gap-2 pb-2 border-b border-slate-700 text-slate-400">
                     <span>
-                      ✓ {t('valid')}: {preview.valid}
+                      ✓ {t('valid')}: {preview.valid.toLocaleString(locale)}
                     </span>
                     <span>
-                      ! {t('conflicts')}: {preview.conflicts}
+                      ! {t('conflicts')}: {preview.conflicts.toLocaleString(locale)}
                     </span>
                     <span>
-                      × {t('invalid')}: {preview.invalid}
+                      × {t('invalid')}: {preview.invalid.toLocaleString(locale)}
                     </span>
                   </div>
                   {!hasImportableLinks && (
@@ -325,8 +330,12 @@ export function ImportExport() {
                   )}
                   {preview.conflicts > 0 && conflictStrategy !== 'skip' && (
                     <p className="py-1 text-yellow-400">
-                      {preview.conflicts} conflicting slugs will be{' '}
-                      {conflictStrategy === 'rename' ? 'renamed' : 'overwritten'}.
+                      {t('conflictPreview', {
+                        count: preview.conflicts.toLocaleString(locale),
+                        action: t(
+                          conflictStrategy === 'rename' ? 'renamedAction' : 'overwrittenAction'
+                        ),
+                      })}
                     </p>
                   )}
                   {preview.preview.map((item, i) => (
@@ -340,7 +349,9 @@ export function ImportExport() {
                         <AlertCircle size={12} className="shrink-0" />
                       )}
                       <span className="font-mono">/{item.slug}</span>
-                      {item._conflict && <span className="text-yellow-500">(conflict)</span>}
+                      {item._conflict && (
+                        <span className="text-yellow-500">({t('conflictLabel')})</span>
+                      )}
                       {item._errors.length > 0 && (
                         <span className="text-red-400">— {item._errors[0]}</span>
                       )}
@@ -453,21 +464,33 @@ export function ImportExport() {
                 {jobs.map((job) => (
                   <tr key={job.id} className="text-slate-300">
                     <td className="px-3 py-2 text-xs text-slate-500">
-                      {dayjs(job.created_at).format('MMM D HH:mm')}
+                      {dateFormatter.format(new Date(job.created_at))}
                     </td>
                     <td className="px-3 py-2">{job.source}</td>
                     <td className="px-3 py-2 text-xs text-slate-500 truncate max-w-32">
                       {job.filename ?? '—'}
                     </td>
-                    <td className="px-3 py-2 text-right">{job.total_count}</td>
-                    <td className="px-3 py-2 text-right text-emerald-400">{job.success_count}</td>
-                    <td className="px-3 py-2 text-right text-yellow-400">{job.skipped_count}</td>
-                    <td className="px-3 py-2 text-right text-red-400">{job.failed_count}</td>
+                    <td className="px-3 py-2 text-right">
+                      {job.total_count.toLocaleString(locale)}
+                    </td>
+                    <td className="px-3 py-2 text-right text-emerald-400">
+                      {job.success_count.toLocaleString(locale)}
+                    </td>
+                    <td className="px-3 py-2 text-right text-yellow-400">
+                      {job.skipped_count.toLocaleString(locale)}
+                    </td>
+                    <td className="px-3 py-2 text-right text-red-400">
+                      {job.failed_count.toLocaleString(locale)}
+                    </td>
                     <td className="px-3 py-2">
                       <span
                         className={`text-xs px-2 py-0.5 rounded-full ${job.status === 'completed' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-yellow-500/15 text-yellow-400'}`}
                       >
-                        {job.status}
+                        {job.status === 'completed'
+                          ? t('completedStatus')
+                          : job.status === 'failed'
+                            ? t('failedStatus')
+                            : t('pendingStatus')}
                       </span>
                     </td>
                     <td className="px-3 py-2 text-right">

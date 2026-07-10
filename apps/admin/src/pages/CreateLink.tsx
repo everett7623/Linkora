@@ -228,7 +228,7 @@ export function CreateLink() {
               disabled={loading}
               icon={<Sparkles size={14} />}
             >
-              Suggest
+              {t('suggest')}
             </Button>
           </div>
         )}
@@ -265,7 +265,7 @@ export function CreateLink() {
               .map((domain) => (
                 <option key={domain.id} value={domain.domain}>
                   {domain.domain}
-                  {domain.is_default === 1 ? ' (default)' : ''}
+                  {domain.is_default === 1 ? ` (${t('defaultOption')})` : ''}
                 </option>
               ))}
           </Select>
@@ -294,7 +294,7 @@ export function CreateLink() {
         {isAdvanced && (
           <Textarea
             label={t('descriptionOptional')}
-            placeholder="Short internal note or page summary"
+            placeholder={t('descriptionPlaceholder')}
             value={form.description}
             onChange={(e) => set('description', e.target.value)}
             error={errors.description}
@@ -305,7 +305,7 @@ export function CreateLink() {
 
         <Input
           label={t('tagsOptional')}
-          placeholder="marketing, campaign, product"
+          placeholder={t('tagsPlaceholder')}
           value={form.tags}
           onChange={(e) => set('tags', e.target.value)}
           hint={t('tagsHint')}
@@ -357,7 +357,7 @@ export function CreateLink() {
                 onChange={(e) => set('warning_enabled', e.target.checked)}
                 className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-brand-600 focus:ring-brand-500"
               />
-              Show safety warning before redirect
+              {t('showWarning')}
             </label>
 
             <Input
@@ -366,7 +366,7 @@ export function CreateLink() {
               value={form.password}
               onChange={(e) => set('password', e.target.value)}
               error={errors.password}
-              hint="Visitors must enter this password before opening the destination."
+              hint={t('passwordHint')}
             />
           </div>
         )}

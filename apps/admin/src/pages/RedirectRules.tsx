@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Edit2, Plus, RefreshCw, Shuffle, Trash2 } from 'lucide-react';
-import dayjs from 'dayjs';
 import type {
   Link as LinkType,
   RedirectRule,
@@ -43,14 +42,14 @@ const EMPTY_FORM: RuleForm = {
   targetsText: '',
 };
 
-const RULE_TYPES: Array<{ value: RedirectRuleType; label: string }> = [
-  { value: 'country', label: 'Country' },
-  { value: 'device', label: 'Device' },
-  { value: 'browser', label: 'Browser' },
-  { value: 'referer', label: 'Referer' },
-  { value: 'language', label: 'Language' },
-  { value: 'weighted', label: 'Weighted / A-B' },
-];
+const RULE_TYPES = [
+  { value: 'country', labelKey: 'countryRule' },
+  { value: 'device', labelKey: 'deviceRule' },
+  { value: 'browser', labelKey: 'browserRule' },
+  { value: 'referer', labelKey: 'refererRule' },
+  { value: 'language', labelKey: 'languageRule' },
+  { value: 'weighted', labelKey: 'weightedRule' },
+] as const satisfies ReadonlyArray<{ value: RedirectRuleType; labelKey: string }>;
 
 const TYPE_BADGES: Record<RedirectRuleType, 'blue' | 'green' | 'gray' | 'purple' | 'yellow'> = {
   country: 'blue',
@@ -110,13 +109,9 @@ function parseTargetsText(value: string): RedirectRuleTarget[] | null {
   return targets.length > 0 ? targets : null;
 }
 
-function formatLink(link?: LinkType): string {
-  if (!link) return 'Unknown link';
+function formatLink(link: LinkType | undefined, fallback: string): string {
+  if (!link) return fallback;
   return `${link.domain ? `${link.domain}/` : '/'}${link.slug}`;
-}
-
-function formatRuleType(type: RedirectRuleType): string {
-  return RULE_TYPES.find((item) => item.value === type)?.label ?? type;
 }
 
 function formatTargets(targets: RedirectRuleTarget[] | undefined): string {
@@ -140,8 +135,19 @@ export function RedirectRules() {
   const [editing, setEditing] = useState<RedirectRule | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<RedirectRule | null>(null);
   const [form, setForm] = useState<RuleForm>(EMPTY_FORM);
+  const dateFormatter = new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   const linkById = useMemo(() => new Map(links.map((link) => [link.id, link])), [links]);
+  const formatRuleType = (type: RedirectRuleType) => {
+    const ruleType = RULE_TYPES.find((item) => item.value === type);
+    return ruleType ? t(ruleType.labelKey) : type;
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -157,7 +163,7 @@ export function RedirectRules() {
     } finally {
       setLoading(false);
     }
-  }, [selectedLinkId]);
+  }, [error, selectedLinkId, t]);
 
   useEffect(() => {
     load();
@@ -318,7 +324,7 @@ export function RedirectRules() {
             <Shuffle size={17} className="text-brand-400" />
           </div>
           <div className="mt-3 text-2xl font-bold text-slate-100">
-            {enabledCount.toLocaleString()}
+            {enabledCount.toLocaleString(locale)}
           </div>
         </div>
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
@@ -327,7 +333,7 @@ export function RedirectRules() {
             <Shuffle size={17} className="text-emerald-400" />
           </div>
           <div className="mt-3 text-2xl font-bold text-slate-100">
-            {weightedCount.toLocaleString()}
+            {weightedCount.toLocaleString(locale)}
           </div>
         </div>
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
@@ -336,7 +342,7 @@ export function RedirectRules() {
             <Shuffle size={17} className="text-yellow-400" />
           </div>
           <div className="mt-3 text-2xl font-bold text-slate-100">
-            {ruleTypesInUse.toLocaleString()}
+            {ruleTypesInUse.toLocaleString(locale)}
           </div>
         </div>
       </div>
@@ -351,7 +357,7 @@ export function RedirectRules() {
             <option value="">{t('allLinks')}</option>
             {links.map((link) => (
               <option key={link.id} value={link.id}>
-                {formatLink(link)}
+                {formatLink(link, t('unknownLink'))}
               </option>
             ))}
           </Select>
@@ -398,7 +404,7 @@ export function RedirectRules() {
                     <tr key={rule.id} className="transition-colors hover:bg-slate-800/50">
                       <td className="whitespace-nowrap px-4 py-3">
                         <span className="font-mono text-brand-400">
-                          {formatLink(linkById.get(rule.link_id))}
+                          {formatLink(linkById.get(rule.link_id), t('unknownLink'))}
                         </span>
                       </td>
                       <td className="px-4 py-3">
@@ -409,9 +415,9 @@ export function RedirectRules() {
                       <td className="max-w-xs px-4 py-3">
                         <p
                           className="truncate text-slate-300"
-                          title={rule.rule_type === 'weighted' ? 'weighted' : valuesText(config)}
+                          title={rule.rule_type === 'weighted' ? t('weighted') : valuesText(config)}
                         >
-                          {rule.rule_type === 'weighted' ? 'weighted' : valuesText(config)}
+                          {rule.rule_type === 'weighted' ? t('weighted') : valuesText(config)}
                         </p>
                       </td>
                       <td className="max-w-md px-4 py-3">
@@ -433,11 +439,11 @@ export function RedirectRules() {
                       </td>
                       <td className="px-4 py-3">
                         <Badge variant={enabled ? 'green' : 'gray'}>
-                          {enabled ? 'enabled' : 'disabled'}
+                          {enabled ? t('enabled') : t('disabledStatus')}
                         </Badge>
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 text-xs text-slate-500">
-                        {dayjs(rule.updated_at).format('YYYY-MM-DD HH:mm')}
+                        {dateFormatter.format(new Date(rule.updated_at))}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1">
@@ -484,7 +490,7 @@ export function RedirectRules() {
             <option value="">{t('selectLink')}</option>
             {links.map((link) => (
               <option key={link.id} value={link.id}>
-                {formatLink(link)}
+                {formatLink(link, t('unknownLink'))}
               </option>
             ))}
           </Select>
@@ -502,7 +508,7 @@ export function RedirectRules() {
             >
               {RULE_TYPES.map((type) => (
                 <option key={type.value} value={type.value}>
-                  {type.label}
+                  {t(type.labelKey)}
                 </option>
               ))}
             </Select>

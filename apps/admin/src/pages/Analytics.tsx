@@ -159,27 +159,27 @@ export function Analytics() {
             onChange={(e) => set('referer', e.target.value)}
           />
           <Input
-            label="UTM Source"
+            label={t('utmSource')}
             value={draft.utm_source ?? ''}
             onChange={(e) => set('utm_source', e.target.value)}
           />
           <Input
-            label="UTM Medium"
+            label={t('utmMedium')}
             value={draft.utm_medium ?? ''}
             onChange={(e) => set('utm_medium', e.target.value)}
           />
           <Input
-            label="UTM Campaign"
+            label={t('utmCampaign')}
             value={draft.utm_campaign ?? ''}
             onChange={(e) => set('utm_campaign', e.target.value)}
           />
           <Input
-            label="UTM Term"
+            label={t('utmTerm')}
             value={draft.utm_term ?? ''}
             onChange={(e) => set('utm_term', e.target.value)}
           />
           <Input
-            label="UTM Content"
+            label={t('utmContent')}
             value={draft.utm_content ?? ''}
             onChange={(e) => set('utm_content', e.target.value)}
           />

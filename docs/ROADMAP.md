@@ -164,7 +164,7 @@ Planned:
 
 ## V8: Usability Modes And Internationalization
 
-Status: in progress. Simple / Advanced mode and the first English / Simplified Chinese Admin foundation are implemented.
+Status: complete. Simple / Advanced mode, the required first-run wizard, full English / Simplified Chinese Admin coverage, locale-aware formatting, and browser smoke tests are implemented.
 
 Goal: keep the product approachable for simple users while preserving advanced tools for power users.
 

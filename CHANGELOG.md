@@ -13,6 +13,26 @@ _(none)_
 
 ---
 
+## [0.8.2] - 2026-07-11
+
+### Changed
+
+- Completed the V8 English and Simplified Chinese Admin localization pass, including remaining import source descriptions and link analytics fallback text.
+- Marked V8 usability modes and internationalization complete after catalog parity, locale-aware formatting, and EN/ZH browser smoke coverage were verified.
+
+---
+
+## [0.8.1] - 2026-07-11
+
+### Changed
+
+- Improved Admin Audit Logs and Analytics localization by covering audit action filters, pagination controls, UTM filter labels, chart units, and locale-aware chart/recent-visit formatting.
+- Added Playwright browser smoke tests for English and Simplified Chinese Admin core workflows, including login language switching, Overview, Links, Create Link, and Settings.
+- Admin CI now installs the Chromium browser runtime before running the combined unit and browser smoke test suite.
+- Normalized remaining Admin display dates, counts, status labels, placeholders, QR labels, API scopes, redirect rule types, health-check details, and import conflict previews to respect the selected English or Simplified Chinese locale across link management and operations pages.
+
+---
+
 ## [0.8.0] — 2026-07-10
 
 ### Added

@@ -81,6 +81,18 @@ export function Links() {
   const { success, error } = useToast();
   const { isAdvanced } = useAdminMode();
   const { locale, t } = useLocale();
+  const createdDateFormatter = new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+  const limitDateFormatter = new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   const keyword = searchParams.get('keyword') ?? '';
   const tag = searchParams.get('tag') ?? '';
@@ -559,7 +571,7 @@ export function Links() {
                         type="checkbox"
                         checked={allVisibleSelected}
                         onChange={toggleAllVisible}
-                        aria-label="Select all visible links"
+                        aria-label={t('selectAllVisibleLinks')}
                         className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-brand-600 focus:ring-brand-500"
                       />
                     </th>
@@ -590,7 +602,7 @@ export function Links() {
                             type="checkbox"
                             checked={selectedIds.has(link.id)}
                             onChange={() => toggleSelected(link.id)}
-                            aria-label={`Select /${link.slug}`}
+                            aria-label={t('selectLinkAria', { slug: link.slug })}
                             className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-brand-600 focus:ring-brand-500"
                           />
                         </td>
@@ -642,7 +654,7 @@ export function Links() {
                         </div>
                       </td>
                       <td className="px-4 py-3 text-right text-slate-300 font-medium">
-                        {link.clicks.toLocaleString()}
+                        {link.clicks.toLocaleString(locale)}
                       </td>
                       {isAdvanced && (
                         <td className="px-4 py-3 text-xs">
@@ -653,7 +665,7 @@ export function Links() {
                                   className={expiredByTime ? 'text-yellow-400' : 'text-slate-500'}
                                 >
                                   {t('until', {
-                                    date: dayjs(link.expires_at).format('MMM D, YYYY HH:mm'),
+                                    date: limitDateFormatter.format(new Date(link.expires_at)),
                                   })}
                                 </div>
                               )}
@@ -661,8 +673,8 @@ export function Links() {
                                 <div
                                   className={expiredByClicks ? 'text-yellow-400' : 'text-slate-500'}
                                 >
-                                  {link.clicks.toLocaleString()} /{' '}
-                                  {Number(link.max_clicks).toLocaleString()}
+                                  {link.clicks.toLocaleString(locale)} /{' '}
+                                  {Number(link.max_clicks).toLocaleString(locale)}
                                 </div>
                               )}
                             </div>
@@ -675,7 +687,7 @@ export function Links() {
                         <StatusBadge status={effectiveStatus} />
                       </td>
                       <td className="px-4 py-3 text-slate-500 text-xs">
-                        {dayjs(link.created_at).format('MMM D, YYYY')}
+                        {createdDateFormatter.format(new Date(link.created_at))}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1">
@@ -904,13 +916,13 @@ export function Links() {
       <Modal
         open={!!qr}
         onClose={() => setQr(null)}
-        title={qr ? `QR Code /${qr.link.slug}` : 'QR Code'}
+        title={qr ? t('qrCodeTitle', { slug: qr.link.slug }) : t('qrCode')}
         size="sm"
       >
         {qr && (
           <div className="space-y-4">
             <div className="rounded-lg bg-white p-4">
-              <img src={qr.dataUrl} alt={`QR code for ${qr.url}`} className="h-auto w-full" />
+              <img src={qr.dataUrl} alt={t('qrCodeFor', { url: qr.url })} className="h-auto w-full" />
             </div>
             <p className="break-all font-mono text-xs text-slate-400">{qr.url}</p>
             <div className="flex justify-end gap-3">

@@ -12,7 +12,6 @@ import { Input, Select } from '../components/ui/Input';
 import { ConfirmDialog, Modal } from '../components/ui/Modal';
 import { useToast } from '../components/ui/Toast';
 import type { Domain } from '@linkora/shared';
-import dayjs from 'dayjs';
 import { useLocale } from '../contexts/LocaleContext';
 
 interface DomainForm {
@@ -37,6 +36,13 @@ export function Domains() {
   const [editing, setEditing] = useState<Domain | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Domain | null>(null);
   const [form, setForm] = useState<DomainForm>(EMPTY_FORM);
+  const dateFormatter = new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -47,7 +53,7 @@ export function Domains() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [error, t]);
 
   useEffect(() => {
     load();
@@ -162,7 +168,7 @@ export function Domains() {
             <Globe2 size={17} className="text-brand-400" />
           </div>
           <div className="mt-3 text-2xl font-bold text-slate-100">
-            {domains.length.toLocaleString()}
+            {domains.length.toLocaleString(locale)}
           </div>
         </div>
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
@@ -171,7 +177,7 @@ export function Domains() {
             <Globe2 size={17} className="text-emerald-400" />
           </div>
           <div className="mt-3 text-2xl font-bold text-slate-100">
-            {activeCount.toLocaleString()}
+            {activeCount.toLocaleString(locale)}
           </div>
         </div>
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
@@ -243,11 +249,11 @@ export function Domains() {
                             : 'bg-slate-700 text-slate-400'
                         }`}
                       >
-                        {domain.status}
+                        {domain.status === 'active' ? t('activeStatus') : t('disabledStatus')}
                       </span>
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-xs text-slate-500">
-                      {dayjs(domain.created_at).format('YYYY-MM-DD HH:mm')}
+                      {dateFormatter.format(new Date(domain.created_at))}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1">

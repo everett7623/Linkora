@@ -347,7 +347,7 @@ export function EditLink() {
         {isAdvanced && (
           <Textarea
             label={t('descriptionOptional')}
-            placeholder="Short internal note or page summary"
+            placeholder={t('descriptionPlaceholder')}
             value={form.description}
             onChange={(e) => set('description', e.target.value)}
             error={errors.description}
@@ -357,7 +357,7 @@ export function EditLink() {
         )}
         <Input
           label={t('tagsOptional')}
-          placeholder="marketing, campaign"
+          placeholder={t('tagsPlaceholder')}
           value={form.tags}
           onChange={(e) => set('tags', e.target.value)}
           hint={t('tagsHint')}

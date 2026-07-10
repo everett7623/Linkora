@@ -5,10 +5,20 @@ import { Button } from '../components/ui/Button';
 import { Select } from '../components/ui/Input';
 import { useToast } from '../components/ui/Toast';
 import type { AuditLog, PaginatedResult } from '@linkora/shared';
-import dayjs from 'dayjs';
 import { useLocale } from '../contexts/LocaleContext';
+import type { MessageKey } from '../i18n/messages';
 
 const PAGE_SIZE = 50;
+const ACTION_OPTIONS: Array<{ value: string; label: MessageKey }> = [
+  { value: 'link.create', label: 'auditActionLinkCreate' },
+  { value: 'link.update', label: 'auditActionLinkUpdate' },
+  { value: 'link.delete', label: 'auditActionLinkDelete' },
+  { value: 'import.confirm', label: 'auditActionImportConfirm' },
+  { value: 'import.shlink_api.fetch', label: 'auditActionShlinkFetch' },
+  { value: 'backup.create', label: 'auditActionBackupCreate' },
+  { value: 'api_token.create', label: 'auditActionApiTokenCreate' },
+  { value: 'api_token.revoke', label: 'auditActionApiTokenRevoke' },
+];
 
 function formatDetail(detail?: string | null): string {
   if (!detail) return '-';
@@ -27,6 +37,14 @@ export function AuditLogs() {
   const [keyword, setKeyword] = useState('');
   const [action, setAction] = useState('');
   const [page, setPage] = useState(1);
+  const dateFormatter = new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -38,7 +56,7 @@ export function AuditLogs() {
     } finally {
       setLoading(false);
     }
-  }, [keyword, action, page]);
+  }, [keyword, action, page, error, t]);
 
   useEffect(() => {
     load();
@@ -76,14 +94,11 @@ export function AuditLogs() {
         </div>
         <Select value={action} onChange={(e) => updateAction(e.target.value)} className="min-w-48">
           <option value="">{t('allActions')}</option>
-          <option value="link.create">Link Create</option>
-          <option value="link.update">Link Update</option>
-          <option value="link.delete">Link Delete</option>
-          <option value="import.confirm">Import Confirm</option>
-          <option value="import.shlink_api.fetch">Shlink API Fetch</option>
-          <option value="backup.create">Backup Create</option>
-          <option value="api_token.create">API Token Create</option>
-          <option value="api_token.revoke">API Token Revoke</option>
+          {ACTION_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {t(option.label)}
+            </option>
+          ))}
         </Select>
       </div>
 
@@ -112,7 +127,7 @@ export function AuditLogs() {
                 {result?.items.map((item) => (
                   <tr key={item.id} className="hover:bg-slate-800/50 transition-colors">
                     <td className="whitespace-nowrap px-4 py-3 text-xs text-slate-500">
-                      {dayjs(item.created_at).format('YYYY-MM-DD HH:mm:ss')}
+                      {dateFormatter.format(new Date(item.created_at))}
                     </td>
                     <td className="px-4 py-3 font-mono text-xs text-brand-400">{item.action}</td>
                     <td className="px-4 py-3 text-xs text-slate-400">
@@ -143,7 +158,10 @@ export function AuditLogs() {
       {result && result.totalPages > 1 && (
         <div className="flex items-center justify-between text-sm">
           <span className="text-slate-500">
-            Page {page} of {result.totalPages}
+            {t('pageOf', {
+              page: page.toLocaleString(locale),
+              total: result.totalPages.toLocaleString(locale),
+            })}
           </span>
           <div className="flex gap-2">
             <Button
@@ -153,7 +171,7 @@ export function AuditLogs() {
               disabled={page <= 1}
               onClick={() => setPage((current) => Math.max(1, current - 1))}
             >
-              Prev
+              {t('previous')}
             </Button>
             <Button
               variant="secondary"
@@ -161,7 +179,7 @@ export function AuditLogs() {
               disabled={page >= result.totalPages}
               onClick={() => setPage((current) => current + 1)}
             >
-              Next <ChevronRight size={14} />
+              {t('next')} <ChevronRight size={14} />
             </Button>
           </div>
         </div>

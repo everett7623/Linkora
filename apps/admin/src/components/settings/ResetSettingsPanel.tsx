@@ -9,16 +9,18 @@ import { useLocale } from '../../contexts/LocaleContext';
 
 const RESET_PHRASE = 'RESET LINKORA';
 
-function formatCount(value: number): string {
-  return value.toLocaleString();
+function formatCount(value: number, locale: string): string {
+  return value.toLocaleString(locale);
 }
 
 function TopTableRows({
   preview,
   emptyLabel,
+  locale,
 }: {
   preview: InstanceResetPreview;
   emptyLabel: string;
+  locale: string;
 }) {
   const rows = Object.entries(preview.tables)
     .filter(([, count]) => count > 0)
@@ -34,7 +36,7 @@ function TopTableRows({
           className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950 px-3 py-2"
         >
           <span className="font-mono text-xs text-slate-400">{table}</span>
-          <span className="text-sm font-semibold text-slate-100">{formatCount(count)}</span>
+          <span className="text-sm font-semibold text-slate-100">{formatCount(count, locale)}</span>
         </div>
       ))}
     </div>
@@ -43,7 +45,7 @@ function TopTableRows({
 
 export function ResetSettingsPanel() {
   const { success, error } = useToast();
-  const { t } = useLocale();
+  const { locale, t } = useLocale();
   const [open, setOpen] = useState(false);
   const [preview, setPreview] = useState<InstanceResetPreview | null>(null);
   const [loadingPreview, setLoadingPreview] = useState(false);
@@ -71,8 +73,8 @@ export function ResetSettingsPanel() {
       const result = await resetInstance({ confirmation, createBackup });
       success(
         t('resetComplete', {
-          rows: formatCount(result.totalRows),
-          keys: formatCount(result.kvDeleted),
+          rows: formatCount(result.totalRows, locale),
+          keys: formatCount(result.kvDeleted, locale),
         })
       );
       setOpen(false);
@@ -114,10 +116,14 @@ export function ResetSettingsPanel() {
                 <div className="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2">
                   <div className="text-xs text-slate-500">{t('rowsToRemove')}</div>
                   <div className="mt-1 text-2xl font-bold text-slate-100">
-                    {formatCount(preview.totalRows)}
+                    {formatCount(preview.totalRows, locale)}
                   </div>
                 </div>
-                <TopTableRows preview={preview} emptyLabel={t('noRowsDelete')} />
+                <TopTableRows
+                  preview={preview}
+                  emptyLabel={t('noRowsDelete')}
+                  locale={locale}
+                />
               </>
             )
           )}

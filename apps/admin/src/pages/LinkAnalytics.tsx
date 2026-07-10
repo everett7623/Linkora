@@ -77,7 +77,7 @@ export function LinkAnalytics() {
             <ArrowLeft size={15} />
             {t('analytics')}
           </RouterLink>
-          <h1 className="text-2xl font-bold text-slate-100">/{link?.slug ?? 'link'}</h1>
+          <h1 className="text-2xl font-bold text-slate-100">/{link?.slug ?? t('unknown')}</h1>
           <p className="mt-0.5 max-w-3xl truncate text-sm text-slate-400">{link?.long_url}</p>
         </div>
         <div className="flex flex-wrap gap-3">
@@ -148,7 +148,7 @@ export function LinkAnalytics() {
         />
         <BarList
           title={t('conversionEvents')}
-          valueLabel="events"
+          valueLabel={t('eventsValue')}
           items={(summary?.topConversionEvents ?? []).map((item) => ({
             label: item.event_name,
             value: item.conversions,

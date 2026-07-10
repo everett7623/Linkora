@@ -6,16 +6,17 @@ import { Input } from '../components/ui/Input';
 import { ConfirmDialog, Modal } from '../components/ui/Modal';
 import { useToast } from '../components/ui/Toast';
 import type { ApiToken, ApiTokenScope } from '@linkora/shared';
-import dayjs from 'dayjs';
 import { useLocale } from '../contexts/LocaleContext';
+import type { MessageKey } from '../i18n/messages';
 
-const SCOPE_OPTIONS: Array<{ value: ApiTokenScope; label: string }> = [
-  { value: 'read', label: 'Read' },
-  { value: 'write', label: 'Write' },
-  { value: 'admin', label: 'Admin' },
+const SCOPE_OPTIONS: Array<{ value: ApiTokenScope; labelKey: MessageKey }> = [
+  { value: 'read', labelKey: 'readScope' },
+  { value: 'write', labelKey: 'writeScope' },
+  { value: 'admin', labelKey: 'adminScope' },
 ];
 
 function ScopePills({ scopes }: { scopes: ApiTokenScope[] }) {
+  const { t } = useLocale();
   return (
     <div className="flex flex-wrap gap-1.5">
       {scopes.map((scope) => (
@@ -23,7 +24,7 @@ function ScopePills({ scopes }: { scopes: ApiTokenScope[] }) {
           key={scope}
           className="rounded-full bg-brand-500/10 px-2 py-0.5 text-xs font-medium text-brand-300"
         >
-          {scope}
+          {t(`${scope}Scope` as MessageKey)}
         </span>
       ))}
     </div>
@@ -42,6 +43,13 @@ export function ApiTokens() {
   const [newToken, setNewToken] = useState<string | null>(null);
   const [revokeTarget, setRevokeTarget] = useState<ApiToken | null>(null);
   const [revoking, setRevoking] = useState(false);
+  const dateFormatter = new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -52,7 +60,7 @@ export function ApiTokens() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [error, t]);
 
   useEffect(() => {
     load();
@@ -135,7 +143,7 @@ export function ApiTokens() {
             <KeyRound size={17} className="text-brand-400" />
           </div>
           <div className="mt-3 text-2xl font-bold text-slate-100">
-            {activeCount.toLocaleString()}
+            {activeCount.toLocaleString(locale)}
           </div>
         </div>
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
@@ -146,7 +154,7 @@ export function ApiTokens() {
           <div className="mt-3 text-2xl font-bold text-slate-100">
             {tokens
               .filter((token) => !token.revoked_at && token.scopes.includes('admin'))
-              .length.toLocaleString()}
+              .length.toLocaleString(locale)}
           </div>
         </div>
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
@@ -155,7 +163,7 @@ export function ApiTokens() {
             <Trash2 size={17} className="text-red-400" />
           </div>
           <div className="mt-3 text-2xl font-bold text-slate-100">
-            {tokens.filter((token) => token.revoked_at).length.toLocaleString()}
+            {tokens.filter((token) => token.revoked_at).length.toLocaleString(locale)}
           </div>
         </div>
       </div>
@@ -190,11 +198,11 @@ export function ApiTokens() {
                       <ScopePills scopes={token.scopes} />
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-xs text-slate-500">
-                      {dayjs(token.created_at).format('YYYY-MM-DD HH:mm')}
+                      {dateFormatter.format(new Date(token.created_at))}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-xs text-slate-500">
                       {token.last_used_at
-                        ? dayjs(token.last_used_at).format('YYYY-MM-DD HH:mm')
+                        ? dateFormatter.format(new Date(token.last_used_at))
                         : '-'}
                     </td>
                     <td className="px-4 py-3">
@@ -205,7 +213,7 @@ export function ApiTokens() {
                             : 'bg-emerald-500/15 text-emerald-400'
                         }`}
                       >
-                        {token.revoked_at ? 'revoked' : 'active'}
+                        {token.revoked_at ? t('revoked') : t('activeStatus')}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -255,9 +263,9 @@ export function ApiTokens() {
                       checked
                         ? 'border-brand-500 bg-brand-500/10 text-brand-200'
                         : 'border-slate-700 bg-slate-950 text-slate-400 hover:border-slate-600'
-                    }`}
+                      }`}
                   >
-                    {option.label}
+                    {t(option.labelKey)}
                     {checked && <Check size={14} />}
                   </button>
                 );

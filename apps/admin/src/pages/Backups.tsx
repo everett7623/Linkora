@@ -13,10 +13,9 @@ import { Button } from '../components/ui/Button';
 import { RestoreBackupModal } from '../components/backups/RestoreBackupModal';
 import { useToast } from '../components/ui/Toast';
 import type { Backup } from '@linkora/shared';
-import dayjs from 'dayjs';
 import { useLocale } from '../contexts/LocaleContext';
 
-function formatBytes(size?: number | null): string {
+function formatBytes(size: number | null | undefined, locale: string, bytesUnit: string): string {
   if (!size) return '-';
   const units = ['B', 'KB', 'MB', 'GB'];
   let value = size;
@@ -25,22 +24,34 @@ function formatBytes(size?: number | null): string {
     value /= 1024;
     unit += 1;
   }
-  return `${value.toFixed(value >= 10 || unit === 0 ? 0 : 1)} ${units[unit]}`;
+  const precision = value >= 10 || unit === 0 ? 0 : 1;
+  const formatted = new Intl.NumberFormat(locale, {
+    maximumFractionDigits: precision,
+    minimumFractionDigits: 0,
+  }).format(value);
+  return `${formatted} ${unit === 0 ? bytesUnit : units[unit]}`;
 }
 
 function StatusPill({ status }: { status: Backup['status'] }) {
+  const { t } = useLocale();
   const classes =
     status === 'completed'
       ? 'bg-emerald-500/15 text-emerald-400'
       : status === 'failed'
         ? 'bg-red-500/15 text-red-400'
         : 'bg-yellow-500/15 text-yellow-400';
+  const label =
+    status === 'completed'
+      ? t('completedStatus')
+      : status === 'failed'
+        ? t('failedStatus')
+        : t('pendingStatus');
 
   return (
     <span
       className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${classes}`}
     >
-      {status}
+      {label}
     </span>
   );
 }
@@ -48,6 +59,20 @@ function StatusPill({ status }: { status: Backup['status'] }) {
 export function Backups() {
   const { success, error } = useToast();
   const { locale, t } = useLocale();
+  const compactDateFormatter = new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  const fullDateFormatter = new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
   const [data, setData] = useState<BackupsList | null>(null);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -62,7 +87,7 @@ export function Backups() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [error, t]);
 
   useEffect(() => {
     load();
@@ -136,7 +161,7 @@ export function Backups() {
             <CheckCircle size={17} className="text-emerald-400" />
           </div>
           <div className="mt-3 text-2xl font-bold text-slate-100">
-            {completedCount.toLocaleString()}
+            {completedCount.toLocaleString(locale)}
           </div>
         </div>
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
@@ -144,7 +169,9 @@ export function Backups() {
             <span className="text-sm text-slate-400">{t('storedSize')}</span>
             <Cloud size={17} className="text-brand-400" />
           </div>
-          <div className="mt-3 text-2xl font-bold text-slate-100">{formatBytes(totalSize)}</div>
+          <div className="mt-3 text-2xl font-bold text-slate-100">
+            {formatBytes(totalSize, locale, t('bytesUnit'))}
+          </div>
         </div>
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
           <div className="flex items-center justify-between">
@@ -152,7 +179,7 @@ export function Backups() {
             <Archive size={17} className="text-slate-400" />
           </div>
           <div className="mt-3 text-lg font-semibold text-slate-100">
-            {latestBackup ? dayjs(latestBackup.created_at).format('MMM D HH:mm') : '-'}
+            {latestBackup ? compactDateFormatter.format(new Date(latestBackup.created_at)) : '-'}
           </div>
         </div>
       </div>
@@ -183,7 +210,7 @@ export function Backups() {
                 {data?.items.map((backup) => (
                   <tr key={backup.id} className="hover:bg-slate-800/50 transition-colors">
                     <td className="whitespace-nowrap px-4 py-3 text-xs text-slate-500">
-                      {dayjs(backup.created_at).format('YYYY-MM-DD HH:mm:ss')}
+                      {fullDateFormatter.format(new Date(backup.created_at))}
                     </td>
                     <td className="px-4 py-3">
                       <p
@@ -195,7 +222,7 @@ export function Backups() {
                     </td>
                     <td className="px-4 py-3 text-xs uppercase text-slate-500">{backup.storage}</td>
                     <td className="px-4 py-3 text-right text-slate-400">
-                      {formatBytes(backup.size)}
+                      {formatBytes(backup.size, locale, t('bytesUnit'))}
                     </td>
                     <td className="px-4 py-3">
                       <StatusPill status={backup.status} />

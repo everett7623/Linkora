@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { messages, type Locale, type MessageKey } from '../i18n/messages';
 import { formatMessage, type MessageVariables } from '../i18n/formatMessage';
 
@@ -19,12 +19,14 @@ function initialLocale(): Locale {
 
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const [locale, updateLocale] = useState<Locale>(initialLocale);
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
   const value = useMemo<LocaleContextValue>(
     () => ({
       locale,
       setLocale(next) {
         window.localStorage.setItem(STORAGE_KEY, next);
-        document.documentElement.lang = next;
         updateLocale(next);
       },
       t(key, variables = {}) {

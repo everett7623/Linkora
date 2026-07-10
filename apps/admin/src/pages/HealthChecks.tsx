@@ -9,7 +9,6 @@ import {
   Search,
   XCircle,
 } from 'lucide-react';
-import dayjs from 'dayjs';
 import type {
   LinkHealthBatchResult,
   LinkHealthCheckResult,
@@ -43,6 +42,7 @@ function Metric({
   value: number | string;
   icon: React.ReactNode;
 }) {
+  const { locale } = useLocale();
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
       <div className="flex items-center justify-between">
@@ -50,7 +50,7 @@ function Metric({
         {icon}
       </div>
       <div className="mt-3 text-2xl font-bold text-slate-100">
-        {typeof value === 'number' ? value.toLocaleString() : value}
+        {typeof value === 'number' ? value.toLocaleString(locale) : value}
       </div>
     </div>
   );
@@ -67,13 +67,21 @@ function resultLink(result: LinkHealthCheckResult): string {
 
 export function HealthChecks() {
   const { success, error } = useToast();
-  const { t } = useLocale();
+  const { locale, t } = useLocale();
   const [limit, setLimit] = useState(20);
   const [url, setUrl] = useState('');
   const [loadingBatch, setLoadingBatch] = useState(false);
   const [loadingUrl, setLoadingUrl] = useState(false);
   const [results, setResults] = useState<LinkHealthCheckResult[]>([]);
   const [lastRunAt, setLastRunAt] = useState<string | null>(null);
+  const dateTimeFormatter = new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
 
   const summary = useMemo<LinkHealthBatchResult>(() => {
     if (results.length === 0) return emptySummary();
@@ -127,7 +135,7 @@ export function HealthChecks() {
           <h1 className="text-2xl font-bold text-slate-100">{t('healthChecks')}</h1>
           <p className="mt-0.5 text-sm text-slate-400">
             {lastRunAt
-              ? t('lastChecked', { date: dayjs(lastRunAt).format('YYYY-MM-DD HH:mm:ss') })
+              ? t('lastChecked', { date: dateTimeFormatter.format(new Date(lastRunAt)) })
               : t('healthSubtitle')}
           </p>
         </div>
@@ -255,7 +263,7 @@ export function HealthChecks() {
                       {result.http_status ?? '-'}
                     </td>
                     <td className="px-4 py-3 text-right text-slate-300">
-                      {result.response_time_ms.toLocaleString()} ms
+                      {result.response_time_ms.toLocaleString(locale)} {t('millisecondsUnit')}
                     </td>
                     <td className="max-w-sm px-4 py-3">
                       <p className="truncate text-slate-400" title={result.final_url ?? ''}>
@@ -266,12 +274,12 @@ export function HealthChecks() {
                           className="mt-1 truncate text-xs text-slate-600"
                           title={result.fallback_url}
                         >
-                          fallback: {result.fallback_url}
+                          {t('fallbackUrl')}: {result.fallback_url}
                         </p>
                       )}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-xs text-slate-500">
-                      {dayjs(result.checked_at).format('YYYY-MM-DD HH:mm:ss')}
+                      {dateTimeFormatter.format(new Date(result.checked_at))}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end gap-1">

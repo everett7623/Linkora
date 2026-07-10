@@ -2,7 +2,7 @@
 
 Quick reference for what is done, what is in progress, and what is not started.
 
-Last updated: 2026-07-10
+Last updated: 2026-07-11
 
 ---
 
@@ -11,12 +11,12 @@ Last updated: 2026-07-10
 | Layer                      | Status                 | Notes                                                                                                                                  |
 | -------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | Worker backend             | ✅ Code complete       | Local type-check passing; deployed on Cloudflare Workers                                                                               |
-| Admin frontend             | 🟡 i18n in progress    | Default-English EN/ZH covers Admin workflows and public status pages; browser smoke and locale formatting remain                       |
+| Admin frontend             | 🟡 i18n in progress    | Default-English EN/ZH covers Admin workflows and public status pages; EN/ZH browser smoke covers core Admin navigation; Admin dates/counts/status labels now follow the selected locale |
 | Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                    |
 | Documentation              | ✅ Complete            | README, self-hosting guide, analytics guide, backup/reset guide, root runbooks, `docs/` reference set, and V7-V10 long-term roadmap    |
 | Deployment                 | ✅ Deployed            | Worker and Admin deployed; GitHub Actions deploy workflow added                                                                        |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                       |
-| Current version            | ✅ 0.8.0               | Simple / Advanced mode, required first-run wizard, default-English EN/ZH foundation, and one-domain deployment are synchronized        |
+| Current version            | ✅ 0.8.2               | V8 EN/ZH Admin localization, browser smoke coverage, and locale-aware operations formatting are complete                              |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`, so a reset followed by `s.y8o.de` migration can keep legacy short URLs |
 
 ---
@@ -95,7 +95,7 @@ Last updated: 2026-07-10
 1. Revoke or rotate the Shlink API key used during migration
 2. Cut over the legacy short domain from Shlink to Linkora when ready
 3. Continue V7 operations work: backup retention, target monitoring, and failure alerts
-4. Continue V8 English / Simplified Chinese coverage after completing the required first-run deployment wizard
+4. Begin V9 public read-only stats pages with privacy controls when V7 priorities allow
 
 ---
 
@@ -130,7 +130,7 @@ Last updated: 2026-07-10
 | V5      | ✅ Done         |
 | V6      | ✅ Done         |
 | V7      | In Progress     |
-| V8      | In Progress     |
+| V8      | ✅ Done         |
 | V9      | Planned         |
 | V10     | Future optional |
 
@@ -221,6 +221,6 @@ Database columns for V2–V4 are already present in `migrations/0001_init.sql` t
 | Version                                           | Scope                                                                                                                                                                                  | Status          |
 | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
 | V7 Operations, Recovery, And Monitoring           | R2 restore, backup retention, periodic target monitoring, alerts, fallback URL UI, custom status pages, operations dashboard, better bot classification                                | In progress     |
-| V8 Usability Modes And Internationalization       | Simple / Advanced mode, deployment capability reporting, required first-run wizard, and default-English EN/ZH foundation are implemented; full-page and locale-aware formatting remain | In progress     |
+| V8 Usability Modes And Internationalization       | Simple / Advanced mode, deployment capability reporting, first-run wizard, full-page EN/ZH localization, browser smoke coverage, and locale-aware formatting                          | Complete        |
 | V9 Growth Tools, Reporting, And Link Intelligence | Bulk URL and UTM operations, link notes, OpenGraph previews, public stats pages, scheduled reports, saved analytics views, conversion attribution, long-idle auto-archive              | Planned         |
 | V10 Collaboration And Governance                  | Multi-user, roles, teams, token governance, audit retention, per-project access, optional managed services                                                                             | Future optional |

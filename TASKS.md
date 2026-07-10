@@ -7,7 +7,7 @@ One item in "In Progress" at a time whenever possible.
 
 ## 🔴 In Progress
 
-- [ ] V8: Continue English / Simplified Chinese localization across remaining basic and advanced pages
+- [x] V8: Complete English / Simplified Chinese localization across basic and advanced pages
 
 ---
 
@@ -31,8 +31,11 @@ One item in "In Progress" at a time whenever possible.
 - [x] V8: Localize Bulk Create, Webhook controls, and complete reset safety workflow
 - [x] V8: Audit Admin i18n coverage and add catalog parity/interpolation tests
 - [x] V8: Localize public redirect/status templates with redirect regression coverage
-- [ ] V8: Add browser smoke tests for English and Simplified Chinese core workflows
-- [ ] V8: Localize remaining page content, redirect status pages, validation, dates, numbers, and exports
+- [x] V8: Localize Audit Logs action filters, pagination, Analytics UTM labels, and locale-aware chart formatting
+- [x] V8: Add browser smoke tests for English and Simplified Chinese core workflows
+- [x] V8: Normalize Admin dates, numbers, status labels, QR labels, placeholders, and API scope labels by selected locale
+- [x] V8: Localize redirect rule types, health-check details, group confirmations, and import conflict previews
+- [x] V8: Localize remaining long-tail page content, validation wording, and export/report details
 - [ ] V9: Add public read-only stats pages with privacy controls
 - [ ] V9: Improve bot classification and conversion attribution
 
