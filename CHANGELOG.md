@@ -13,6 +13,16 @@ _(none)_
 
 ---
 
+## [0.8.7] - 2026-07-11
+
+### Changed
+
+- Replaced broad substring bot detection with a boundary-aware classifier for major search crawlers, social link previews, SEO tools, AI crawlers, Headless browsers, uptime monitors, and HTTP automation clients.
+- Prevented false positives for real browser traffic whose device names contain `bot`, including CUBOT Android devices.
+- Added representative bot and real-browser regression tests; classification remains asynchronous and cannot affect redirect responses.
+
+---
+
 ## [0.8.6] - 2026-07-11
 
 ### Added

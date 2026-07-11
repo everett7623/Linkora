@@ -4,17 +4,7 @@ import { generateId, now, sha256 } from '../utils/id';
 import { incrementClicks, insertVisit, upsertDailyStats } from '../db/index';
 import { insertVisitTarget } from '../db/analytics';
 import { setCachedLink } from '../cache/index';
-
-const BOT_UA_PATTERNS = [
-  /bot/i, /crawler/i, /spider/i, /scraper/i, /curl/i,
-  /wget/i, /python/i, /java\/\d/i, /axios/i, /node-fetch/i,
-  /go-http/i, /php/i, /ruby/i,
-];
-
-function detectBot(userAgent: string | null): boolean {
-  if (!userAgent) return false;
-  return BOT_UA_PATTERNS.some((pattern) => pattern.test(userAgent));
-}
+import { isLikelyBot } from './botDetection';
 
 function detectBrowser(ua: string): string {
   if (/Edg\//i.test(ua)) return 'Edge';
@@ -90,7 +80,7 @@ export async function recordVisitMessage(env: Env, message: VisitQueueMessage): 
     const country = request.country ?? undefined;
     const ip = request.ip ?? '';
 
-    const isBot = detectBot(ua) ? 1 : 0;
+    const isBot = isLikelyBot(ua) ? 1 : 0;
     const ipHash = ip ? await sha256(ip) : undefined;
 
     const visitId = generateId();
