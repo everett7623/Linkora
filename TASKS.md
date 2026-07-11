@@ -376,7 +376,7 @@ Deployment experience:
 - [x] Periodic target health monitoring through Cron
 - [ ] Target status history with last status code, last checked time, and failure count
 - [ ] Target failure alerts through Admin notices and optional webhooks
-- [ ] Alert controls for retry windows, suppression, and recovery notifications
+- [x] Alert controls for consecutive-failure thresholds, suppression, and recovery Webhook notifications
 - [x] First-class `fallback_url` editing in Create/Edit Link
 - [ ] Custom 404, expired, disabled, and warning page templates
 - [x] Operations dashboard for backup freshness, monitoring status, current failed targets, queue configuration, and deployment health

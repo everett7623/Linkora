@@ -9,7 +9,7 @@ import type {
 import { validateLongUrl } from '@linkora/shared';
 import type { Env } from '../types';
 import { requireAuth } from '../auth/index';
-import { getLinkById, getLinksByIds, getSettings, listLinks } from '../db/index';
+import { getLinkById, getLinksByIds, getSettings, listLinks, setSetting } from '../db/index';
 import { recordAudit } from '../audit/index';
 import { now } from '../utils/id';
 import { jsonError, jsonOk } from '../utils/response';
@@ -18,6 +18,12 @@ import {
   normalizeHealthMonitoringLimit,
   parseHealthMonitoringEnabled,
 } from '../health/monitoringPolicy';
+import {
+  evaluateHealthAlerts,
+  normalizeFailureThreshold,
+  normalizeSuppressionMinutes,
+  parseHealthAlertState,
+} from '../health/alertPolicy';
 
 const healthChecks = new Hono<{ Bindings: Env }>();
 
@@ -117,9 +123,10 @@ export async function runScheduledHealthChecks(env: Env): Promise<LinkHealthBatc
   if (!parseHealthMonitoringEnabled(settings.health_monitoring_enabled)) return null;
 
   const limit = normalizeHealthMonitoringLimit(settings.health_monitoring_limit);
+  const cursor = Math.max(0, Number.parseInt(settings.health_monitoring_cursor ?? '0', 10) || 0);
   const links = await listLinks(env, {
     status: 'active',
-    page: 1,
+    page: Math.floor(cursor / limit) + 1,
     pageSize: limit,
     sort: 'updated_at_asc',
   });
@@ -130,12 +137,36 @@ export async function runScheduledHealthChecks(env: Env): Promise<LinkHealthBatc
   }
 
   const summary = summarizeResults(results);
-  if (summary.warning > 0 || summary.broken > 0) {
+  const evaluatedAt = now();
+  const decision = evaluateHealthAlerts(
+    results.flatMap((item) => (item.link_id ? [item.link_id] : [])),
+    results.flatMap((item) =>
+      item.link_id && item.status !== 'healthy' ? [item.link_id] : []
+    ),
+    parseHealthAlertState(settings.health_alert_state),
+    normalizeFailureThreshold(settings.health_failure_threshold),
+    normalizeSuppressionMinutes(settings.health_alert_suppression_minutes),
+    evaluatedAt
+  );
+
+  if (decision.notifyFailure) {
     await emitWebhook(env, 'health_check.failed', {
       trigger: 'scheduled',
       summary,
+      newlyFailed: decision.newlyFailed,
     });
   }
+  if (decision.recovered.length > 0) {
+    await emitWebhook(env, 'health_check.recovered', {
+      trigger: 'scheduled',
+      recovered: decision.recovered,
+    });
+  }
+  const nextCursor = links.total > 0 ? (cursor + links.items.length) % links.total : 0;
+  await Promise.all([
+    setSetting(env, 'health_alert_state', JSON.stringify(decision.nextState), evaluatedAt),
+    setSetting(env, 'health_monitoring_cursor', String(nextCursor), evaluatedAt),
+  ]);
   return summary;
 }
 

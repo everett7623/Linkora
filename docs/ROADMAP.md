@@ -155,8 +155,8 @@ Planned:
 - Done: backup retention policy for R2 objects and D1 backup records, with a configurable 30-day default
 - Done: opt-in periodic target health monitoring through Cron, with manual checks kept available
 - Target status history for links, including last status code, last checked time, and failure count
-- Partial: scheduled anomalies emit optional signed webhooks; Admin notices and persisted alert state remain
-- Alert controls, including retry windows, suppression, and recovery notifications
+- Partial: scheduled anomalies and recoveries emit optional signed webhooks; Admin notices and full status history remain
+- Done: alert controls for consecutive-failure thresholds, repeat suppression, and recovery notifications
 - Done: first-class `fallback_url` editing in Create/Edit Link, without changing redirect behavior
 - Custom 404, expired, disabled, and warning page templates with safe defaults
 - Done: operations dashboard for backup freshness, monitoring status, current failed targets, queue configuration, and deployment health

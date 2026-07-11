@@ -28,6 +28,8 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   backup_retention_days: '30',
   health_monitoring_enabled: 'false',
   health_monitoring_limit: '20',
+  health_failure_threshold: '2',
+  health_alert_suppression_minutes: '1440',
 };
 
 export interface InstanceResetPreview {

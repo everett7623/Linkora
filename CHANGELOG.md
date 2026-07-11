@@ -13,6 +13,21 @@ _(none)_
 
 ---
 
+## [0.8.8] - 2026-07-11
+
+### Added
+
+- Added configurable consecutive-failure thresholds (1-10 checks) before scheduled target alerts fire.
+- Added repeat alert suppression from 0 to 10080 minutes and signed `health_check.recovered` Webhook notifications.
+- Added D1-backed internal alert state and rotating monitoring cursors so limited Cron batches eventually cover all active links.
+- Added bilingual Advanced Settings controls and health alert state-machine tests.
+
+### Security
+
+- Internal health alert state and monitoring cursors are excluded from Settings API responses and backup payloads.
+
+---
+
 ## [0.8.7] - 2026-07-11
 
 ### Changed

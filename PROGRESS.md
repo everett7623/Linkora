@@ -16,7 +16,7 @@ Last updated: 2026-07-11
 | Documentation              | ✅ Complete            | README, self-hosting guide, analytics guide, backup/reset guide, root runbooks, `docs/` reference set, and V7-V10 long-term roadmap    |
 | Deployment                 | ✅ Deployed            | Worker and Admin deployed; GitHub Actions deploy workflow added                                                                        |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                       |
-| Current version            | ✅ 0.8.7               | Analytics bot classification covers search, preview, AI, SEO, monitoring, Headless, and automation clients with browser false-positive tests |
+| Current version            | ✅ 0.8.8               | Scheduled health alerts support consecutive-failure thresholds, repeat suppression, recovery Webhooks, and rotating link batches           |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`, so a reset followed by `s.y8o.de` migration can keep legacy short URLs |
 
 ---
@@ -214,7 +214,7 @@ Database columns for V2–V4 are already present in `migrations/0001_init.sql` t
 | Restore report               | ✅ Done | Restore result includes created, overwritten, renamed, skipped, failed, redirect-rule counts, and a CSV-style report                                                                  |
 | Factory reset                | ✅ Done | Admin Settings danger zone previews affected rows, requires `RESET LINKORA`, creates optional `pre-reset` R2 backup, clears KV cache, and preserves backup records plus `ADMIN_TOKEN` |
 | Backup retention             | ✅ Done | Advanced Settings configures 1-3650 days (default 30); Cron deletes expired R2 objects before their D1 records and preserves records when R2 is unavailable                           |
-| Target monitoring and alerts | In progress | Opt-in Cron checks 1-50 active links and emits signed anomaly summaries; persisted status history, retry/suppression, and recovery alerts remain pending                         |
+| Target monitoring and alerts | In progress | Cron rotates through active links with configurable failure thresholds, repeat suppression, and signed failure/recovery Webhooks; full status history and Admin notices remain pending |
 | Fallback URL editing         | ✅ Done | Create/Edit Link can set or clear a validated HTTP(S) fallback URL for monitoring and future workflows; public redirect behavior remains unchanged                                      |
 | Operations dashboard         | ✅ Done | Advanced Admin combines backup freshness, monitoring settings, Queue/R2 deployment capabilities, and manually requested current target failures                                        |
 | Bot classification           | ✅ Done | Boundary-aware classifier covers major crawlers and automation clients while preserving real browser traffic, including CUBOT Android devices                                           |

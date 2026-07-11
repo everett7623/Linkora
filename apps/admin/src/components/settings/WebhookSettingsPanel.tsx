@@ -152,7 +152,11 @@ export function WebhookSettingsPanel() {
                 onChange={() => toggleEvent(event)}
                 className="h-4 w-4 rounded border-slate-600 bg-slate-900 text-brand-600 focus:ring-brand-500"
               />
-              {event === 'health_check.failed' ? t('healthCheckFailedEvent') : eventLabel(event)}
+              {event === 'health_check.failed'
+                ? t('healthCheckFailedEvent')
+                : event === 'health_check.recovered'
+                  ? t('healthCheckRecoveredEvent')
+                  : eventLabel(event)}
             </label>
           ))}
         </div>

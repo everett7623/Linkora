@@ -74,6 +74,8 @@ async function mockAdminApi(page: Page) {
           backup_retention_days: '30',
           health_monitoring_enabled: 'false',
           health_monitoring_limit: '20',
+          health_failure_threshold: '2',
+          health_alert_suppression_minutes: '1440',
         })
       );
       return;
@@ -89,7 +91,7 @@ async function mockAdminApi(page: Page) {
           url: '',
           events: [],
           has_secret: false,
-          available_events: ['health_check.failed'],
+          available_events: ['health_check.failed', 'health_check.recovered'],
         })
       );
       return;

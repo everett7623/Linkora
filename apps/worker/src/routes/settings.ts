@@ -6,6 +6,10 @@ import { jsonOk, jsonError } from '../utils/response';
 import { now } from '../utils/id';
 import { DEFAULT_BACKUP_RETENTION_DAYS } from '../backups/retentionPolicy';
 import { DEFAULT_HEALTH_MONITORING_LIMIT } from '../health/monitoringPolicy';
+import {
+  DEFAULT_HEALTH_FAILURE_THRESHOLD,
+  DEFAULT_HEALTH_SUPPRESSION_MINUTES,
+} from '../health/alertPolicy';
 
 const settings = new Hono<{ Bindings: Env }>();
 
@@ -20,6 +24,10 @@ settings.get('/', async (c) => {
   allSettings.backup_retention_days ??= String(DEFAULT_BACKUP_RETENTION_DAYS);
   allSettings.health_monitoring_enabled ??= 'false';
   allSettings.health_monitoring_limit ??= String(DEFAULT_HEALTH_MONITORING_LIMIT);
+  allSettings.health_failure_threshold ??= String(DEFAULT_HEALTH_FAILURE_THRESHOLD);
+  allSettings.health_alert_suppression_minutes ??= String(DEFAULT_HEALTH_SUPPRESSION_MINUTES);
+  delete allSettings.health_alert_state;
+  delete allSettings.health_monitoring_cursor;
   if ('webhook_secret' in allSettings) {
     allSettings.webhook_secret = '';
   }
@@ -64,6 +72,26 @@ function normalizeSetting(key: string, value: string): { value: string; error?: 
       };
     }
     return { value: String(limit) };
+  }
+  if (key === 'health_failure_threshold') {
+    const threshold = parseInt(value, 10);
+    if (!Number.isFinite(threshold) || threshold < 1 || threshold > 10) {
+      return {
+        value: String(DEFAULT_HEALTH_FAILURE_THRESHOLD),
+        error: 'health_failure_threshold must be between 1 and 10',
+      };
+    }
+    return { value: String(threshold) };
+  }
+  if (key === 'health_alert_suppression_minutes') {
+    const minutes = parseInt(value, 10);
+    if (!Number.isFinite(minutes) || minutes < 0 || minutes > 10080) {
+      return {
+        value: String(DEFAULT_HEALTH_SUPPRESSION_MINUTES),
+        error: 'health_alert_suppression_minutes must be between 0 and 10080',
+      };
+    }
+    return { value: String(minutes) };
   }
   if (key === 'backup_retention_days') {
     const days = parseInt(value, 10);

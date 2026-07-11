@@ -26,6 +26,8 @@ export function Settings() {
     backup_retention_days: '30',
     health_monitoring_enabled: 'false',
     health_monitoring_limit: '20',
+    health_failure_threshold: '2',
+    health_alert_suppression_minutes: '1440',
   });
 
   useEffect(() => {
@@ -39,6 +41,8 @@ export function Settings() {
           backup_retention_days: s.backup_retention_days ?? '30',
           health_monitoring_enabled: s.health_monitoring_enabled ?? 'false',
           health_monitoring_limit: s.health_monitoring_limit ?? '20',
+          health_failure_threshold: s.health_failure_threshold ?? '2',
+          health_alert_suppression_minutes: s.health_alert_suppression_minutes ?? '1440',
         });
       })
       .catch(() => error(t('loadSettingsFailed')))
@@ -151,6 +155,28 @@ export function Settings() {
               onChange={(e) => set('health_monitoring_limit', e.target.value)}
               hint={t('healthMonitoringHint')}
             />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Input
+                label={t('healthFailureThreshold')}
+                type="number"
+                min="1"
+                max="10"
+                disabled={form.health_monitoring_enabled !== 'true'}
+                value={form.health_failure_threshold}
+                onChange={(e) => set('health_failure_threshold', e.target.value)}
+                hint={t('healthFailureThresholdHint')}
+              />
+              <Input
+                label={t('healthSuppressionMinutes')}
+                type="number"
+                min="0"
+                max="10080"
+                disabled={form.health_monitoring_enabled !== 'true'}
+                value={form.health_alert_suppression_minutes}
+                onChange={(e) => set('health_alert_suppression_minutes', e.target.value)}
+                hint={t('healthSuppressionHint')}
+              />
+            </div>
           </div>
         )}
 
