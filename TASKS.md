@@ -8,6 +8,7 @@ One item in "In Progress" at a time whenever possible.
 ## 🔴 In Progress
 
 - [x] V9: Add OpenGraph preview cards for destination pages
+- [ ] V9+: Audit Shlink features and integrate high-value missing capabilities into Linkora
 
 ---
 
@@ -95,6 +96,17 @@ One item in "In Progress" at a time whenever possible.
 - [x] Write imported domains to `links.domain`
 - [x] Refresh import KV cache using stored link domain instead of API host
 - [x] Document reset-then-import cutover safety for `s.y8o.de`
+
+---
+
+## ✅ Completed — Import Async Job Fix (v0.9.11)
+
+- [x] Move heavy import processing out of request handler into background job
+- [x] Return `processing` jobId immediately from `POST /api/import/confirm`
+- [x] Poll `/api/import/jobs/:id` in Admin UI every 2 s until completion/failure
+- [x] Add `importProcessing` EN/ZH i18n messages and disabled button state
+- [x] Prevent duplicate confirm clicks while a job is running
+- [x] Update `CHANGELOG.md`, package versions, env examples, and docs to `0.9.11`
 
 ---
 

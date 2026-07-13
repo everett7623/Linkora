@@ -2,7 +2,7 @@
 
 Quick reference for what is done, what is in progress, and what is not started.
 
-Last updated: 2026-07-12
+Last updated: 2026-07-13
 
 ---
 
@@ -18,6 +18,7 @@ Last updated: 2026-07-12
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                       |
 | Current version            | ✅ 0.9.11              | Async import jobs avoid request timeouts; removed Playwright install; auto-generates ADMIN_TOKEN; improved first-time deployment onboarding                                                             |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`, so a reset followed by `s.y8o.de` migration can keep legacy short URLs |
+| Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
 
 ---
 
