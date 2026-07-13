@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, Sparkles } from 'lucide-react';
 import { createLink } from '../api/links';
 import { listDomains } from '../api/domains';
-import { fetchLinkSuggestions, fetchPageTitle } from '../api/metadata';
+import { fetchLinkSuggestions, fetchPagePreview, fetchPageTitle, type PagePreviewResult } from '../api/metadata';
+import { PagePreviewCard } from '../components/PagePreviewCard';
 import { listTags } from '../api/tags';
 import { LinkSuggestionsPanel } from '../components/LinkSuggestionsPanel';
 import { TagSuggestions } from '../components/TagSuggestions';
@@ -24,6 +25,7 @@ export function CreateLink() {
   const [titleLoading, setTitleLoading] = useState(false);
   const [suggestionLoading, setSuggestionLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<LinkSuggestionResult | null>(null);
+  const [preview, setPreview] = useState<PagePreviewResult | null>(null);
   const [tagCatalog, setTagCatalog] = useState<Tag[]>([]);
   const [domains, setDomains] = useState<Domain[]>([]);
   const [form, setForm] = useState({
@@ -131,6 +133,7 @@ export function CreateLink() {
       setSuggestionLoading(false);
     }
   };
+  const handlePreview = async () => { try { setPreview(await fetchPagePreview(form.long_url)); } catch (e) { error(String(e)); } };
 
   const mergeTags = (incoming: string[]) => {
     const current = form.tags
@@ -236,6 +239,8 @@ export function CreateLink() {
             </Button>
           </div>
         )}
+        {isAdvanced && <div className="flex justify-end"><Button type="button" variant="secondary" onClick={handlePreview} disabled={loading}>{t('previewOpenGraph')}</Button></div>}
+        {isAdvanced && <PagePreviewCard preview={preview} />}
 
         {isAdvanced && (
           <LinkSuggestionsPanel

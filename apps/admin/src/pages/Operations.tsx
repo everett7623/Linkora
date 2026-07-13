@@ -4,8 +4,10 @@ import type { DeploymentCapabilities, LinkHealthBatchResult } from '@linkora/sha
 import { listBackups, type BackupsList } from '../api/backups';
 import {
   getHealthAlertStatus,
+  getHealthCheckHistory,
   runHealthCheckBatch,
   type HealthAlertStatus,
+  type HealthCheckHistory,
 } from '../api/healthChecks';
 import { getSettings } from '../api/settings';
 import { getDeploymentCapabilities } from '../api/system';
@@ -19,6 +21,7 @@ interface OperationsState {
   backups: BackupsList | null;
   capabilities: DeploymentCapabilities | null;
   alerts: HealthAlertStatus | null;
+  history: HealthCheckHistory | null;
 }
 
 const EMPTY_STATE: OperationsState = {
@@ -26,6 +29,7 @@ const EMPTY_STATE: OperationsState = {
   backups: null,
   capabilities: null,
   alerts: null,
+  history: null,
 };
 
 export function Operations() {
@@ -39,13 +43,14 @@ export function Operations() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [settings, backups, capabilities, alerts] = await Promise.all([
+      const [settings, backups, capabilities, alerts, history] = await Promise.all([
         getSettings(),
         listBackups(),
         getDeploymentCapabilities(),
         getHealthAlertStatus(),
+        getHealthCheckHistory(),
       ]);
-      setState({ settings, backups, capabilities, alerts });
+      setState({ settings, backups, capabilities, alerts, history });
     } catch (e) {
       error(String(e));
     } finally {
@@ -190,6 +195,42 @@ export function Operations() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+      </section>
+
+      <section className="space-y-4 border-t border-slate-800 pt-5">
+        <div>
+          <h2 className="text-sm font-semibold text-slate-100">{t('scheduledHealthHistory')}</h2>
+          <p className="mt-1 text-xs text-slate-500">{t('scheduledHealthHistoryHint')}</p>
+        </div>
+        {!state.history || state.history.items.length === 0 ? (
+          <p className="text-sm text-slate-500">{t('noScheduledHealthHistory')}</p>
+        ) : (
+          <div className="overflow-x-auto border-t border-slate-800">
+            <table className="w-full text-sm">
+              <thead><tr className="text-xs uppercase text-slate-500">
+                <th className="px-3 py-3 text-left">{t('target')}</th>
+                <th className="px-3 py-3 text-left">{t('status')}</th>
+                <th className="px-3 py-3 text-right">{t('http')}</th>
+                <th className="px-3 py-3 text-right">{t('failureCount')}</th>
+                <th className="px-3 py-3 text-right">{t('checkedAt')}</th>
+              </tr></thead>
+              <tbody className="divide-y divide-slate-800">
+                {state.history.items.slice(0, 20).map((item, index) => (
+                  <tr key={`${item.link_id}-${item.checked_at}-${index}`}>
+                    <td className="max-w-xs px-3 py-3">
+                      <p className="truncate font-mono text-slate-300">{item.slug ? `/${item.slug}` : item.link_id}</p>
+                      <p className="truncate text-xs text-slate-600">{item.domain ?? item.link_id}</p>
+                    </td>
+                    <td className="px-3 py-3"><Badge variant={item.status === 'healthy' ? 'green' : item.status === 'warning' ? 'yellow' : 'red'}>{t(`${item.status}Status`)}</Badge></td>
+                    <td className="px-3 py-3 text-right text-slate-400">{item.http_status ?? '-'}</td>
+                    <td className="px-3 py-3 text-right text-slate-400">{item.consecutive_failures.toLocaleString(locale)}</td>
+                    <td className="whitespace-nowrap px-3 py-3 text-right text-slate-500">{dateFormatter.format(new Date(item.checked_at))}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </section>

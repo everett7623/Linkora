@@ -6,7 +6,7 @@ import { ResetSettingsPanel } from '../components/settings/ResetSettingsPanel';
 import { WebhookSettingsPanel } from '../components/settings/WebhookSettingsPanel';
 import { AdminModePanel } from '../components/settings/AdminModePanel';
 import { Button } from '../components/ui/Button';
-import { Input, Select } from '../components/ui/Input';
+import { Input, Select, Textarea } from '../components/ui/Input';
 import { useToast } from '../components/ui/Toast';
 import { useAdminMode } from '../contexts/AdminModeContext';
 import { useLocale } from '../contexts/LocaleContext';
@@ -28,6 +28,10 @@ export function Settings() {
     health_monitoring_limit: '20',
     health_failure_threshold: '2',
     health_alert_suppression_minutes: '1440',
+    public_page_404_message: '',
+    public_page_disabled_message: '',
+    public_page_expired_message: '',
+    public_page_warning_message: '',
   });
 
   useEffect(() => {
@@ -43,6 +47,10 @@ export function Settings() {
           health_monitoring_limit: s.health_monitoring_limit ?? '20',
           health_failure_threshold: s.health_failure_threshold ?? '2',
           health_alert_suppression_minutes: s.health_alert_suppression_minutes ?? '1440',
+          public_page_404_message: s.public_page_404_message ?? '',
+          public_page_disabled_message: s.public_page_disabled_message ?? '',
+          public_page_expired_message: s.public_page_expired_message ?? '',
+          public_page_warning_message: s.public_page_warning_message ?? '',
         });
       })
       .catch(() => error(t('loadSettingsFailed')))
@@ -131,6 +139,19 @@ export function Settings() {
               onChange={(e) => set('backup_retention_days', e.target.value)}
               hint={t('backupRetentionHint')}
             />
+          </div>
+        )}
+
+        {isAdvanced && (
+          <div className="space-y-4 border-t border-slate-800 pt-5">
+            <div>
+              <h2 className="text-sm font-semibold text-slate-200">{t('publicPageTemplates')}</h2>
+              <p className="mt-1 text-xs text-slate-500">{t('publicPageTemplatesHint')}</p>
+            </div>
+            <Textarea label={t('notFoundPageMessage')} maxLength={500} rows={2} value={form.public_page_404_message} onChange={(e) => set('public_page_404_message', e.target.value)} />
+            <Textarea label={t('disabledPageMessage')} maxLength={500} rows={2} value={form.public_page_disabled_message} onChange={(e) => set('public_page_disabled_message', e.target.value)} />
+            <Textarea label={t('expiredPageMessage')} maxLength={500} rows={2} value={form.public_page_expired_message} onChange={(e) => set('public_page_expired_message', e.target.value)} />
+            <Textarea label={t('warningPageMessage')} maxLength={500} rows={2} value={form.public_page_warning_message} onChange={(e) => set('public_page_warning_message', e.target.value)} />
           </div>
         )}
 

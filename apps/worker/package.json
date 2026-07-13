@@ -1,6 +1,6 @@
 {
   "name": "@linkora/worker",
-  "version": "0.8.9",
+  "version": "0.9.5",
   "license": "GPL-3.0-only",
   "private": true,
   "type": "module",
@@ -13,7 +13,7 @@
     "kv:create": "wrangler kv namespace create LINKORA_KV",
     "queue:create": "wrangler queues create linkora-visits --message-retention-period-secs 60",
     "type-check": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test src/utils/publicPages.test.mjs src/backups/retention.test.mjs src/health/monitoringPolicy.test.mjs src/health/alertPolicy.test.mjs src/health/alertStatus.test.mjs src/links/fallbackUrl.test.mjs src/analytics/botDetection.test.mjs"
+    "test": "node --experimental-strip-types --test src/utils/publicPages.test.mjs src/utils/pageTemplates.test.mjs src/publicStats/policy.test.mjs src/backups/retention.test.mjs src/health/monitoringPolicy.test.mjs src/health/alertPolicy.test.mjs src/health/alertStatus.test.mjs src/health/history.test.mjs src/links/fallbackUrl.test.mjs src/analytics/botDetection.test.mjs src/analytics/savedViews.test.mjs src/analytics/scheduledReportPolicy.test.mjs src/utm/templatePolicy.test.mjs src/links/notes.test.mjs"
   },
   "dependencies": {
     "@linkora/shared": "*",

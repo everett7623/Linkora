@@ -2,7 +2,7 @@
 
 Quick reference for what is done, what is in progress, and what is not started.
 
-Last updated: 2026-07-11
+Last updated: 2026-07-12
 
 ---
 
@@ -16,7 +16,7 @@ Last updated: 2026-07-11
 | Documentation              | ✅ Complete            | README, self-hosting guide, analytics guide, backup/reset guide, root runbooks, `docs/` reference set, and V7-V10 long-term roadmap    |
 | Deployment                 | ✅ Deployed            | Worker and Admin deployed; GitHub Actions deploy workflow added                                                                        |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                       |
-| Current version            | ✅ 0.8.9               | Operations exposes sanitized persisted health alerts while internal D1 state remains private                                                |
+| Current version            | ✅ 0.9.5               | Advanced Create/Edit Link can inspect OpenGraph metadata in a safe preview card                                                             |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`, so a reset followed by `s.y8o.de` migration can keep legacy short URLs |
 
 ---
@@ -94,7 +94,7 @@ Last updated: 2026-07-11
 
 1. Revoke or rotate the Shlink API key used during migration
 2. Cut over the legacy short domain from Shlink to Linkora when ready
-3. Continue V7 operations work: persisted target health history, failure counters, and recovery alerts
+3. Continue V9 with bulk destination replacement or UTM normalization
 4. Begin V9 public read-only stats pages with privacy controls when V7 priorities allow
 
 ---
@@ -131,7 +131,7 @@ Last updated: 2026-07-11
 | V6      | ✅ Done         |
 | V7      | In Progress     |
 | V8      | ✅ Done         |
-| V9      | Planned         |
+| V9      | In Progress     |
 | V10     | Future optional |
 
 Database columns for V2–V4 are already present in `migrations/0001_init.sql` to avoid future migration complexity.
@@ -214,16 +214,18 @@ Database columns for V2–V4 are already present in `migrations/0001_init.sql` t
 | Restore report               | ✅ Done | Restore result includes created, overwritten, renamed, skipped, failed, redirect-rule counts, and a CSV-style report                                                                  |
 | Factory reset                | ✅ Done | Admin Settings danger zone previews affected rows, requires `RESET LINKORA`, creates optional `pre-reset` R2 backup, clears KV cache, and preserves backup records plus `ADMIN_TOKEN` |
 | Backup retention             | ✅ Done | Advanced Settings configures 1-3650 days (default 30); Cron deletes expired R2 objects before their D1 records and preserves records when R2 is unavailable                           |
-| Target monitoring and alerts | In progress | Cron rotates through active links with thresholds, suppression, signed failure/recovery Webhooks, and persisted Admin notices; full per-check status history remains pending         |
+| Target monitoring and alerts | ✅ Done | Cron rotates through active links with thresholds, suppression, signed failure/recovery Webhooks, persisted notices, and a bounded 200-record target history                         |
 | Fallback URL editing         | ✅ Done | Create/Edit Link can set or clear a validated HTTP(S) fallback URL for monitoring and future workflows; public redirect behavior remains unchanged                                      |
 | Operations dashboard         | ✅ Done | Advanced Admin combines backup freshness, monitoring settings, Queue/R2 deployment capabilities, and manually requested current target failures                                        |
 | Bot classification           | ✅ Done | Boundary-aware classifier covers major crawlers and automation clients while preserving real browser traffic, including CUBOT Android devices                                           |
+| Public status page templates | ✅ Done | Advanced Settings supports escaped plain-text messages for 404, disabled, expired, and warning pages with safe localized defaults                                                       |
 
 ### V7-V10 Planning
 
 | Version                                           | Scope                                                                                                                                                                                  | Status          |
 | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
 | V7 Operations, Recovery, And Monitoring           | R2 restore, backup retention, periodic target monitoring, alerts, fallback URL UI, custom status pages, operations dashboard, better bot classification                                | In progress     |
+| V9 Growth Tools, Reporting, And Link Intelligence | Public stats sharing, reporting, campaign tools, previews, notes, attribution, and lifecycle automation                                                                              | In progress     |
 | V8 Usability Modes And Internationalization       | Simple / Advanced mode, deployment capability reporting, first-run wizard, full-page EN/ZH localization, browser smoke coverage, and locale-aware formatting                          | Complete        |
 | V9 Growth Tools, Reporting, And Link Intelligence | Bulk URL and UTM operations, link notes, OpenGraph previews, public stats pages, scheduled reports, saved analytics views, conversion attribution, long-idle auto-archive              | Planned         |
 | V10 Collaboration And Governance                  | Multi-user, roles, teams, token governance, audit retention, per-project access, optional managed services                                                                             | Future optional |

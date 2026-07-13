@@ -605,6 +605,42 @@ links.post('/bulk-tag', async (c) => {
   });
 });
 
+links.post('/bulk-replace-url/preview', async (c) => {
+  let body: { ids?: unknown; find?: unknown; replace?: unknown };
+  try { body = await c.req.json(); } catch { return jsonError('Invalid JSON body', 400); }
+  const ids = Array.isArray(body.ids) ? [...new Set(body.ids.filter((id): id is string => typeof id === 'string' && id.trim().length > 0))] : [];
+  const find = typeof body.find === 'string' ? body.find : '';
+  const replace = typeof body.replace === 'string' ? body.replace : '';
+  if (!ids.length || ids.length > 100) return jsonError('Select between 1 and 100 links', 400);
+  if (!find) return jsonError('find must not be empty', 400);
+  const existing = await getLinksByIds(c.env, ids);
+  const items = existing.map((link) => {
+    const next = link.long_url.includes(find) ? link.long_url.split(find).join(replace) : link.long_url;
+    const validation = validateLongUrl(next);
+    return { id: link.id, slug: link.slug, current_url: link.long_url, next_url: next, status: next === link.long_url ? 'unchanged' : validation.valid ? 'ready' : 'invalid', error: validation.valid ? null : validation.error ?? 'Invalid URL' };
+  });
+  return jsonOk({ items, ready: items.filter((item) => item.status === 'ready').length, unchanged: items.filter((item) => item.status === 'unchanged').length, invalid: items.filter((item) => item.status === 'invalid').length, notFound: ids.length - existing.length });
+});
+
+links.post('/bulk-replace-url/confirm', async (c) => {
+  let body: { items?: unknown };
+  try { body = await c.req.json(); } catch { return jsonError('Invalid JSON body', 400); }
+  const requested = Array.isArray(body.items) ? body.items.slice(0, 100) as Array<{ id?: unknown; current_url?: unknown; next_url?: unknown }> : [];
+  if (!requested.length) return jsonError('items must be a non-empty array', 400);
+  const existing = await getLinksByIds(c.env, requested.flatMap((item) => typeof item.id === 'string' ? [item.id] : []));
+  const byId = new Map(existing.map((link) => [link.id, link])); const ts = now(); const fallbackDomain = requestDomain(c.req.url); const changed: Array<{id:string;slug:string;old_url:string;new_url:string}>=[]; let skipped=0;
+  for (const item of requested) {
+    const link = typeof item.id === 'string' ? byId.get(item.id) : undefined; const oldUrl = typeof item.current_url === 'string' ? item.current_url : ''; const nextUrl = typeof item.next_url === 'string' ? item.next_url : '';
+    if (!link || link.long_url !== oldUrl || !validateLongUrl(nextUrl).valid || nextUrl === oldUrl) { skipped++; continue; }
+    await updateLink(c.env, link.id, { long_url: nextUrl, updated_at: ts });
+    await refreshLinkCache(c.env, cacheDomainForLink(link, fallbackDomain), { ...link, long_url: nextUrl, updated_at: ts });
+    changed.push({ id: link.id, slug: link.slug, old_url: oldUrl, new_url: nextUrl });
+  }
+  await recordAudit(c.env, c.req.raw, 'link.bulk_replace_url', 'link', undefined, { changed: changed.length, skipped, ids: changed.map((item) => item.id) });
+  const csv = ['id,slug,old_url,new_url', ...changed.map((item) => [item.id,item.slug,item.old_url,item.new_url].map((value) => `"${value.replace(/"/g,'""')}"`).join(','))].join('\r\n');
+  return jsonOk({ changed: changed.length, skipped, rollback_csv: csv });
+});
+
 // GET /api/links/:id
 links.get('/:id', async (c) => {
   const link = await getLinkById(c.env, c.req.param('id'));

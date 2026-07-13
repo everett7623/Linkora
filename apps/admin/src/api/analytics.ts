@@ -1,4 +1,4 @@
-import { apiGet, apiPost, downloadFile } from './client';
+import { apiDelete, apiGet, apiPost, apiPut, downloadFile } from './client';
 import type { ConversionEvent, Link, Visit } from '@linkora/shared';
 
 export interface AnalyticsFilters {
@@ -48,6 +48,39 @@ export interface AnalyticsSummary {
 export interface LinkAnalyticsResponse {
   link: Link;
   summary: AnalyticsSummary;
+}
+
+export interface PublicStatsConfig {
+  enabled: boolean;
+  days?: number;
+  show_countries?: boolean;
+  show_referrers?: boolean;
+  created_at?: string;
+  token?: string;
+}
+
+export interface SavedAnalyticsView { id: string; name: string; filters: AnalyticsFilters; created_at: string; }
+export function getSavedAnalyticsViews(): Promise<{ items: SavedAnalyticsView[] }> { return apiGet('/api/analytics-views'); }
+export function saveAnalyticsView(name: string, filters: AnalyticsFilters): Promise<SavedAnalyticsView> { return apiPost('/api/analytics-views', { name, filters }); }
+export function deleteAnalyticsView(id: string): Promise<{ deleted: boolean }> { return apiDelete(`/api/analytics-views/${id}`); }
+
+export interface AnalyticsReportRecord { key: string; created_at: string; status: 'completed' | 'failed'; size: number | null; error?: string; }
+export interface AnalyticsReportState { config: { enabled: boolean; days: number; saved_view_id: string | null }; records: AnalyticsReportRecord[]; r2Configured: boolean; }
+export function getAnalyticsReportState(): Promise<AnalyticsReportState> { return apiGet('/api/analytics-reports'); }
+export function saveAnalyticsReportConfig(payload: AnalyticsReportState['config']): Promise<AnalyticsReportState['config']> { return apiPut('/api/analytics-reports/config', payload); }
+export function runAnalyticsReport(): Promise<AnalyticsReportRecord> { return apiPost('/api/analytics-reports/run'); }
+export function downloadScheduledAnalyticsReport(record: AnalyticsReportRecord): Promise<void> { return downloadFile(`/api/analytics-reports/download?key=${encodeURIComponent(record.key)}`, record.key.split('/').pop() ?? 'linkora-analytics.csv'); }
+
+export function getPublicStatsConfig(id: string): Promise<PublicStatsConfig> {
+  return apiGet(`/api/public-stats/links/${id}`);
+}
+
+export function createPublicStatsShare(id: string, payload: { days: number; show_countries: boolean; show_referrers: boolean }): Promise<PublicStatsConfig> {
+  return apiPost(`/api/public-stats/links/${id}`, payload);
+}
+
+export function disablePublicStatsShare(id: string): Promise<PublicStatsConfig> {
+  return apiDelete(`/api/public-stats/links/${id}`);
 }
 
 export interface ConversionPayload {

@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { LinkIcon } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { LinkIcon, Save, Trash2 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Input, Select } from './ui/Input';
 import { useLocale } from '../contexts/LocaleContext';
+import { createUtmTemplate, deleteUtmTemplate, listUtmTemplates, type UtmTemplate } from '../api/utmTemplates';
+import { useToast } from './ui/Toast';
 
 const TEMPLATES: Record<string, { source: string; medium: string; campaign: string }> = {
   newsletter: { source: 'newsletter', medium: 'email', campaign: '' },
@@ -30,6 +32,7 @@ export function UtmBuilder({
   disabled?: boolean;
 }) {
   const { t } = useLocale();
+  const { success, error: toastError } = useToast();
   const [template, setTemplate] = useState('');
   const [utm, setUtm] = useState({
     source: '',
@@ -39,6 +42,12 @@ export function UtmBuilder({
     content: '',
   });
   const [error, setError] = useState('');
+  const [saved, setSaved] = useState<UtmTemplate[]>([]);
+  const [savedId, setSavedId] = useState('');
+  const [name, setName] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => { listUtmTemplates().then((result) => setSaved(result.items)).catch(() => toastError(t('utmTemplatesLoadFailed'))); }, []);
 
   const set = (key: keyof typeof utm, value: string) => {
     setUtm((current) => ({ ...current, [key]: value }));
@@ -57,6 +66,10 @@ export function UtmBuilder({
     }));
     setError('');
   };
+
+  const applySaved = (id: string) => { setSavedId(id); const item=saved.find((entry)=>entry.id===id); if(item){setTemplate('');setUtm(item.values);setError('');} };
+  const saveCurrent = async () => { setBusy(true); try { const item=await createUtmTemplate(name,utm);setSaved((items)=>[...items,item]);setSavedId(item.id);setName('');success(t('utmTemplateSaved')); } catch(e){toastError(String(e));} finally{setBusy(false);} };
+  const removeSaved = async () => { if(!savedId)return;setBusy(true);try{await deleteUtmTemplate(savedId);setSaved((items)=>items.filter((item)=>item.id!==savedId));setSavedId('');success(t('utmTemplateDeleted'));}catch(e){toastError(String(e));}finally{setBusy(false);} };
 
   const apply = () => {
     try {
@@ -111,6 +124,11 @@ export function UtmBuilder({
         <option value="affiliate">{t('affiliate')}</option>
       </Select>
 
+      <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+        <Select value={savedId} onChange={(e) => applySaved(e.target.value)} disabled={disabled}><option value="">{t('savedUtmTemplates')}</option>{saved.map((item)=><option key={item.id} value={item.id}>{item.name}</option>)}</Select>
+        <Button type="button" variant="danger" size="sm" icon={<Trash2 size={14}/>} disabled={disabled||!savedId} loading={busy} onClick={removeSaved}>{t('deleteTemplate')}</Button>
+      </div>
+
       <div className="grid gap-3 md:grid-cols-2">
         <Input
           label="utm_source"
@@ -144,6 +162,10 @@ export function UtmBuilder({
         onChange={(e) => set('content', e.target.value)}
         disabled={disabled}
       />
+      <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+        <Input placeholder={t('utmTemplateName')} maxLength={50} value={name} onChange={(e)=>setName(e.target.value)} disabled={disabled}/>
+        <Button type="button" variant="secondary" size="sm" icon={<Save size={14}/>} disabled={disabled||!name.trim()||saved.length>=20} loading={busy} onClick={saveCurrent}>{t('saveTemplate')}</Button>
+      </div>
       {error && <p className="text-xs text-red-400">{error}</p>}
     </div>
   );

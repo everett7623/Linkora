@@ -154,11 +154,11 @@ Planned:
 - Done: factory reset with preview, confirmation phrase, pre-reset backup, and KV cache clearing
 - Done: backup retention policy for R2 objects and D1 backup records, with a configurable 30-day default
 - Done: opt-in periodic target health monitoring through Cron, with manual checks kept available
-- Target status history for links, including last status code, last checked time, and failure count
+- Done: bounded scheduled target status history, including status code, checked time, response time, and failure count
 - Done: scheduled anomalies and recoveries emit optional signed webhooks and appear as persisted Admin notices
 - Done: alert controls for consecutive-failure thresholds, repeat suppression, and recovery notifications
 - Done: first-class `fallback_url` editing in Create/Edit Link, without changing redirect behavior
-- Custom 404, expired, disabled, and warning page templates with safe defaults
+- Done: custom 404, expired, disabled, and warning page messages with escaped plain-text variables and safe defaults
 - Done: operations dashboard for backup freshness, monitoring status, current failed targets, queue configuration, and deployment health
 - Done: better bot classification for analytics and monitoring noise reduction
 
@@ -184,7 +184,7 @@ Planned:
 
 ## V9: Growth Tools, Reporting, And Link Intelligence
 
-Status: planned.
+Status: in progress. Privacy-first public read-only statistics sharing is implemented.
 
 Goal: support ongoing campaign, SEO, affiliate, and content operations without compromising redirect stability.
 
@@ -192,12 +192,12 @@ Planned:
 
 - Bulk replace destination URLs with preview and rollback guidance
 - Bulk append or normalize UTM parameters
-- Saved UTM templates and campaign presets
-- Link notes and affiliate/internal notes
-- OpenGraph preview cards for destination pages
-- Public read-only stats pages with privacy controls, share tokens, and per-link enablement
-- Scheduled analytics report exports
-- Saved Analytics filters and reusable report views
+- Done: saved personal UTM templates and campaign presets in Create/Edit Link
+- Done: private internal link notes in Advanced Edit Link
+- Done: authenticated OpenGraph preview cards in Advanced Create/Edit Link
+- Done: public read-only stats pages with privacy controls, hashed share tokens, and per-link enablement
+- Done: scheduled Analytics CSV report exports to R2 with saved-view support
+- Done: saved Analytics filters and reusable report views
 - Session or visitor-level conversion attribution where privacy-safe
 - More conversion attribution fields, such as external campaign IDs and client-provided visitor IDs
 - Long-idle auto-archive rules with review queue and dry-run mode

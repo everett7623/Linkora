@@ -5,6 +5,8 @@ export interface PageTitleResult {
   title: string;
   final_url: string;
 }
+export interface PagePreviewResult { title: string | null; description: string | null; image: string | null; final_url: string; }
+export function fetchPagePreview(url: string): Promise<PagePreviewResult> { return apiPost('/api/metadata/preview', { url }); }
 
 export function fetchPageTitle(url: string): Promise<PageTitleResult> {
   return apiPost('/api/metadata/title', { url });

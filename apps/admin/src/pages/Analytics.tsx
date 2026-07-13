@@ -9,12 +9,24 @@ import {
   Search,
   Target,
   Users,
+  Save,
+  Trash2,
+  Clock3,
 } from 'lucide-react';
 import {
   downloadAnalyticsReport,
   getAnalytics,
   type AnalyticsFilters,
   type AnalyticsSummary,
+  getSavedAnalyticsViews,
+  saveAnalyticsView,
+  deleteAnalyticsView,
+  type SavedAnalyticsView,
+  getAnalyticsReportState,
+  saveAnalyticsReportConfig,
+  runAnalyticsReport,
+  downloadScheduledAnalyticsReport,
+  type AnalyticsReportState,
 } from '../api/analytics';
 import { BarList, DailyBars, Metric, RecentVisits } from '../components/analytics/AnalyticsBlocks';
 import { Button } from '../components/ui/Button';
@@ -32,6 +44,11 @@ export function Analytics() {
   const [data, setData] = useState<AnalyticsSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
+  const [views, setViews] = useState<SavedAnalyticsView[]>([]);
+  const [viewName, setViewName] = useState('');
+  const [selectedView, setSelectedView] = useState('');
+  const [reports, setReports] = useState<AnalyticsReportState | null>(null);
+  const [reportBusy, setReportBusy] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -40,6 +57,9 @@ export function Analytics() {
       .catch(() => error(t('analyticsLoadFailed')))
       .finally(() => setLoading(false));
   }, [filters]);
+
+  useEffect(() => { getSavedAnalyticsViews().then((result) => setViews(result.items)).catch(() => error(t('savedViewsLoadFailed'))); }, []);
+  useEffect(() => { getAnalyticsReportState().then(setReports).catch(() => error(t('scheduledReportsLoadFailed'))); }, []);
 
   const hasFilters = useMemo(
     () => Object.entries(filters).some(([key, value]) => key !== 'days' && !!value),
@@ -71,6 +91,29 @@ export function Analytics() {
     }
   };
 
+  const saveView = async () => {
+    try { const view = await saveAnalyticsView(viewName, cleanFilters(draft)); setViews((items) => [...items, view]); setViewName(''); setSelectedView(view.id); success(t('savedViewCreated')); }
+    catch (e) { error(String(e)); }
+  };
+  const applyView = (id: string) => {
+    setSelectedView(id); const view = views.find((item) => item.id === id); if (!view) return;
+    const next = cleanFilters(view.filters); setDraft(next); setFilters(next);
+  };
+  const removeView = async () => {
+    if (!selectedView) return;
+    try { await deleteAnalyticsView(selectedView); setViews((items) => items.filter((item) => item.id !== selectedView)); setSelectedView(''); success(t('savedViewDeleted')); }
+    catch (e) { error(String(e)); }
+  };
+  const updateReportConfig = async () => {
+    if (!reports) return; setReportBusy(true);
+    try { const config = await saveAnalyticsReportConfig(reports.config); setReports({ ...reports, config }); success(t('scheduledReportsSaved')); }
+    catch (e) { error(String(e)); } finally { setReportBusy(false); }
+  };
+  const runReport = async () => {
+    setReportBusy(true); try { const record = await runAnalyticsReport(); setReports((state) => state ? { ...state, records: [record, ...state.records].slice(0, 30) } : state); success(t('scheduledReportCreated')); }
+    catch (e) { error(String(e)); } finally { setReportBusy(false); }
+  };
+
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
@@ -97,6 +140,12 @@ export function Analytics() {
       </div>
 
       <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+        <div className="mb-4 grid gap-3 border-b border-slate-800 pb-4 md:grid-cols-[1fr_auto_1fr_auto]">
+          <Select value={selectedView} onChange={(e) => applyView(e.target.value)}><option value="">{t('savedViews')}</option>{views.map((view) => <option key={view.id} value={view.id}>{view.name}</option>)}</Select>
+          <Button variant="danger" icon={<Trash2 size={15} />} disabled={!selectedView} onClick={removeView}>{t('deleteSavedView')}</Button>
+          <Input placeholder={t('savedViewName')} maxLength={50} value={viewName} onChange={(e) => setViewName(e.target.value)} />
+          <Button variant="secondary" icon={<Save size={15} />} disabled={!viewName.trim() || views.length >= 20} onClick={saveView}>{t('saveCurrentView')}</Button>
+        </div>
         <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
           <Select
             label={t('range')}
@@ -229,6 +278,17 @@ export function Analytics() {
       </div>
 
       <DailyBars items={data?.daily ?? []} />
+
+      {reports && <section className="border border-slate-800 bg-slate-900 p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="flex items-center gap-2 text-sm font-semibold text-slate-100"><Clock3 size={16}/>{t('scheduledReports')}</h2><p className="mt-1 text-xs text-slate-500">{t('scheduledReportsHint')}</p></div>{!reports.r2Configured && <span className="text-xs text-yellow-300">{t('r2NotConfigured')}</span>}</div>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <label className="flex items-center gap-2 text-sm text-slate-300"><input type="checkbox" checked={reports.config.enabled} onChange={(e) => setReports({ ...reports, config: { ...reports.config, enabled: e.target.checked } })}/>{t('enableDailyReports')}</label>
+          <Select value={String(reports.config.days)} onChange={(e) => setReports({ ...reports, config: { ...reports.config, days: Number(e.target.value) } })}><option value="7">{t('last7')}</option><option value="30">{t('last30')}</option><option value="90">{t('last90')}</option><option value="365">{t('last365')}</option></Select>
+          <Select value={reports.config.saved_view_id ?? ''} onChange={(e) => setReports({ ...reports, config: { ...reports.config, saved_view_id: e.target.value || null } })}><option value="">{t('allAnalytics')}</option>{views.map((view) => <option key={view.id} value={view.id}>{view.name}</option>)}</Select>
+        </div>
+        <div className="mt-4 flex gap-2"><Button loading={reportBusy} onClick={updateReportConfig}>{t('saveSchedule')}</Button><Button variant="secondary" loading={reportBusy} disabled={!reports.r2Configured} onClick={runReport}>{t('runReportNow')}</Button></div>
+        <div className="mt-4 overflow-x-auto"><table className="w-full text-sm"><tbody className="divide-y divide-slate-800">{reports.records.slice(0, 10).map((record) => <tr key={`${record.key}-${record.created_at}`}><td className="py-3 text-slate-400">{new Date(record.created_at).toLocaleString()}</td><td className="py-3 text-slate-400">{record.status === 'completed' ? t('completedStatus') : t('failedStatus')}</td><td className="py-3 text-right">{record.status === 'completed' && <Button size="sm" variant="ghost" icon={<Download size={14}/>} onClick={() => downloadScheduledAnalyticsReport(record)}>{t('download')}</Button>}</td></tr>)}</tbody></table>{reports.records.length === 0 && <p className="py-3 text-sm text-slate-500">{t('noScheduledReports')}</p>}</div>
+      </section>}
 
       <div className="grid gap-6 xl:grid-cols-2">
         <BarList

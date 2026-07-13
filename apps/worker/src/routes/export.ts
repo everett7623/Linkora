@@ -113,7 +113,7 @@ function csv(value: string | number | null | undefined): string {
   return text;
 }
 
-function analyticsCsv(summary: AnalyticsSummary): string {
+export function analyticsCsv(summary: AnalyticsSummary): string {
   const rows: Array<Array<string | number | null | undefined>> = [
     ['section', 'label', 'value', 'extra'],
     ['summary', 'days', summary.days, ''],

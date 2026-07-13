@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation complete and verified locally for Linkora 0.8.9.
+Implementation complete and verified locally for Linkora 0.8.10.
 
 ## Completed
 
@@ -16,7 +16,7 @@ Implementation complete and verified locally for Linkora 0.8.9.
 
 ## Deferred
 
-- [ ] Full timestamped per-check health history.
+- [x] Bounded timestamped scheduled per-target health history (latest 200 records).
 
 ## Verification
 

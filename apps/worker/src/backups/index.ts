@@ -107,6 +107,9 @@ function redactBackupSettings(settings: Record<string, string>): Record<string, 
     redacted.webhook_secret = '';
   }
   delete redacted.health_alert_state;
+  delete redacted.health_check_history;
+  delete redacted.public_stats_shares;
   delete redacted.health_monitoring_cursor;
+  delete redacted.analytics_report_records;
   return redacted;
 }

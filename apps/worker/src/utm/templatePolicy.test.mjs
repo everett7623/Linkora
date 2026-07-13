@@ -1,0 +1,2 @@
+import assert from 'node:assert/strict';import test from 'node:test';import{isUtmTemplate,normalizeUtmValues}from'./templatePolicy.ts';
+test('UTM templates normalize bounded known fields',()=>{assert.deepEqual(normalizeUtmValues({source:' email ',medium:'x',unknown:'no'}),{source:'email',medium:'x',campaign:'',term:'',content:''});assert.equal(isUtmTemplate({id:'1',name:'Email',values:{},created_at:'now'}),true);assert.equal(isUtmTemplate({name:'bad'}),false)});

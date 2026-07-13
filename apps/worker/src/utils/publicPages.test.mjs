@@ -30,6 +30,8 @@ test('public pages render localized copy and escape user-controlled values', () 
     renderWarningPage('zh-CN', 'go', 'https://example.com/?x=<tag>', false),
     /&lt;tag&gt;/
   );
+  assert.match(renderDisabledPage('en', { message: 'Contact <support>' }), /Contact &lt;support&gt;/);
+  assert.doesNotMatch(renderWarningPage('en', 'go', 'https://example.com', false, { message: '<script>x</script>' }), /<script>/);
 });
 
 test('normal redirect responses preserve status and Location without a body', async () => {

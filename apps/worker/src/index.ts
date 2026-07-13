@@ -21,6 +21,12 @@ import groupRoutes from './routes/groups';
 import healthCheckRoutes, { runScheduledHealthChecks } from './routes/healthChecks';
 import maintenanceRoutes from './routes/maintenance';
 import systemRoutes from './routes/system';
+import publicStatsRoutes from './routes/publicStats';
+import analyticsViewRoutes from './routes/analyticsViews';
+import analyticsReportRoutes from './routes/analyticsReports';
+import { createScheduledAnalyticsReport } from './analytics/scheduledReports';
+import utmTemplateRoutes from './routes/utmTemplates';
+import linkNoteRoutes from './routes/linkNotes';
 import { processVisitQueueBatch } from './analytics/index';
 import { createR2Backup } from './backups/index';
 import { cleanupBackupRetention } from './backups/retention';
@@ -31,6 +37,7 @@ import { getOverviewStats } from './db/index';
 import { requireAuth } from './auth/index';
 import { jsonOk, notFound } from './utils/response';
 import { resolvePublicLocale } from './utils/publicPages';
+import { getPublicPageMessage } from './utils/pageTemplates';
 
 const RESERVED_PATHS = new Set([
   'admin',
@@ -56,6 +63,8 @@ app.use(
     allowHeaders: ['Content-Type', 'Authorization'],
   })
 );
+
+app.route('/', publicStatsRoutes);
 
 // Health check
 app.get('/health', (c) => {
@@ -95,6 +104,10 @@ app.route('/api/audit', auditRoutes);
 
 // Analytics
 app.route('/api/analytics', analyticsRoutes);
+app.route('/api/analytics-views', analyticsViewRoutes);
+app.route('/api/analytics-reports', analyticsReportRoutes);
+app.route('/api/utm-templates', utmTemplateRoutes);
+app.route('/api/link-notes', linkNoteRoutes);
 
 // Conversion events
 app.route('/api/conversions', conversionRoutes);
@@ -135,7 +148,7 @@ app.get('/api/overview', async (c) => {
 app.get('/:slug', async (c) => {
   const slug = c.req.param('slug');
   if (RESERVED_PATHS.has(slug.toLowerCase())) {
-    return notFound(undefined, resolvePublicLocale(c.req.header('Accept-Language')));
+    return notFound(await getPublicPageMessage(c.env, '404', { slug }), resolvePublicLocale(c.req.header('Accept-Language')));
   }
   return handleRedirect(c);
 });
@@ -143,7 +156,7 @@ app.get('/:slug', async (c) => {
 app.post('/:slug', async (c) => {
   const slug = c.req.param('slug');
   if (RESERVED_PATHS.has(slug.toLowerCase())) {
-    return notFound(undefined, resolvePublicLocale(c.req.header('Accept-Language')));
+    return notFound(await getPublicPageMessage(c.env, '404', { slug }), resolvePublicLocale(c.req.header('Accept-Language')));
   }
   return handleRedirect(c);
 });
@@ -180,6 +193,7 @@ const handler: ExportedHandler<Env, VisitQueueMessage> = {
         console.error('Scheduled Linkora health monitoring failed', error);
       })
     );
+    ctx.waitUntil(createScheduledAnalyticsReport(env).catch((error) => console.error('Scheduled Analytics report failed', error)));
     if (env.BACKUPS) {
       ctx.waitUntil(
         createR2Backup(env, 'scheduled')

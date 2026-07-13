@@ -20,6 +20,7 @@ import {
   ShieldAlert,
   SlidersHorizontal,
   BarChart3,
+  Replace,
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import {
@@ -33,6 +34,9 @@ import {
   bulkTagLinks,
   type BulkLinkAction,
   type BulkTagMode,
+  previewBulkUrlReplace,
+  confirmBulkUrlReplace,
+  type BulkUrlPreviewItem,
 } from '../api/links';
 import { getSettings } from '../api/settings';
 import { StatusBadge } from '../components/ui/Badge';
@@ -78,6 +82,10 @@ export function Links() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [qr, setQr] = useState<{ link: LinkType; url: string; dataUrl: string } | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [replaceOpen, setReplaceOpen] = useState(false);
+  const [findText, setFindText] = useState('');
+  const [replaceText, setReplaceText] = useState('');
+  const [replacePreview, setReplacePreview] = useState<BulkUrlPreviewItem[]>([]);
   const { success, error } = useToast();
   const { isAdvanced } = useAdminMode();
   const { locale, t } = useLocale();
@@ -347,6 +355,8 @@ export function Links() {
       setActionLoading(false);
     }
   };
+  const runUrlPreview = async () => { setActionLoading(true); try { const result=await previewBulkUrlReplace([...selectedIds],findText,replaceText);setReplacePreview(result.items); } catch(e){error(String(e));} finally{setActionLoading(false);} };
+  const confirmUrlReplace = async () => { setActionLoading(true); try { const result=await confirmBulkUrlReplace(replacePreview); const blob=new Blob([result.rollback_csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`linkora-url-rollback-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);success(t('bulkUrlsUpdated',{count:result.changed}));setReplaceOpen(false);setReplacePreview([]);setSelectedIds(new Set());await load(); } catch(e){error(String(e));} finally{setActionLoading(false);} };
 
   return (
     <div className="space-y-6">
@@ -532,6 +542,7 @@ export function Links() {
             >
               {t('tags')}
             </Button>
+            <Button size="sm" variant="secondary" icon={<Replace size={14}/>} onClick={()=>setReplaceOpen(true)} loading={actionLoading}>{t('replaceUrls')}</Button>
             <Button
               size="sm"
               variant="danger"
@@ -912,6 +923,7 @@ export function Links() {
           </div>
         </Modal>
       )}
+      {isAdvanced && <Modal open={replaceOpen} onClose={()=>setReplaceOpen(false)} title={t('replaceUrls')} size="xl"><div className="space-y-4"><div className="grid gap-3 sm:grid-cols-2"><Input label={t('findText')} value={findText} onChange={(e)=>{setFindText(e.target.value);setReplacePreview([])}}/><Input label={t('replaceWith')} value={replaceText} onChange={(e)=>{setReplaceText(e.target.value);setReplacePreview([])}}/></div><p className="text-xs text-yellow-300">{t('replaceUrlGuidance')}</p>{replacePreview.length>0&&<div className="max-h-72 overflow-auto border border-slate-800"><table className="w-full text-xs"><tbody className="divide-y divide-slate-800">{replacePreview.map((item)=><tr key={item.id}><td className="px-3 py-2 font-mono text-slate-400">/{item.slug}</td><td className="max-w-xs truncate px-3 py-2 text-slate-500">{item.next_url}</td><td className="px-3 py-2 text-right">{t(item.status==='ready'?'readyStatus':item.status==='invalid'?'invalidStatus':'unchangedStatus')}</td></tr>)}</tbody></table></div>}<div className="flex justify-end gap-2"><Button variant="secondary" onClick={runUrlPreview} disabled={!findText} loading={actionLoading}>{t('previewChanges')}</Button><Button onClick={confirmUrlReplace} disabled={!replacePreview.some((item)=>item.status==='ready')} loading={actionLoading}>{t('confirmReplace')}</Button></div></div></Modal>}
 
       <Modal
         open={!!qr}

@@ -10,6 +10,7 @@ import {
   DEFAULT_HEALTH_FAILURE_THRESHOLD,
   DEFAULT_HEALTH_SUPPRESSION_MINUTES,
 } from '../health/alertPolicy';
+import { validatePublicPageTemplate } from '../utils/pageTemplatePolicy';
 
 const settings = new Hono<{ Bindings: Env }>();
 
@@ -27,7 +28,13 @@ settings.get('/', async (c) => {
   allSettings.health_failure_threshold ??= String(DEFAULT_HEALTH_FAILURE_THRESHOLD);
   allSettings.health_alert_suppression_minutes ??= String(DEFAULT_HEALTH_SUPPRESSION_MINUTES);
   delete allSettings.health_alert_state;
+  delete allSettings.health_check_history;
   delete allSettings.health_monitoring_cursor;
+  delete allSettings.public_stats_shares;
+  delete allSettings.analytics_saved_views;
+  delete allSettings.analytics_report_records;
+  delete allSettings.utm_templates;
+  delete allSettings.link_notes;
   if ('webhook_secret' in allSettings) {
     allSettings.webhook_secret = '';
   }
@@ -57,6 +64,10 @@ settings.put('/', async (c) => {
 });
 
 function normalizeSetting(key: string, value: string): { value: string; error?: string } {
+  if (/^public_page_(404|disabled|expired|warning)_message$/.test(key)) {
+    const error = validatePublicPageTemplate(value);
+    return { value: value.trim(), ...(error ? { error } : {}) };
+  }
   if (key === 'health_monitoring_enabled') {
     if (value !== 'true' && value !== 'false') {
       return { value: 'false', error: 'health_monitoring_enabled must be true or false' };

@@ -13,6 +13,7 @@ import { resolvePublicLocale, type PublicLocale } from '../utils/publicPages';
 import { redirectResponse } from '../utils/redirectResponse';
 import { sha256 } from '../utils/id';
 import type { KVCacheEntry, Link } from '@linkora/shared';
+import { getPublicPageMessage } from '../utils/pageTemplates';
 
 function toCacheEntry(link: Link): KVCacheEntry {
   return {
@@ -28,19 +29,19 @@ function toCacheEntry(link: Link): KVCacheEntry {
   };
 }
 
-function redirectForLink(link: Link, locale: PublicLocale): Response | null {
-  if (link.status === 'disabled') return disabledPage(locale);
+async function redirectForLink(env: Env, link: Link, locale: PublicLocale): Promise<Response | null> {
+  if (link.status === 'disabled') return disabledPage(locale, { message: await getPublicPageMessage(env, 'disabled', { slug: link.slug }) });
   if (link.status === 'expired') {
-    return expiredPage(locale);
+    return expiredPage(locale, { message: await getPublicPageMessage(env, 'expired', { slug: link.slug }) });
   }
   if (link.status === 'archived') {
-    return notFound(undefined, locale);
+    return notFoundFor(env, link.slug, locale);
   }
   if (link.expires_at && new Date(link.expires_at) < new Date()) {
-    return expiredPage(locale);
+    return expiredPage(locale, { message: await getPublicPageMessage(env, 'expired', { slug: link.slug }) });
   }
   if (link.max_clicks !== null && link.max_clicks !== undefined && link.clicks >= link.max_clicks) {
-    return expiredPage(locale);
+    return expiredPage(locale, { message: await getPublicPageMessage(env, 'expired', { slug: link.slug }) });
   }
   return null;
 }
@@ -66,6 +67,10 @@ function shouldCacheRedirect(link: Link): boolean {
 
 async function getRedirectLink(env: Env, domain: string, slug: string): Promise<Link | null> {
   return (await getLinkByDomainAndSlug(env, domain, slug)) ?? getDomainlessLinkBySlug(env, slug);
+}
+
+async function notFoundFor(env: Env, slug: string, locale: PublicLocale): Promise<Response> {
+  return notFound(await getPublicPageMessage(env, '404', { slug }), locale);
 }
 
 async function getSmartRedirectDecision(
@@ -112,7 +117,7 @@ async function accessGate(
   link: Link,
   locale: PublicLocale
 ): Promise<Response | null> {
-  const inactiveResponse = redirectForLink(link, locale);
+  const inactiveResponse = await redirectForLink(c.env, link, locale);
   if (inactiveResponse) return inactiveResponse;
 
   if (link.password_hash) {
@@ -123,7 +128,9 @@ async function accessGate(
   }
 
   if (link.warning_enabled === 1 && !warningConfirmed(c)) {
-    return warningPage(link.slug, link.long_url, !!link.password_hash, locale);
+    return warningPage(link.slug, link.long_url, !!link.password_hash, locale, {
+      message: await getPublicPageMessage(c.env, 'warning', { slug: link.slug, url: link.long_url }),
+    });
   }
 
   return null;
@@ -133,7 +140,7 @@ export async function handleRedirect(c: Context<{ Bindings: Env }>): Promise<Res
   const slug = c.req.param('slug');
   const locale = resolvePublicLocale(c.req.header('Accept-Language'));
   if (!slug) {
-    return notFound(undefined, locale);
+    return notFoundFor(c.env, slug ?? '', locale);
   }
 
   const domain = new URL(c.req.url).hostname.toLowerCase();
@@ -145,7 +152,7 @@ export async function handleRedirect(c: Context<{ Bindings: Env }>): Promise<Res
     // Fallback to D1
     const link = await getRedirectLink(c.env, domain, slug);
     if (!link) {
-      return notFound(undefined, locale);
+      return notFoundFor(c.env, slug, locale);
     }
 
     const gatedResponse = await accessGate(c, link, locale);
@@ -177,7 +184,7 @@ export async function handleRedirect(c: Context<{ Bindings: Env }>): Promise<Res
   try {
     const link = await getRedirectLink(c.env, domain, slug);
     if (!link) {
-      return notFound(undefined, locale);
+      return notFoundFor(c.env, slug, locale);
     }
 
     const gatedResponse = await accessGate(c, link, locale);
@@ -214,5 +221,5 @@ export async function handleRedirect(c: Context<{ Bindings: Env }>): Promise<Res
     }
   }
 
-  return notFound(undefined, locale);
+  return notFoundFor(c.env, slug, locale);
 }

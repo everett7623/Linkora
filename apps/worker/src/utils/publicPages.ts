@@ -1,5 +1,9 @@
 export type PublicLocale = 'en' | 'zh-CN';
 
+export interface PublicPageTemplate {
+  message?: string;
+}
+
 const copy = {
   en: {
     notFoundTitle: 'Link Not Found',
@@ -83,21 +87,21 @@ export function renderNotFoundPage(locale: PublicLocale, message?: string): stri
   );
 }
 
-export function renderDisabledPage(locale: PublicLocale): string {
+export function renderDisabledPage(locale: PublicLocale, template?: PublicPageTemplate): string {
   const text = copy[locale];
   return document(
     locale,
     text.disabledTitle,
-    `<main class="container"><section class="panel"><h1>${text.disabledTitle}</h1><p>${text.disabledMessage}</p></section></main>`
+    `<main class="container"><section class="panel"><h1>${text.disabledTitle}</h1><p>${escapeHtml(template?.message || text.disabledMessage)}</p></section></main>`
   );
 }
 
-export function renderExpiredPage(locale: PublicLocale): string {
+export function renderExpiredPage(locale: PublicLocale, template?: PublicPageTemplate): string {
   const text = copy[locale];
   return document(
     locale,
     text.expiredTitle,
-    `<main class="container"><section class="panel"><div class="label">${text.expiredCode}</div><h1>${text.expiredTitle}</h1><p>${text.expiredMessage}</p></section></main>`
+    `<main class="container"><section class="panel"><div class="label">${text.expiredCode}</div><h1>${text.expiredTitle}</h1><p>${escapeHtml(template?.message || text.expiredMessage)}</p></section></main>`
   );
 }
 
@@ -117,7 +121,8 @@ export function renderWarningPage(
   locale: PublicLocale,
   slug: string,
   longUrl: string,
-  requiresPassword: boolean
+  requiresPassword: boolean,
+  template?: PublicPageTemplate
 ): string {
   const text = copy[locale];
   const safeSlug = escapeHtml(slug);
@@ -129,6 +134,6 @@ export function renderWarningPage(
   return document(
     locale,
     text.warningTitle,
-    `<main class="container"><section class="panel"><div class="label">${text.external}</div><h1>${text.warningTitle} <span class="slug">/${safeSlug}</span>${question}</h1><p>${text.warningMessage}</p><div class="url">${escapeHtml(longUrl)}</div>${control}</section></main>`
+    `<main class="container"><section class="panel"><div class="label">${text.external}</div><h1>${text.warningTitle} <span class="slug">/${safeSlug}</span>${question}</h1><p>${escapeHtml(template?.message || text.warningMessage)}</p><div class="url">${escapeHtml(longUrl)}</div>${control}</section></main>`
   );
 }

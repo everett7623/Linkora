@@ -25,6 +25,7 @@ import {
   parseHealthAlertState,
 } from '../health/alertPolicy';
 import { buildHealthAlertStatus } from '../health/alertStatus';
+import { appendHealthHistory, parseHealthHistory } from '../health/history';
 
 const healthChecks = new Hono<{ Bindings: Env }>();
 
@@ -44,6 +45,20 @@ healthChecks.get('/alerts', async (c) => {
   const ids = Object.keys(state.failures);
   const links = ids.length > 0 ? await getLinksByIds(c.env, ids) : [];
   return jsonOk(buildHealthAlertStatus(state, links));
+});
+
+healthChecks.get('/history', async (c) => {
+  const settings = await getSettings(c.env);
+  const history = parseHealthHistory(settings.health_check_history);
+  const ids = [...new Set(history.map((item) => item.link_id))];
+  const links = ids.length > 0 ? await getLinksByIds(c.env, ids) : [];
+  const linkById = new Map(links.map((link) => [link.id, link]));
+  return jsonOk({
+    items: history.map((item) => {
+      const link = linkById.get(item.link_id);
+      return { ...item, slug: link?.slug ?? null, domain: link?.domain ?? null };
+    }),
+  });
 });
 
 healthChecks.post('/url', async (c) => {
@@ -174,6 +189,18 @@ export async function runScheduledHealthChecks(env: Env): Promise<LinkHealthBatc
   const nextCursor = links.total > 0 ? (cursor + links.items.length) % links.total : 0;
   await Promise.all([
     setSetting(env, 'health_alert_state', JSON.stringify(decision.nextState), evaluatedAt),
+    setSetting(
+      env,
+      'health_check_history',
+      JSON.stringify(
+        appendHealthHistory(
+          parseHealthHistory(settings.health_check_history),
+          results,
+          decision.nextState.failures
+        )
+      ),
+      evaluatedAt
+    ),
     setSetting(env, 'health_monitoring_cursor', String(nextCursor), evaluatedAt),
   ]);
   return summary;

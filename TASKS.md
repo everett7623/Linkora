@@ -7,14 +7,14 @@ One item in "In Progress" at a time whenever possible.
 
 ## 🔴 In Progress
 
-- [x] V8: Complete English / Simplified Chinese localization across basic and advanced pages
+- [x] V9: Add OpenGraph preview cards for destination pages
 
 ---
 
 ## 🟡 Next — Operations And UX Planning
 
 - [x] V7: Add configurable backup retention, starting with a 30-day default
-- [ ] V7: Add periodic target health monitoring and failure alerts
+- [x] V7: Add periodic target health monitoring, failure alerts, recovery alerts, and bounded status history
 - [x] V7: Add opt-in Cron target monitoring with a configurable 1-50 link batch
 - [x] V7: Send signed `health_check.failed` Webhook summaries for scheduled anomalies
 - [x] V8: Add Simple / Advanced Admin mode toggle
@@ -374,11 +374,11 @@ Deployment experience:
 - [x] Configurable R2 backup retention with a 30-day default
 - [x] Retention cleanup for old backup records and R2 objects
 - [x] Periodic target health monitoring through Cron
-- [ ] Target status history with last status code, last checked time, and failure count
+- [x] Target status history with last status code, last checked time, and failure count
 - [x] Target failure alerts through Admin Operations notices and optional signed Webhooks
 - [x] Alert controls for consecutive-failure thresholds, suppression, and recovery Webhook notifications
 - [x] First-class `fallback_url` editing in Create/Edit Link
-- [ ] Custom 404, expired, disabled, and warning page templates
+- [x] Custom 404, expired, disabled, and warning page templates with escaped plain-text variables
 - [x] Operations dashboard for backup freshness, monitoring status, current failed targets, queue configuration, and deployment health
 - [x] Better bot classification for analytics and monitoring noise reduction
 
@@ -401,12 +401,12 @@ Deployment experience:
 
 - [ ] Bulk replace destination URLs with preview and rollback guidance
 - [ ] Bulk append or normalize UTM parameters
-- [ ] Saved UTM templates and campaign presets
-- [ ] Link notes and affiliate/internal notes
-- [ ] OpenGraph preview cards for destination pages
-- [ ] Public read-only stats pages with privacy controls, share tokens, and per-link enablement
-- [ ] Scheduled analytics report exports
-- [ ] Saved Analytics filters and reusable report views
+- [x] Saved UTM templates and campaign presets
+- [x] Link notes and affiliate/internal notes
+- [x] OpenGraph preview cards for destination pages
+- [x] Public read-only stats pages with privacy controls, hashed share tokens, and per-link enablement
+- [x] Scheduled analytics report exports
+- [x] Saved Analytics filters and reusable report views
 - [ ] Privacy-safe session or visitor-level conversion attribution
 - [ ] Additional conversion attribution fields, such as external campaign IDs and client-provided visitor IDs
 - [ ] Long-idle auto-archive rules with review queue and dry-run mode

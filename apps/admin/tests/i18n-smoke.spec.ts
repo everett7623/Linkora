@@ -177,6 +177,34 @@ async function mockAdminApi(page: Page) {
       await route.fulfill(apiResponse({ items: [], last_alert_at: null }));
       return;
     }
+    if (path === '/api/health-checks/history' && request.method() === 'GET') {
+      await route.fulfill(apiResponse({ items: [] }));
+      return;
+    }
+    if (path.startsWith('/api/public-stats/links/') && request.method() === 'GET') {
+      await route.fulfill(apiResponse({ enabled: false }));
+      return;
+    }
+    if (path === '/api/analytics-views' && request.method() === 'GET') {
+      await route.fulfill(apiResponse({ items: [] }));
+      return;
+    }
+    if (path === '/api/analytics-reports' && request.method() === 'GET') {
+      await route.fulfill(apiResponse({ config: { enabled: false, days: 30, saved_view_id: null }, records: [], r2Configured: true }));
+      return;
+    }
+    if (path === '/api/utm-templates' && request.method() === 'GET') {
+      await route.fulfill(apiResponse({ items: [] }));
+      return;
+    }
+    if (path.startsWith('/api/link-notes/') && request.method() === 'GET') {
+      await route.fulfill(apiResponse({ note: '' }));
+      return;
+    }
+    if (path === '/api/metadata/preview' && request.method() === 'POST') {
+      await route.fulfill(apiResponse({ title: 'Preview', description: 'Preview', image: null, final_url: 'https://example.com' }));
+      return;
+    }
 
     await route.fulfill({ status: 404, contentType: 'application/json', body: '{"error":"mock missing"}' });
   });

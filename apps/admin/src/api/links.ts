@@ -110,6 +110,9 @@ export function bulkTagLinks(
 ): Promise<{ mode: BulkTagMode; tags: string[]; total: number; success: number; notFound: number }> {
   return apiPost('/api/links/bulk-tag', { ids, tags, mode });
 }
+export interface BulkUrlPreviewItem { id:string;slug:string;current_url:string;next_url:string;status:'ready'|'unchanged'|'invalid';error:string|null; }
+export function previewBulkUrlReplace(ids:string[],find:string,replace:string):Promise<{items:BulkUrlPreviewItem[];ready:number;unchanged:number;invalid:number;notFound:number}>{return apiPost('/api/links/bulk-replace-url/preview',{ids,find,replace});}
+export function confirmBulkUrlReplace(items:BulkUrlPreviewItem[]):Promise<{changed:number;skipped:number;rollback_csv:string}>{return apiPost('/api/links/bulk-replace-url/confirm',{items:items.filter((item)=>item.status==='ready')});}
 
 export function getOverview(): Promise<{
   totalLinks: number;

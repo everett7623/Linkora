@@ -23,6 +23,7 @@ interface PageMetadata {
   description?: string | null;
   keywords: string[];
 }
+interface PagePreview { title: string | null; description: string | null; image: string | null; final_url: string; }
 
 const EMPTY_PAGE_METADATA: PageMetadata = { keywords: [] };
 
@@ -98,6 +99,39 @@ metadata.post('/suggestions', async (c) => {
   const result = await buildSuggestions(c.env, url, finalUrl, pageMetadata, metadataFetched, error);
   return jsonOk(result);
 });
+
+metadata.post('/preview', async (c) => {
+  let body: { url?: unknown };
+  try { body = await c.req.json(); } catch { return jsonError('Invalid JSON body', 400); }
+  const url = typeof body.url === 'string' ? body.url.trim() : '';
+  const validation = validateLongUrl(url);
+  if (!validation.valid) return jsonError(validation.error!, 400);
+  try {
+    const response = await fetch(url, { redirect: 'follow', signal: AbortSignal.timeout(FETCH_TIMEOUT_MS), headers: { Accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.1', 'User-Agent': 'Linkora/0.1 preview (+https://github.com/EvenFrank/Linkora)' } });
+    if (!response.ok) return jsonError(`Target URL returned HTTP ${response.status}`, 400);
+    const contentType = response.headers.get('Content-Type') ?? '';
+    if (contentType && !/\b(html|xhtml|xml)\b/i.test(contentType)) return jsonError('Target URL did not return an HTML page', 400);
+    const contentLength = Number(response.headers.get('Content-Length') ?? '0');
+    if (contentLength > MAX_CONTENT_LENGTH) return jsonError('Target page is too large to inspect', 400);
+    return jsonOk(await extractPreview(response, response.url || url));
+  } catch { return jsonError('Unable to fetch URL preview', 400); }
+});
+
+async function extractPreview(response: Response, finalUrl: string): Promise<PagePreview> {
+  let title = ''; let description = ''; let image = ''; let pageTitle = '';
+  await new HTMLRewriter().on('title', { text(text) { pageTitle += text.text; } }).on('meta', { element(element) {
+    const property = normalizeAttribute(element.getAttribute('property')); const name = normalizeAttribute(element.getAttribute('name')); const content = element.getAttribute('content') ?? '';
+    if (!title && (property === 'og:title' || name === 'twitter:title')) title = content;
+    if (!description && (property === 'og:description' || name === 'twitter:description' || name === 'description')) description = content;
+    if (!image && (property === 'og:image' || name === 'twitter:image')) image = content;
+  }}).transform(response).arrayBuffer();
+  return { title: normalizeTitle(title) ?? normalizeTitle(pageTitle), description: normalizeDescription(description), image: normalizeImage(image, finalUrl), final_url: finalUrl };
+}
+
+function normalizeImage(value: string, baseUrl: string): string | null {
+  if (!value.trim()) return null;
+  try { const url = new URL(value.trim(), baseUrl); return url.protocol === 'http:' || url.protocol === 'https:' ? url.toString() : null; } catch { return null; }
+}
 
 async function extractTitle(response: Response): Promise<string | null> {
   const fallback = response.clone();
