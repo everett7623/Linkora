@@ -150,7 +150,7 @@ curl https://go.example.com/health
 Expected shape:
 
 ```json
-{"success":true,"data":{"status":"ok","name":"Linkora","version":"0.9.5"}}
+{"success":true,"data":{"status":"ok","name":"Linkora","version":"0.9.6"}}
 ```
 
 ## 7. Build and Deploy Admin
@@ -179,13 +179,16 @@ Add your admin custom domain, for example `admin.example.com`, in the Cloudflare
 
 ## 8. GitHub Actions Auto Deploy
 
-The included workflow can apply D1 migrations and deploy on pushes to `main`.
+The included workflow can apply D1 migrations and deploy on pushes to `main`. This is the recommended path for new users because it keeps your Cloudflare resource IDs out of the repository.
+
+### Required for any deployment
 
 Add repository secrets:
 
 ```txt
 CLOUDFLARE_API_TOKEN
 CLOUDFLARE_ACCOUNT_ID
+ADMIN_TOKEN
 ```
 
 Add repository variables:
@@ -201,10 +204,14 @@ LINKORA_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKORA_KV_PREVIEW_ID=<your-kv-preview-id>
 ```
 
-Optional variables:
+Push to `main` and the workflow will type-check, build, migrate D1, deploy the Worker, and deploy the Admin.
+
+### Optional advanced variables
+
+Leave these unset for the basic deployment; enable them later from the Admin Advanced mode.
 
 ```txt
-LINKORA_VERSION=0.9.5
+LINKORA_VERSION=0.9.6
 LINKORA_COMPATIBILITY_DATE=2026-07-08
 LINKORA_WORKER_DOMAINS=go.example.com,s.example.com
 LINKORA_R2_BUCKET=linkora-backups
@@ -214,7 +221,7 @@ LINKORA_VISITS_QUEUE=linkora-visits
 
 `LINKORA_WORKER_DOMAINS` replaces the single-domain fallback when set. Configure both R2 variables together. Queue and R2 are independent advanced capabilities; leaving them unset no longer blocks the basic Worker deployment.
 
-The workflow still type-checks and builds when Cloudflare secrets are missing, but Cloudflare migration and deployment are skipped. Worker deployment uses these variables to generate `apps/worker/wrangler.toml` during CI, so your Cloudflare resource IDs do not need to be committed.
+The workflow still type-checks and builds when Cloudflare secrets are missing, but Cloudflare migration and deployment are skipped. Worker deployment uses these variables to generate `apps/worker/wrangler.toml` during CI.
 
 ## 9. First Login
 

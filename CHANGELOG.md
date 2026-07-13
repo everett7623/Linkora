@@ -13,6 +13,20 @@ _(none)_
 
 ---
 
+## [0.9.6] - 2026-07-13
+
+### Added
+
+- Added "Deploy to Cloudflare Workers" and "Deploy to Cloudflare Pages" buttons to the README for faster first-time deployment.
+- Added automatic redirect to the Setup page after first login when the default domain or first short link is missing.
+
+### Changed
+
+- Split the GitHub Actions deployment documentation into required and optional variables so new users can deploy without configuring R2, Queue, or multiple domains.
+- Enhanced the First Run Wizard with clearer next-step highlighting and action buttons.
+
+---
+
 ## [0.9.5] - 2026-07-12
 
 ### Added

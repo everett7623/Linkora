@@ -4,6 +4,11 @@ A lightweight, stable, self-hosted short link system built on Cloudflare Workers
 
 > **Core Principle:** Redirect stability first. Stats failures must never break redirects.
 
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/everett7623/Linkora)
+[![Deploy to Cloudflare Pages](https://deploy.pages.cloudflare.com/button)](https://deploy.pages.cloudflare.com/?url=https://github.com/everett7623/Linkora)
+
+> **New to self-hosting?** Follow the [quick-start guide](docs/SELF_HOSTING.md) for the fastest first deployment. Advanced features like R2 backups, Queues, multiple domains, and webhooks stay optional.
+
 ---
 
 ## Product Direction

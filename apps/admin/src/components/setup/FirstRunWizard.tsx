@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle2, Circle, ExternalLink, Rocket } from 'lucide-react';
+import { CheckCircle2, Circle, ExternalLink, Rocket, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLocale } from '../../contexts/LocaleContext';
 import { getSetupWizardState } from '../../utils/setupWizard';
@@ -41,6 +41,8 @@ export function FirstRunWizard({
     },
   ];
 
+  const firstIncomplete = steps.find((step) => !step.complete);
+
   return (
     <section className="overflow-hidden rounded-xl border border-brand-500/40 bg-slate-900">
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-800 p-5">
@@ -61,28 +63,43 @@ export function FirstRunWizard({
       </div>
 
       <div className="divide-y divide-slate-800">
-        {steps.map((step, index) => (
-          <div key={step.title} className="flex flex-wrap items-center gap-3 px-5 py-4">
-            {step.complete ? (
-              <CheckCircle2 size={18} className="text-emerald-400" />
-            ) : (
-              <Circle size={18} className="text-slate-600" />
-            )}
-            <span className="w-5 text-xs font-medium text-slate-500">{index + 1}</span>
-            <div className="min-w-0 flex-1">
-              <div className="text-sm font-medium text-slate-200">{step.title}</div>
-              <div className="mt-0.5 text-xs text-slate-500">{step.detail}</div>
+        {steps.map((step, index) => {
+          const isNext = firstIncomplete === step;
+          return (
+            <div
+              key={step.title}
+              className={`flex flex-wrap items-center gap-3 px-5 py-4 ${
+                isNext ? 'bg-brand-500/5' : ''
+              }`}
+            >
+              {step.complete ? (
+                <CheckCircle2 size={18} className="text-emerald-400" />
+              ) : (
+                <Circle size={18} className={isNext ? 'text-brand-400' : 'text-slate-600'} />
+              )}
+              <span className="w-5 text-xs font-medium text-slate-500">{index + 1}</span>
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-medium text-slate-200">{step.title}</div>
+                <div className={`mt-0.5 text-xs ${isNext ? 'text-brand-300' : 'text-slate-500'}`}>
+                  {step.detail}
+                </div>
+              </div>
+              {step.to && step.action && (
+                <Link
+                  to={step.to}
+                  className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium ${
+                    isNext
+                      ? 'bg-brand-600 text-white hover:bg-brand-500'
+                      : 'bg-slate-700 text-slate-100 hover:bg-slate-600'
+                  }`}
+                >
+                  {step.action}
+                  {isNext && <ArrowRight size={12} />}
+                </Link>
+              )}
             </div>
-            {step.to && step.action && (
-              <Link
-                to={step.to}
-                className="rounded-lg bg-slate-700 px-3 py-1.5 text-xs font-medium text-slate-100 hover:bg-slate-600"
-              >
-                {step.action}
-              </Link>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-950/50 px-5 py-3 text-xs text-slate-500">
