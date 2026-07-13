@@ -13,6 +13,15 @@ _(none)_
 
 ---
 
+## [0.9.10] - 2026-07-13
+
+### Changed
+
+- Removed Playwright browser installation from the GitHub Actions deploy workflow. Admin smoke tests are no longer run during deployment, cutting several minutes from each deploy.
+- Changed Admin test step in deploy workflow to run only unit tests.
+
+---
+
 ## [0.9.9] - 2026-07-13
 
 ### Added

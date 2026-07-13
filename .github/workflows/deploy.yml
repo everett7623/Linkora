@@ -44,9 +44,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Admin browser test runtime
-        run: npx playwright install --with-deps chromium
-
       - name: Resolve Linkora version
         run: |
           PACKAGE_VERSION="$(node -p "require('./package.json').version")"
@@ -66,11 +63,11 @@ jobs:
       - name: Type-check Worker
         run: npm run type-check --workspace=apps/worker
 
-      - name: Test Admin mode rules
-        run: npm run test:admin
+      - name: Test Admin unit rules
+        run: npm run test:unit --workspace=apps/admin
 
       - name: Test Worker public pages and redirects
-        run: npm run test:worker
+        run: npm run test --workspace=apps/worker
 
       - name: Build Admin
         run: npm run build --workspace=apps/admin
@@ -130,7 +127,7 @@ jobs:
             ']',
             '',
             '[vars]',
-            `LINKORA_VERSION = "${env.RESOLVED_LINKORA_VERSION || '0.9.9'}"`,
+            `LINKORA_VERSION = "${env.RESOLVED_LINKORA_VERSION || '0.9.10'}"`,
             '',
             '[[d1_databases]]',
             'binding = "DB"',
