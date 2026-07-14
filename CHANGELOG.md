@@ -13,6 +13,16 @@ _(none)_
 
 ---
 
+## [0.9.22] - 2026-07-15
+
+### Planning
+
+- Recorded the next development priority as a preview-first bulk UTM append and normalization workflow with bounded D1 writes, selective KV invalidation, and rollback records.
+- Recorded the following Admin usability task for sidebar/table density preferences and instance-level optional-module visibility.
+- Kept Shlink retirement operations explicitly deferred while the existing Shlink deployment remains in use.
+
+---
+
 ## [0.9.21] - 2026-07-15
 
 ### Changed

@@ -17,7 +17,7 @@ Last updated: 2026-07-15
 | Deployment                 | ✅ Deployed            | Worker and Admin deployed; GitHub Actions deploy workflow added                                                                        |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                       |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md` |
-| Current version            | ✅ 0.9.21              | Scheduled target controls now live on Health Checks, and the Advanced sidebar is grouped by workflow                                                     |
+| Current version            | ✅ 0.9.22              | Next development is scoped for bulk UTM normalization followed by Admin display preferences                                                               |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
 
@@ -94,9 +94,10 @@ Last updated: 2026-07-15
 
 ## Next Steps
 
-1. Continue V9 with bulk UTM append and normalization
-2. Continue V8 with optional feature visibility and display-density preferences
-3. Keep Shlink API-key rotation and legacy-domain cutover deferred while Shlink remains in use
+1. Build the V9 bulk UTM append/normalization workflow with selection/filter scope, preview, bounded D1 writes, affected-link KV invalidation, and a downloadable change record
+2. Add V8 per-browser sidebar/table density preferences and instance-level visibility for optional Advanced modules
+3. Preserve Simple/Advanced mode, EN/ZH coverage, redirect stability, and recovery-route visibility throughout both tasks
+4. Keep Shlink API-key rotation and legacy-domain cutover deferred while Shlink remains in use
 
 ---
 

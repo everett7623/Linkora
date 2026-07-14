@@ -222,6 +222,35 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
+## 🟡 Planned — Next Development
+
+### Priority 1 — Bulk UTM Append And Normalization
+
+- [ ] Add an Advanced Links bulk UTM tool without changing redirect-path behavior
+- [ ] Support selection/filter scope and show the exact matching-link count before preview
+- [ ] Support add-missing, replace-selected, and remove-selected UTM parameter modes
+- [ ] Preserve unrelated query parameters, URL fragments, credentials safety, and URL encoding
+- [ ] Preview before/after destination URLs and conflicts before writing
+- [ ] Update D1 in bounded batches and clear affected KV entries only after successful writes
+- [ ] Download a change-record CSV and provide backup/rollback guidance
+- [ ] Add Worker policy tests, Admin browser coverage, and large-batch regression coverage
+
+### Priority 2 — Admin Display Preferences
+
+- [ ] Add compact/comfortable sidebar density as a per-browser preference
+- [ ] Add compact/comfortable table density as a per-browser preference
+- [ ] Add instance-level visibility controls for optional Advanced modules
+- [ ] Keep required recovery, settings, and core link-management routes always reachable
+- [ ] Preserve Simple/Advanced mode behavior and EN/ZH coverage
+- [ ] Add unit and browser regression coverage for preference persistence and hidden modules
+
+### Deferred Operations
+
+- [ ] Keep Shlink API-key rotation deferred while Shlink remains active
+- [ ] Keep legacy short-domain cutover deferred until no remaining links depend on Shlink
+
+---
+
 ## ✅ Completed — Shlink Feature Port (v0.9.12)
 
 - [x] Audit Shlink features and document gap in `docs/SHLINK_FEATURE_GAP.md`

@@ -174,8 +174,8 @@ Planned:
 - Simple / Advanced mode toggle in Admin
 - Simple mode hides or de-emphasizes advanced navigation such as Redirect Rules, Webhooks, API Tokens, advanced Analytics filters, backup internals, and bulk tooling
 - Advanced mode exposes the full operator interface
-- Instance-level feature visibility settings for optional modules
-- Per-browser or per-admin preference for sidebar density, table density, and advanced panels
+- Next: instance-level feature visibility settings for optional modules, while keeping core and recovery routes reachable
+- Next: per-browser sidebar and table density preferences with Simple/Advanced mode compatibility
 - Done: required first-run setup wizard verifies API readiness, one default short domain, and the first link from real instance state
 - In progress: language switcher with English as the default and Simplified Chinese as an option
 - In progress: i18n foundation covers core and advanced link management, deployment, operations, audit, backup/restore, and analytics workflows
@@ -193,7 +193,7 @@ Planned:
 
 - Done: bulk replace destination URLs with preview and rollback guidance
 - Done: migrate all matching stored short-link domains with preview, concurrency protection, KV invalidation, and migration records
-- Bulk append or normalize UTM parameters
+- Next priority: bulk append or normalize UTM parameters with filter/selection scope, preview, bounded writes, KV invalidation, and a downloadable change record
 - Done: saved personal UTM templates and campaign presets in Create/Edit Link
 - Done: private internal link notes in Advanced Edit Link
 - Done: authenticated OpenGraph preview cards in Advanced Create/Edit Link

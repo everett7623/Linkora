@@ -161,7 +161,7 @@ routes = [
 ]
 
 [vars]
-LINKORA_VERSION = "0.9.21"
+LINKORA_VERSION = "0.9.22"
 
 [[d1_databases]]
 binding = "DB"
@@ -202,7 +202,7 @@ curl https://go.example.com/health
 Expected response:
 
 ```json
-{"success":true,"data":{"status":"ok","name":"Linkora","version":"0.9.21"}}
+{"success":true,"data":{"status":"ok","name":"Linkora","version":"0.9.22"}}
 ```
 
 ---
@@ -316,7 +316,7 @@ Defined in `apps/worker/wrangler.toml`:
 
 | Name | Example |
 |------|---------|
-| `LINKORA_VERSION` | `0.9.21` |
+| `LINKORA_VERSION` | `0.9.22` |
 | `LINKORA_DAILY_CRON` | `0 18 * * *` |
 | `LINKORA_HEALTH_CRON` | `0 * * * *` |
 

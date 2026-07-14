@@ -13,7 +13,7 @@ routes = [
 ]
 
 [vars]
-LINKORA_VERSION = "0.9.21"
+LINKORA_VERSION = "0.9.22"
 LINKORA_DAILY_CRON = "0 18 * * *"
 LINKORA_HEALTH_CRON = "0 * * * *"
 
