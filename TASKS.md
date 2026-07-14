@@ -200,6 +200,17 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
+## ✅ Completed — Default Notification Format (v0.9.20)
+
+- [x] Replace terse target messages with complete built-in failure and recovery formats
+- [x] Include short link, target URL, status, HTTP status, response time, and UTC detection time
+- [x] Preserve plain-text delivery and existing notification credentials and channel behavior
+- [x] Add focused Worker format regression coverage
+- [x] Leave redirect logic unchanged
+- [x] Update release metadata to `0.9.20`
+
+---
+
 ## ✅ Completed — Shlink Feature Port (v0.9.12)
 
 - [x] Audit Shlink features and document gap in `docs/SHLINK_FEATURE_GAP.md`

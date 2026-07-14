@@ -17,7 +17,7 @@ Last updated: 2026-07-14
 | Deployment                 | ✅ Deployed            | Worker and Admin deployed; GitHub Actions deploy workflow added                                                                        |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                       |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md` |
-| Current version            | ✅ 0.9.19              | Short-link domains can be previewed and migrated in bulk without changing slugs or destination/Aff URLs                                                  |
+| Current version            | ✅ 0.9.20              | Scheduled target failures and recoveries use complete built-in notification formats with explicit UTC detection times                                  |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
 
@@ -219,7 +219,7 @@ Database columns for V2–V4 are already present in `migrations/0001_init.sql` t
 | Restore report               | ✅ Done | Restore result includes created, overwritten, renamed, skipped, failed, redirect-rule counts, and a CSV-style report                                                                  |
 | Factory reset                | ✅ Done | Admin Settings danger zone previews affected rows, requires `RESET LINKORA`, creates optional `pre-reset` R2 backup, clears KV cache, and preserves backup records plus `ADMIN_TOKEN` |
 | Backup retention             | ✅ Done | Advanced Settings configures 1-3650 days (default 30); Cron deletes expired R2 objects before their D1 records and preserves records when R2 is unavailable                           |
-| Target monitoring and alerts | ✅ Done | Cron rotates through active links with thresholds, suppression, signed failure/recovery Webhooks, persisted notices, and a bounded 200-record target history                         |
+| Target monitoring and alerts | ✅ Done | Cron rotates through active links with thresholds, suppression, complete failure/recovery notifications, signed Webhooks, persisted notices, and a bounded 200-record target history |
 | Fallback URL editing         | ✅ Done | Create/Edit Link can set or clear a validated HTTP(S) fallback URL for monitoring and future workflows; public redirect behavior remains unchanged                                      |
 | Operations dashboard         | ✅ Done | Advanced Admin combines backup freshness, monitoring settings, Queue/R2 deployment capabilities, and manually requested current target failures                                        |
 | Bot classification           | ✅ Done | Boundary-aware classifier covers major crawlers and automation clients while preserving real browser traffic, including CUBOT Android devices                                           |

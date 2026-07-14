@@ -7,7 +7,10 @@ export const NOTIFICATION_PROVIDERS = [
   'wecom',
 ] as const;
 
-export type NotificationProvider = typeof NOTIFICATION_PROVIDERS[number];
+export type NotificationProvider = (typeof NOTIFICATION_PROVIDERS)[number];
+
+const MAX_NOTIFICATION_ITEMS = 10;
+const MAX_NOTIFICATION_LENGTH = 1900;
 
 export function buildNotificationRequest(
   provider: NotificationProvider,
@@ -25,7 +28,8 @@ export function buildNotificationRequest(
     return { url: credential, body: { content: message, allowed_mentions: { parse: [] } } };
   }
   if (provider === 'slack') return { url: credential, body: { text: message } };
-  if (provider === 'feishu') return { url: credential, body: { msg_type: 'text', content: { text: message } } };
+  if (provider === 'feishu')
+    return { url: credential, body: { msg_type: 'text', content: { text: message } } };
   return { url: credential, body: { msgtype: 'text', text: { content: message } } };
 }
 
@@ -33,34 +37,81 @@ export function formatHealthNotification(
   event: 'health_check.failed' | 'health_check.recovered',
   data: unknown
 ): string {
-  const record = data && typeof data === 'object' ? data as Record<string, unknown> : {};
-  const summary = record.summary && typeof record.summary === 'object'
-    ? record.summary as Record<string, unknown>
-    : {};
+  const record = data && typeof data === 'object' ? (data as Record<string, unknown>) : {};
+  const summary =
+    record.summary && typeof record.summary === 'object'
+      ? (record.summary as Record<string, unknown>)
+      : {};
   const rawItems = Array.isArray(summary.items)
-    ? summary.items.filter((item): item is Record<string, unknown> => !!item && typeof item === 'object')
+    ? summary.items.filter(
+        (item): item is Record<string, unknown> => !!item && typeof item === 'object'
+      )
     : Array.isArray(record.items)
-      ? record.items.filter((item): item is Record<string, unknown> => !!item && typeof item === 'object')
+      ? record.items.filter(
+          (item): item is Record<string, unknown> => !!item && typeof item === 'object'
+        )
       : [];
   const isFailure = event === 'health_check.failed';
   const items = isFailure ? rawItems.filter((item) => item.status !== 'healthy') : rawItems;
   const lines = [
-    isFailure ? '🚨 Linkora target alert' : '✅ Linkora target recovered',
+    isFailure ? '⚠️ Linkora Link Alert' : '✅ Linkora Link Recovered',
+    '',
     isFailure
-      ? `Checked ${numberValue(summary.total)} · warning ${numberValue(summary.warning)} · broken ${numberValue(summary.broken)}`
-      : `${items.length || arrayLength(record.recovered)} target(s) recovered`,
+      ? `Affected Links: ${items.length}`
+      : `Recovered Links: ${items.length || arrayLength(record.recovered)}`,
   ];
-
-  for (const item of items.slice(0, 10)) {
-    const slug = stringValue(item.slug) || stringValue(item.link_id) || 'unknown';
-    const url = stringValue(item.url);
-    const status = item.http_status === null || item.http_status === undefined
-      ? stringValue(item.error) || stringValue(item.status)
-      : `HTTP ${String(item.http_status)}`;
-    lines.push(`• /${slug} — ${status}${url ? `\n  ${url}` : ''}`);
+  if (isFailure) {
+    lines.push(
+      `Checked: ${numberValue(summary.total)} | Warning: ${numberValue(summary.warning)} | Broken: ${numberValue(summary.broken)}`
+    );
   }
-  if (items.length > 10) lines.push(`…and ${items.length - 10} more`);
-  return lines.join('\n').slice(0, 1900);
+
+  for (const item of items.slice(0, MAX_NOTIFICATION_ITEMS)) {
+    const slug = stringValue(item.slug) || stringValue(item.link_id) || 'unknown';
+    const domain = stringValue(item.domain);
+    const error = stringValue(item.error);
+    lines.push(
+      '',
+      `Short Link: ${domain ? `https://${domain}/${slug}` : `/${slug}`}`,
+      `Target URL: ${stringValue(item.url) || 'Unknown'}`,
+      `Status: ${healthStatus(item, isFailure)}`,
+      `HTTP Status: ${httpStatus(item.http_status)}`,
+      `Response Time: ${responseTime(item.response_time_ms)}`,
+      `Detected At: ${detectedAt(item.checked_at)}`
+    );
+    if (error) lines.push(`Error: ${error}`);
+  }
+  if (items.length > MAX_NOTIFICATION_ITEMS) {
+    lines.push('', `…and ${items.length - MAX_NOTIFICATION_ITEMS} more`);
+  }
+  lines.push(
+    '',
+    isFailure
+      ? 'Please check the target URL or redirect configuration.'
+      : 'The target URL has returned to normal.'
+  );
+  return lines.join('\n').slice(0, MAX_NOTIFICATION_LENGTH);
+}
+
+function healthStatus(item: Record<string, unknown>, isFailure: boolean): string {
+  if (!isFailure) return 'Online';
+  return item.status === 'warning' ? 'Target Warning' : 'Target Offline';
+}
+
+function httpStatus(value: unknown): string {
+  return typeof value === 'number' && Number.isFinite(value) ? String(value) : 'N/A';
+}
+
+function responseTime(value: unknown): string {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0
+    ? `${Math.round(value)} ms`
+    : 'N/A';
+}
+
+function detectedAt(value: unknown): string {
+  const timestamp = stringValue(value);
+  const utc = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})(?:\.\d+)?Z$/.exec(timestamp);
+  return utc ? `${utc[1]} ${utc[2]} UTC` : timestamp || 'Unknown';
 }
 
 function numberValue(value: unknown): number {

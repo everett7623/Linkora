@@ -182,6 +182,8 @@ Notification endpoints require admin access. They configure scheduled original d
 
 Telegram accepts `credential` as the bot token and `target` as the chat ID or `@channel`. Other providers accept the official Incoming Webhook URL as `credential`. Sending an empty credential preserves the stored value.
 
+Scheduled failure and recovery deliveries use Linkora's built-in plain-text format. Messages include the short link when its domain is available, target URL, target status, HTTP status, response time, and an explicit UTC detection time. Notification templates are not stored per instance.
+
 ## Links
 
 | Method | Path |

@@ -13,6 +13,20 @@ _(none)_
 
 ---
 
+## [0.9.20] - 2026-07-14
+
+### Changed
+
+- Replaced terse scheduled target failure and recovery messages with complete built-in notification formats.
+- Notifications now include the full short link when its domain is available, target URL, target status, HTTP status, response time, and an explicit UTC detection time.
+- Kept notification content as safe plain text with no per-instance template configuration or redirect-path changes.
+
+### Tests
+
+- Added focused failure and recovery format coverage for complete fields, unavailable HTTP responses, and UTC timestamps.
+
+---
+
 ## [0.9.19] - 2026-07-14
 
 ### Added

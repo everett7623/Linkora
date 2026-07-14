@@ -150,7 +150,7 @@ curl https://go.example.com/health
 Expected shape:
 
 ```json
-{"success":true,"data":{"status":"ok","name":"Linkora","version":"0.9.19"}}
+{"success":true,"data":{"status":"ok","name":"Linkora","version":"0.9.20"}}
 ```
 
 ## 7. Build and Deploy Admin
@@ -216,7 +216,7 @@ Leave these unset for the basic deployment; enable them later from the Admin Adv
 
 ```txt
 LINKORA_KV_PREVIEW_ID=<your-kv-preview-id>
-LINKORA_VERSION=0.9.19
+LINKORA_VERSION=0.9.20
 LINKORA_COMPATIBILITY_DATE=2026-07-08
 LINKORA_WORKER_DOMAINS=go.example.com,s.example.com
 LINKORA_R2_BUCKET=linkora-backups
@@ -282,6 +282,8 @@ Linkora uses a daily Cron for backups, reports, and cleanup, plus a separate hou
 5. Save each channel and send a test notification.
 
 The monitor checks each active link's stored `long_url`, follows redirects, retries selected HEAD failures with a one-byte GET request, and records HTTP status, final URL, response time, and error state. Notifications are sent only when the failure threshold is reached and when the target later recovers. The existing signed generic Webhook remains available separately.
+
+Notification channels use Linkora's built-in plain-text failure and recovery formats. They include the short link, target URL, status, HTTP status, response time, and UTC detection time; operators configure channel credentials and targets, not message templates.
 
 Notification tokens and Incoming Webhook URLs are stored as write-only instance settings: they are not returned by the API and are excluded from Linkora backup exports. Keep D1 access restricted to the deployment account.
 
