@@ -15,6 +15,7 @@ import type {
   LinkHealthStatus,
 } from '@linkora/shared';
 import { checkUrl, runHealthCheckBatch } from '../api/healthChecks';
+import { HealthMonitoringSettingsPanel } from '../components/health/HealthMonitoringSettingsPanel';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Input, Select } from '../components/ui/Input';
@@ -155,6 +156,8 @@ export function HealthChecks() {
           </Button>
         </div>
       </div>
+
+      <HealthMonitoringSettingsPanel />
 
       <div className="grid gap-4 md:grid-cols-4">
         <Metric

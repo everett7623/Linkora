@@ -211,6 +211,17 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
+## ✅ Completed — Monitoring Navigation UX (v0.9.21)
+
+- [x] Put scheduled destination/Aff monitoring controls on the Health Checks page
+- [x] Link Health Checks directly to Telegram and other notification channel settings
+- [x] Group the Advanced sidebar into daily, insights/automation, operations, and system sections
+- [x] Use exact route matching so nested link pages do not highlight multiple menu entries
+- [x] Mark Shlink key rotation and legacy-domain cutover as deferred while Shlink stays active
+- [x] Add Admin browser coverage and update release metadata to `0.9.21`
+
+---
+
 ## ✅ Completed — Shlink Feature Port (v0.9.12)
 
 - [x] Audit Shlink features and document gap in `docs/SHLINK_FEATURE_GAP.md`
@@ -319,8 +330,8 @@ Deployment experience:
 - [x] Verify duplicate import preview reports conflicts instead of overwriting
 - [x] Spot-check imported redirects on production Worker
 - [x] Prepare legacy short-domain cutover and rollback checklist
-- [ ] Revoke or rotate the Shlink API key used for migration
-- [ ] Cut over the legacy short domain from Shlink to Linkora
+- [ ] Revoke or rotate the Shlink API key used for migration (deferred while Shlink remains active)
+- [ ] Cut over the legacy short domain from Shlink to Linkora (deferred until no legacy links depend on Shlink)
 
 ---
 

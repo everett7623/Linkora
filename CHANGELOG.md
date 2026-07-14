@@ -13,6 +13,21 @@ _(none)_
 
 ---
 
+## [0.9.21] - 2026-07-15
+
+### Changed
+
+- Moved scheduled destination/Aff monitoring controls from general Settings to the Health Checks page, with a direct link to notification channel configuration.
+- Grouped the Advanced Admin sidebar into daily management, insights and automation, operations, and system sections, using denser navigation spacing and exact active-route highlighting.
+- Marked Shlink API-key rotation and legacy-domain cutover as deferred while the existing Shlink instance remains in active use.
+- Kept redirect handling and scheduled Worker behavior unchanged.
+
+### Tests
+
+- Extended Admin browser smoke coverage for opening Health Checks, enabling scheduled monitoring, and saving its settings.
+
+---
+
 ## [0.9.20] - 2026-07-14
 
 ### Changed

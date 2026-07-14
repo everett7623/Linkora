@@ -25,10 +25,6 @@ export function Settings() {
     default_domain: '',
     analytics_retention_days: '0',
     backup_retention_days: '30',
-    health_monitoring_enabled: 'false',
-    health_monitoring_limit: '20',
-    health_failure_threshold: '2',
-    health_alert_suppression_minutes: '1440',
     public_page_404_message: '',
     public_page_disabled_message: '',
     public_page_expired_message: '',
@@ -44,10 +40,6 @@ export function Settings() {
           default_domain: s.default_domain ?? '',
           analytics_retention_days: s.analytics_retention_days ?? '0',
           backup_retention_days: s.backup_retention_days ?? '30',
-          health_monitoring_enabled: s.health_monitoring_enabled ?? 'false',
-          health_monitoring_limit: s.health_monitoring_limit ?? '20',
-          health_failure_threshold: s.health_failure_threshold ?? '2',
-          health_alert_suppression_minutes: s.health_alert_suppression_minutes ?? '1440',
           public_page_404_message: s.public_page_404_message ?? '',
           public_page_disabled_message: s.public_page_disabled_message ?? '',
           public_page_expired_message: s.public_page_expired_message ?? '',
@@ -149,56 +141,34 @@ export function Settings() {
               <h2 className="text-sm font-semibold text-slate-200">{t('publicPageTemplates')}</h2>
               <p className="mt-1 text-xs text-slate-500">{t('publicPageTemplatesHint')}</p>
             </div>
-            <Textarea label={t('notFoundPageMessage')} maxLength={500} rows={2} value={form.public_page_404_message} onChange={(e) => set('public_page_404_message', e.target.value)} />
-            <Textarea label={t('disabledPageMessage')} maxLength={500} rows={2} value={form.public_page_disabled_message} onChange={(e) => set('public_page_disabled_message', e.target.value)} />
-            <Textarea label={t('expiredPageMessage')} maxLength={500} rows={2} value={form.public_page_expired_message} onChange={(e) => set('public_page_expired_message', e.target.value)} />
-            <Textarea label={t('warningPageMessage')} maxLength={500} rows={2} value={form.public_page_warning_message} onChange={(e) => set('public_page_warning_message', e.target.value)} />
-          </div>
-        )}
-
-        {isAdvanced && (
-          <div className="space-y-3 rounded-md border border-slate-800 bg-slate-950 p-4">
-            <label className="flex items-center gap-3 text-sm text-slate-300">
-              <input
-                type="checkbox"
-                checked={form.health_monitoring_enabled === 'true'}
-                onChange={(e) => set('health_monitoring_enabled', String(e.target.checked))}
-                className="h-4 w-4 rounded border-slate-600 bg-slate-900 text-brand-600 focus:ring-brand-500"
-              />
-              {t('enableHealthMonitoring')}
-            </label>
-            <Input
-              label={t('healthMonitoringLimit')}
-              type="number"
-              min="1"
-              max="50"
-              disabled={form.health_monitoring_enabled !== 'true'}
-              value={form.health_monitoring_limit}
-              onChange={(e) => set('health_monitoring_limit', e.target.value)}
-              hint={t('healthMonitoringHint')}
+            <Textarea
+              label={t('notFoundPageMessage')}
+              maxLength={500}
+              rows={2}
+              value={form.public_page_404_message}
+              onChange={(e) => set('public_page_404_message', e.target.value)}
             />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Input
-                label={t('healthFailureThreshold')}
-                type="number"
-                min="1"
-                max="10"
-                disabled={form.health_monitoring_enabled !== 'true'}
-                value={form.health_failure_threshold}
-                onChange={(e) => set('health_failure_threshold', e.target.value)}
-                hint={t('healthFailureThresholdHint')}
-              />
-              <Input
-                label={t('healthSuppressionMinutes')}
-                type="number"
-                min="0"
-                max="10080"
-                disabled={form.health_monitoring_enabled !== 'true'}
-                value={form.health_alert_suppression_minutes}
-                onChange={(e) => set('health_alert_suppression_minutes', e.target.value)}
-                hint={t('healthSuppressionHint')}
-              />
-            </div>
+            <Textarea
+              label={t('disabledPageMessage')}
+              maxLength={500}
+              rows={2}
+              value={form.public_page_disabled_message}
+              onChange={(e) => set('public_page_disabled_message', e.target.value)}
+            />
+            <Textarea
+              label={t('expiredPageMessage')}
+              maxLength={500}
+              rows={2}
+              value={form.public_page_expired_message}
+              onChange={(e) => set('public_page_expired_message', e.target.value)}
+            />
+            <Textarea
+              label={t('warningPageMessage')}
+              maxLength={500}
+              rows={2}
+              value={form.public_page_warning_message}
+              onChange={(e) => set('public_page_warning_message', e.target.value)}
+            />
           </div>
         )}
 
@@ -222,7 +192,11 @@ export function Settings() {
 
       {isAdvanced && <WebhookSettingsPanel />}
 
-      {isAdvanced && <NotificationSettingsPanel />}
+      {isAdvanced && (
+        <div id="notifications" className="scroll-mt-8">
+          <NotificationSettingsPanel />
+        </div>
+      )}
 
       {isAdvanced && <ResetSettingsPanel />}
 

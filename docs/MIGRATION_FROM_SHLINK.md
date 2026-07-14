@@ -26,5 +26,5 @@ Use [../CUTOVER.md](../CUTOVER.md) as a starting template, then fill in your own
 
 Outstanding operational tasks:
 
-- Revoke or rotate the Shlink API key used during migration.
-- Cut over the old short domain when ready.
+- Revoke or rotate the Shlink API key used during migration after Shlink is no longer needed. This is intentionally deferred while the existing Shlink instance remains active.
+- Cut over the old short domain only after confirming that no legacy links still depend on Shlink.

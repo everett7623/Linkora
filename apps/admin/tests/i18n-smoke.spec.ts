@@ -360,6 +360,17 @@ test('English core workflow renders overview, links, create link, and settings',
 
   await page
     .getByRole('navigation')
+    .getByRole('link', { name: messages.en.healthChecks })
+    .click();
+  await expect(
+    page.getByRole('heading', { name: messages.en.scheduledTargetMonitoring })
+  ).toBeVisible();
+  await page.getByLabel(messages.en.enableHealthMonitoring).check();
+  await page.getByRole('button', { name: messages.en.saveMonitoringSettings }).click();
+  await expect(page.getByText(messages.en.monitoringSettingsSaved)).toBeVisible();
+
+  await page
+    .getByRole('navigation')
     .getByRole('link', { name: messages.en.operationsDashboard })
     .click();
   await expect(page.getByRole('heading', { name: messages.en.operationsDashboard })).toBeVisible();
