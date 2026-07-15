@@ -13,6 +13,25 @@ _(none)_
 
 ---
 
+## [0.13.0] - 2026-07-16
+
+### Added
+
+- Added a dry-run-first `deploy:bootstrap` command that derives unique Worker, Pages, D1, and KV names for a new self-hosted installation.
+- Added an account-and-prefix confirmation phrase before writes, idempotent exact-name reuse, partial-run recovery, and D1/KV binding output.
+
+### Changed
+
+- Upgraded the project CLI toolchain from Wrangler 3 to Wrangler 4 and kept cross-platform Wrangler execution shell-free.
+- Updated the beginner self-hosting path so D1/KV provisioning precedes the full read-only deployment preflight.
+- Changed local and remote D1 migration scripts to resolve the stable `DB` binding instead of assuming one database name.
+
+### Tests
+
+- Expanded deployment policy coverage to 18 tests, including dry-run safety, confirmation rejection, exact-resource reuse, duplicate-name rejection, partial recovery, create failures, and credential redaction.
+
+---
+
 ## [0.12.0] - 2026-07-16
 
 ### Added

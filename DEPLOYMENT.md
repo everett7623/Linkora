@@ -72,25 +72,35 @@ Old Shlink domain: s.example.com
 
 ---
 
-## 3. Create Cloudflare D1
+## 3. Create Required D1 And KV Resources
 
-Create the database:
+Run a read-only plan using a unique prefix and your own hostname:
 
 ```bash
-npx wrangler d1 create linketry
+npm run deploy:bootstrap -- --prefix linketry-alice --domain go.example.com --account-id <your-cloudflare-account-id>
 ```
 
-Copy the returned `database_id` into `apps/worker/wrangler.toml`:
+Review the account suffix and names, then append the exact `--apply --confirm <phrase-from-dry-run>` value printed by the command. Apply creates only missing D1/KV resources, rereads them, and prints the required binding values.
+
+Copy the returned D1 and KV IDs into `apps/worker/wrangler.toml`:
 
 ```toml
 [[d1_databases]]
 binding = "DB"
-database_name = "linketry"
+database_name = "linketry-alice-db"
 database_id = "<your-d1-database-id>"
 migrations_dir = "../../migrations"
 ```
 
-Apply all production migrations:
+The required KV binding is:
+
+```toml
+[[kv_namespaces]]
+binding = "KV"
+id = "<your-kv-namespace-id>"
+```
+
+Apply all production migrations only after the full fresh-track preflight passes:
 
 ```bash
 npm run db:migrate:remote --workspace=apps/worker
@@ -100,34 +110,11 @@ D1 is the source of truth for links, visits, settings, import jobs, tags, and an
 
 ---
 
-## 4. Create Cloudflare KV
-
-Create the production KV namespace:
-
-```bash
-npx wrangler kv namespace create KV
-```
-
-Create the preview namespace:
-
-```bash
-npx wrangler kv namespace create KV --preview
-```
-
-Copy both IDs into `apps/worker/wrangler.toml`:
-
-```toml
-[[kv_namespaces]]
-binding = "KV"
-id = "<your-kv-namespace-id>"
-preview_id = "<your-kv-preview-id>"
-```
-
-KV is cache only. D1 remains the source of truth.
+KV is cache only. D1 remains the source of truth. A separate KV preview namespace is optional and can be added later.
 
 ---
 
-## 5. Create Cloudflare R2 Backup Buckets
+## 4. Create Cloudflare R2 Backup Buckets
 
 Create the production and preview buckets used by the `BACKUPS` binding:
 
@@ -140,7 +127,7 @@ R2 stores scheduled and manually created `backup.json` snapshots. D1 remains the
 
 ---
 
-## 6. Create Cloudflare Queue
+## 5. Create Cloudflare Queue
 
 Create the queue used for asynchronous visit statistics:
 
@@ -152,7 +139,7 @@ If the queue binding is unavailable, the Worker falls back to the current `ctx.w
 
 ---
 
-## 7. Configure Worker
+## 6. Configure Worker
 
 Edit `apps/worker/wrangler.toml`:
 
@@ -167,7 +154,7 @@ routes = [
 ]
 
 [vars]
-LINKETRY_VERSION = "0.12.0"
+LINKETRY_VERSION = "0.13.0"
 
 [[d1_databases]]
 binding = "DB"
@@ -208,12 +195,12 @@ curl https://go.example.com/health
 Expected response:
 
 ```json
-{"success":true,"data":{"status":"ok","name":"Linketry","version":"0.12.0"}}
+{"success":true,"data":{"status":"ok","name":"Linketry","version":"0.13.0"}}
 ```
 
 ---
 
-## 8. Configure DNS for Worker Domains
+## 7. Configure DNS for Worker Domains
 
 If you use a Worker custom domain route, Cloudflare will attach the Worker to the hostname.
 
@@ -234,7 +221,7 @@ https://go.example.com/<slug>
 
 ---
 
-## 9. Build Admin Frontend
+## 8. Build Admin Frontend
 
 The Admin frontend needs the stable API domain at build time:
 
@@ -253,7 +240,7 @@ Set `VITE_LINKETRY_API_URL` to the Worker domain when Admin is hosted on Pages. 
 
 ---
 
-## 10. Deploy Admin to Cloudflare Pages
+## 9. Deploy Admin to Cloudflare Pages
 
 Create a Pages project and deploy `apps/admin/dist`:
 
@@ -287,7 +274,7 @@ Log in with `LINKETRY_ADMIN_TOKEN`.
 
 ---
 
-## 11. Configure Linketry Settings
+## 10. Configure Linketry Settings
 
 In the Admin panel, open **Settings**.
 
@@ -308,7 +295,7 @@ For a Shlink migration:
 
 ---
 
-## 12. Required Environment Values
+## 11. Required Environment Values
 
 ### Worker Secrets
 
@@ -322,7 +309,7 @@ Defined in `apps/worker/wrangler.toml`:
 
 | Name | Example |
 |------|---------|
-| `LINKETRY_VERSION` | `0.12.0` |
+| `LINKETRY_VERSION` | `0.13.0` |
 | `LINKETRY_DAILY_CRON` | `0 18 * * *` |
 | `LINKETRY_HEALTH_CRON` | `0 * * * *` |
 
@@ -381,7 +368,7 @@ On the first successful deployment, the workflow automatically creates `LINKETRY
 
 ---
 
-## 13. Production Smoke Test
+## 12. Production Smoke Test
 
 Run these checks after deployment:
 
@@ -437,7 +424,7 @@ Login with `LINKETRY_ADMIN_TOKEN`, then verify:
 
 ---
 
-## 14. Shlink Cutover Checklist
+## 13. Shlink Cutover Checklist
 
 Use this when moving an existing Shlink domain to Linketry.
 

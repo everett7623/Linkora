@@ -1,9 +1,5 @@
-import { spawnSync } from 'node:child_process';
-import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
-
-const require = createRequire(import.meta.url);
-const WRANGLER_CLI = require.resolve('wrangler/bin/wrangler.js');
+import { parseJsonOutput, runWrangler } from './lib/wrangler.mjs';
 
 const TRACKS = new Set(['fresh', 'upgrade', 'demo']);
 const TRUE_VALUES = new Set(['1', 'true', 'yes', 'on']);
@@ -80,32 +76,12 @@ function hostnameFromUrl(value) {
   }
 }
 
-function stripAnsi(value) {
-  return String(value ?? '').replace(/\u001b\[[0-?]*[ -/]*[@-~]/g, '');
-}
-
-function parseJsonOutput(value) {
-  const output = stripAnsi(value).trim();
-  const starts = [output.indexOf('['), output.indexOf('{')].filter((index) => index >= 0);
-  if (starts.length === 0) throw new Error('Wrangler did not return JSON output.');
-  return JSON.parse(output.slice(Math.min(...starts)));
-}
-
 function addCheck(checks, ok, code, passMessage, failMessage = passMessage) {
   checks.push({ status: ok ? 'pass' : 'fail', code, message: ok ? passMessage : failMessage });
 }
 
 function addWarning(checks, code, message) {
   checks.push({ status: 'warn', code, message });
-}
-
-function defaultRunner(args, env) {
-  return spawnSync(process.execPath, [WRANGLER_CLI, ...args], {
-    cwd: process.cwd(),
-    env,
-    encoding: 'utf8',
-    windowsHide: true,
-  });
 }
 
 function collectTargets(env) {
@@ -352,7 +328,7 @@ function validateTrack(track, env, targets, checks) {
   );
 }
 
-async function validateCloudflareResources(env, targets, checks, runner = defaultRunner) {
+async function validateCloudflareResources(env, targets, checks, runner = runWrangler) {
   const commands = [
     { key: 'whoami', args: ['whoami', '--account', targets.accountId] },
     { key: 'd1', args: ['d1', 'list', '--json'] },

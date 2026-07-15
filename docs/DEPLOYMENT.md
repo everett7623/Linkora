@@ -25,11 +25,10 @@ Do not cut over an existing production short domain until imported links have be
 
 ```bash
 npm install
-npx wrangler d1 create linketry
-npx wrangler kv namespace create KV
-npx wrangler kv namespace create KV --preview
+npm run deploy:bootstrap -- --prefix linketry-alice --domain go.example.com --account-id <your-cloudflare-account-id>
+# Review the plan, then append: --apply --confirm <phrase-from-dry-run>
 cp -f apps/worker/wrangler.toml.example apps/worker/wrangler.toml
-# Edit apps/worker/wrangler.toml with your domain and Cloudflare resource IDs.
+# Edit apps/worker/wrangler.toml with your domain and the bootstrap D1/KV IDs.
 npm run type-check --workspace=apps/worker
 npm run db:migrate:remote --workspace=apps/worker
 npm run deploy --workspace=apps/worker

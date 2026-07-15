@@ -294,9 +294,9 @@ One item in "In Progress" at a time whenever possible.
 - [x] Define three explicit deployment tracks: existing production upgrade, fresh beginner self-hosting, and isolated official Demo
 - [ ] Keep the existing owner deployment upgradeable with its current bindings, but require a verified backup, migration-status review, and non-destructive incremental migrations before deploy
 - [ ] Prohibit production upgrades from running initialization SQL, factory reset, Demo seeding, resource recreation, or automatic binding/domain replacement
-- [ ] Provide an idempotent guided workflow or script for required D1 and KV provisioning and binding output
-- [ ] Make the beginner path create brand-new resources in the new user's own Cloudflare account without depending on Linketry maintainer domains, IDs, tokens, databases, or prior deployment state
-- [ ] Generate or collect unique beginner resource names and confirm the selected account and target resources before the first write
+- [x] Provide an idempotent guided workflow or script for required D1 and KV provisioning and binding output
+- [x] Make the beginner path create brand-new resources in the new user's own Cloudflare account without depending on Linketry maintainer domains, IDs, tokens, databases, or prior deployment state
+- [x] Generate or collect unique beginner resource names and confirm the selected account and target resources before the first write
 - [x] Keep R2, Queues, extra domains, and advanced Cron resources explicitly optional
 - [x] Add permission and configuration preflight checks without printing tokens or secrets
 - [x] Reconcile manual and GitHub Actions `LINKETRY_ADMIN_TOKEN` guidance into two clearly separated deployment paths
@@ -430,7 +430,7 @@ Deployment experience:
 
 ### Backend
 
-- [x] Create and configure Cloudflare D1 database (`wrangler d1 create linketry`)
+- [x] Create and configure the original Cloudflare D1 database (new installs now use `deploy:bootstrap`)
 - [x] Create and configure Cloudflare KV namespace
 - [x] Apply production DB migration after Cloudflare D1 is configured
 - [x] Set `LINKETRY_ADMIN_TOKEN` secret for production (`wrangler secret put LINKETRY_ADMIN_TOKEN`)

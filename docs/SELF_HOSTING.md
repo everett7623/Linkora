@@ -33,37 +33,33 @@ Use your own domains everywhere below. Do not copy another deployment's domains,
 - npm 10+
 - A Cloudflare account
 - A domain managed by Cloudflare DNS
-- Wrangler login completed
+- Wrangler 4 and a completed login
 
 ```bash
-npx wrangler login
 npm install
+npx wrangler --version
+npx wrangler login
 ```
 
-Before creating or deploying resources, load your selected Cloudflare and `LINKETRY_*` values into the current shell and run the read-only fresh-install preflight:
-
-```bash
-npm run deploy:preflight -- --track fresh --check-cloudflare
-```
-
-Set `LINKETRY_FRESH_INSTALL_CONFIRMED=true` only after confirming the target account and resources belong to this new installation. The command validates configuration and D1/KV read access but does not create or change anything. See [Deployment Preflight](DEPLOYMENT_PREFLIGHT.md) for the complete variable list and redaction guarantees.
+The repository pins Wrangler 4. If the version command does not report `4.x`, run `npm install` again before continuing.
 
 ## 2. Choose Names
 
-Pick values before creating resources:
+Choose one unique lowercase prefix for this installation before creating resources. Replace `alice` with your handle, organization, or another name that distinguishes the deployment:
 
 ```txt
-Worker name:       linketry-worker
-D1 database:       linketry
-KV namespace:      KV
-Pages project:     linketry-admin
+Resource prefix:   linketry-alice
+Worker name:       linketry-alice-worker
+D1 database:       linketry-alice-db
+KV namespace:      linketry-alice-kv
+Pages project:     linketry-alice-admin
 Worker domain:     go.example.com
-Admin URL:         linketry-admin.pages.dev (automatic)
+Admin URL:         linketry-alice-admin.pages.dev (automatic)
 ```
 
 Advanced optional names include a branded Admin domain, the `linketry-backups` R2 buckets, `linketry-visits` Queue, and a separate public short-link domain.
 
-For the easiest first deployment, keep the resource names above. You can rename them, but then you must update `apps/worker/wrangler.toml`, GitHub repository variables, and any direct Wrangler commands that include the resource name.
+The bootstrap derives every required name from the prefix. It rejects the reserved official Demo prefix and does not contain any maintainer account, domain, token, database, or resource ID.
 
 When optional advanced bindings are enabled, keep their binding names unchanged:
 
@@ -76,17 +72,34 @@ VISITS_QUEUE
 
 ## 3. Create Cloudflare Resources
 
-Create D1:
+Run the bootstrap without `--apply` first. This authenticates against the selected account, lists D1/KV resources, and prints an exact create/reuse plan without changing anything:
 
 ```bash
-npx wrangler d1 create linketry
+npm run deploy:bootstrap -- --prefix linketry-alice --domain go.example.com --account-id <your-cloudflare-account-id>
 ```
 
-Create KV:
+Review the masked account suffix and every target name. The dry-run prints a confirmation phrase tied to that account and prefix. Only then rerun the same command with the printed suffix:
 
 ```bash
-npx wrangler kv namespace create KV
-npx wrangler kv namespace create KV --preview
+npm run deploy:bootstrap -- --prefix linketry-alice --domain go.example.com --account-id <your-cloudflare-account-id> --apply --confirm <phrase-from-dry-run>
+```
+
+Apply mode creates only missing D1/KV resources, reads them back, and prints the complete GitHub repository variables and Wrangler binding snippet. Rerunning it with the same prefix is idempotent: exact existing resources are reused and no writes occur.
+
+The script does not apply migrations, deploy Worker/Admin code, write secrets, change DNS, or create optional infrastructure. If an apply is interrupted after one resource succeeds, rerun the dry-run; the completed resource is reused and only the missing resource is planned.
+
+After apply, load the printed variables into the current shell, set `LINKETRY_FRESH_INSTALL_CONFIRMED=true`, and run the full read-only deployment preflight:
+
+```bash
+npm run deploy:preflight -- --track fresh --check-cloudflare
+```
+
+See [Deployment Preflight](DEPLOYMENT_PREFLIGHT.md) for the complete variable list and redaction guarantees.
+
+Optional: create a separate KV preview namespace manually and add its ID later:
+
+```bash
+npx wrangler kv namespace create linketry-alice-kv-preview
 ```
 
 Advanced optional: create R2 buckets for scheduled backups and one-click restore:
@@ -121,9 +134,9 @@ Edit `apps/worker/wrangler.toml` and replace:
 | Placeholder | Value |
 |-------------|-------|
 | `<your-short-domain>` | Your short-link and API hostname, for example `go.example.com` |
-| `<your-d1-database-id>` | The `database_id` returned by `wrangler d1 create` |
-| `<your-kv-namespace-id>` | The production KV namespace ID |
-| `<your-kv-preview-id>` | The preview KV namespace ID |
+| `<your-d1-database-id>` | The D1 ID printed by `deploy:bootstrap --apply` |
+| `<your-kv-namespace-id>` | The KV ID printed by `deploy:bootstrap --apply` |
+| `<your-kv-preview-id>` | Optional preview KV namespace ID; remove the `preview_id` line when omitted |
 
 For a manual Wrangler deployment, set the production admin token:
 
@@ -144,13 +157,7 @@ Do not repeat this manual token step when using the GitHub Actions first-deploym
 npm run db:migrate:remote --workspace=apps/worker
 ```
 
-If you renamed the D1 database, run the Wrangler command directly with your database name:
-
-```bash
-cd apps/worker
-npx wrangler d1 migrations apply <your-d1-database-name> --remote
-cd ../..
-```
+The workspace command uses the stable `DB` binding, so it works with the unique database name generated by Bootstrap.
 
 For local development:
 
@@ -174,7 +181,7 @@ curl https://go.example.com/health
 Expected shape:
 
 ```json
-{"success":true,"data":{"status":"ok","name":"Linketry","version":"0.12.0"}}
+{"success":true,"data":{"status":"ok","name":"Linketry","version":"0.13.0"}}
 ```
 
 ## 7. Build and Deploy Admin
@@ -242,7 +249,7 @@ Leave these unset for the basic deployment; enable them later from the Admin Adv
 
 ```txt
 LINKETRY_KV_PREVIEW_ID=<your-kv-preview-id>
-LINKETRY_VERSION=0.12.0
+LINKETRY_VERSION=0.13.0
 LINKETRY_COMPATIBILITY_DATE=2026-07-08
 LINKETRY_WORKER_DOMAINS=go.example.com,s.example.com
 LINKETRY_R2_BUCKET=linketry-backups

@@ -54,13 +54,21 @@ Do not put real tokens in a committed environment file. Set them in the current 
 
 ## Fresh Self-Hosting
 
-The fresh track is only for a brand-new installation in the user's own Cloudflare account. After reviewing the account and target names/IDs, set:
+The fresh track is only for a brand-new installation in the user's own Cloudflare account. Start with the idempotent bootstrap dry-run:
+
+```bash
+npm run deploy:bootstrap -- --prefix linketry-alice --domain go.example.com --account-id <your-cloudflare-account-id>
+```
+
+It generates unique D1, KV, Worker, and Pages names, shows an exact create/reuse plan, and prints a confirmation phrase without writing anything. Add `--apply --confirm <printed-phrase>` only after reviewing the selected account and names. Apply creates missing D1/KV resources and prints reusable binding output; it does not migrate or deploy the application.
+
+Load the resulting variables into the shell, then set:
 
 ```txt
 LINKETRY_FRESH_INSTALL_CONFIRMED=true
 ```
 
-Then run the preflight. Resource provisioning is still an explicit later step; this command does not create D1 or KV.
+Then run `deploy:preflight -- --track fresh --check-cloudflare` before migrations or deployment. The preflight remains read-only and confirms the created IDs belong to the selected account.
 
 For the rest of the first-install procedure, follow [Self-Hosting Linketry](SELF_HOSTING.md).
 

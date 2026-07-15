@@ -225,7 +225,7 @@ Ordered delivery:
 
 1. Done: publish an authenticated OpenAPI contract and Swagger documentation, with route drift checks.
 2. Done: warn about duplicate normalized destination URLs during create/edit while allowing intentional duplicates.
-3. In progress: fresh self-hosting, existing upgrades, and the official Demo now have a shared read-only preflight with redacted configuration checks, upgrade safety gates, D1/KV account verification, and fail-closed Demo overlap checks. Guided idempotent D1/KV provisioning, workflow enforcement, and fresh-account/upgrade rehearsals remain.
+3. In progress: fresh self-hosting now has a dry-run-first, confirmation-gated, idempotent D1/KV provisioning command with unique names and binding output. Fresh, upgrade, and Demo tracks share redacted preflight checks, upgrade safety gates, D1/KV account verification, and fail-closed Demo overlap checks. Workflow enforcement and fresh-account/upgrade rehearsals remain.
 4. Launch an official Linketry-domain introduction site and an isolated Demo using synthetic data, unique Worker/Pages/D1/KV/R2/Queue/Token/domain identifiers, read-only or scheduled-reset behavior, rate limits, and a separate Demo short-link host. Fail before migrations or deployment if any protected production identifier matches.
 5. Add optional Cloudflare Access authentication and asynchronous signed `link.clicked` webhooks without weakening bearer-token recovery or redirect stability.
 6. Complete Admin density and optional-module visibility preferences.

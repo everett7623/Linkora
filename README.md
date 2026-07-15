@@ -93,7 +93,7 @@ linketry/
 
 - Node.js 24 recommended
 - npm 10+
-- Wrangler CLI: `npm install -g wrangler`
+- Wrangler 4, installed locally by `npm install`
 - Cloudflare account
 
 ### Install dependencies
@@ -131,7 +131,13 @@ npm run dev --workspace=apps/admin
 
 For a new self-hosted deployment, follow [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md). It includes the Cloudflare resource checklist, template configuration, GitHub Actions variables, and smoke tests.
 
-Validate the chosen fresh, upgrade, or Demo track without changing Cloudflare resources:
+For a fresh install, preview unique D1/KV names before any resource write:
+
+```bash
+npm run deploy:bootstrap -- --prefix linketry-alice --domain go.example.com --account-id <your-cloudflare-account-id>
+```
+
+The dry-run prints the exact confirmation phrase required by `--apply`. After provisioning, validate the chosen fresh, upgrade, or Demo track without changing Cloudflare resources:
 
 ```bash
 npm run deploy:preflight -- --track fresh --check-cloudflare
@@ -141,13 +147,14 @@ See [docs/DEPLOYMENT_PREFLIGHT.md](docs/DEPLOYMENT_PREFLIGHT.md) for required ga
 
 This repository also keeps a maintainer production runbook in [DEPLOYMENT.md](DEPLOYMENT.md).
 
-### 1. Create D1 Database
+### 1. Create Required D1 And KV Resources
 
 ```bash
-wrangler d1 create linketry
+npm run deploy:bootstrap -- --prefix linketry-alice --domain go.example.com --account-id <your-cloudflare-account-id>
+# Review the plan, then append: --apply --confirm <phrase-from-dry-run>
 ```
 
-Copy `apps/worker/wrangler.toml.example` to `apps/worker/wrangler.toml`, then put the returned `database_id` into the D1 binding.
+The apply result prints the D1/KV IDs, GitHub repository variables, and Wrangler binding snippet. Copy `apps/worker/wrangler.toml.example` to `apps/worker/wrangler.toml`, then use those values. A KV preview namespace remains optional.
 
 ### 2. Run Migrations
 
@@ -159,16 +166,7 @@ npm run db:migrate:local --workspace=apps/worker
 npm run db:migrate:remote --workspace=apps/worker
 ```
 
-### 3. Create KV Namespace
-
-```bash
-wrangler kv namespace create KV
-wrangler kv namespace create KV --preview
-```
-
-Copy both IDs into `apps/worker/wrangler.toml`.
-
-### 4. Create R2 Backup Buckets
+### 3. Create Optional R2 Backup Buckets
 
 ```bash
 wrangler r2 bucket create linketry-backups
@@ -177,7 +175,7 @@ wrangler r2 bucket create linketry-backups-dev
 
 The Worker binds these buckets as `BACKUPS`, runs a daily scheduled backup, and supports preview-first one-click restore from completed snapshots.
 
-### 5. Create Queue for Visit Stats
+### 4. Create Queue for Visit Stats
 
 ```bash
 wrangler queues create linketry-visits --message-retention-period-secs 60
@@ -185,7 +183,7 @@ wrangler queues create linketry-visits --message-retention-period-secs 60
 
 The Worker uses this queue for asynchronous visit statistics and falls back to direct `ctx.waitUntil()` recording if queue send fails.
 
-### 6. Set Admin Token (Production)
+### 5. Set Admin Token (Production)
 
 ```bash
 wrangler secret put LINKETRY_ADMIN_TOKEN

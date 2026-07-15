@@ -1,6 +1,6 @@
 {
   "name": "@linketry/worker",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "author": "everettlabs",
   "license": "GPL-3.0-only",
   "private": true,
@@ -8,10 +8,8 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "db:migrate:local": "wrangler d1 migrations apply linketry --local",
-    "db:migrate:remote": "wrangler d1 migrations apply linketry --remote",
-    "db:create": "wrangler d1 create linketry",
-    "kv:create": "wrangler kv namespace create LINKETRY_KV",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
     "queue:create": "wrangler queues create linketry-visits --message-retention-period-secs 60",
     "type-check": "tsc --noEmit",
     "test": "node --experimental-strip-types --test src/openapi/document.test.mjs src/utils/publicPages.test.mjs src/utils/pageTemplates.test.mjs src/publicStats/policy.test.mjs src/backups/retention.test.mjs src/cache/index.test.mjs src/health/monitoringPolicy.test.mjs src/health/alertPolicy.test.mjs src/health/alertStatus.test.mjs src/health/history.test.mjs src/health/schedulePolicy.test.mjs src/links/fallbackUrl.test.mjs src/links/duplicateDestination.test.mjs src/links/domainMigration.test.mjs src/links/bulkUtm.test.mjs src/analytics/botDetection.test.mjs src/analytics/savedViews.test.mjs src/analytics/scheduledReportPolicy.test.mjs src/utm/templatePolicy.test.mjs src/links/notes.test.mjs src/importers/queue.test.mjs src/importers/batching.test.mjs src/importers/backupFormat.test.mjs src/notifications/index.test.mjs src/routes/apiVersion.test.mjs"
@@ -23,6 +21,6 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240725.0",
     "typescript": "^5.4.5",
-    "wrangler": "^3.65.1"
+    "wrangler": "^4.111.0"
   }
 }

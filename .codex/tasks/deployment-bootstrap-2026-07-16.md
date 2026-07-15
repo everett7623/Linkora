@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress. The read-only deployment-track preflight slice is complete; guided D1/KV provisioning and deployment rehearsals remain.
+In progress. Read-only deployment-track preflight and guided D1/KV provisioning are complete; workflow enforcement and deployment rehearsals remain.
 
 ## Completed In This Slice
 
@@ -16,11 +16,14 @@ In progress. The read-only deployment-track preflight slice is complete; guided 
 - [x] Separated manual Wrangler and GitHub Actions `LINKETRY_ADMIN_TOKEN` instructions.
 - [x] Added policy tests and a CI test step.
 - [x] Confirmed the current production upgrade target with 25 passing configuration/account/resource checks and zero writes.
+- [x] Added a dry-run-first `deploy:bootstrap` command that derives unique Worker, Pages, D1, and KV names from one user prefix.
+- [x] Required an exact confirmation phrase containing the selected account suffix and prefix before the first write.
+- [x] Created only missing D1/KV resources, reread their IDs, and printed GitHub variable and Wrangler binding output.
+- [x] Made interrupted/repeated runs reuse exact resources without deleting, replacing, migrating, or deploying anything.
+- [x] Upgraded the project toolchain to Wrangler 4 and kept CLI execution shell-free on Windows and Linux.
 
 ## Remaining
 
-- [ ] Build an idempotent, confirmation-gated D1/KV provisioning workflow for a new user's own Cloudflare account.
-- [ ] Generate reusable binding output without writing maintainer identifiers into the repository.
 - [ ] Enforce upgrade preflight gates in the production deployment workflow after verifying a current production backup.
 - [ ] Build a separate Demo workflow with isolated synthetic resources and no production write capability.
 - [ ] Rehearse the basic path on a fresh Cloudflare account and record first-link smoke results.
@@ -30,12 +33,15 @@ In progress. The read-only deployment-track preflight slice is complete; guided 
 
 - Redirect code was not changed.
 - D1 remains the source of truth; KV remains cache only.
-- No Cloudflare resource was created, migrated, deployed, reset, seeded, or rebound by the preflight implementation.
+- The live Bootstrap verification used dry-run mode only; no Cloudflare resource was created, migrated, deployed, reset, seeded, or rebound.
 
 ## Verification
 
-- `npm run test:deployment`: 9 passed.
+- `npm run test:deployment`: 18 passed.
+- Current-account `deploy:bootstrap` dry-run: passed with a create plan and zero mutation attempts.
 - Current production `--track upgrade --check-cloudflare`: 25 passed, 0 failed, 1 informational warning for local Wrangler OAuth authentication.
+- Wrangler 4.111.0 Worker deploy dry-run: passed with the expected D1/KV/R2/Queue bindings and Linketry 0.13.0.
+- Wrangler 4 D1 migration review through the stable `DB` binding: local inventory resolved and production reported no pending migrations.
 - Production D1 point-in-time restore bookmark: available before release.
 - Worker type-check and tests: 58 passed.
 - Admin unit tests: 13 passed.
