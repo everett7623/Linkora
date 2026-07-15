@@ -40,6 +40,7 @@ One item in "In Progress" at a time whenever possible.
 - [x] V8: Normalize Admin dates, numbers, status labels, QR labels, placeholders, and API scope labels by selected locale
 - [x] V8: Localize redirect rule types, health-check details, group confirmations, and import conflict previews
 - [x] V8: Localize remaining long-tail page content, validation wording, and export/report details
+- [x] V8: Add per-browser Admin density and instance-level optional-module visibility preferences
 - [x] V9: Add public read-only stats pages with privacy controls
 - [x] V9: Improve bot classification and conversion attribution
 
@@ -327,12 +328,12 @@ One item in "In Progress" at a time whenever possible.
 
 ### Priority 7 — Admin Display Preferences
 
-- [ ] Add compact/comfortable sidebar density as a per-browser preference
-- [ ] Add compact/comfortable table density as a per-browser preference
-- [ ] Add instance-level visibility controls for optional Advanced modules
-- [ ] Keep required recovery, settings, and core link-management routes always reachable
-- [ ] Preserve Simple/Advanced mode behavior and EN/ZH coverage
-- [ ] Add unit and browser regression coverage for preference persistence and hidden modules
+- [x] Add compact/comfortable sidebar density as a per-browser preference
+- [x] Add compact/comfortable table density as a per-browser preference
+- [x] Add instance-level visibility controls for optional Advanced modules
+- [x] Keep required recovery, settings, and core link-management routes always reachable
+- [x] Preserve Simple/Advanced mode behavior and EN/ZH coverage
+- [x] Add unit and browser regression coverage for preference persistence and hidden modules
 
 ### Priority 8 — Product Presentation And Ecosystem
 

@@ -69,7 +69,7 @@ The following Sink ideas are accepted into Linketry's development direction. The
 4. Complete beginner D1/KV provisioning and fresh-account deployment validation.
 5. Launch the official Linketry project site and isolated Demo after the owner supplies the domain.
 6. Add optional Cloudflare Access and asynchronous signed click webhooks.
-7. Complete Admin display preferences, then themes, card view, and social preview customization.
+7. Done in v0.16.0: Admin display preferences; follow with themes, card view, and social preview customization.
 8. Consider broader locales, real-time views, optional Workers AI, and external clients after the foundations are stable.
 
 ## Deliberate Non-goals For The Basic Edition

@@ -13,6 +13,20 @@ _(none)_
 
 ---
 
+## [0.16.0] - 2026-07-16
+
+### Added
+
+- Added per-browser compact and comfortable density preferences for the Admin sidebar and data tables.
+- Added instance-level visibility controls for every optional Advanced navigation module, persisted in D1 through the authenticated settings API.
+- Kept core link management, setup, settings, backup, and recovery routes directly reachable when optional navigation entries are hidden.
+
+### Tests
+
+- Added Admin preference policy tests, Worker setting-validation tests, browser persistence and hidden-navigation regression coverage, and EN/ZH catalog parity coverage.
+
+---
+
 ## [0.15.0] - 2026-07-16
 
 ### Added

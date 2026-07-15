@@ -2,7 +2,7 @@
 
 ## Status
 
-Planning complete. Product implementation has not started in this task record.
+Implementation is in progress. Bulk UTM, OpenAPI, duplicate detection, the project site, deployment safety foundations, and Admin display preferences are delivered; fresh-account rehearsal, site-domain activation, the isolated Demo, and optional integrations remain.
 
 ## Confirmed Decisions
 
@@ -17,12 +17,12 @@ Planning complete. Product implementation has not started in this task record.
 ## Ordered Delivery
 
 1. Bulk UTM append and normalization — completed in v0.9.24.
-2. OpenAPI and authenticated API documentation.
-3. Non-blocking duplicate destination detection.
+2. OpenAPI and authenticated API documentation — completed in v0.10.1.
+3. Non-blocking duplicate destination detection — completed in v0.10.2.
 4. Beginner D1/KV provisioning and deployment preflight.
 5. Official project site and isolated, read-only or resettable Demo.
 6. Optional Cloudflare Access authentication and asynchronous signed click webhooks.
-7. Admin density and optional-module visibility preferences.
+7. Admin density and optional-module visibility preferences — completed in v0.16.0.
 8. Theme, card view, social preview customization, broader locales, real-time views, optional AI, and external clients.
 
 Detailed acceptance criteria are tracked in `TASKS.md` and the phase boundaries are mirrored in `docs/ROADMAP.md`.

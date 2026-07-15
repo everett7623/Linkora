@@ -42,6 +42,18 @@ function apiResponse(data: unknown) {
 }
 
 async function mockAdminApi(page: Page) {
+  const instanceSettings: Record<string, string> = {
+    site_name: 'Linketry',
+    default_domain: 'go.example.com',
+    default_redirect_type: '302',
+    analytics_retention_days: '0',
+    backup_retention_days: '30',
+    health_monitoring_enabled: 'false',
+    health_monitoring_limit: '20',
+    health_failure_threshold: '2',
+    health_alert_suppression_minutes: '1440',
+    admin_hidden_modules: '[]',
+  };
   await page.route('**/*', async (route) => {
     const request = route.request();
     const url = new URL(request.url());
@@ -56,7 +68,11 @@ async function mockAdminApi(page: Page) {
       return;
     }
     if (path === '/api/v1/auth/me') {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{"success":true}' });
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '{"success":true}',
+      });
       return;
     }
     if (path === '/api/v1/overview') {
@@ -72,22 +88,11 @@ async function mockAdminApi(page: Page) {
       return;
     }
     if (path === '/api/v1/settings' && request.method() === 'GET') {
-      await route.fulfill(
-        apiResponse({
-          site_name: 'Linketry',
-          default_domain: 'go.example.com',
-          default_redirect_type: '302',
-          analytics_retention_days: '0',
-          backup_retention_days: '30',
-          health_monitoring_enabled: 'false',
-          health_monitoring_limit: '20',
-          health_failure_threshold: '2',
-          health_alert_suppression_minutes: '1440',
-        })
-      );
+      await route.fulfill(apiResponse(instanceSettings));
       return;
     }
     if (path === '/api/v1/settings' && request.method() === 'PUT') {
+      Object.assign(instanceSettings, request.postDataJSON() as Record<string, string>);
       await route.fulfill(apiResponse({ message: 'Settings saved' }));
       return;
     }
@@ -175,9 +180,7 @@ async function mockAdminApi(page: Page) {
       return;
     }
     if (path === '/api/v1/health-checks/batch' && request.method() === 'POST') {
-      await route.fulfill(
-        apiResponse({ items: [], total: 0, healthy: 0, warning: 0, broken: 0 })
-      );
+      await route.fulfill(apiResponse({ items: [], total: 0, healthy: 0, warning: 0, broken: 0 }));
       return;
     }
     if (path === '/api/v1/health-checks/alerts' && request.method() === 'GET') {
@@ -197,7 +200,13 @@ async function mockAdminApi(page: Page) {
       return;
     }
     if (path === '/api/v1/analytics-reports' && request.method() === 'GET') {
-      await route.fulfill(apiResponse({ config: { enabled: false, days: 30, saved_view_id: null }, records: [], r2Configured: true }));
+      await route.fulfill(
+        apiResponse({
+          config: { enabled: false, days: 30, saved_view_id: null },
+          records: [],
+          r2Configured: true,
+        })
+      );
       return;
     }
     if (path === '/api/v1/utm-templates' && request.method() === 'GET') {
@@ -209,7 +218,14 @@ async function mockAdminApi(page: Page) {
       return;
     }
     if (path === '/api/v1/metadata/preview' && request.method() === 'POST') {
-      await route.fulfill(apiResponse({ title: 'Preview', description: 'Preview', image: null, final_url: 'https://example.com' }));
+      await route.fulfill(
+        apiResponse({
+          title: 'Preview',
+          description: 'Preview',
+          image: null,
+          final_url: 'https://example.com',
+        })
+      );
       return;
     }
     if (path === '/api/v1/links/duplicates' && request.method() === 'GET') {
@@ -241,47 +257,59 @@ async function mockAdminApi(page: Page) {
       return;
     }
     if (path === '/api/v1/links/migrate-domain/preview' && request.method() === 'POST') {
-      await route.fulfill(apiResponse({
-        source_domain: 's.y8o.de',
-        target_domain: 'go.example.com',
-        total: 195,
-        target_registered: true,
-        items: [{
-          id: link.id,
-          slug: link.slug,
-          current_short_url: `https://s.y8o.de/${link.slug}`,
-          next_short_url: `https://go.example.com/${link.slug}`,
-        }],
-      }));
+      await route.fulfill(
+        apiResponse({
+          source_domain: 's.y8o.de',
+          target_domain: 'go.example.com',
+          total: 195,
+          target_registered: true,
+          items: [
+            {
+              id: link.id,
+              slug: link.slug,
+              current_short_url: `https://s.y8o.de/${link.slug}`,
+              next_short_url: `https://go.example.com/${link.slug}`,
+            },
+          ],
+        })
+      );
       return;
     }
     if (path === '/api/v1/notifications/config' && request.method() === 'GET') {
-      await route.fulfill(apiResponse({
-        channels: ['telegram', 'discord', 'slack', 'feishu', 'dingtalk', 'wecom'].map((provider) => ({
-          provider,
-          enabled: false,
-          configured: false,
-          target: '',
-        })),
-        available_providers: ['telegram', 'discord', 'slack', 'feishu', 'dingtalk', 'wecom'],
-      }));
+      await route.fulfill(
+        apiResponse({
+          channels: ['telegram', 'discord', 'slack', 'feishu', 'dingtalk', 'wecom'].map(
+            (provider) => ({
+              provider,
+              enabled: false,
+              configured: false,
+              target: '',
+            })
+          ),
+          available_providers: ['telegram', 'discord', 'slack', 'feishu', 'dingtalk', 'wecom'],
+        })
+      );
       return;
     }
     if (path === '/api/v1/import/preview' && request.method() === 'POST') {
-      await route.fulfill(apiResponse({
-        source: 'generic-csv',
-        total: 1,
-        valid: 1,
-        invalid: 0,
-        conflicts: 0,
-        preview: [{
-          slug: 'imported',
-          longUrl: 'https://example.com/imported',
-          _valid: true,
-          _errors: [],
-          _conflict: false,
-        }],
-      }));
+      await route.fulfill(
+        apiResponse({
+          source: 'generic-csv',
+          total: 1,
+          valid: 1,
+          invalid: 0,
+          conflicts: 0,
+          preview: [
+            {
+              slug: 'imported',
+              longUrl: 'https://example.com/imported',
+              _valid: true,
+              _errors: [],
+              _conflict: false,
+            },
+          ],
+        })
+      );
       return;
     }
     if (path === '/api/v1/import/confirm' && request.method() === 'POST') {
@@ -289,20 +317,22 @@ async function mockAdminApi(page: Page) {
       return;
     }
     if (path === '/api/v1/import/jobs/import_job_1' && request.method() === 'GET') {
-      await route.fulfill(apiResponse({
-        id: 'import_job_1',
-        source: 'generic-csv',
-        filename: 'links.csv',
-        total_count: 1,
-        success_count: 1,
-        skipped_count: 0,
-        conflict_count: 0,
-        failed_count: 0,
-        status: 'completed',
-        report: null,
-        created_at: '2026-07-14T08:00:00.000Z',
-        completed_at: '2026-07-14T08:00:01.000Z',
-      }));
+      await route.fulfill(
+        apiResponse({
+          id: 'import_job_1',
+          source: 'generic-csv',
+          filename: 'links.csv',
+          total_count: 1,
+          success_count: 1,
+          skipped_count: 0,
+          conflict_count: 0,
+          failed_count: 0,
+          status: 'completed',
+          report: null,
+          created_at: '2026-07-14T08:00:00.000Z',
+          completed_at: '2026-07-14T08:00:01.000Z',
+        })
+      );
       return;
     }
     if (path === '/api/v1/import/jobs' && request.method() === 'GET') {
@@ -318,7 +348,11 @@ async function mockAdminApi(page: Page) {
       return;
     }
 
-    await route.fulfill({ status: 404, contentType: 'application/json', body: '{"error":"mock missing"}' });
+    await route.fulfill({
+      status: 404,
+      contentType: 'application/json',
+      body: '{"error":"mock missing"}',
+    });
   });
 }
 
@@ -348,7 +382,9 @@ test.beforeEach(async ({ page }) => {
 test('login page switches between English and Simplified Chinese', async ({ page }) => {
   await page.goto('/login');
   await expect(page.getByRole('button', { name: messages.en.signIn })).toBeVisible();
-  await expect(page.getByRole('heading', { name: messages.en.deploymentAccessTitle })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: messages.en.deploymentAccessTitle })
+  ).toBeVisible();
   await expect(page.getByText(messages.en.tokenHowToTitle)).toBeVisible();
   await expect(page.getByRole('button', { name: messages.en.showAdminToken })).toBeVisible();
 
@@ -356,13 +392,17 @@ test('login page switches between English and Simplified Chinese', async ({ page
 
   await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
   await expect(page.getByRole('button', { name: messages['zh-CN'].signIn })).toBeVisible();
-  await expect(page.getByRole('heading', { name: messages['zh-CN'].deploymentAccessTitle })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: messages['zh-CN'].deploymentAccessTitle })
+  ).toBeVisible();
   await expect(page.getByText(messages['zh-CN'].tokenHowToTitle)).toBeVisible();
   await expect(page.getByLabel(messages['zh-CN'].language)).toHaveValue('zh-CN');
   await page.evaluate(() => window.__assertNoBrowserErrors());
 });
 
-test('English core workflow renders overview, links, create link, and settings', async ({ page }) => {
+test('English core workflow renders overview, links, create link, and settings', async ({
+  page,
+}) => {
   await authenticate(page, 'en', 'advanced');
   await page.goto('/overview');
 
@@ -370,13 +410,18 @@ test('English core workflow renders overview, links, create link, and settings',
   await expect(page.getByRole('heading', { name: messages.en.overview })).toBeVisible();
   await expect(page.getByText(messages.en.totalLinks)).toBeVisible();
 
-  await page.getByRole('navigation').getByRole('link', { name: messages.en.links, exact: true }).click();
+  await page
+    .getByRole('navigation')
+    .getByRole('link', { name: messages.en.links, exact: true })
+    .click();
   await expect(page.getByRole('heading', { name: messages.en.links })).toBeVisible();
   await expect(page.getByText('/docs', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: messages.en.migrateShortDomain }).click();
   await page.getByLabel(messages.en.sourceShortDomain).fill('s.y8o.de');
   await page.getByRole('button', { name: messages.en.previewMigration }).click();
-  await expect(page.getByText(messages.en.domainMigrationCount.replace('{count}', '195'))).toBeVisible();
+  await expect(
+    page.getByText(messages.en.domainMigrationCount.replace('{count}', '195'))
+  ).toBeVisible();
   await page.keyboard.press('Escape');
 
   await page.getByRole('main').getByRole('link', { name: messages.en.createLink }).click();
@@ -393,10 +438,7 @@ test('English core workflow renders overview, links, create link, and settings',
   await expect(page.getByText(messages.en.settingsSaved)).toBeVisible();
   await expect(page.getByRole('heading', { name: messages.en.notificationChannels })).toBeVisible();
 
-  await page
-    .getByRole('navigation')
-    .getByRole('link', { name: messages.en.healthChecks })
-    .click();
+  await page.getByRole('navigation').getByRole('link', { name: messages.en.healthChecks }).click();
   await expect(
     page.getByRole('heading', { name: messages.en.scheduledTargetMonitoring })
   ).toBeVisible();
@@ -410,11 +452,15 @@ test('English core workflow renders overview, links, create link, and settings',
     .click();
   await expect(page.getByRole('heading', { name: messages.en.operationsDashboard })).toBeVisible();
   await page.getByRole('button', { name: messages.en.checkNow }).click();
-  await expect(page.getByText(messages.en.allCheckedTargetsHealthy.replace('{count}', '0'))).toBeVisible();
+  await expect(
+    page.getByText(messages.en.allCheckedTargetsHealthy.replace('{count}', '0'))
+  ).toBeVisible();
   await page.evaluate(() => window.__assertNoBrowserErrors());
 });
 
-test('Simplified Chinese core workflow renders localized navigation and forms', async ({ page }) => {
+test('Simplified Chinese core workflow renders localized navigation and forms', async ({
+  page,
+}) => {
   await authenticate(page, 'zh-CN', 'advanced');
   await page.goto('/overview');
 
@@ -434,13 +480,63 @@ test('Simplified Chinese core workflow renders localized navigation and forms', 
   await expect(page.getByLabel(messages['zh-CN'].destinationUrl)).toBeVisible();
   await expect(page.getByLabel(messages['zh-CN'].fallbackUrlOptional)).toBeVisible();
 
-  await page.getByRole('navigation').getByRole('link', { name: messages['zh-CN'].settings }).click();
+  await page
+    .getByRole('navigation')
+    .getByRole('link', { name: messages['zh-CN'].settings })
+    .click();
   await expect(page.getByRole('heading', { name: messages['zh-CN'].settings })).toBeVisible();
   await expect(page.getByRole('main').getByLabel(messages['zh-CN'].language)).toHaveValue('zh-CN');
   await page.evaluate(() => window.__assertNoBrowserErrors());
 });
 
-test('duplicate destinations warn without blocking create and edit excludes the current link', async ({ page }) => {
+test('display preferences persist density and hide only optional navigation modules', async ({
+  page,
+}) => {
+  await authenticate(page, 'en', 'advanced');
+  await page.goto('/settings');
+
+  const shell = page.locator('[data-sidebar-density][data-table-density]');
+  await expect(shell).toHaveAttribute('data-sidebar-density', 'comfortable');
+  await expect(shell).toHaveAttribute('data-table-density', 'comfortable');
+
+  await page
+    .getByRole('button', { name: `${messages.en.sidebarDensity}: ${messages.en.compact}` })
+    .click();
+  await page
+    .getByRole('button', { name: `${messages.en.tableDensity}: ${messages.en.compact}` })
+    .click();
+  await expect(shell).toHaveAttribute('data-sidebar-density', 'compact');
+  await expect(shell).toHaveAttribute('data-table-density', 'compact');
+
+  const preferences = page
+    .getByRole('heading', { name: messages.en.displayPreferences })
+    .locator('xpath=ancestor::section');
+  await preferences.getByRole('checkbox', { name: messages.en.analytics }).uncheck();
+  await preferences.getByRole('checkbox', { name: messages.en.backups }).uncheck();
+  await page.getByRole('button', { name: messages.en.saveDisplayPreferences }).click();
+  await expect(page.getByText(messages.en.displayPreferencesSaved)).toBeVisible();
+
+  const navigation = page.getByRole('navigation');
+  await expect(navigation.getByRole('link', { name: messages.en.analytics })).toHaveCount(0);
+  await expect(navigation.getByRole('link', { name: messages.en.backups })).toHaveCount(0);
+  await expect(
+    navigation.getByRole('link', { name: messages.en.links, exact: true })
+  ).toBeVisible();
+  await expect(navigation.getByRole('link', { name: messages.en.settings })).toBeVisible();
+
+  await page.reload();
+  await expect(shell).toHaveAttribute('data-sidebar-density', 'compact');
+  await expect(shell).toHaveAttribute('data-table-density', 'compact');
+  await expect(navigation.getByRole('link', { name: messages.en.backups })).toHaveCount(0);
+
+  await page.goto('/backups');
+  await expect(page.getByRole('heading', { name: messages.en.backups })).toBeVisible();
+  await page.evaluate(() => window.__assertNoBrowserErrors());
+});
+
+test('duplicate destinations warn without blocking create and edit excludes the current link', async ({
+  page,
+}) => {
   await authenticate(page, 'en', 'advanced');
   await page.goto('/links/create');
   await page.getByLabel(messages.en.destinationUrl).fill(link.long_url);
@@ -459,7 +555,9 @@ test('duplicate destinations warn without blocking create and edit excludes the 
   await page.evaluate(() => window.__assertNoBrowserErrors());
 });
 
-test('password defaults to empty and editing back to empty clears existing protection', async ({ page }) => {
+test('password defaults to empty and editing back to empty clears existing protection', async ({
+  page,
+}) => {
   await authenticate(page, 'en', 'advanced');
   await page.goto('/links/create');
 
@@ -495,7 +593,9 @@ test('password defaults to empty and editing back to empty clears existing prote
   await page.evaluate(() => window.__assertNoBrowserErrors());
 });
 
-test('completed import exits the importing state and clears the finished input', async ({ page }) => {
+test('completed import exits the importing state and clears the finished input', async ({
+  page,
+}) => {
   await authenticate(page, 'en', 'advanced');
   await page.goto('/import-export');
 
@@ -505,14 +605,18 @@ test('completed import exits the importing state and clears the finished input',
     buffer: Buffer.from('slug,long_url\nimported,https://example.com/imported\n'),
   });
   await page.getByRole('button', { name: messages.en.preview, exact: true }).click();
-  await page.getByRole('button', { name: messages.en.importLinksCount.replace('{count}', '1') }).click();
+  await page
+    .getByRole('button', { name: messages.en.importLinksCount.replace('{count}', '1') })
+    .click();
 
-  await expect(page.getByText(
-    messages.en.importComplete
-      .replace('{success}', '1')
-      .replace('{skipped}', '0')
-      .replace('{failed}', '0')
-  )).toBeVisible();
+  await expect(
+    page.getByText(
+      messages.en.importComplete
+        .replace('{success}', '1')
+        .replace('{skipped}', '0')
+        .replace('{failed}', '0')
+    )
+  ).toBeVisible();
   await expect(page.getByText(messages.en.importProcessing)).toHaveCount(0);
   await expect(page.getByText('links.csv')).toHaveCount(0);
   await page.evaluate(() => window.__assertNoBrowserErrors());

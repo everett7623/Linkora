@@ -175,7 +175,7 @@ Planned:
 
 ## V8: Usability Modes And Internationalization
 
-Status: complete. Simple / Advanced mode, the required first-run wizard, full English / Simplified Chinese Admin coverage, locale-aware formatting, and browser smoke tests are implemented.
+Status: complete. Simple / Advanced mode, the required first-run wizard, full English / Simplified Chinese Admin coverage, locale-aware formatting, per-browser density, instance-level optional-module visibility, and browser smoke tests are implemented.
 
 Goal: keep the product approachable for simple users while preserving advanced tools for power users.
 
@@ -184,8 +184,8 @@ Planned:
 - Simple / Advanced mode toggle in Admin
 - Simple mode hides or de-emphasizes advanced navigation such as Redirect Rules, Webhooks, API Tokens, advanced Analytics filters, backup internals, and bulk tooling
 - Advanced mode exposes the full operator interface
-- Next: instance-level feature visibility settings for optional modules, while keeping core and recovery routes reachable
-- Next: per-browser sidebar and table density preferences with Simple/Advanced mode compatibility
+- Done: instance-level feature visibility settings for optional modules, while keeping core and recovery routes reachable
+- Done: per-browser sidebar and table density preferences with Simple/Advanced mode compatibility
 - Done: required first-run setup wizard verifies API readiness, one default short domain, and the first link from real instance state
 - In progress: language switcher with English as the default and Simplified Chinese as an option
 - In progress: i18n foundation covers core and advanced link management, deployment, operations, audit, backup/restore, and analytics workflows
@@ -228,7 +228,7 @@ Ordered delivery:
 3. In progress: fresh self-hosting now has dry-run-first, confirmation-gated, idempotent D1/KV provisioning with unique names and binding output. Fresh, upgrade, and Demo tracks share redacted preflight checks, D1/KV account verification, and fail-closed isolation checks. The production workflow enforces approved release/commit/migration state plus backup-backed upgrade gates before any Cloudflare write; fresh-account rehearsal remains.
 4. In progress: the independent official project site now covers product positioning, Admin preview, architecture, deployment, docs, roadmap, license, and GitHub, with a safety-gated Pages deployment path. Activate the purchased `linketry.com` apex domain, then launch an isolated Demo using synthetic data, unique resources, read-only or scheduled-reset behavior, rate limits, and a separate Demo short-link host.
 5. Add optional Cloudflare Access authentication and asynchronous signed `link.clicked` webhooks without weakening bearer-token recovery or redirect stability.
-6. Complete Admin density and optional-module visibility preferences.
+6. Done in v0.16.0: Admin density and optional-module visibility preferences.
 7. Follow with light/dark/system themes, an optional card view, per-link social preview controls, broader community-driven locales, and later ecosystem clients built against OpenAPI.
 
 External prerequisites:

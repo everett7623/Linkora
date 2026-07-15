@@ -1,4 +1,5 @@
-export type BrowserSetting = 'adminMode' | 'apiBase' | 'locale' | 'token';
+export type BrowserSetting =
+  'adminMode' | 'apiBase' | 'locale' | 'sidebarDensity' | 'tableDensity' | 'token';
 
 interface StorageLike {
   getItem(key: string): string | null;
@@ -10,6 +11,8 @@ const STORAGE_KEYS: Record<BrowserSetting, string> = {
   adminMode: 'linketry_admin_mode',
   apiBase: 'linketry_api_base',
   locale: 'linketry.locale',
+  sidebarDensity: 'linketry_sidebar_density',
+  tableDensity: 'linketry_table_density',
   token: 'linketry_token',
 };
 

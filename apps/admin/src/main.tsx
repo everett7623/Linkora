@@ -5,6 +5,7 @@ import { App } from './App';
 import { AuthProvider } from './contexts/AuthContext';
 import { AdminModeProvider } from './contexts/AdminModeContext';
 import { LocaleProvider } from './contexts/LocaleContext';
+import { DisplayPreferencesProvider } from './contexts/DisplayPreferencesContext';
 import { ToastProvider } from './components/ui/Toast';
 import './index.css';
 
@@ -14,7 +15,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <LocaleProvider>
         <ToastProvider>
           <AdminModeProvider>
-            <AuthProvider><App /></AuthProvider>
+            <AuthProvider>
+              <DisplayPreferencesProvider>
+                <App />
+              </DisplayPreferencesProvider>
+            </AuthProvider>
           </AdminModeProvider>
         </ToastProvider>
       </LocaleProvider>

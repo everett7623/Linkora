@@ -33,3 +33,12 @@ test('writes and removes canonical settings on logout', () => {
   removeBrowserSetting('token', storage);
   assert.equal(storage.getItem('linketry_token'), null);
 });
+
+test('stores sidebar and table density independently in the current browser', () => {
+  const storage = memoryStorage();
+  writeBrowserSetting('sidebarDensity', 'compact', storage);
+  writeBrowserSetting('tableDensity', 'comfortable', storage);
+
+  assert.equal(storage.getItem('linketry_sidebar_density'), 'compact');
+  assert.equal(storage.getItem('linketry_table_density'), 'comfortable');
+});

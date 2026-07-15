@@ -11,6 +11,7 @@ import {
   DEFAULT_HEALTH_SUPPRESSION_MINUTES,
 } from '../health/alertPolicy';
 import { validatePublicPageTemplate } from '../utils/pageTemplatePolicy';
+import { normalizeHiddenAdminModules } from '../settings/displayPreferences';
 
 const settings = new Hono<{ Bindings: Env }>();
 
@@ -65,8 +66,14 @@ settings.put('/', async (c) => {
 });
 
 function normalizeSetting(key: string, value: string): { value: string; error?: string } {
+  if (key === 'admin_hidden_modules') {
+    return normalizeHiddenAdminModules(value);
+  }
   if (key === 'notification_channels') {
-    return { value: '', error: 'notification_channels must be updated through the notifications API' };
+    return {
+      value: '',
+      error: 'notification_channels must be updated through the notifications API',
+    };
   }
   if (/^public_page_(404|disabled|expired|warning)_message$/.test(key)) {
     const error = validatePublicPageTemplate(value);

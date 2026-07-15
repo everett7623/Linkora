@@ -56,6 +56,21 @@ export const settingsPageMessages = {
     fullBackupHelp: 'Links + tags + settings in JSON',
     temporaryApiKey: 'Temporary API key',
     sourcePlaceholder: 'Source',
+    displayPreferences: 'Display Preferences',
+    displayPreferencesHelp:
+      'Tune information density and choose which optional modules appear in navigation.',
+    sidebarDensity: 'Sidebar Density',
+    tableDensity: 'Table Density',
+    comfortable: 'Comfortable',
+    compact: 'Compact',
+    densityBrowserHint: 'Density preferences are saved only in this browser.',
+    optionalModules: 'Optional Advanced Modules',
+    optionalModulesHint:
+      'Checked modules appear in Advanced navigation. Core links, setup, and settings always remain available.',
+    moduleVisibilityInstanceHint:
+      'Module visibility is saved for this Linketry instance. Hidden routes remain directly reachable for recovery.',
+    saveDisplayPreferences: 'Save Module Visibility',
+    displayPreferencesSaved: 'Display preferences saved',
   },
   'zh-CN': {
     bulkCreateLinks: '批量创建短链',
@@ -112,5 +127,18 @@ export const settingsPageMessages = {
     fullBackupHelp: '以 JSON 格式导出短链、标签和设置',
     temporaryApiKey: '临时 API 密钥',
     sourcePlaceholder: '来源',
+    displayPreferences: '显示偏好',
+    displayPreferencesHelp: '调整信息密度，并选择导航中显示的可选模块。',
+    sidebarDensity: '侧栏密度',
+    tableDensity: '表格密度',
+    comfortable: '舒适',
+    compact: '紧凑',
+    densityBrowserHint: '密度偏好仅保存在当前浏览器。',
+    optionalModules: '可选高级模块',
+    optionalModulesHint: '勾选的模块会显示在高级导航中；核心短链、部署检查和设置始终可用。',
+    moduleVisibilityInstanceHint:
+      '模块显隐会保存到当前 Linketry 实例；隐藏路由仍可直接访问，以便恢复。',
+    saveDisplayPreferences: '保存模块显隐',
+    displayPreferencesSaved: '显示偏好已保存',
   },
 } as const;

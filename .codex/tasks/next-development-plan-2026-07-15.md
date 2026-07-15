@@ -2,7 +2,7 @@
 
 ## Status
 
-Bulk UTM Priority 1 completed in v0.9.24. The later sequence continues in `public-launch-and-sink-roadmap-2026-07-15.md`, starting with OpenAPI.
+Bulk UTM Priority 1 completed in v0.9.24. Admin Display Preferences completed in v0.16.0. The remaining sequence continues in `public-launch-and-sink-roadmap-2026-07-15.md`.
 
 ## Priority 1 — Bulk UTM Append And Normalization
 
@@ -17,12 +17,12 @@ Bulk UTM Priority 1 completed in v0.9.24. The later sequence continues in `publi
 
 ## Later — Admin Display Preferences (Ordered Priority 7)
 
-- [ ] Store sidebar and table density preferences in the browser for the current Admin.
-- [ ] Add compact and comfortable layouts without reducing touch-target accessibility.
-- [ ] Add instance-level visibility settings for optional Advanced modules.
-- [ ] Keep Overview, Links, Create Link, Import/Export, Setup, Settings, and recovery access reachable.
-- [ ] Preserve Simple/Advanced mode and English/Simplified Chinese behavior.
-- [ ] Add persistence, navigation, and hidden-module regression coverage.
+- [x] Store sidebar and table density preferences in the browser for the current Admin.
+- [x] Add compact and comfortable layouts without reducing touch-target accessibility.
+- [x] Add instance-level visibility settings for optional Advanced modules.
+- [x] Keep Overview, Links, Create Link, Import/Export, Setup, Settings, and recovery access reachable.
+- [x] Preserve Simple/Advanced mode and English/Simplified Chinese behavior.
+- [x] Add persistence, navigation, and hidden-module regression coverage.
 
 ## Deferred
 
