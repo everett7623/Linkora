@@ -52,7 +52,7 @@ export function DeploymentAccessGuide({ apiOrigin, compact = false }: Deployment
           <li>{t('tokenSaveHint')}</li>
         </ol>
         <a
-          href="https://github.com/everettlabs/linketry/blob/main/docs/SELF_HOSTING.md#9-first-login"
+          href="https://github.com/everett7623/Linketry/blob/main/docs/SELF_HOSTING.md#9-first-login"
           target="_blank"
           rel="noopener noreferrer"
           className="mt-2 inline-flex items-center gap-1 text-brand-400 hover:text-brand-300"

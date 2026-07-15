@@ -11,7 +11,7 @@ test('bot detection recognizes search, preview, AI, monitoring, and automation c
     'UptimeRobot/2.0',
     'curl/8.10.1',
     'python-requests/2.32.0',
-    'Linketry/0.1 health-check (+https://github.com/everettlabs/linketry)',
+    'Linketry/0.1 health-check (+https://github.com/everett7623/Linketry)',
     'Example_Crawler/1.0',
   ];
 

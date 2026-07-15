@@ -170,7 +170,7 @@ export function Setup() {
             {t('refresh')}
           </Button>
           <a
-            href="https://github.com/everettlabs/linketry/blob/main/docs/SELF_HOSTING.md"
+            href="https://github.com/everett7623/Linketry/blob/main/docs/SELF_HOSTING.md"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-700 px-4 py-2 text-sm font-medium text-slate-100 shadow-sm transition-colors hover:bg-slate-600"

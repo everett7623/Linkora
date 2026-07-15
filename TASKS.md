@@ -48,7 +48,7 @@ One item in "In Progress" at a time whenever possible.
 ## ✅ Completed — Linketry 0.10 Rebrand And Upgrade Safety
 
 - [x] Rename product, package scope, repository metadata, runtime copy, exports, notifications, and fresh-install resource defaults to Linketry
-- [x] Set author `everettlabs`, website `linketry.dev`, repository `everettlabs/linketry`, and canonical image name `everett7623/linketry`
+- [x] Set author `everettlabs`, website `linketry.dev`, repository `everett7623/Linketry`, and canonical image name `everett7623/linketry`
 - [x] Move the canonical Admin API to `/api/v1` while keeping deprecated `/api/*` aliases for the `0.10.x` compatibility window
 - [x] Prefer `LINKETRY_*` Worker/Admin configuration while accepting existing Linkora repository variables and Worker secrets
 - [x] Migrate browser-local auth/API/locale/mode keys without logging users out

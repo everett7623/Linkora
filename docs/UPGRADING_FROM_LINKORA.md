@@ -72,7 +72,7 @@ The Worker reads `LINKETRY_ADMIN_TOKEN` first and falls back to the existing `AD
 
 After deploying the Worker and Admin against the existing bindings:
 
-1. `GET /health` returns `name: "Linketry"` and the current release version, `0.10.3` for this release.
+1. `GET /health` returns `name: "Linketry"` and the current release version, `0.10.4` for this release.
 2. An unauthenticated `GET /api/v1/auth/me` returns `401`.
 3. Login succeeds with the existing saved token.
 4. Existing links, tags, visits, domains, backups, and settings remain visible.

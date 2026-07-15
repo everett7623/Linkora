@@ -13,7 +13,7 @@ routes = [
 ]
 
 [vars]
-LINKETRY_VERSION = "0.10.3"
+LINKETRY_VERSION = "0.10.4"
 LINKETRY_DAILY_CRON = "0 18 * * *"
 LINKETRY_HEALTH_CRON = "0 * * * *"
 

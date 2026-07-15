@@ -111,7 +111,7 @@ export function FirstRunWizard({
         <span>{t('wizardOneDomain')}</span>
         {isAdvanced && (
           <a
-            href="https://github.com/everettlabs/linketry/blob/main/docs/SELF_HOSTING.md#advanced-deployment"
+            href="https://github.com/everett7623/Linketry/blob/main/docs/SELF_HOSTING.md#advanced-deployment"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 text-brand-400 hover:text-brand-300"

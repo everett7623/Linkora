@@ -12,7 +12,7 @@ Linketry is a self-hosted link management, analytics and monitoring platform.
 |---|---|
 | Author | `everettlabs` |
 | Website | [linketry.dev](https://linketry.dev) |
-| GitHub | [everettlabs/linketry](https://github.com/everettlabs/linketry) |
+| GitHub | [everett7623/Linketry](https://github.com/everett7623/Linketry) |
 | Docker image | `everett7623/linketry` |
 | API namespace | `/api/v1` |
 | Environment prefix | `LINKETRY_` |
@@ -20,8 +20,8 @@ Linketry is a self-hosted link management, analytics and monitoring platform.
 
 > **Core Principle:** Redirect stability first. Stats failures must never break redirects.
 
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/everettlabs/linketry)
-[![Deploy to Cloudflare Pages](https://deploy.pages.cloudflare.com/button)](https://deploy.pages.cloudflare.com/?url=https://github.com/everettlabs/linketry)
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/everett7623/Linketry)
+[![Deploy to Cloudflare Pages](https://deploy.pages.cloudflare.com/button)](https://deploy.pages.cloudflare.com/?url=https://github.com/everett7623/Linketry)
 
 > **New to self-hosting?** Follow the [quick-start guide](docs/SELF_HOSTING.md). Existing Linkora deployments must use the [non-destructive upgrade guide](docs/UPGRADING_FROM_LINKORA.md) and keep their current D1/KV/R2/Queue bindings.
 

@@ -272,7 +272,7 @@ async function fetchForHealth(url: string, method: LinkHealthMethod): Promise<Re
     signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     headers: {
       Accept: method === 'HEAD' ? '*/*' : 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.1',
-      'User-Agent': 'Linketry/0.1 health-check (+https://github.com/everettlabs/linketry)',
+      'User-Agent': 'Linketry/0.1 health-check (+https://github.com/everett7623/Linketry)',
       ...(method === 'GET' ? { Range: 'bytes=0-0' } : {}),
     },
   });

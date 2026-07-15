@@ -22,4 +22,4 @@ Completed in Linketry 0.10.3.
 
 - [x] Runtime brand, packages, configuration, API namespace, new resource defaults, Admin storage, exports, and documentation use Linketry.
 - [x] Remaining Linkora references are intentional compatibility or upgrade documentation.
-- [ ] GitHub repository rename remains external: `everettlabs/linketry` and `everett7623/Linketry` did not exist during this audit, so the working `origin` was not replaced with an unavailable URL.
+- [x] Rename the GitHub repository to `everett7623/Linketry`, update `origin`, and align project links with the live repository.

@@ -1,12 +1,12 @@
 {
   "name": "linketry",
-  "version": "0.10.3",
+  "version": "0.10.4",
   "description": "Linketry is a self-hosted link management, analytics and monitoring platform.",
   "author": "everettlabs",
   "homepage": "https://linketry.dev",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/everettlabs/linketry.git"
+    "url": "git+https://github.com/everett7623/Linketry.git"
   },
   "license": "GPL-3.0-only",
   "private": true,

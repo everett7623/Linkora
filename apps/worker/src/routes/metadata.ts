@@ -53,7 +53,7 @@ metadata.post('/title', async (c) => {
       signal,
       headers: {
         Accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.1',
-        'User-Agent': 'Linketry/0.1 (+https://github.com/everettlabs/linketry)',
+        'User-Agent': 'Linketry/0.1 (+https://github.com/everett7623/Linketry)',
       },
     });
   } catch {
@@ -107,7 +107,7 @@ metadata.post('/preview', async (c) => {
   const validation = validateLongUrl(url);
   if (!validation.valid) return jsonError(validation.error!, 400);
   try {
-    const response = await fetch(url, { redirect: 'follow', signal: AbortSignal.timeout(FETCH_TIMEOUT_MS), headers: { Accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.1', 'User-Agent': 'Linketry/0.1 preview (+https://github.com/everettlabs/linketry)' } });
+    const response = await fetch(url, { redirect: 'follow', signal: AbortSignal.timeout(FETCH_TIMEOUT_MS), headers: { Accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.1', 'User-Agent': 'Linketry/0.1 preview (+https://github.com/everett7623/Linketry)' } });
     if (!response.ok) return jsonError(`Target URL returned HTTP ${response.status}`, 400);
     const contentType = response.headers.get('Content-Type') ?? '';
     if (contentType && !/\b(html|xhtml|xml)\b/i.test(contentType)) return jsonError('Target URL did not return an HTML page', 400);
@@ -178,7 +178,7 @@ async function fetchSuggestionMetadata(url: string): Promise<{
       signal,
       headers: {
         Accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.1',
-        'User-Agent': 'Linketry/0.1 suggestions (+https://github.com/everettlabs/linketry)',
+        'User-Agent': 'Linketry/0.1 suggestions (+https://github.com/everett7623/Linketry)',
       },
     });
 

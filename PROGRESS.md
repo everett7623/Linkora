@@ -17,7 +17,7 @@ Last updated: 2026-07-15
 | Deployment                 | ✅ Deployed            | Worker and Admin deployed; GitHub Actions deploy workflow added                                                                        |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                       |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md` |
-| Current version            | ✅ 0.10.3              | Linketry rebrand, authenticated OpenAPI, duplicate destination detection, and primary Logo integration complete; next: deployment bootstrap and official site/Demo |
+| Current version            | ✅ 0.10.4              | Linketry rebrand, live GitHub repository rename, Logo, OpenAPI, and duplicate destination detection complete; next: deployment bootstrap and official site/Demo |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
 
@@ -27,7 +27,7 @@ Last updated: 2026-07-15
 
 | Area | Status | Notes |
 |---|---|---|
-| Product identity | ✅ Complete | Linketry; author `everettlabs`; website `linketry.dev`; repository `everettlabs/linketry`; image `everett7623/linketry` |
+| Product identity | ✅ Complete | Linketry; author `everettlabs`; website `linketry.dev`; repository `everett7623/Linketry`; image `everett7623/linketry` |
 | API namespace | ✅ Complete | `/api/v1` is canonical; old `/api/*` aliases remain deprecated for `0.10.x` |
 | Existing data | ✅ Preserved | No new D1 migration; existing binding IDs, rows, links, visits, settings, domains, backups, and slugs remain unchanged |
 | Configuration | ✅ Compatible | New `LINKETRY_*` names take priority; existing Linkora repository variables and Worker secret remain accepted during upgrade |

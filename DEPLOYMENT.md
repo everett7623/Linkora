@@ -167,7 +167,7 @@ routes = [
 ]
 
 [vars]
-LINKETRY_VERSION = "0.10.3"
+LINKETRY_VERSION = "0.10.4"
 
 [[d1_databases]]
 binding = "DB"
@@ -208,7 +208,7 @@ curl https://go.example.com/health
 Expected response:
 
 ```json
-{"success":true,"data":{"status":"ok","name":"Linketry","version":"0.10.3"}}
+{"success":true,"data":{"status":"ok","name":"Linketry","version":"0.10.4"}}
 ```
 
 ---
@@ -322,7 +322,7 @@ Defined in `apps/worker/wrangler.toml`:
 
 | Name | Example |
 |------|---------|
-| `LINKETRY_VERSION` | `0.10.3` |
+| `LINKETRY_VERSION` | `0.10.4` |
 | `LINKETRY_DAILY_CRON` | `0 18 * * *` |
 | `LINKETRY_HEALTH_CRON` | `0 * * * *` |
 

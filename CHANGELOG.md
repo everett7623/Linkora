@@ -13,6 +13,15 @@ _(none)_
 
 ---
 
+## [0.10.4] - 2026-07-15
+
+### Changed
+
+- Renamed the live GitHub repository from `everett7623/Linkora` to `everett7623/Linketry` and updated the local `origin` remote.
+- Aligned package metadata, README deployment buttons, Admin documentation links, Worker user agents, progress records, and repository references with the live Linketry URL.
+
+---
+
 ## [0.10.3] - 2026-07-15
 
 ### Added
@@ -60,7 +69,7 @@ _(none)_
 
 ### Changed
 
-- Renamed the project and runtime identity from Linkora to Linketry, with author `everettlabs`, repository `everettlabs/linketry`, website `linketry.dev`, canonical Docker image name `everett7623/linketry`, and the positioning “Linketry is a self-hosted link management, analytics and monitoring platform.”
+- Renamed the project and runtime identity from Linkora to Linketry, with author `everettlabs`, repository `everett7623/Linketry`, website `linketry.dev`, canonical Docker image name `everett7623/linketry`, and the positioning “Linketry is a self-hosted link management, analytics and monitoring platform.”
 - Renamed workspace packages to `@linketry/*`, exports and UI copy to Linketry, fresh-install D1 defaults to `linketry`, and project configuration to the `LINKETRY_*` prefix.
 - Moved the canonical Admin API contract to `/api/v1/*`; all Admin API calls and current documentation now use the versioned namespace.
 - New backups, exports, cache keys, notification copy, Webhook headers, user agents, and runtime metadata use Linketry naming.

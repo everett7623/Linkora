@@ -214,7 +214,7 @@ export function Settings() {
           <p>
             {t('documentation')}:{' '}
             <a
-              href="https://github.com/everettlabs/linketry"
+              href="https://github.com/everett7623/Linketry"
               target="_blank"
               rel="noopener noreferrer"
               className="text-brand-400 hover:text-brand-300"
