@@ -13,6 +13,15 @@ _(none)_
 
 ---
 
+## [0.11.1] - 2026-07-15
+
+### Fixed
+
+- Made Admin DNS automation conditional on a dedicated optional `CLOUDFLARE_DNS_API_TOKEN` secret with Zone Read and DNS Write access, so a least-privilege Workers/Pages deployment token does not fail an otherwise successful release.
+- Added an explicit deployment notice with the required Pages CNAME target when the optional DNS token is not configured.
+
+---
+
 ## [0.11.0] - 2026-07-15
 
 ### Changed

@@ -17,7 +17,7 @@ Last updated: 2026-07-15
 | Deployment                 | ✅ Deployed            | Worker and Admin deployed; GitHub Actions deploy workflow added                                                                        |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                       |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md` |
-| Current version            | ✅ 0.11.0              | Final Linketry identity cutover complete across local code, GitHub, and Cloudflare; next: deployment bootstrap and official site/Demo |
+| Current version            | ✅ 0.11.1              | Final Linketry identity cutover complete; least-privilege CI now treats custom-domain DNS as an explicitly permissioned optional step |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
 

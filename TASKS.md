@@ -51,7 +51,7 @@ One item in "In Progress" at a time whenever possible.
 - [x] Migrate production D1 and R2 data to canonical Linketry resources with complete row/object verification
 - [x] Rename KV and Queue resources in place, recreate Worker and Pages projects, and transfer production domains
 - [x] Replace all GitHub Actions repository variables with `LINKETRY_*` names and preserve the Admin credential in `LINKETRY_ADMIN_TOKEN`
-- [x] Add idempotent Admin custom-domain DNS maintenance to the deployment workflow
+- [x] Add optionally authenticated Admin custom-domain DNS maintenance without broadening the main deployment token
 - [x] Verify production health, authentication, redirect behavior, Admin deployment, and final resource inventory
 
 ---

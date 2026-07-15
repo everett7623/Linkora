@@ -164,7 +164,7 @@ curl https://go.example.com/health
 Expected shape:
 
 ```json
-{"success":true,"data":{"status":"ok","name":"Linketry","version":"0.11.0"}}
+{"success":true,"data":{"status":"ok","name":"Linketry","version":"0.11.1"}}
 ```
 
 ## 7. Build and Deploy Admin
@@ -206,6 +206,8 @@ CLOUDFLARE_ACCOUNT_ID
 
 `LINKETRY_ADMIN_TOKEN` does not need to be created manually. On the first deployment, the workflow generates it as a Worker secret and prints it once in the deployment log. A repository secret with the same name is only an optional recovery override if the generated value is lost.
 
+To let GitHub Actions maintain a custom Admin-domain CNAME automatically, add an optional `CLOUDFLARE_DNS_API_TOKEN` secret restricted to Zone Read and DNS Write for your zone. Without it, deployment still succeeds and reports the CNAME target for manual setup.
+
 Add repository variables:
 
 ```txt
@@ -230,7 +232,7 @@ Leave these unset for the basic deployment; enable them later from the Admin Adv
 
 ```txt
 LINKETRY_KV_PREVIEW_ID=<your-kv-preview-id>
-LINKETRY_VERSION=0.11.0
+LINKETRY_VERSION=0.11.1
 LINKETRY_COMPATIBILITY_DATE=2026-07-08
 LINKETRY_WORKER_DOMAINS=go.example.com,s.example.com
 LINKETRY_R2_BUCKET=linketry-backups
