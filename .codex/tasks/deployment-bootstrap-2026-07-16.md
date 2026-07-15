@@ -39,11 +39,11 @@ In progress. Read-only deployment-track preflight, guided D1/KV provisioning, an
 
 ## Verification
 
-- `npm run test:deployment`: 26 passed.
+- `npm run test:deployment`: 27 passed.
 - Current-account `deploy:bootstrap` dry-run: passed with a create plan and zero mutation attempts.
 - Current production `--track upgrade --check-cloudflare`: 25 passed, 0 failed, 1 informational warning for local Wrangler OAuth authentication.
-- Production workflow gate: passed against the owner account, exact 0.14.0 release state, reviewed migrations, current D1 restore bookmark, and existing bindings before deploy.
-- Wrangler 4.111.0 Worker deploy dry-run: passed with the expected D1/KV/R2/Queue bindings and Linketry 0.14.0.
+- Local production-target workflow gate: passed against the owner account, exact 0.14.1 release state, reviewed migrations, current D1 restore bookmark, and existing bindings before deploy.
+- Wrangler 4.111.0 Worker deploy dry-run: passed with the expected D1/KV/R2/Queue bindings and Linketry 0.14.1.
 - Wrangler 4 D1 migration review through the stable `DB` binding: local inventory resolved and production reported no pending migrations.
 - Production D1 point-in-time restore bookmark: available before release.
 - Worker type-check and tests: 58 passed.

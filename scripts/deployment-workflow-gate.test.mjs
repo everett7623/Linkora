@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { inspectMigrations, runDeploymentWorkflowGate } from './deployment-workflow-gate.mjs';
 
-const version = '0.14.0';
+const version = '0.14.1';
 const commit = 'a'.repeat(40);
 const migrations = [
   { name: '0001_init.sql', source: 'CREATE TABLE links (id TEXT PRIMARY KEY);' },
@@ -169,6 +169,17 @@ test('SQL policy ignores destructive words inside comments', () => {
   ]);
 
   assert.deepEqual(policy.unsafe, []);
+});
+
+test('migration digest is stable across Windows and Unix line endings', () => {
+  const unix = inspectMigrations([
+    { name: '0001.sql', source: 'CREATE TABLE links (\nid TEXT\n);\n' },
+  ]);
+  const windows = inspectMigrations([
+    { name: '0001.sql', source: 'CREATE TABLE links (\r\nid TEXT\r\n);\r\n' },
+  ]);
+
+  assert.equal(windows.digest, unix.digest);
 });
 
 test('production workflow runs the safety gate before every Cloudflare write', () => {

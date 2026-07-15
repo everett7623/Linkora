@@ -13,6 +13,18 @@ _(none)_
 
 ---
 
+## [0.14.1] - 2026-07-16
+
+### Fixed
+
+- Canonicalized migration content to LF before hashing so the reviewed deployment digest is identical on Windows and GitHub Actions/Linux checkouts.
+
+### Tests
+
+- Expanded deployment policy coverage to 27 tests with a cross-platform CRLF/LF digest regression.
+
+---
+
 ## [0.14.0] - 2026-07-16
 
 ### Added

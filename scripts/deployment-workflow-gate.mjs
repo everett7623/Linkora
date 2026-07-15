@@ -47,11 +47,12 @@ export function inspectMigrations(sources) {
   const hash = createHash('sha256');
   const unsafe = [];
   for (const migration of sources) {
+    const canonicalSource = migration.source.replace(/\r\n?/g, '\n');
     hash.update(migration.name);
     hash.update('\0');
-    hash.update(migration.source);
+    hash.update(canonicalSource);
     hash.update('\0');
-    const executableSql = stripSqlComments(migration.source);
+    const executableSql = stripSqlComments(canonicalSource);
     for (const rule of UNSAFE_SQL_PATTERNS) {
       if (rule.pattern.test(executableSql)) unsafe.push({ file: migration.name, rule: rule.name });
     }
