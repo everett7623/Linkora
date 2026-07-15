@@ -145,6 +145,8 @@ npm run deploy:preflight -- --track fresh --check-cloudflare
 
 See [docs/DEPLOYMENT_PREFLIGHT.md](docs/DEPLOYMENT_PREFLIGHT.md) for required gates and safe output behavior.
 
+GitHub Actions production runs are additionally bound to an approved release version, exact commit, migration digest, and fresh-or-upgrade safety state before any Cloudflare write. Generate the reviewed digest with `npm run deploy:migration-digest`.
+
 This repository also keeps a maintainer production runbook in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ### 1. Create Required D1 And KV Resources
@@ -234,6 +236,11 @@ LINKETRY_D1_DATABASE_NAME=linketry
 LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_KV_PREVIEW_ID=<your-kv-preview-id>
+LINKETRY_DEPLOYMENT_TRACK=fresh
+LINKETRY_APPROVED_RELEASE=0.14.0
+LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
+LINKETRY_APPROVED_MIGRATIONS_SHA256=<migration-digest>
+LINKETRY_FRESH_INSTALL_CONFIRMED=true
 ```
 
 After the first deploy, open the automatic `https://linketry-admin.pages.dev` URL shown in the workflow summary. The same summary points to the automatically generated token in the **Ensure LINKETRY_ADMIN_TOKEN secret** step. A branded `admin.example.com` domain can be added later, but is not part of the beginner flow.

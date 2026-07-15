@@ -1,6 +1,6 @@
 {
   "name": "linketry",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Linketry is a self-hosted link management, analytics and monitoring platform.",
   "author": "everettlabs",
   "homepage": "https://linketry.com",
@@ -20,9 +20,11 @@
     "build:admin": "npm run build --workspace=apps/admin",
     "test:admin": "npm run test --workspace=apps/admin",
     "test:worker": "npm run test --workspace=apps/worker",
-    "test:deployment": "node --test scripts/deployment-preflight.test.mjs scripts/deployment-bootstrap.test.mjs",
+    "test:deployment": "node --test scripts/deployment-preflight.test.mjs scripts/deployment-bootstrap.test.mjs scripts/deployment-workflow-gate.test.mjs",
     "deploy:preflight": "node scripts/deployment-preflight.mjs",
     "deploy:bootstrap": "node scripts/deployment-bootstrap.mjs",
+    "deploy:gate": "node scripts/deployment-workflow-gate.mjs",
+    "deploy:migration-digest": "node scripts/deployment-workflow-gate.mjs --digest-only",
     "deploy:worker": "npm run deploy --workspace=apps/worker",
     "db:migrate:local": "npm run db:migrate:local --workspace=apps/worker",
     "db:migrate:remote": "npm run db:migrate:remote --workspace=apps/worker"

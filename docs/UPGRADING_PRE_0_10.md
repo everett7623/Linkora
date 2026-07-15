@@ -18,6 +18,21 @@ npm run deploy:preflight -- --track upgrade --check-cloudflare
 
 The required gate variables and prohibited upgrade flags are documented in [Deployment Preflight](DEPLOYMENT_PREFLIGHT.md). Keep a concrete `LINKETRY_BACKUP_REFERENCE` such as the verified backup filename, R2 object, or D1 restore-point timestamp.
 
+For GitHub Actions, set these repository variables before pushing the reviewed release commit:
+
+```txt
+LINKETRY_DEPLOYMENT_TRACK=upgrade
+LINKETRY_APPROVED_RELEASE=<exact package version>
+LINKETRY_APPROVED_COMMIT=<40-character commit from git rev-parse HEAD>
+LINKETRY_APPROVED_MIGRATIONS_SHA256=<output of npm run deploy:migration-digest>
+LINKETRY_BACKUP_VERIFIED=true
+LINKETRY_BACKUP_REFERENCE=<verified backup or D1 restore bookmark>
+LINKETRY_MIGRATIONS_REVIEWED=true
+LINKETRY_UPGRADE_TARGET_CONFIRMED=true
+```
+
+The workflow checks these values, the existing account/resource bindings, destructive-operation flags, migration SQL policy, and remote D1 migration status before setting a Worker secret or making another Cloudflare change.
+
 Do not initialize, reset, seed Demo data, or copy production identifiers from the fresh-install guide during an upgrade.
 
 ## Canonical Resource Names

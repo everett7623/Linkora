@@ -93,7 +93,26 @@ LINKETRY_ALLOW_RESOURCE_RECREATION
 LINKETRY_ALLOW_DOMAIN_REPLACEMENT
 ```
 
-The current production workflow is not yet wired to consume these gates automatically. Until that follow-up is complete, maintainers must run the preflight explicitly before triggering an upgrade.
+## GitHub Actions Production Gate
+
+When Cloudflare credentials are configured, `.github/workflows/deploy.yml` runs a fail-closed gate after generating the temporary Worker config and before setting secrets, applying migrations, or deploying. Every run requires these repository variables:
+
+```txt
+LINKETRY_DEPLOYMENT_TRACK=fresh | upgrade
+LINKETRY_APPROVED_RELEASE=<exact package version>
+LINKETRY_APPROVED_COMMIT=<exact 40-character GitHub commit SHA>
+LINKETRY_APPROVED_MIGRATIONS_SHA256=<reviewed migration digest>
+```
+
+Generate the migration value from the reviewed checkout:
+
+```bash
+npm run deploy:migration-digest
+```
+
+A fresh deployment also requires `LINKETRY_FRESH_INSTALL_CONFIRMED=true`. An upgrade requires the backup and review variables above. Update the exact release and commit approval for every production release, and update the migration approval whenever any file under `migrations/` changes.
+
+The gate rejects the Demo track in this production workflow, scans migrations for destructive SQL, reruns the full account/resource preflight, and reads remote D1 migration status. A separate isolated Demo workflow remains planned.
 
 ## Official Demo
 

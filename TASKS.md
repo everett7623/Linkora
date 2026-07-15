@@ -292,8 +292,8 @@ One item in "In Progress" at a time whenever possible.
 ### Priority 4 — Beginner Deployment Bootstrap
 
 - [x] Define three explicit deployment tracks: existing production upgrade, fresh beginner self-hosting, and isolated official Demo
-- [ ] Keep the existing owner deployment upgradeable with its current bindings, but require a verified backup, migration-status review, and non-destructive incremental migrations before deploy
-- [ ] Prohibit production upgrades from running initialization SQL, factory reset, Demo seeding, resource recreation, or automatic binding/domain replacement
+- [x] Keep the existing owner deployment upgradeable with its current bindings, but require a verified backup, migration-status review, and non-destructive incremental migrations before deploy
+- [x] Prohibit production upgrades from running initialization SQL, factory reset, Demo seeding, resource recreation, or automatic binding/domain replacement
 - [x] Provide an idempotent guided workflow or script for required D1 and KV provisioning and binding output
 - [x] Make the beginner path create brand-new resources in the new user's own Cloudflare account without depending on Linketry maintainer domains, IDs, tokens, databases, or prior deployment state
 - [x] Generate or collect unique beginner resource names and confirm the selected account and target resources before the first write

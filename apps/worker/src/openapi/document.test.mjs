@@ -33,9 +33,9 @@ test('OpenAPI operation inventory matches mounted Hono route declarations', asyn
 });
 
 test('OpenAPI document is versioned, secured, unique, and contains no credential examples', () => {
-  const document = createOpenApiDocument({}, '0.13.0');
+  const document = createOpenApiDocument({}, '0.14.0');
   assert.equal(document.openapi, '3.1.0');
-  assert.equal(document.info.version, '0.13.0');
+  assert.equal(document.info.version, '0.14.0');
   assert.equal(new Set(API_OPERATIONS.map((item) => key(item.method, item.path))).size, API_OPERATIONS.length);
   assert.deepEqual(document.paths['/auth/login'].post.security, []);
   assert.deepEqual(document.paths['/links'].get.security, [{ bearerAuth: [] }]);

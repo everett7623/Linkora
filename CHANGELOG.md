@@ -13,6 +13,24 @@ _(none)_
 
 ---
 
+## [0.14.0] - 2026-07-16
+
+### Added
+
+- Added a production deployment safety gate that binds every Cloudflare run to an explicitly approved release version, Git commit, migration digest, and fresh-or-upgrade track.
+- Added read-only remote D1 migration-status verification and a command for generating the reviewed migration digest.
+
+### Security
+
+- Production upgrades now require a verified backup reference, migration review, and target confirmation before any Cloudflare write.
+- Demo deployments, destructive migration SQL, initialization/reset/seed flags, resource recreation, and automatic domain replacement fail before secrets, migrations, or deploy steps.
+
+### Tests
+
+- Expanded deployment policy coverage to 26 tests, including workflow ordering, approval mismatch, migration tampering, destructive SQL, and fresh/upgrade gate behavior.
+
+---
+
 ## [0.13.0] - 2026-07-16
 
 ### Added
