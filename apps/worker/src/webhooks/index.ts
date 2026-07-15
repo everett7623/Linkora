@@ -184,14 +184,11 @@ async function deliverWebhook(
     'User-Agent': 'Linketry-Webhook/1.0',
     'X-Linketry-Event': event,
     'X-Linketry-Timestamp': createdAt,
-    'X-Linkora-Event': event,
-    'X-Linkora-Timestamp': createdAt,
   };
 
   if (config.secret) {
     const signature = `sha256=${await signWebhook(config.secret, `${createdAt}.${body}`)}`;
     headers['X-Linketry-Signature'] = signature;
-    headers['X-Linkora-Signature'] = signature;
   }
 
   const controller = new AbortController();

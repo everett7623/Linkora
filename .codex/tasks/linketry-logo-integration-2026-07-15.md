@@ -21,5 +21,5 @@ Completed in Linketry 0.10.3.
 ## Repository Rename Audit
 
 - [x] Runtime brand, packages, configuration, API namespace, new resource defaults, Admin storage, exports, and documentation use Linketry.
-- [x] Remaining Linkora references are intentional compatibility or upgrade documentation.
+- [x] Remaining previous-name references were limited to compatibility or upgrade documentation before the final cutover.
 - [x] Rename the GitHub repository to `everett7623/Linketry`, update `origin`, and align project links with the live repository.

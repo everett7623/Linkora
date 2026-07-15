@@ -9,9 +9,4 @@ export interface Env {
   LINKETRY_VERSION?: string;
   LINKETRY_DAILY_CRON?: string;
   LINKETRY_HEALTH_CRON?: string;
-  // One-release upgrade compatibility for existing Linkora deployments.
-  ADMIN_TOKEN?: string;
-  LINKORA_VERSION?: string;
-  LINKORA_DAILY_CRON?: string;
-  LINKORA_HEALTH_CRON?: string;
 }

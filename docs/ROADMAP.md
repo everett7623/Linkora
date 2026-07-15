@@ -4,7 +4,7 @@
 
 Status: complete.
 
-- Rename the project identity from Linkora to Linketry
+- Complete the Linketry project-identity rollout across code, hosting, and documentation
 - Standardize author, repository, website, image, package scope, configuration prefix, and fresh-install database name
 - Make `/api/v1` canonical while retaining a time-bounded legacy API alias
 - Preserve existing D1 data, Cloudflare bindings, Admin sessions, KV cache fallback, backups, secrets, and repository variables during upgrade

@@ -63,8 +63,7 @@ type ShlinkApiPagination = {
 
 function detectAdapter(input: unknown, hint?: string): ImportAdapter | null {
   if (hint) {
-    const normalizedHint = hint === 'linkora-backup' ? 'linketry-backup' : hint;
-    const found = ADAPTERS.find((a) => a.source === normalizedHint);
+    const found = ADAPTERS.find((a) => a.source === hint);
     if (found) return found;
   }
   return ADAPTERS.find((a) => a.detect(input)) ?? null;

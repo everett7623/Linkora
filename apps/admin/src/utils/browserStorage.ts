@@ -6,24 +6,18 @@ interface StorageLike {
   removeItem(key: string): void;
 }
 
-const STORAGE_KEYS: Record<BrowserSetting, { current: string; legacy: string }> = {
-  adminMode: { current: 'linketry_admin_mode', legacy: 'linkora_admin_mode' },
-  apiBase: { current: 'linketry_api_base', legacy: 'linkora_api_base' },
-  locale: { current: 'linketry.locale', legacy: 'linkora.locale' },
-  token: { current: 'linketry_token', legacy: 'linkora_token' },
+const STORAGE_KEYS: Record<BrowserSetting, string> = {
+  adminMode: 'linketry_admin_mode',
+  apiBase: 'linketry_api_base',
+  locale: 'linketry.locale',
+  token: 'linketry_token',
 };
 
 export function readBrowserSetting(
   setting: BrowserSetting,
   storage: StorageLike = window.localStorage
 ): string | null {
-  const keys = STORAGE_KEYS[setting];
-  const current = storage.getItem(keys.current);
-  if (current !== null) return current;
-
-  const legacy = storage.getItem(keys.legacy);
-  if (legacy !== null) storage.setItem(keys.current, legacy);
-  return legacy;
+  return storage.getItem(STORAGE_KEYS[setting]);
 }
 
 export function writeBrowserSetting(
@@ -31,14 +25,12 @@ export function writeBrowserSetting(
   value: string,
   storage: StorageLike = window.localStorage
 ): void {
-  storage.setItem(STORAGE_KEYS[setting].current, value);
+  storage.setItem(STORAGE_KEYS[setting], value);
 }
 
 export function removeBrowserSetting(
   setting: BrowserSetting,
   storage: StorageLike = window.localStorage
 ): void {
-  const keys = STORAGE_KEYS[setting];
-  storage.removeItem(keys.current);
-  storage.removeItem(keys.legacy);
+  storage.removeItem(STORAGE_KEYS[setting]);
 }

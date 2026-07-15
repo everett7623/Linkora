@@ -7,10 +7,6 @@ function kvKey(domain: string, slug: string): string {
   return `linketry:slug:${domain}:${slug}`;
 }
 
-function legacyKvKey(domain: string, slug: string): string {
-  return `linkora:slug:${domain}:${slug}`;
-}
-
 export async function getCachedLink(
   env: Env,
   domain: string,
@@ -18,10 +14,7 @@ export async function getCachedLink(
 ): Promise<KVCacheEntry | null> {
   try {
     const key = kvKey(domain, slug);
-    const value = await env.KV.get(key, 'json');
-    if (value) return value as KVCacheEntry;
-    const legacyValue = await env.KV.get(legacyKvKey(domain, slug), 'json');
-    return (legacyValue as KVCacheEntry | null) ?? null;
+    return (await env.KV.get(key, 'json')) as KVCacheEntry | null;
   } catch {
     return null;
   }
@@ -38,10 +31,7 @@ export async function setCachedLink(env: Env, domain: string, entry: KVCacheEntr
 
 export async function deleteCachedLink(env: Env, domain: string, slug: string): Promise<void> {
   try {
-    await Promise.all([
-      env.KV.delete(kvKey(domain, slug)),
-      env.KV.delete(legacyKvKey(domain, slug)),
-    ]);
+    await env.KV.delete(kvKey(domain, slug));
   } catch {
     // Ignore cache errors
   }

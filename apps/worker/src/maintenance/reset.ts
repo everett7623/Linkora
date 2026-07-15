@@ -4,10 +4,9 @@ import { createR2Backup } from '../backups/index';
 import { now } from '../utils/id';
 
 export const RESET_CONFIRMATION = 'RESET LINKETRY';
-const LEGACY_RESET_CONFIRMATION = 'RESET LINKORA';
 
 export function isResetConfirmation(value: unknown): boolean {
-  return value === RESET_CONFIRMATION || value === LEGACY_RESET_CONFIRMATION;
+  return value === RESET_CONFIRMATION;
 }
 
 const RESET_TABLES = [
@@ -114,10 +113,7 @@ async function restoreDefaultSettings(env: Env, updatedAt: string): Promise<void
 }
 
 async function clearSlugCaches(env: Env): Promise<number> {
-  const prefixes = ['linketry:slug:', 'linkora:slug:'];
-  let deleted = 0;
-  for (const prefix of prefixes) deleted += await clearCachePrefix(env, prefix);
-  return deleted;
+  return clearCachePrefix(env, 'linketry:slug:');
 }
 
 async function clearCachePrefix(env: Env, prefix: string): Promise<number> {

@@ -17,22 +17,23 @@ Last updated: 2026-07-15
 | Deployment                 | ✅ Deployed            | Worker and Admin deployed; GitHub Actions deploy workflow added                                                                        |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                       |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md` |
-| Current version            | ✅ 0.10.4              | Linketry rebrand, live GitHub repository rename, Logo, OpenAPI, and duplicate destination detection complete; next: deployment bootstrap and official site/Demo |
+| Current version            | ✅ 0.11.0              | Final Linketry identity cutover complete across local code, GitHub, and Cloudflare; next: deployment bootstrap and official site/Demo |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
 
 ---
 
-## Linketry 0.10 Rebrand And Upgrade Safety
+## Linketry 0.11 Identity Cutover
 
 | Area | Status | Notes |
 |---|---|---|
 | Product identity | ✅ Complete | Linketry; author `everettlabs`; website `linketry.dev`; repository `everett7623/Linketry`; image `everett7623/linketry` |
-| API namespace | ✅ Complete | `/api/v1` is canonical; old `/api/*` aliases remain deprecated for `0.10.x` |
-| Existing data | ✅ Preserved | No new D1 migration; existing binding IDs, rows, links, visits, settings, domains, backups, and slugs remain unchanged |
-| Configuration | ✅ Compatible | New `LINKETRY_*` names take priority; existing Linkora repository variables and Worker secret remain accepted during upgrade |
-| Admin session | ✅ Compatible | Legacy token, API origin, locale, and mode keys migrate in-browser without forced logout |
-| Cache and backup | ✅ Compatible | D1 remains the source of truth; legacy KV keys and `Linkora Backup` payloads remain readable |
+| API namespace | ✅ Complete | `/api/v1` is canonical; compatibility aliases remain limited to the API deprecation policy |
+| Existing data | ✅ Preserved | All 14 production D1 tables retained exact row counts; all 10 R2 backup objects copied and verified |
+| Configuration | ✅ Complete | Worker and GitHub Actions use only canonical `LINKETRY_*` configuration and secret names |
+| Admin session | ✅ Complete | Admin uses only canonical Linketry browser-storage keys |
+| Cache and backup | ✅ Complete | D1 remains the source of truth; canonical cache keys and backup markers are enforced |
+| Cloudflare | ✅ Complete | Worker, Pages, D1, KV, R2, and Queue use canonical Linketry resource names |
 | Deployment tracks | ✅ Documented | Fresh beginner install, non-destructive existing upgrade, and isolated Demo remain separate |
 
 ---

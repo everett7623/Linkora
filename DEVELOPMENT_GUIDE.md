@@ -120,7 +120,7 @@ linketry:slug:<domain>:<slug>
 
 `<domain>` is the hostname from the request, for example `go.example.com`. For local dev it will be `localhost`.
 
-During the `0.10.x` upgrade window, reads fall back to the legacy `linkora:slug:*` key and mutations clear both generations. D1 remains the source of truth.
+From `0.11.0`, reads and mutations use only the canonical `linketry:slug:*` key. D1 remains the source of truth.
 
 ### API Auth
 

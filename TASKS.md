@@ -45,16 +45,27 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
+## ✅ Completed — Linketry 0.11 Final Identity Cutover
+
+- [x] Remove superseded product-name compatibility code from Worker, Admin, tests, documentation, and deployment configuration
+- [x] Migrate production D1 and R2 data to canonical Linketry resources with complete row/object verification
+- [x] Rename KV and Queue resources in place, recreate Worker and Pages projects, and transfer production domains
+- [x] Replace all GitHub Actions repository variables with `LINKETRY_*` names and preserve the Admin credential in `LINKETRY_ADMIN_TOKEN`
+- [x] Add idempotent Admin custom-domain DNS maintenance to the deployment workflow
+- [x] Verify production health, authentication, redirect behavior, Admin deployment, and final resource inventory
+
+---
+
 ## ✅ Completed — Linketry 0.10 Rebrand And Upgrade Safety
 
 - [x] Rename product, package scope, repository metadata, runtime copy, exports, notifications, and fresh-install resource defaults to Linketry
 - [x] Set author `everettlabs`, website `linketry.dev`, repository `everett7623/Linketry`, and canonical image name `everett7623/linketry`
 - [x] Move the canonical Admin API to `/api/v1` while keeping deprecated `/api/*` aliases for the `0.10.x` compatibility window
-- [x] Prefer `LINKETRY_*` Worker/Admin configuration while accepting existing Linkora repository variables and Worker secrets
+- [x] Prefer `LINKETRY_*` Worker/Admin configuration while temporarily accepting superseded repository variables and Worker secrets
 - [x] Migrate browser-local auth/API/locale/mode keys without logging users out
 - [x] Read old KV cache keys, clear both generations on mutations, and keep D1 as the source of truth
-- [x] Export `Linketry Backup` while retaining Linkora backup import/restore support
-- [x] Add a separate non-destructive Linkora upgrade guide; do not recreate or overwrite existing D1/KV/R2/Queue resources
+- [x] Export `Linketry Backup` while temporarily retaining the superseded backup import/restore marker
+- [x] Add a separate non-destructive pre-0.10 upgrade guide; do not recreate or overwrite existing D1/KV/R2/Queue resources
 - [x] Add the Linketry primary Logo to Admin login, navigation, README, and favicon branding
 
 ---

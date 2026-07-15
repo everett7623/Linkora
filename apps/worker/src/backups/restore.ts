@@ -232,7 +232,7 @@ async function parseBackupPayload(payload: unknown): Promise<{
   redirectRules: RedirectRule[];
 }> {
   if (!LinketryBackupAdapter.detect(payload)) {
-    throw new Error('Invalid Linketry or legacy Linkora backup payload');
+    throw new Error('Invalid Linketry backup payload');
   }
   return {
     items: await LinketryBackupAdapter.parse(payload),

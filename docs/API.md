@@ -176,7 +176,7 @@ backup.completed
 backup.failed
 ```
 
-Delivery headers include `X-Linketry-Event`, `X-Linketry-Timestamp`, and, when a secret is configured, `X-Linketry-Signature: sha256=<hex-hmac>`. Matching `X-Linkora-*` headers are also sent during the `0.10.x` compatibility window for existing consumers.
+Delivery headers include `X-Linketry-Event`, `X-Linketry-Timestamp`, and, when a secret is configured, `X-Linketry-Signature: sha256=<hex-hmac>`.
 
 ## Notification Channels
 

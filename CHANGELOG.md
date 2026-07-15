@@ -13,11 +13,31 @@ _(none)_
 
 ---
 
+## [0.11.0] - 2026-07-15
+
+### Changed
+
+- Completed the Linketry identity cutover across local code, GitHub Actions, and Cloudflare production resources.
+- Removed the 0.10 compatibility aliases for Worker variables and secrets, browser storage, KV cache keys, backup markers, import hints, reset confirmation, redirect parameters, and Webhook headers.
+- Updated GitHub Actions to use only `LINKETRY_*` repository variables and to maintain the Admin custom-domain DNS record idempotently.
+- Migrated production D1 and R2 data to canonical Linketry resources, renamed KV and Queue resources in place, recreated Worker and Pages projects under canonical names, and transferred their custom domains.
+
+### Safety
+
+- Exported a full pre-cutover D1 snapshot, preserved all 14 application tables, verified exact source/target row counts, copied every R2 backup object, and removed legacy product markers from migrated data.
+- Kept D1 as the source of truth and left redirect logic unchanged apart from removing the superseded cache-key fallback.
+
+### Verified
+
+- Verified Worker type-checks and tests, Admin unit/browser tests and production build, production health/authentication, an existing 302 redirect, GitHub deployment, Pages custom domain, and final Cloudflare inventory.
+
+---
+
 ## [0.10.4] - 2026-07-15
 
 ### Changed
 
-- Renamed the live GitHub repository from `everett7623/Linkora` to `everett7623/Linketry` and updated the local `origin` remote.
+- Renamed the live GitHub repository to `everett7623/Linketry` and updated the local `origin` remote.
 - Aligned package metadata, README deployment buttons, Admin documentation links, Worker user agents, progress records, and repository references with the live Linketry URL.
 
 ---
@@ -69,7 +89,7 @@ _(none)_
 
 ### Changed
 
-- Renamed the project and runtime identity from Linkora to Linketry, with author `everettlabs`, repository `everett7623/Linketry`, website `linketry.dev`, canonical Docker image name `everett7623/linketry`, and the positioning “Linketry is a self-hosted link management, analytics and monitoring platform.”
+- Renamed the previous project and runtime identity to Linketry, with author `everettlabs`, repository `everett7623/Linketry`, website `linketry.dev`, canonical Docker image name `everett7623/linketry`, and the positioning “Linketry is a self-hosted link management, analytics and monitoring platform.”
 - Renamed workspace packages to `@linketry/*`, exports and UI copy to Linketry, fresh-install D1 defaults to `linketry`, and project configuration to the `LINKETRY_*` prefix.
 - Moved the canonical Admin API contract to `/api/v1/*`; all Admin API calls and current documentation now use the versioned namespace.
 - New backups, exports, cache keys, notification copy, Webhook headers, user agents, and runtime metadata use Linketry naming.
@@ -77,12 +97,12 @@ _(none)_
 ### Upgrade Compatibility
 
 - Kept deprecated `/api/*` route aliases throughout the `0.10.x` compatibility window and added deprecation response headers.
-- Worker configuration prefers `LINKETRY_ADMIN_TOKEN`, `LINKETRY_VERSION`, and Linketry cron variables while accepting the existing `ADMIN_TOKEN` and `LINKORA_*` variables.
-- GitHub Actions prefers `LINKETRY_*` variables but falls back to existing Linkora repository values, preserving the current D1/KV/R2/Queue bindings and Worker token.
-- Admin browser storage migrates legacy Linkora token, API origin, locale, and interface mode values without logging out existing users.
-- Redirect cache reads legacy `linkora:slug:*` keys on a new-key miss and deletes both generations after link mutations; D1 remains the source of truth.
-- Linketry backup import and restore continue accepting the legacy `Linkora Backup` marker, and Webhook deliveries temporarily include matching `X-Linkora-*` compatibility headers.
-- Added a dedicated non-destructive Linkora upgrade guide. Version `0.10.0` adds no D1 migration and does not recreate, reset, seed, or overwrite an existing database.
+- Worker configuration preferred `LINKETRY_ADMIN_TOKEN`, `LINKETRY_VERSION`, and Linketry cron variables while temporarily accepting the superseded variable generation.
+- GitHub Actions preferred `LINKETRY_*` variables but temporarily fell back to superseded repository values, preserving the current D1/KV/R2/Queue bindings and Worker token.
+- Admin browser storage migrated superseded token, API origin, locale, and interface mode values without logging users out.
+- Redirect cache temporarily read the superseded cache-key generation on a new-key miss and deleted both generations after link mutations; D1 remained the source of truth.
+- Linketry backup import and restore temporarily accepted the superseded backup marker, and Webhook deliveries included matching compatibility headers.
+- Added a dedicated non-destructive upgrade guide. Version `0.10.0` added no D1 migration and did not recreate, reset, seed, or overwrite an existing database.
 
 ### Tests
 

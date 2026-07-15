@@ -4,7 +4,7 @@ This guide deploys Linketry, a self-hosted link management, analytics and monito
 
 This is the **fresh self-hosting** path: every new user deploys into their own Cloudflare account with newly created D1/KV resources, Worker/Pages projects, token, and domain. It must not reuse Linketry maintainer production or Demo identifiers.
 
-An existing Linkora or Linketry instance follows the separate [non-destructive upgrade guide](docs/UPGRADING_FROM_LINKORA.md): keep its current bindings, take and verify a backup, review pending migrations, apply only non-destructive incremental migrations, and then deploy. Never initialize, reset, seed Demo data, recreate resources, or replace domains automatically during an upgrade.
+An existing Linketry instance follows the separate [non-destructive upgrade guide](docs/UPGRADING_PRE_0_10.md): keep its current bindings, take and verify a backup, review pending migrations, apply only non-destructive incremental migrations, and then deploy. Never initialize, reset, seed Demo data, recreate resources, or replace domains automatically during an upgrade.
 
 The official Linketry Demo is a third isolated environment with synthetic data and separate resources. It is never an upgrade target or a template binding source.
 
@@ -167,7 +167,7 @@ routes = [
 ]
 
 [vars]
-LINKETRY_VERSION = "0.10.4"
+LINKETRY_VERSION = "0.11.0"
 
 [[d1_databases]]
 binding = "DB"
@@ -208,7 +208,7 @@ curl https://go.example.com/health
 Expected response:
 
 ```json
-{"success":true,"data":{"status":"ok","name":"Linketry","version":"0.10.4"}}
+{"success":true,"data":{"status":"ok","name":"Linketry","version":"0.11.0"}}
 ```
 
 ---
@@ -322,7 +322,7 @@ Defined in `apps/worker/wrangler.toml`:
 
 | Name | Example |
 |------|---------|
-| `LINKETRY_VERSION` | `0.10.4` |
+| `LINKETRY_VERSION` | `0.11.0` |
 | `LINKETRY_DAILY_CRON` | `0 18 * * *` |
 | `LINKETRY_HEALTH_CRON` | `0 * * * *` |
 

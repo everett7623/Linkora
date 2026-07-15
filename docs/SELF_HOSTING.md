@@ -4,14 +4,14 @@ This guide is for people who fork or clone Linketry and want to deploy it to the
 
 ## Deployment Track
 
-This document is the **fresh beginner self-hosting** track. It creates new resources in your own Cloudflare account and never uses the Linketry maintainer's production or Demo resource IDs, domains, tokens, or data. If you already deployed Linkora, stop here and follow [Upgrading from Linkora](UPGRADING_FROM_LINKORA.md) instead.
+This document is the **fresh beginner self-hosting** track. It creates new resources in your own Cloudflare account and never uses the Linketry maintainer's production or Demo resource IDs, domains, tokens, or data. If you already run an installation older than 0.10, stop here and follow [Upgrading pre-0.10 installations](UPGRADING_PRE_0_10.md) instead.
 
 Linketry keeps three deployment tracks separate:
 
 | Track | Purpose | Resource rule |
 |-------|---------|---------------|
 | Fresh self-hosting | A new user installs Linketry | Create new resources in the user's own Cloudflare account |
-| Existing production upgrade | Upgrade an already deployed Linkora or Linketry instance | Reuse that instance's bindings only after a verified backup; apply incremental migrations without reset or Demo data |
+| Existing production upgrade | Upgrade an already deployed Linketry instance | Reuse that instance's bindings only after a verified backup; apply incremental migrations without reset or Demo data |
 | Official Demo | Public Linketry demonstration | Use isolated Demo resources and synthetic data; never share production bindings |
 
 Do not use the official Demo workflow to upgrade an existing deployment. Do not use an existing production database as the target for this fresh-install guide.
@@ -164,7 +164,7 @@ curl https://go.example.com/health
 Expected shape:
 
 ```json
-{"success":true,"data":{"status":"ok","name":"Linketry","version":"0.10.4"}}
+{"success":true,"data":{"status":"ok","name":"Linketry","version":"0.11.0"}}
 ```
 
 ## 7. Build and Deploy Admin
@@ -230,7 +230,7 @@ Leave these unset for the basic deployment; enable them later from the Admin Adv
 
 ```txt
 LINKETRY_KV_PREVIEW_ID=<your-kv-preview-id>
-LINKETRY_VERSION=0.10.4
+LINKETRY_VERSION=0.11.0
 LINKETRY_COMPATIBILITY_DATE=2026-07-08
 LINKETRY_WORKER_DOMAINS=go.example.com,s.example.com
 LINKETRY_R2_BUCKET=linketry-backups

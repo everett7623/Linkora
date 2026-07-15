@@ -70,7 +70,7 @@ function buildRedirectUrl(targetUrl: string, requestUrl: URL): string {
     const target = new URL(targetUrl);
     for (const [key, value] of requestUrl.searchParams) {
       const normalizedKey = key.toLowerCase();
-      if (normalizedKey.startsWith('linketry_') || normalizedKey.startsWith('linkora_')) continue;
+      if (normalizedKey.startsWith('linketry_')) continue;
       target.searchParams.set(key, value);
     }
     return target.toString();
@@ -106,7 +106,7 @@ async function getSmartRedirectDecision(
 }
 
 function warningConfirmed(c: Context<{ Bindings: Env }>): boolean {
-  return c.req.query('linketry_confirm') === '1' || c.req.query('linkora_confirm') === '1';
+  return c.req.query('linketry_confirm') === '1';
 }
 
 async function readSubmittedPassword(c: Context<{ Bindings: Env }>): Promise<string | undefined> {

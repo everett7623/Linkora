@@ -2,7 +2,7 @@
 
 This document is the short deployment checklist.
 
-For a fresh self-hosted install, use [SELF_HOSTING.md](SELF_HOSTING.md). Existing Linkora deployments must use [UPGRADING_FROM_LINKORA.md](UPGRADING_FROM_LINKORA.md) and retain their current binding IDs.
+For a fresh self-hosted install, use [SELF_HOSTING.md](SELF_HOSTING.md). Installations older than 0.10 must use [UPGRADING_PRE_0_10.md](UPGRADING_PRE_0_10.md) and retain their current binding IDs until migration is verified.
 
 The longer maintainer production runbook is in [../DEPLOYMENT.md](../DEPLOYMENT.md).
 

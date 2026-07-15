@@ -2,7 +2,7 @@
 
 Linketry supports manual exports, pre-import backup downloads, and R2 backup snapshots.
 
-New payloads use the `Linketry Backup` marker. Import and restore continue accepting the legacy `Linkora Backup` marker during the `0.10.x` upgrade window.
+Backup payloads use the canonical `Linketry Backup` marker. Version 0.11 and later reject superseded product markers so restored data stays identity-consistent.
 
 ## Available Exports
 
