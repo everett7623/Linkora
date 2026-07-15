@@ -362,6 +362,9 @@ async function authenticate(page: Page, locale: Locale, mode: 'simple' | 'advanc
       window.localStorage.setItem('linketry_token', 'smoke-token');
       window.localStorage.setItem('linketry.locale', nextLocale);
       window.localStorage.setItem('linketry_admin_mode', nextMode);
+      if (!window.localStorage.getItem('linketry_theme')) {
+        window.localStorage.setItem('linketry_theme', 'dark');
+      }
     },
     { nextLocale: locale, nextMode: mode }
   );
@@ -531,6 +534,39 @@ test('display preferences persist density and hide only optional navigation modu
 
   await page.goto('/backups');
   await expect(page.getByRole('heading', { name: messages.en.backups })).toBeVisible();
+  await page.evaluate(() => window.__assertNoBrowserErrors());
+});
+
+test('theme preference switches color tokens and persists across reloads', async ({ page }) => {
+  await authenticate(page, 'en', 'advanced');
+  await page.goto('/settings');
+
+  const root = page.locator('html');
+  await expect(root).toHaveAttribute('data-theme', 'dark');
+  await expect(root).toHaveAttribute('data-theme-preference', 'dark');
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(2, 6, 23)');
+
+  const themePanel = page
+    .getByRole('heading', { name: messages.en.theme })
+    .locator('xpath=ancestor::section');
+  await themePanel.getByRole('button', { name: new RegExp(`^${messages.en.lightTheme}`) }).click();
+
+  await expect(root).toHaveAttribute('data-theme', 'light');
+  await expect(root).toHaveAttribute('data-theme-preference', 'light');
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(248, 250, 252)');
+  await expect(page.locator('body')).toHaveCSS('color', 'rgb(15, 23, 42)');
+  await expect(page.getByRole('link', { name: 'GitHub' })).toHaveCSS('color', 'rgb(67, 56, 202)');
+  await expect
+    .poll(() => page.evaluate(() => window.localStorage.getItem('linketry_theme')))
+    .toBe('light');
+
+  await page.reload();
+  await expect(root).toHaveAttribute('data-theme', 'light');
+  await expect(root).toHaveAttribute('data-theme-preference', 'light');
+
+  await themePanel.getByRole('button', { name: new RegExp(`^${messages.en.systemTheme}`) }).click();
+  await expect(root).toHaveAttribute('data-theme-preference', 'system');
+  await expect(root).toHaveAttribute('data-theme', /^(light|dark)$/);
   await page.evaluate(() => window.__assertNoBrowserErrors());
 });
 

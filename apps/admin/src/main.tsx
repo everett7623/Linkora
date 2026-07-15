@@ -6,23 +6,26 @@ import { AuthProvider } from './contexts/AuthContext';
 import { AdminModeProvider } from './contexts/AdminModeContext';
 import { LocaleProvider } from './contexts/LocaleContext';
 import { DisplayPreferencesProvider } from './contexts/DisplayPreferencesContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastProvider } from './components/ui/Toast';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <LocaleProvider>
-        <ToastProvider>
-          <AdminModeProvider>
-            <AuthProvider>
-              <DisplayPreferencesProvider>
-                <App />
-              </DisplayPreferencesProvider>
-            </AuthProvider>
-          </AdminModeProvider>
-        </ToastProvider>
-      </LocaleProvider>
+      <ThemeProvider>
+        <LocaleProvider>
+          <ToastProvider>
+            <AdminModeProvider>
+              <AuthProvider>
+                <DisplayPreferencesProvider>
+                  <App />
+                </DisplayPreferencesProvider>
+              </AuthProvider>
+            </AdminModeProvider>
+          </ToastProvider>
+        </LocaleProvider>
+      </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

@@ -23,7 +23,7 @@ Implementation is in progress. Bulk UTM, OpenAPI, duplicate detection, the proje
 5. Official project site and isolated, read-only or resettable Demo.
 6. Optional Cloudflare Access authentication and asynchronous signed click webhooks.
 7. Admin density and optional-module visibility preferences — completed in v0.16.0.
-8. Theme, card view, social preview customization, broader locales, real-time views, optional AI, and external clients.
+8. Theme preferences — completed in v0.17.0; card view, social preview customization, broader locales, real-time views, optional AI, and external clients remain.
 
 Detailed acceptance criteria are tracked in `TASKS.md` and the phase boundaries are mirrored in `docs/ROADMAP.md`.
 

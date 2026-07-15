@@ -41,6 +41,7 @@ One item in "In Progress" at a time whenever possible.
 - [x] V8: Localize redirect rule types, health-check details, group confirmations, and import conflict previews
 - [x] V8: Localize remaining long-tail page content, validation wording, and export/report details
 - [x] V8: Add per-browser Admin density and instance-level optional-module visibility preferences
+- [x] V8: Add accessible per-browser light, dark, and system theme preferences
 - [x] V9: Add public read-only stats pages with privacy controls
 - [x] V9: Improve bot classification and conversion attribution
 
@@ -337,7 +338,7 @@ One item in "In Progress" at a time whenever possible.
 
 ### Priority 8 — Product Presentation And Ecosystem
 
-- [ ] Add light, dark, and system theme preferences with accessible contrast
+- [x] Add light, dark, and system theme preferences with accessible contrast
 - [ ] Evaluate an optional link card/grid view with favicon, visits, visitors, referers, and compact actions after density preferences are stable
 - [ ] Add per-link social preview title, description, and image controls with optional R2 storage outside the redirect hot path
 - [ ] Expand translations through a community-ready locale workflow instead of blocking the basic deployment on many built-in languages

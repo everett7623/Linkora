@@ -13,6 +13,24 @@ _(none)_
 
 ---
 
+## [0.17.0] - 2026-07-16
+
+### Added
+
+- Added per-browser light, dark, and system-following Admin themes with immediate persistence and operating-system color-scheme updates.
+- Added theme-aware Slate and brand design tokens so existing pages, tables, forms, dialogs, density modes, and optional-module controls switch consistently.
+- Added pre-render theme initialization to prevent a mismatched color flash and updated browser chrome color for the resolved theme.
+
+### Accessibility
+
+- Added high-contrast light-theme text and semantic status colors, retained the original dark palette, and disabled theme transitions when reduced motion is requested.
+
+### Tests
+
+- Added theme normalization and resolution tests plus a real-browser regression for dark-to-light switching, computed colors, persistence, and system mode.
+
+---
+
 ## [0.16.0] - 2026-07-16
 
 ### Added

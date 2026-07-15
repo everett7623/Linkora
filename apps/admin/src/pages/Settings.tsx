@@ -7,6 +7,7 @@ import { WebhookSettingsPanel } from '../components/settings/WebhookSettingsPane
 import { NotificationSettingsPanel } from '../components/settings/NotificationSettingsPanel';
 import { AdminModePanel } from '../components/settings/AdminModePanel';
 import { DisplayPreferencesPanel } from '../components/settings/DisplayPreferencesPanel';
+import { ThemePanel } from '../components/settings/ThemePanel';
 import { Button } from '../components/ui/Button';
 import { Input, Select, Textarea } from '../components/ui/Input';
 import { useToast } from '../components/ui/Toast';
@@ -183,6 +184,8 @@ export function Settings() {
       <AdminModePanel />
 
       <DisplayPreferencesPanel />
+
+      <ThemePanel />
 
       <section className="space-y-3 rounded-xl border border-slate-800 bg-slate-900 p-6">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">

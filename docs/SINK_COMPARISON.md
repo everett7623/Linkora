@@ -23,7 +23,7 @@ The comparison was refreshed after Sink v0.2.11. Linketry now has the required f
 | P1       | Asynchronous click webhook                                      | Add an opt-in signed `link.clicked` event through the current webhook conventions, always outside the redirect response path.                                                                                                                  |
 | P1       | Per-link social preview customization and image storage         | The destination preview exists; add explicit title, description, and image controls with optional R2 storage without placing metadata work in redirects.                                                                                       |
 | P1       | Official project site and safe Demo                             | Use a Linketry project domain, isolated resources, synthetic data, read-only or scheduled-reset behavior, rate limits, and a separate Demo redirect host.                                                                                       |
-| P2       | Light/dark/system themes and optional card view                 | Add after density preferences, preserving accessibility and the existing compact operational workflows.                                                                                                                                       |
+| P2       | Optional link card/grid view                                    | Theme preferences are complete; evaluate a card view while preserving accessibility and the existing compact operational workflows.                                                                                                            |
 | P2       | Broader community-driven internationalization                   | Preserve complete EN/ZH support, then make additional locale contributions sustainable instead of blocking basic deployment on many built-in languages.                                                                                       |
 | P2       | Real-time analytics stream and live globe                       | Useful for visual monitoring, but lower priority than deployment simplicity, API correctness, and Demo safety.                                                                                                                                |
 | P2       | Workers AI-assisted slug and metadata                           | Existing local suggestions remain the default; an optional AI binding can be considered in Advanced mode.                                                                                                                                      |
@@ -69,7 +69,7 @@ The following Sink ideas are accepted into Linketry's development direction. The
 4. Complete beginner D1/KV provisioning and fresh-account deployment validation.
 5. Launch the official Linketry project site and isolated Demo after the owner supplies the domain.
 6. Add optional Cloudflare Access and asynchronous signed click webhooks.
-7. Done in v0.16.0: Admin display preferences; follow with themes, card view, and social preview customization.
+7. Done in v0.16.0-v0.17.0: Admin display and theme preferences; follow with card view and social preview customization.
 8. Consider broader locales, real-time views, optional Workers AI, and external clients after the foundations are stable.
 
 ## Deliberate Non-goals For The Basic Edition

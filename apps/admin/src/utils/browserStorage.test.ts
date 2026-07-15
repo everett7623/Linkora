@@ -42,3 +42,9 @@ test('stores sidebar and table density independently in the current browser', ()
   assert.equal(storage.getItem('linketry_sidebar_density'), 'compact');
   assert.equal(storage.getItem('linketry_table_density'), 'comfortable');
 });
+
+test('stores the theme preference under the canonical Linketry key', () => {
+  const storage = memoryStorage();
+  writeBrowserSetting('theme', 'system', storage);
+  assert.equal(storage.getItem('linketry_theme'), 'system');
+});
