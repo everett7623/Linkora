@@ -265,6 +265,9 @@ test('Demo workflow keeps its gate before all Cloudflare writes and uses Demo-on
   assert.match(workflow, /LINKETRY_DEMO_USE_WORKERS_DEV/);
   assert.match(workflow, /LINKETRY_DEMO_R2_BUCKET/);
   assert.match(workflow, /LINKETRY_DEMO_VISITS_QUEUE/);
+  assert.match(workflow, /wrangler r2 bucket list\)/);
+  assert.match(workflow, /wrangler queues list\)/);
+  assert.doesNotMatch(workflow, /wrangler (?:r2 bucket|queues) list --json/);
   assert.match(workflow, /\[\[r2_buckets\]\]/);
   assert.match(workflow, /\[\[queues\.producers\]\]/);
   assert.match(workflow, /Upload isolated synthetic Demo artifacts/);

@@ -2,7 +2,7 @@
 
 ## Status
 
-Complete in Linketry v0.25.0.
+Complete in Linketry v0.25.0. Wrangler R2/Queue inventory compatibility was repaired in v0.25.1 before the live rollout.
 
 ## Completed
 

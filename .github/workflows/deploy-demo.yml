@@ -149,7 +149,7 @@ jobs:
             ...routing,
             '',
             '[vars]',
-            `LINKETRY_VERSION = "${env.RESOLVED_LINKETRY_VERSION || '0.25.0'}"`,
+            `LINKETRY_VERSION = "${env.RESOLVED_LINKETRY_VERSION || '0.25.1'}"`,
             'LINKETRY_DEMO_MODE = "read-only"',
             'LINKETRY_DAILY_CRON = "15 3 * * *"',
             'LINKETRY_HEALTH_CRON = "15 * * * *"',
@@ -183,14 +183,15 @@ jobs:
           ensure_r2_bucket() {
             local name="$1"
             local inventory
-            inventory="$(npx wrangler r2 bucket list --json)"
+            inventory="$(npx wrangler r2 bucket list)"
             if ! printf '%s' "$inventory" | node -e '
               let body = "";
               process.stdin.on("data", (chunk) => body += chunk);
               process.stdin.on("end", () => {
-                const parsed = JSON.parse(body);
-                const items = Array.isArray(parsed) ? parsed : parsed.result || [];
-                process.exit(items.some((item) => item.name === process.argv[1]) ? 0 : 1);
+                const name = process.argv[1];
+                const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                const exactCell = new RegExp(`(?:^|[^A-Za-z0-9_-])${escaped}(?:$|[^A-Za-z0-9_-])`, "m");
+                process.exit(exactCell.test(body) ? 0 : 1);
               });
             ' "$name"; then
               npx wrangler r2 bucket create "$name"
@@ -200,14 +201,15 @@ jobs:
           ensure_queue() {
             local name="$1"
             local inventory
-            inventory="$(npx wrangler queues list --json)"
+            inventory="$(npx wrangler queues list)"
             if ! printf '%s' "$inventory" | node -e '
               let body = "";
               process.stdin.on("data", (chunk) => body += chunk);
               process.stdin.on("end", () => {
-                const parsed = JSON.parse(body);
-                const items = Array.isArray(parsed) ? parsed : parsed.result || [];
-                process.exit(items.some((item) => (item.queue_name || item.name) === process.argv[1]) ? 0 : 1);
+                const name = process.argv[1];
+                const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                const exactCell = new RegExp(`(?:^|[^A-Za-z0-9_-])${escaped}(?:$|[^A-Za-z0-9_-])`, "m");
+                process.exit(exactCell.test(body) ? 0 : 1);
               });
             ' "$name"; then
               npx wrangler queues create "$name" --message-retention-period-secs 60

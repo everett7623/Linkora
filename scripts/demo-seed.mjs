@@ -569,7 +569,7 @@ ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.upd
 export function buildDemoArtifacts({
   origin: originValue,
   now: nowValue = new Date(),
-  version = '0.25.0',
+  version = '0.25.1',
 }) {
   const origin = normalizeOrigin(originValue);
   const now = new Date(nowValue);
@@ -631,7 +631,7 @@ export function buildDemoArtifacts({
 }
 
 function parseArgs(argv) {
-  const result = { origin: '', output: '', artifactDir: '', version: '0.25.0' };
+  const result = { origin: '', output: '', artifactDir: '', version: '0.25.1' };
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     if (argument === '--origin') result.origin = argv[++index] ?? '';

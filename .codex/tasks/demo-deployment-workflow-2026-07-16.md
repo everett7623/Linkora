@@ -2,7 +2,7 @@
 
 ## Status
 
-Deployment isolation completed in Linketry v0.18.0; public read-only controls completed in v0.23.0; `demo.linketry.com` went live in v0.24.0; responsive Admin parity and isolated advanced resources completed in v0.25.0.
+Deployment isolation completed in Linketry v0.18.0; public read-only controls completed in v0.23.0; `demo.linketry.com` went live in v0.24.0; responsive Admin parity and isolated advanced resources completed in v0.25.0; current Wrangler inventory compatibility was repaired in v0.25.1.
 
 ## Scope
 
@@ -20,6 +20,7 @@ Deployment isolation completed in Linketry v0.18.0; public read-only controls co
 - [x] Create the protected `linketry-demo` GitHub environment and repository-level production protection inventory.
 - [x] Add safety-gated Demo-only R2 buckets and Queue plus synthetic backup/report artifacts.
 - [x] Populate all advanced Admin sections with deterministic synthetic records.
+- [x] Keep R2 and Queue discovery compatible with current Wrangler table output.
 
 ## Safety Boundary
 

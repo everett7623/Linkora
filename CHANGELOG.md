@@ -13,6 +13,19 @@ _(none)_
 
 ---
 
+## [0.25.1] - 2026-07-17
+
+### Fixed
+
+- Updated isolated Demo R2 and Queue discovery for Wrangler versions whose list commands no longer support `--json`.
+- Added deployment-policy coverage that rejects the removed JSON-list flags before a live Demo deployment can reach Cloudflare writes.
+
+### Security
+
+- Preserved the fail-closed Demo safety gate, separate-account credentials, protected production inventories, and manual-only deployment trigger.
+
+---
+
 ## [0.25.0] - 2026-07-17
 
 ### Added

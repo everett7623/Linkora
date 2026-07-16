@@ -30,7 +30,7 @@ test('Demo artifacts match the seeded R2 object keys and contain valid sample fi
   const artifacts = buildDemoArtifacts({
     origin: 'https://demo-go.linketry.com',
     now: new Date('2026-07-17T12:00:00.000Z'),
-    version: '0.25.0',
+    version: '0.25.1',
   });
 
   assert.deepEqual(

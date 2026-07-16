@@ -47,6 +47,15 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
+## ✅ Completed - Demo Deployment Compatibility (v0.25.1)
+
+- [x] Remove unsupported Wrangler JSON flags from isolated Demo R2 and Queue inventory checks
+- [x] Match exact Demo resource names in current Wrangler table output before creating resources
+- [x] Add deployment-policy regression coverage and keep the safety gate ahead of every Cloudflare write
+- [x] Leave production deployment inputs, resources, redirects, and data unchanged
+
+---
+
 ## ✅ Completed - Demo Parity And Responsive Admin (v0.25.0)
 
 - [x] Default fresh public Demo sessions to the complete Advanced navigation without overriding stored user choices
