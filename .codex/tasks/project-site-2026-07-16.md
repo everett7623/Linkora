@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation complete. Independent Cloudflare Pages project created; workflow deployment and `linketry.com` custom-domain activation remain to be verified after push.
+Complete. The independent Pages project is deployed and `linketry.com` is active and verified.
 
 ## Completed
 
@@ -14,17 +14,17 @@ Implementation complete. Independent Cloudflare Pages project created; workflow 
 - [x] Created the isolated `linketry-site` Cloudflare Pages project without changing Worker, D1, KV, R2, Queue, Admin, or short-link resources.
 - [x] Recorded a current production D1 point-in-time restore bookmark and confirmed there are no pending migrations before the public-launch deployment.
 
-## Remaining
+## Activation
 
-- [ ] Deploy the reviewed build to `https://linketry-site.pages.dev` through GitHub Actions.
-- [ ] Add the purchased `linketry.com` apex domain to the Pages project's Custom domains after Cloudflare nameservers are active.
-- [ ] Verify project-site status, canonical metadata, security headers, navigation links, and mobile layout on the deployed domain.
+- [x] Deployed the reviewed build to `https://linketry-site.pages.dev` through GitHub Actions.
+- [x] Added the purchased `linketry.com` apex domain to the Pages project's Custom domains.
+- [x] Verified apex DNS, TLS, HTTP 200, and canonical/OpenGraph metadata on `https://linketry.com`.
 
 ## Safety Notes
 
 - Redirect code and production data paths were not changed.
 - The project site has no authentication, database, storage, secret, or Admin-token dependency.
-- Apex DNS is not changed automatically; Cloudflare Pages custom-domain association must precede DNS activation.
+- Apex DNS remains owner-managed; the active Cloudflare Pages custom-domain association must be preserved.
 
 ## Verification
 

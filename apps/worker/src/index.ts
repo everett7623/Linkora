@@ -12,13 +12,14 @@ import { cleanupBackupRetention } from './backups/retention';
 import { emitWebhook } from './webhooks/index';
 import { cleanupAnalyticsRetention } from './db/analytics';
 import type { VisitQueueMessage } from '@linketry/shared';
-import { jsonOk, notFound } from './utils/response';
+import { jsonError, jsonOk, notFound } from './utils/response';
 import { resolvePublicLocale } from './utils/publicPages';
 import { getPublicPageMessage } from './utils/pageTemplates';
 import { DEFAULT_DAILY_CRON, scheduledWorkForCron } from './health/schedulePolicy';
 import { getDailyCron, getHealthCron, getRuntimeVersion } from './config/runtime';
 import { registerAdminApiRoutes } from './routes/api';
 import { isLegacyApiPath } from './routes/apiVersion';
+import { checkDemoRateLimit, isPublicReadOnlyDemo, isReadOnlyMethod } from './demo/policy';
 
 const RESERVED_PATHS = new Set([
   'admin',
@@ -44,6 +45,42 @@ app.use(
     allowHeaders: ['Content-Type', 'Authorization'],
   })
 );
+
+app.use('/api/*', async (c, next) => {
+  if (!isPublicReadOnlyDemo(c.env)) {
+    await next();
+    return;
+  }
+
+  const method = c.req.raw.method;
+  if (!isReadOnlyMethod(method)) {
+    return jsonError('The public Linketry Demo is read-only.', 403);
+  }
+
+  if (method === 'OPTIONS') {
+    await next();
+    return;
+  }
+
+  try {
+    const rateLimit = await checkDemoRateLimit(c.env, c.req.raw);
+    c.header('X-RateLimit-Limit', String(rateLimit.limit));
+    if (!rateLimit.allowed) {
+      c.header('Retry-After', String(rateLimit.retryAfterSeconds));
+      return jsonError('Demo request limit exceeded. Please try again shortly.', 429);
+    }
+  } catch (error) {
+    console.error(
+      JSON.stringify({
+        message: 'Demo rate-limit check failed closed',
+        error: error instanceof Error ? error.message : String(error),
+      })
+    );
+    return jsonError('The public Demo is temporarily unavailable.', 503);
+  }
+
+  await next();
+});
 
 app.use('/api/*', async (c, next) => {
   await next();

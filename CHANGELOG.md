@@ -13,6 +13,36 @@ _(none)_
 
 ---
 
+## [0.23.0] - 2026-07-17
+
+### Added
+
+- Added a public read-only Demo build that opens without exposing an Admin token and displays a persistent English/Simplified Chinese safety banner.
+- Added Worker-side write rejection for Demo Admin APIs plus matching browser-side write prevention.
+- Added privacy-safe Demo API abuse control through Cloudflare's native Rate Limiting binding with hashed client keys.
+- Added an idempotent synthetic dataset generator covering links, visits, target analytics, conversions, tags, settings, a Demo domain, and audit samples.
+
+### Changed
+
+- Extended the isolated manual Demo workflow to build in Demo mode, migrate D1, generate and apply synthetic data, deploy Worker/Admin targets, and preserve the existing fail-closed account/resource gate.
+- Added an explicit isolated `workers.dev` routing mode so the Demo account can launch without production-zone DNS or custom-domain permissions.
+- Activated and verified `https://linketry.com` as the canonical Pages-hosted project site and synchronized the GitHub site URL/runtime variables.
+- Updated package/runtime versions, deployment fallbacks, self-hosting examples, progress records, and task records to `0.23.0`.
+
+### Security
+
+- Demo read authentication bypass exists only when `LINKETRY_DEMO_MODE=read-only`; production behavior is unchanged.
+- Demo redirects preserve their normal response path but skip visit/click persistence, preventing public traffic from contaminating the synthetic-only dataset.
+- The protected `linketry-demo` GitHub environment defaults to unconfirmed credentials/isolation and rejects the production account, resource IDs/names, and hostnames before any Cloudflare write.
+- Live Demo provisioning remains blocked until a second Cloudflare account and narrowly scoped credentials are available.
+
+### Tests
+
+- Passed Worker type-check, 72 Worker tests, 37 Admin unit tests, 13 Chromium Admin tests, 38 deployment safety tests, and the Admin production build.
+- Executed the generated seed against local D1 and verified 5 synthetic links, 84 synthetic visits, and 12 synthetic conversions.
+
+---
+
 ## [0.22.0] - 2026-07-16
 
 ### Added

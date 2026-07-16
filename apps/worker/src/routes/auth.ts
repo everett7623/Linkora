@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import type { Env } from '../types';
 import { jsonOk, jsonError } from '../utils/response';
 import { getAdminToken } from '../config/runtime';
+import { isPublicReadOnlyDemo } from '../demo/policy';
 
 const auth = new Hono<{ Bindings: Env }>();
 
@@ -26,6 +27,10 @@ auth.post('/login', async (c) => {
 });
 
 auth.get('/me', (c) => {
+  if (isPublicReadOnlyDemo(c.env)) {
+    return jsonOk({ authenticated: true, role: 'demo', readOnly: true });
+  }
+
   const authHeader = c.req.header('Authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return jsonError('Unauthorized', 401);

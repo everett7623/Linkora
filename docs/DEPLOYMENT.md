@@ -82,7 +82,7 @@ LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_KV_PREVIEW_ID=<your-kv-preview-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.22.0
+LINKETRY_APPROVED_RELEASE=0.23.0
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<output-of-npm-run-deploy:migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true
@@ -106,7 +106,7 @@ If a Worker variable is missing, the workflow skips Worker deploy rather than re
 
 The official Demo never uses the production `Deploy Linketry` workflow. Its manual-only `Deploy Isolated Linketry Demo` workflow reads credentials and variables from the protected `linketry-demo` GitHub environment, requires an exact release/commit/migration approval, and rejects every protected production account, resource, and hostname before a Cloudflare write.
 
-The workflow expects isolated D1, KV, Worker, Pages, token, and domain targets to exist already. It deploys only the Demo Worker and Admin; resource provisioning, synthetic seed data, read-only or scheduled-reset behavior, rate limits, DNS activation, and live smoke tests remain explicit follow-up steps. See [Deployment Preflight](DEPLOYMENT_PREFLIGHT.md#official-demo) for the complete environment contract.
+The workflow expects isolated D1, KV, Worker, Pages, token, and domain targets to exist already. It supports the isolated account's automatic `workers.dev` hostname without treating it as a custom domain, builds the Admin in public read-only mode, rejects every mutating Admin API request, suppresses real-visitor analytics writes, applies a native per-client Worker rate limit, and idempotently refreshes a synthetic D1 dataset after migrations. It does not provision resources or modify DNS, so isolated-account provisioning, optional branded-domain activation, and live smoke tests remain explicit follow-up steps. See [Deployment Preflight](DEPLOYMENT_PREFLIGHT.md#official-demo) for the complete environment contract.
 
 ## Smoke Checks
 

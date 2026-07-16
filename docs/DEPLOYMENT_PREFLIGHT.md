@@ -136,19 +136,22 @@ LINKETRY_DEMO_APPROVED_RELEASE=<exact package version>
 LINKETRY_DEMO_APPROVED_COMMIT=<exact 40-character GitHub commit SHA>
 LINKETRY_DEMO_APPROVED_MIGRATIONS_SHA256=<reviewed migration digest>
 LINKETRY_DEMO_WORKER_NAME=linketry-demo-worker
-LINKETRY_DEMO_WORKER_DOMAINS=<isolated Demo short-link hostname>
-LINKETRY_DEMO_API_URL=https://<isolated Demo short-link hostname>
+LINKETRY_DEMO_USE_WORKERS_DEV=true
+LINKETRY_DEMO_WORKER_DOMAINS=linketry-demo-worker.<Demo account subdomain>.workers.dev
+LINKETRY_DEMO_API_URL=https://linketry-demo-worker.<Demo account subdomain>.workers.dev
 LINKETRY_DEMO_ADMIN_URL=https://linketry-demo-admin.pages.dev
 LINKETRY_DEMO_PAGES_PROJECT=linketry-demo-admin
 LINKETRY_DEMO_D1_DATABASE_NAME=linketry-demo-d1
 LINKETRY_DEMO_D1_DATABASE_ID=<isolated Demo D1 ID>
 LINKETRY_DEMO_KV_NAMESPACE_ID=<isolated Demo KV ID>
-LINKETRY_DEMO_COMPATIBILITY_DATE=2026-07-16
+LINKETRY_DEMO_COMPATIBILITY_DATE=2026-07-17
 LINKETRY_PROTECTED_ACCOUNT_IDS=<comma-separated production Cloudflare account IDs>
 LINKETRY_PROTECTED_RESOURCE_IDS=<comma-separated production D1/KV IDs>
 LINKETRY_PROTECTED_RESOURCE_NAMES=<comma-separated production Worker/Pages/D1/R2/Queue names>
 LINKETRY_PROTECTED_DOMAINS=<comma-separated production hostnames>
 ```
+
+The initial isolated launch should use the Demo account's automatic `workers.dev` hostname. With `LINKETRY_DEMO_USE_WORKERS_DEV=true`, the workflow enables `workers_dev` and does not misconfigure that hostname as a custom domain. A future `demo.linketry.com` or dedicated short domain requires a separately reviewed, least-privilege DNS/custom-domain arrangement and must never grant the Demo token access to production resources.
 
 Generate the migration digest with `npm run deploy:migration-digest`. Update the approved release, commit, and digest for every reviewed Demo deployment.
 
@@ -161,7 +164,7 @@ Run **Deploy Isolated Linketry Demo** from GitHub Actions and type the exact con
 - the selected resources exist in the Demo account;
 - the release, Git commit, non-destructive migration policy, and reviewed migration digest match.
 
-The workflow deploys only the isolated Demo Worker and Admin. It does not deploy the production project site, modify DNS, copy production data, provision resources, seed data, reset data, or configure rate limits. Synthetic seed data, read-only or scheduled-reset behavior, abuse controls, and live smoke tests remain required before public launch.
+The workflow deploys only the isolated Demo Worker and Admin. After the safety gate and migrations, it idempotently refreshes synthetic links, visits, conversions, tags, a Demo domain, settings, and audit samples. The Demo Admin is built without a login prompt, browser and Worker layers reject writes, redirect analytics does not record real visitors, and API reads use Cloudflare's native Rate Limiting binding with a hashed client key and a 120-request/minute policy. The workflow does not deploy the production project site, modify DNS, copy production data, or provision resources. Isolated-account resources, scoped credentials, DNS activation, and live smoke tests remain required before public launch.
 
 ## Admin Token: Choose One Deployment Path
 

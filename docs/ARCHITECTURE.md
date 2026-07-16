@@ -22,6 +22,7 @@ This document describes the current runtime architecture. It is derived from the
 | Admin Pages app   | React operator interface                                              | Recommended |
 | Cloudflare R2     | Scheduled and operator-created backup snapshots                       | No          |
 | Cloudflare Queue  | Asynchronous visit ingestion                                          | No          |
+| Rate Limiting     | Native per-client API abuse control for the official public Demo      | Demo only   |
 | Daily Cron        | Backups, retention cleanup, reports, and aggregate traffic alerts     | No          |
 | Health Cron       | Rotating target checks and alerts                                     | No          |
 | Project site      | Public Linketry product and documentation site                        | No          |
@@ -36,7 +37,7 @@ The Worker and Admin are separate deployments. The Admin is a static client and 
 | GET /:slug        | Resolves and redirects a public short link                            |
 | POST /:slug       | Continues a password-protected link after form submission             |
 | GET /stats/:token | Renders an explicitly enabled, privacy-limited public statistics page |
-| /api/v1/*         | Requires the Admin token or a scoped API token                        |
+| /api/v1/*         | Requires the Admin/scoped token; the isolated read-only Demo permits safe methods only |
 
 Reserved paths such as api, health, admin, login, settings, assets, and static are never treated as slugs.
 
@@ -103,6 +104,7 @@ Authenticated Admin startup performs a cached GitHub version check. It reads the
 | Work                      | Execution                                            | Failure behavior                                          |
 | ------------------------- | ---------------------------------------------------- | --------------------------------------------------------- |
 | Visit storage             | Queue when configured; direct ctx.waitUntil fallback | Redirect continues                                        |
+| Demo visit storage        | Skipped in explicit public read-only Demo mode         | Redirect continues; synthetic analytics remain unchanged |
 | Daily aggregation         | Part of asynchronous analytics storage               | Redirect continues                                        |
 | Redirect target analytics | Separate visit_targets write                         | Core visit and redirect continue                          |
 | Webhook delivery          | Background task                                      | Primary mutation continues                                |

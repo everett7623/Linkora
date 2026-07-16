@@ -4,6 +4,8 @@ import {
   removeBrowserSetting,
   writeBrowserSetting,
 } from '../utils/browserStorage';
+import { IS_PUBLIC_DEMO } from '../config/demo';
+import { DEMO_READ_ONLY_ERROR, isReadOnlyRequest } from '../utils/demoMode';
 
 export { normalizeApiBase } from '../utils/apiBase';
 
@@ -23,6 +25,7 @@ export class ApiError extends Error {
 }
 
 export function getApiBaseOverride(): string {
+  if (IS_PUBLIC_DEMO) return '';
   try {
     return normalizeApiBase(readBrowserSetting('apiBase') ?? '');
   } catch {
@@ -35,10 +38,11 @@ export function getBuildApiBase(): string {
 }
 
 export function getApiBase(): string {
-  return getApiBaseOverride() || BUILD_API_BASE;
+  return IS_PUBLIC_DEMO ? BUILD_API_BASE : getApiBaseOverride() || BUILD_API_BASE;
 }
 
 export function setApiBaseOverride(value: string): string {
+  if (IS_PUBLIC_DEMO) return BUILD_API_BASE;
   const normalized = normalizeApiBase(value);
   try {
     if (normalized) {
@@ -72,12 +76,16 @@ export async function apiFetch<T>(
   apiBase = getApiBase(),
   timeoutMs = API_TIMEOUT_MS
 ): Promise<T> {
+  if (IS_PUBLIC_DEMO && !isReadOnlyRequest(options.method)) {
+    throw new ApiError(403, DEMO_READ_ONLY_ERROR);
+  }
+
   const token = readBrowserSetting('token');
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
   };
-  if (token) {
+  if (token && !IS_PUBLIC_DEMO) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
@@ -142,7 +150,7 @@ export async function apiDelete<T>(path: string): Promise<T> {
 export async function downloadFile(path: string, filename: string): Promise<void> {
   const token = readBrowserSetting('token');
   const headers: Record<string, string> = {};
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (token && !IS_PUBLIC_DEMO) headers['Authorization'] = `Bearer ${token}`;
 
   const res = await fetchWithTimeout(`${getApiBase()}${path}`, { headers });
   if (!res.ok) throw new ApiError(res.status, `Download failed: HTTP ${res.status}`);

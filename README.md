@@ -24,7 +24,7 @@ Linketry is a self-hosted link management, analytics and monitoring platform.
 
 > **New to self-hosting?** Follow the [quick-start guide](docs/SELF_HOSTING.md) and run the [read-only deployment preflight](docs/DEPLOYMENT_PREFLIGHT.md) before provisioning or deployment. Installations older than 0.10 must use the [non-destructive upgrade guide](docs/UPGRADING_PRE_0_10.md) and keep their current D1/KV/R2/Queue bindings until migration is verified.
 
-The official project site lives in `apps/site` and is deployed independently from the Admin. Its automatic Pages URL is [linketry-site.pages.dev](https://linketry-site.pages.dev); `linketry.com` becomes canonical after the purchased apex domain is added to the Pages project and its Cloudflare nameservers are active. The official Demo has a separate manual deployment workflow and must pass protected-account/resource isolation checks before any Cloudflare write; it is not live until synthetic data and a read-only or reset policy are completed.
+The official project site lives in `apps/site`, is deployed independently from the Admin, and is live at [linketry.com](https://linketry.com); [linketry-site.pages.dev](https://linketry-site.pages.dev) remains its automatic Pages URL. The official Demo is built from this same repository, not a second repository, but uses a separate manual workflow, Cloudflare account, Worker, Pages project, D1 database, KV namespace, credentials, and hostname inventory. Its public read-only mode, synthetic seed data, and native Worker abuse limit are implemented; the live Demo remains blocked until the isolated Cloudflare resources and scoped credentials are supplied and verified.
 
 ---
 

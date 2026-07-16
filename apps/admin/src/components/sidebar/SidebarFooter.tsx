@@ -1,10 +1,11 @@
 import React from 'react';
-import { LogOut } from 'lucide-react';
+import { Eye, LogOut } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useAuth } from '../../contexts/AuthContext';
 import { useAdminMode } from '../../contexts/AdminModeContext';
 import { useLocale } from '../../contexts/LocaleContext';
 import { SidebarUtilityActions } from './SidebarUtilityActions';
+import { IS_PUBLIC_DEMO } from '../../config/demo';
 
 export function SidebarFooter({ compact }: { compact: boolean }) {
   const { logout } = useAuth();
@@ -26,14 +27,21 @@ export function SidebarFooter({ compact }: { compact: boolean }) {
           {t(mode)}
         </span>
       </button>
-      <button
-        type="button"
-        onClick={logout}
-        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-red-400"
-      >
-        <LogOut size={18} aria-hidden="true" />
-        {t('logout')}
-      </button>
+      {IS_PUBLIC_DEMO ? (
+        <div className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-amber-300">
+          <Eye size={18} aria-hidden="true" />
+          {t('demoReadOnlyLabel')}
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={logout}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-red-400"
+        >
+          <LogOut size={18} aria-hidden="true" />
+          {t('logout')}
+        </button>
+      )}
     </div>
   );
 }

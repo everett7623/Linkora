@@ -13,6 +13,7 @@ One item in "In Progress" at a time whenever possible.
 
 ## 🟡 Next — Operations And UX Planning
 
+- [ ] Provision and smoke-test the isolated public Demo after a second Cloudflare account and scoped token are available
 - [ ] V9+: Integrate next high-value Shlink capabilities into Linketry (multi-segment slugs, extra-path forwarding, expired-link cleanup)
 - [ ] Activate the owner-managed everettlabs.dev/support page and optionally redirect /coffee to it
 
@@ -45,6 +46,22 @@ One item in "In Progress" at a time whenever possible.
 - [x] V8: Add accessible per-browser light, dark, and system theme preferences
 - [x] V9: Add public read-only stats pages with privacy controls
 - [x] V9: Improve bot classification and conversion attribution
+
+---
+
+## ✅ Completed — Official Site And Public Read-Only Demo Software (v0.23.0)
+
+- [x] Verify `linketry.com` DNS, TLS, HTTP, and canonical metadata on the independent Pages project
+- [x] Update GitHub site/runtime variables and create the protected `linketry-demo` environment
+- [x] Protect the production Cloudflare account, resource IDs/names, and domains from Demo overlap
+- [x] Add no-login public Demo Admin access with an EN/ZH read-only banner
+- [x] Reject Demo writes in the Admin API client and Worker middleware
+- [x] Preserve redirect responses while suppressing real-visitor analytics writes in Demo mode
+- [x] Add hashed-client native Worker rate limiting for Demo API reads
+- [x] Seed five synthetic links, 84 visits, 12 conversions, tags, settings, domain, and audit samples
+- [x] Extend the manual isolated workflow to migrate, seed, deploy, and summarize Demo targets
+- [x] Support the isolated account's `workers.dev` hostname without production DNS access
+- [x] Keep live deployment fail-closed until separate-account resources and scoped credentials are supplied
 
 ---
 

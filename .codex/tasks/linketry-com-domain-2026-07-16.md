@@ -10,4 +10,7 @@ Set the purchased `linketry.com` domain as Linketry's official project website.
 - [x] Update root package homepage metadata.
 - [x] Update progress, tasks, changelog, and rebrand records.
 - [x] Update the GitHub repository homepage.
-- [x] Keep DNS and website hosting as a separate follow-up because the domain is not yet resolving.
+- [x] Kept DNS and website hosting as a separate activation step.
+- [x] Activated `linketry.com` on the `linketry-site` Pages project.
+- [x] Verified Cloudflare DNS, TLS, HTTP 200, and canonical/OpenGraph metadata.
+- [x] Updated the GitHub `LINKETRY_SITE_URL` repository variable to `https://linketry.com`.

@@ -69,6 +69,8 @@ export async function runDemoDeploymentWorkflowGate({
     readEnv(env, 'LINKETRY_PAGES_PROJECT'),
     readEnv(env, 'LINKETRY_D1_DATABASE_NAME'),
   ];
+  const workerDomains = splitList(readEnv(env, 'LINKETRY_WORKER_DOMAINS'));
+  const useWorkersDev = isTrue(readEnv(env, 'LINKETRY_DEMO_USE_WORKERS_DEV'));
 
   addCheck(
     checks,
@@ -76,6 +78,19 @@ export async function runDemoDeploymentWorkflowGate({
     'manual-trigger',
     'The Demo deployment was started manually.',
     'The isolated Demo workflow may only run through workflow_dispatch.'
+  );
+  addCheck(
+    checks,
+    useWorkersDev
+      ? workerDomains.length === 1 && workerDomains[0].endsWith('.workers.dev')
+      : workerDomains.every((domain) => !domain.endsWith('.workers.dev')),
+    'demo-worker-routing',
+    useWorkersDev
+      ? 'The Demo uses one isolated-account workers.dev hostname.'
+      : 'The Demo uses reviewed custom-domain routing.',
+    useWorkersDev
+      ? 'LINKETRY_DEMO_USE_WORKERS_DEV=true requires exactly one *.workers.dev hostname.'
+      : 'A *.workers.dev hostname requires LINKETRY_DEMO_USE_WORKERS_DEV=true so it is not configured as a custom domain.'
   );
   addCheck(
     checks,

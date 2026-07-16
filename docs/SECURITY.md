@@ -19,6 +19,12 @@ API tokens are stored as SHA-256 hashes in D1 and can be scoped as `read`, `writ
 
 All `/api/v1/*` routes must pass through `src/auth/index.ts`.
 
+### Official Public Demo Exception
+
+The official Demo sets `LINKETRY_DEMO_MODE=read-only` only in its isolated Worker. In that mode, GET/HEAD/OPTIONS Admin API requests may run without an owner token so the public can explore synthetic data. Every mutating API method is rejected before routing, the Admin client independently rejects writes, and real redirect visits are not persisted. API reads also pass through a dedicated Cloudflare Rate Limiting binding keyed by a hash of the client address. If that binding is missing or fails, the Demo API fails closed with 503.
+
+Production and normal self-hosted configurations must not set `LINKETRY_DEMO_MODE`. The Demo workflow also requires a separate Cloudflare account, resource inventory, scoped credentials, and protected production account/resource/domain lists.
+
 ## URL Safety
 
 Long URLs must use `http://` or `https://`.

@@ -4,7 +4,7 @@ import test from 'node:test';
 import { inspectMigrations } from './deployment-workflow-gate.mjs';
 import { runDemoDeploymentWorkflowGate } from './deployment-demo-workflow-gate.mjs';
 
-const version = '0.22.0';
+const version = '0.23.0';
 const commit = 'a'.repeat(40);
 const migrations = [
   { name: '0001_init.sql', source: 'CREATE TABLE links (id TEXT PRIMARY KEY);' },
@@ -193,6 +193,32 @@ test('Demo gate rejects compatibility-date config injection', async () => {
   assert.equal(report.checks.find((check) => check.code === 'compatibility-date')?.status, 'fail');
 });
 
+test('Demo gate accepts workers.dev only through the explicit isolated routing mode', async () => {
+  const { runner } = createRunner();
+  const env = {
+    ...baseEnv,
+    LINKETRY_DEMO_USE_WORKERS_DEV: 'true',
+    LINKETRY_WORKER_DOMAINS: 'linketry-demo-worker.demo-account.workers.dev',
+    LINKETRY_API_URL: 'https://linketry-demo-worker.demo-account.workers.dev',
+  };
+  const report = await runDemoDeploymentWorkflowGate({ env, version, migrations, runner });
+
+  assert.equal(report.ok, true);
+  assert.equal(report.checks.find((check) => check.code === 'demo-worker-routing')?.status, 'pass');
+
+  const invalid = await runDemoDeploymentWorkflowGate({
+    env: { ...env, LINKETRY_DEMO_USE_WORKERS_DEV: 'false' },
+    version,
+    migrations,
+    runner,
+  });
+  assert.equal(invalid.ok, false);
+  assert.equal(
+    invalid.checks.find((check) => check.code === 'demo-worker-routing')?.status,
+    'fail'
+  );
+});
+
 test('Demo workflow keeps its gate before all Cloudflare writes and uses Demo-only credentials', () => {
   const workflow = readFileSync(
     new URL('../.github/workflows/deploy-demo.yml', import.meta.url),
@@ -201,18 +227,28 @@ test('Demo workflow keeps its gate before all Cloudflare writes and uses Demo-on
   const gate = workflow.indexOf('- name: Enforce isolated Demo safety gate');
   const secret = workflow.indexOf('- name: Set isolated Demo Admin token');
   const migrations = workflow.indexOf('- name: Apply isolated Demo migrations');
+  const seed = workflow.indexOf('- name: Seed isolated synthetic Demo data');
   const worker = workflow.indexOf('- name: Deploy isolated Demo Worker');
   const admin = workflow.indexOf('- name: Deploy isolated Demo Admin');
 
   assert.ok(gate > -1);
   assert.ok(gate < secret);
   assert.ok(secret < migrations);
-  assert.ok(migrations < worker);
+  assert.ok(migrations < seed);
+  assert.ok(seed < worker);
   assert.ok(worker < admin);
   assert.match(workflow, /workflow_dispatch:/);
   assert.doesNotMatch(workflow, /\n  push:/);
   assert.match(workflow, /secrets\.LINKETRY_DEMO_CLOUDFLARE_API_TOKEN/);
   assert.match(workflow, /secrets\.LINKETRY_DEMO_CLOUDFLARE_ACCOUNT_ID/);
+  assert.match(workflow, /VITE_LINKETRY_DEMO_MODE: 'true'/);
+  assert.match(workflow, /LINKETRY_DEMO_USE_WORKERS_DEV/);
+  assert.match(workflow, /workers_dev = true/);
+  assert.match(workflow, /LINKETRY_DEMO_MODE = "read-only"/);
+  assert.match(workflow, /name = "DEMO_RATE_LIMITER"/);
+  assert.match(workflow, /limit = 120/);
+  assert.match(workflow, /period = 60/);
+  assert.match(workflow, /scripts\/demo-seed\.mjs/);
   assert.doesNotMatch(workflow, /secrets\.CLOUDFLARE_API_TOKEN/);
   assert.doesNotMatch(workflow, /Ensure Linketry Admin DNS|Deploy project site/);
 });

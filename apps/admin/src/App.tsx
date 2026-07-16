@@ -22,6 +22,7 @@ import { Groups } from './pages/Groups';
 import { HealthChecks } from './pages/HealthChecks';
 import { Setup } from './pages/Setup';
 import { Operations } from './pages/Operations';
+import { IS_PUBLIC_DEMO } from './config/demo';
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { authenticated, loading } = useAuth();
@@ -38,7 +39,10 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
 export function App() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
+      <Route
+        path="/login"
+        element={IS_PUBLIC_DEMO ? <Navigate to="/overview" replace /> : <Login />}
+      />
       <Route
         path="/"
         element={

@@ -26,6 +26,7 @@ jobs:
       LINKETRY_ADMIN_TOKEN_OVERRIDE: ${{ secrets.LINKETRY_DEMO_ADMIN_TOKEN }}
       LINKETRY_WORKER_NAME: ${{ vars.LINKETRY_DEMO_WORKER_NAME }}
       LINKETRY_WORKER_DOMAINS: ${{ vars.LINKETRY_DEMO_WORKER_DOMAINS }}
+      LINKETRY_DEMO_USE_WORKERS_DEV: ${{ vars.LINKETRY_DEMO_USE_WORKERS_DEV }}
       LINKETRY_API_URL: ${{ vars.LINKETRY_DEMO_API_URL }}
       LINKETRY_ADMIN_URL: ${{ vars.LINKETRY_DEMO_ADMIN_URL }}
       LINKETRY_PAGES_PROJECT: ${{ vars.LINKETRY_DEMO_PAGES_PROJECT }}
@@ -81,6 +82,7 @@ jobs:
         run: npm run build --workspace=apps/admin
         env:
           VITE_LINKETRY_API_URL: ${{ env.LINKETRY_API_URL }}
+          VITE_LINKETRY_DEMO_MODE: 'true'
 
       - name: Generate isolated Demo Worker config
         run: |
@@ -97,6 +99,9 @@ jobs:
           const routes = domains
             .map((domain) => `  { pattern = "${domain}", custom_domain = true }`)
             .join(',\n');
+          const routing = env.LINKETRY_DEMO_USE_WORKERS_DEV === 'true'
+            ? ['workers_dev = true']
+            : ['routes = [', routes, ']'];
           const kv = [
             '[[kv_namespaces]]',
             'binding = "KV"',
@@ -108,14 +113,20 @@ jobs:
           const config = [
             `name = "${env.LINKETRY_WORKER_NAME || ''}"`,
             'main = "src/index.ts"',
-            `compatibility_date = "${env.LINKETRY_COMPATIBILITY_DATE || '2026-07-16'}"`,
+            `compatibility_date = "${env.LINKETRY_COMPATIBILITY_DATE || '2026-07-17'}"`,
             'compatibility_flags = ["nodejs_compat"]',
-            'routes = [',
-            routes,
-            ']',
+            ...routing,
             '',
             '[vars]',
-            `LINKETRY_VERSION = "${env.RESOLVED_LINKETRY_VERSION || '0.22.0'}"`,
+            `LINKETRY_VERSION = "${env.RESOLVED_LINKETRY_VERSION || '0.23.0'}"`,
+            'LINKETRY_DEMO_MODE = "read-only"',
+            '',
+            '[[ratelimits]]',
+            'name = "DEMO_RATE_LIMITER"',
+            'namespace_id = "1001"',
+            '  [ratelimits.simple]',
+            '  limit = 120',
+            '  period = 60',
             '',
             '[[d1_databases]]',
             'binding = "DB"',
@@ -144,6 +155,20 @@ jobs:
           npx wrangler d1 migrations apply "$LINKETRY_D1_DATABASE_NAME" \
             --remote \
             --config wrangler.demo.toml
+        working-directory: apps/worker
+
+      - name: Generate isolated synthetic Demo data
+        run: |
+          node scripts/demo-seed.mjs \
+            --origin "$LINKETRY_API_URL" \
+            --output "$RUNNER_TEMP/linketry-demo-seed.sql"
+
+      - name: Seed isolated synthetic Demo data
+        run: |
+          npx wrangler d1 execute "$LINKETRY_D1_DATABASE_NAME" \
+            --remote \
+            --config wrangler.demo.toml \
+            --file "$RUNNER_TEMP/linketry-demo-seed.sql"
         working-directory: apps/worker
 
       - name: Deploy isolated Demo Worker

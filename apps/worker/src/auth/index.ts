@@ -4,11 +4,16 @@ import type { ApiTokenScope } from '@linketry/shared';
 import { getActiveApiTokenByHash, parseApiTokenScopes, touchApiTokenLastUsed } from '../db/index';
 import { now, sha256 } from '../utils/id';
 import { getAdminToken } from '../config/runtime';
+import { isPublicReadOnlyDemo, isReadOnlyMethod } from '../demo/policy';
 
 export async function requireAuth(
   c: Context<{ Bindings: Env }>,
   requiredScope = scopeForMethod(c.req.raw.method)
 ): Promise<Response | null> {
+  if (isPublicReadOnlyDemo(c.env) && isReadOnlyMethod(c.req.raw.method)) {
+    return null;
+  }
+
   const authHeader = c.req.header('Authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return authError('Unauthorized', 401);

@@ -45,6 +45,10 @@ export const messages = {
     basic: 'Basic',
     advanced: 'Advanced',
     logout: 'Logout',
+    demoReadOnlyLabel: 'Read-only Demo',
+    demoReadOnlyTitle: 'Public Linketry Demo · Read only',
+    demoReadOnlyDescription:
+      'All displayed data is synthetic. Creating, editing, deleting, importing, and configuration changes are disabled.',
     adminSubtitle: 'Enter your admin token to continue',
     adminToken: 'Admin Token',
     enterToken: 'Enter your admin token',
@@ -236,6 +240,10 @@ export const messages = {
     basic: '基础',
     advanced: '高级',
     logout: '退出登录',
+    demoReadOnlyLabel: '只读演示',
+    demoReadOnlyTitle: 'Linketry 公开演示 · 只读模式',
+    demoReadOnlyDescription:
+      '页面中的数据均为合成演示数据；创建、编辑、删除、导入和配置修改均已禁用。',
     adminSubtitle: '输入管理员令牌以继续',
     adminToken: '管理员令牌',
     enterToken: '输入管理员令牌',

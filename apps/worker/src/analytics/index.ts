@@ -1,10 +1,17 @@
-import type { Link, KVCacheEntry, VisitLinkSnapshot, VisitQueueMessage, VisitRequestSnapshot } from '@linketry/shared';
+import type {
+  Link,
+  KVCacheEntry,
+  VisitLinkSnapshot,
+  VisitQueueMessage,
+  VisitRequestSnapshot,
+} from '@linketry/shared';
 import type { Env } from '../types';
 import { generateId, now, sha256 } from '../utils/id';
 import { incrementClicks, insertVisit, upsertDailyStats } from '../db/index';
 import { insertVisitTarget } from '../db/analytics';
 import { setCachedLink } from '../cache/index';
 import { isLikelyBot } from './botDetection';
+import { isPublicReadOnlyDemo } from '../demo/policy';
 
 function detectBrowser(ua: string): string {
   if (/Edg\//i.test(ua)) return 'Edge';
@@ -38,6 +45,7 @@ export async function recordVisit(
   domain: string,
   target?: VisitQueueMessage['target']
 ): Promise<void> {
+  if (isPublicReadOnlyDemo(env)) return;
   const message = createVisitQueueMessage(link, request, domain, target);
   await recordVisitMessage(env, message);
 }
@@ -49,9 +57,9 @@ export async function queueOrRecordVisit(
   domain: string,
   target?: VisitQueueMessage['target']
 ): Promise<void> {
+  if (isPublicReadOnlyDemo(env)) return;
   const message = createVisitQueueMessage(link, request, domain, target);
-  const needsImmediateClickAccounting =
-    link.max_clicks !== null && link.max_clicks !== undefined;
+  const needsImmediateClickAccounting = link.max_clicks !== null && link.max_clicks !== undefined;
 
   if (!env.VISITS_QUEUE || needsImmediateClickAccounting) {
     await recordVisitMessage(env, message);
@@ -69,10 +77,12 @@ export async function processVisitQueueBatch(
   env: Env,
   batch: MessageBatch<VisitQueueMessage>
 ): Promise<void> {
+  if (isPublicReadOnlyDemo(env)) return;
   await Promise.all(batch.messages.map((message) => recordVisitMessage(env, message.body)));
 }
 
 export async function recordVisitMessage(env: Env, message: VisitQueueMessage): Promise<void> {
+  if (isPublicReadOnlyDemo(env)) return;
   try {
     const { link, request, domain } = message;
     const ua = request.user_agent ?? '';
@@ -131,7 +141,7 @@ export async function recordVisitMessage(env: Env, message: VisitQueueMessage): 
       slug: link.slug,
       domain: link.domain ?? undefined,
       longUrl: link.long_url,
-      redirectType: (link.redirect_type as 301 | 302),
+      redirectType: link.redirect_type as 301 | 302,
       status: link.status,
       expiresAt: link.expires_at ?? undefined,
       maxClicks: link.max_clicks ?? undefined,

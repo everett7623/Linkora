@@ -6,6 +6,7 @@ import {
   removeBrowserSetting,
   writeBrowserSetting,
 } from '../utils/browserStorage';
+import { IS_PUBLIC_DEMO } from '../config/demo';
 
 interface AuthState {
   authenticated: boolean;
@@ -20,9 +21,14 @@ interface AuthContextValue extends AuthState {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<AuthState>({ authenticated: false, loading: true });
+  const [state, setState] = useState<AuthState>({
+    authenticated: IS_PUBLIC_DEMO,
+    loading: !IS_PUBLIC_DEMO,
+  });
 
   useEffect(() => {
+    if (IS_PUBLIC_DEMO) return;
+
     const stored = readBrowserSetting('token');
     if (!stored) {
       setState({ authenticated: false, loading: false });
@@ -49,6 +55,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = useCallback(async (token: string): Promise<AuthResult> => {
+    if (IS_PUBLIC_DEMO) return 'authenticated';
+
     writeBrowserSetting('token', token);
     const result = await apiLogin(token);
     if (result === 'authenticated') {
@@ -61,6 +69,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
+    if (IS_PUBLIC_DEMO) {
+      setState({ authenticated: true, loading: false });
+      return;
+    }
     removeBrowserSetting('token');
     setState({ authenticated: false, loading: false });
   }, []);

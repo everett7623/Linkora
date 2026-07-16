@@ -2,7 +2,7 @@
 
 Quick reference for what is done, what is in progress, and what is not started.
 
-Last updated: 2026-07-16
+Last updated: 2026-07-17
 
 ---
 
@@ -14,12 +14,26 @@ Last updated: 2026-07-16
 | Admin frontend             | ✅ V8 complete         | EN/ZH, display preferences, themes, updates, table/card views, grouped Sidebar utilities, and traffic-alert controls are browser tested                                                                 |
 | Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
 | Documentation              | ✅ Complete            | README, architecture/development guides, self-hosting, API, analytics, backup/reset, runbooks, and long-term roadmap                                                                                    |
-| Deployment                 | 🟡 External activation | Production is deployed; the project site and isolated manual Demo workflow are prepared; DNS activation and live Demo resources remain                                                                  |
+| Deployment                 | 🟡 Demo provisioning   | Production and `linketry.com` are live; the Demo workflow, read-only controls, rate limit, and synthetic seed are complete; separate-account Demo resources remain                                       |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                                                                                        |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | ✅ 0.22.0              | Privacy-safe scheduled traffic anomaly alerts are implemented and verified locally; production deployment follows the guarded main workflow                                                            |
+| Current version            | ✅ 0.23.0              | The official site is active and the isolated public Demo software/safety layer is implemented and verified locally                                                                                     |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.23.0 Official Site And Public Read-Only Demo
+
+| Area                    | Status              | Notes                                                                                                                     |
+| ----------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Official project site   | ✅ Live             | `https://linketry.com` resolves through `linketry-site` Pages and passed DNS, TLS, HTTP, and canonical metadata checks     |
+| Repository model        | ✅ One repository   | Site, self-hosted product, and Demo share this repository; Demo Cloudflare resources and credentials remain fully isolated |
+| Public Admin            | ✅ Read only        | No login token is exposed; the UI shows an EN/ZH Demo banner and blocks browser-side mutations                            |
+| Worker enforcement      | ✅ Read only        | Mutating Demo API requests return 403, while safe reads can bypass owner authentication only in explicit Demo mode         |
+| Synthetic-only boundary | ✅ Enforced         | Redirects still work, but public visits do not change Demo analytics; deploys refresh an idempotent synthetic dataset      |
+| Abuse control           | ✅ Implemented      | Demo API reads use Cloudflare's native Rate Limiting binding with a hashed client key and 120 requests/minute             |
+| Live Demo resources     | 🟡 External blocker | A second Cloudflare account, scoped token, isolated D1/KV/Worker/Pages, hostname, and live smoke tests are still required  |
 
 ---
 
@@ -148,7 +162,7 @@ Last updated: 2026-07-16
 ## Next Steps
 
 1. Complete deployment Bootstrap with a fresh-account first-link rehearsal; guided provisioning, three-track preflight, production enforcement, and the separate Demo workflow are complete
-2. Activate the prepared project site on the purchased `linketry.com` apex domain, then provision synthetic Demo data and add a read-only or scheduled-reset public policy
+2. Provision the reviewed `linketry-demo-*` resources in a second Cloudflare account, add scoped credentials and a separate Demo Worker hostname, then deploy and run live smoke tests
 3. Add optional Cloudflare Access and asynchronous signed click webhooks without weakening bearer-token recovery or redirect stability
 4. Keep social preview customization, new reviewed locale catalogs, real-time visuals, optional AI, and external clients behind the foundational work
 5. Keep the separate supporter/coffee domain and Shlink retirement operations deferred until their external prerequisites are ready

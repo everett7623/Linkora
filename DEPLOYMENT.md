@@ -383,7 +383,7 @@ On the first successful deployment, the workflow automatically creates `LINKETRY
 
 The public project site is isolated from the Admin under `apps/site`. Maintainers can validate it with `npm run test:site` and `npm run build:site`. Set `LINKETRY_SITE_PROJECT=linketry-site` to deploy the build through the same release-bound workflow.
 
-The automatic preview is `https://linketry-site.pages.dev`. To activate the purchased apex domain, add `linketry.com` under that Pages project's **Custom domains** after the domain is an active Cloudflare zone. Do not create only a manual apex DNS record without associating the custom domain with Pages first.
+The automatic preview is `https://linketry-site.pages.dev`, and the purchased apex is active at `https://linketry.com` through the Pages project's **Custom domains** configuration. Keep the Pages custom-domain association in place; an apex DNS record by itself is not a substitute for that association.
 
 ---
 
