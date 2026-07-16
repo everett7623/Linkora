@@ -43,8 +43,27 @@ test('stores sidebar and table density independently in the current browser', ()
   assert.equal(storage.getItem('linketry_table_density'), 'comfortable');
 });
 
+test('stores the selected Links view only in the current browser', () => {
+  const storage = memoryStorage();
+  writeBrowserSetting('linkView', 'cards', storage);
+
+  assert.equal(storage.getItem('linketry_link_view'), 'cards');
+});
+
 test('stores the theme preference under the canonical Linketry key', () => {
   const storage = memoryStorage();
   writeBrowserSetting('theme', 'system', storage);
   assert.equal(storage.getItem('linketry_theme'), 'system');
+});
+
+test('stores update checks and dismissed versions separately', () => {
+  const storage = memoryStorage();
+  writeBrowserSetting('updateCheck', '{"latestVersion":"0.19.0","checkedAt":1}', storage);
+  writeBrowserSetting('dismissedUpdateVersion', '0.19.0', storage);
+
+  assert.equal(
+    storage.getItem('linketry_update_check'),
+    '{"latestVersion":"0.19.0","checkedAt":1}'
+  );
+  assert.equal(storage.getItem('linketry_dismissed_update_version'), '0.19.0');
 });

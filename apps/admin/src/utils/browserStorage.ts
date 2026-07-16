@@ -1,7 +1,16 @@
 export type BrowserSetting =
-  'adminMode' | 'apiBase' | 'locale' | 'sidebarDensity' | 'tableDensity' | 'theme' | 'token';
+  | 'adminMode'
+  | 'apiBase'
+  | 'dismissedUpdateVersion'
+  | 'linkView'
+  | 'locale'
+  | 'sidebarDensity'
+  | 'tableDensity'
+  | 'theme'
+  | 'token'
+  | 'updateCheck';
 
-interface StorageLike {
+export interface StorageLike {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
   removeItem(key: string): void;
@@ -10,11 +19,14 @@ interface StorageLike {
 const STORAGE_KEYS: Record<BrowserSetting, string> = {
   adminMode: 'linketry_admin_mode',
   apiBase: 'linketry_api_base',
+  dismissedUpdateVersion: 'linketry_dismissed_update_version',
+  linkView: 'linketry_link_view',
   locale: 'linketry.locale',
   sidebarDensity: 'linketry_sidebar_density',
   tableDensity: 'linketry_table_density',
   theme: 'linketry_theme',
   token: 'linketry_token',
+  updateCheck: 'linketry_update_check',
 };
 
 export function readBrowserSetting(

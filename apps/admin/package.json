@@ -1,6 +1,6 @@
 {
   "name": "@linketry/admin",
-  "version": "0.17.0",
+  "version": "0.19.0",
   "author": "everettlabs",
   "license": "GPL-3.0-only",
   "private": true,
@@ -9,7 +9,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "test": "npm run test:unit && npm run test:smoke",
-    "test:unit": "node --experimental-strip-types --test src/utils/adminMode.test.ts src/utils/browserStorage.test.ts src/utils/displayPreferences.test.ts src/utils/linkPassword.test.ts src/utils/theme.test.ts",
+    "test:unit": "node --experimental-strip-types --test src/utils/adminMode.test.ts src/utils/browserStorage.test.ts src/utils/displayPreferences.test.ts src/utils/linkPassword.test.ts src/utils/linkPresentation.test.ts src/utils/linkView.test.ts src/utils/theme.test.ts src/utils/versionCheck.test.ts",
     "test:smoke": "playwright test",
     "preview": "vite preview"
   },

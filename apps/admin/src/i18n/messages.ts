@@ -4,6 +4,8 @@ import { operationsMessages } from './operationsMessages.ts';
 import { observabilityMessages } from './observabilityMessages.ts';
 import { settingsPageMessages } from './settingsPageMessages.ts';
 import { bulkUtmMessages } from './bulkUtmMessages.ts';
+import { updateMessages } from './updateMessages.ts';
+import { linkViewMessages } from './linkViewMessages.ts';
 
 export const messages = {
   en: {
@@ -13,6 +15,8 @@ export const messages = {
     ...observabilityMessages.en,
     ...settingsPageMessages.en,
     ...bulkUtmMessages.en,
+    ...updateMessages.en,
+    ...linkViewMessages.en,
     language: 'Language',
     english: 'English',
     chinese: '简体中文',
@@ -55,7 +59,8 @@ export const messages = {
     unreachableApi:
       'Cannot reach the API origin. Check the URL, deployment status, and CORS settings.',
     invalidToken: 'Invalid token. Please check your LINKETRY_ADMIN_TOKEN.',
-    adminTokenHint: 'LINKETRY_ADMIN_TOKEN is set before deployment as a Wrangler or GitHub Actions secret.',
+    adminTokenHint:
+      'LINKETRY_ADMIN_TOKEN is set before deployment as a Wrangler or GitHub Actions secret.',
     adminTokenHelp: 'Where do I find my admin token?',
     deploymentAccessTitle: 'Your deployment access details',
     deploymentAccessDescription:
@@ -201,6 +206,8 @@ export const messages = {
     ...observabilityMessages['zh-CN'],
     ...settingsPageMessages['zh-CN'],
     ...bulkUtmMessages['zh-CN'],
+    ...updateMessages['zh-CN'],
+    ...linkViewMessages['zh-CN'],
     language: '语言',
     english: 'English',
     chinese: '简体中文',
@@ -242,7 +249,8 @@ export const messages = {
     invalidOrigin: 'API 地址无效，请填写完整 URL，例如 https://go.example.com。',
     unreachableApi: '无法连接 API，请检查地址、部署状态和 CORS 设置。',
     invalidToken: '令牌无效，请检查 LINKETRY_ADMIN_TOKEN。',
-    adminTokenHint: 'LINKETRY_ADMIN_TOKEN 需要在部署前通过 Wrangler 或 GitHub Actions secret 设置。',
+    adminTokenHint:
+      'LINKETRY_ADMIN_TOKEN 需要在部署前通过 Wrangler 或 GitHub Actions secret 设置。',
     adminTokenHelp: '我的管理员令牌在哪里？',
     deploymentAccessTitle: '部署访问方式',
     deploymentAccessDescription: '后台直接使用自动生成的 Pages 地址，Worker 域名用于 API 请求。',

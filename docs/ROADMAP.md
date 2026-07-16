@@ -226,11 +226,11 @@ Ordered delivery:
 
 1. Done: publish an authenticated OpenAPI contract and Swagger documentation, with route drift checks.
 2. Done: warn about duplicate normalized destination URLs during create/edit while allowing intentional duplicates.
-3. In progress: fresh self-hosting now has dry-run-first, confirmation-gated, idempotent D1/KV provisioning with unique names and binding output. Fresh, upgrade, and Demo tracks share redacted preflight checks, D1/KV account verification, and fail-closed isolation checks. The production workflow enforces approved release/commit/migration state plus backup-backed upgrade gates before any Cloudflare write; fresh-account rehearsal remains.
-4. In progress: the independent official project site now covers product positioning, Admin preview, architecture, deployment, docs, roadmap, license, and GitHub, with a safety-gated Pages deployment path. Activate the purchased `linketry.com` apex domain, then launch an isolated Demo using synthetic data, unique resources, read-only or scheduled-reset behavior, rate limits, and a separate Demo short-link host.
+3. In progress: fresh self-hosting now has dry-run-first, confirmation-gated, idempotent D1/KV provisioning with unique names and binding output. Fresh, upgrade, and Demo tracks share redacted preflight checks, D1/KV account verification, and fail-closed isolation checks. The production workflow enforces approved release/commit/migration state plus backup-backed upgrade gates before any Cloudflare write; the separate Demo workflow adds protected-account enforcement and exact release approvals. Fresh-account rehearsal remains.
+4. In progress: the independent official project site now covers product positioning, Admin preview, architecture, deployment, docs, roadmap, license, and GitHub, with a safety-gated Pages deployment path. The isolated manual Demo Worker/Admin workflow is prepared. Activate the purchased `linketry.com` apex domain, then provision synthetic Demo data, add read-only or scheduled-reset behavior and rate limits, and verify a separate Demo short-link host.
 5. Add optional Cloudflare Access authentication and asynchronous signed `link.clicked` webhooks without weakening bearer-token recovery or redirect stability.
 6. Done in v0.16.0: Admin density and optional-module visibility preferences.
-7. Theme preferences completed in v0.17.0; follow with an optional card view, per-link social preview controls, broader community-driven locales, and later ecosystem clients built against OpenAPI.
+7. Theme preferences completed in v0.17.0 and the optional Links card view completed in v0.19.0; follow with per-link social preview controls, broader community-driven locales, and later ecosystem clients built against OpenAPI.
 
 External prerequisites:
 

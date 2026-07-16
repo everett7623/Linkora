@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { inspectMigrations, runDeploymentWorkflowGate } from './deployment-workflow-gate.mjs';
 
-const version = '0.17.0';
+const version = '0.19.0';
 const commit = 'a'.repeat(40);
 const migrations = [
   { name: '0001_init.sql', source: 'CREATE TABLE links (id TEXT PRIMARY KEY);' },

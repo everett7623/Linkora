@@ -7,7 +7,7 @@ One item in "In Progress" at a time whenever possible.
 
 ## 🔴 In Progress
 
-- [ ] V9+: Complete Beginner Deployment Bootstrap (read-only track preflight complete; guided D1/KV provisioning and rehearsals remain)
+- [ ] V9+: Complete Beginner Deployment Bootstrap (guided provisioning, production gates, and isolated Demo workflow complete; fresh-account rehearsal remains)
 
 ---
 
@@ -311,8 +311,8 @@ One item in "In Progress" at a time whenever possible.
 - [x] Use the owner-supplied `linketry.com` domain while keeping apex-domain activation as an explicit DNS prerequisite
 - [ ] Deploy the Demo with isolated D1/KV/optional R2 resources and synthetic data only
 - [ ] Give the Demo unique Worker, Pages, D1, KV, R2, Queue, Token, and domain identifiers; never reuse the existing production bindings or project names
-- [ ] Fail the Demo deployment before migrations or deploy commands when any protected production resource identifier or domain matches
-- [ ] Keep Demo workflows separate from the production `main` deployment workflow and prohibit Demo automation from changing production DNS, bindings, migrations, backups, or data
+- [x] Fail the Demo deployment before migrations or deploy commands when any protected production account, resource identifier, name, or domain matches
+- [x] Keep Demo workflows separate from the production `main` deployment workflow and prohibit Demo automation from changing production DNS, bindings, migrations, backups, or data
 - [ ] Make the Demo read-only or automatically reset it on a documented schedule, and rate-limit abuse-prone operations
 - [ ] Use a separate Demo short-link host and never expose production credentials or shared writable secrets in the frontend
 - [x] Take and verify an independent production backup before any future production deployment change associated with the public launch
@@ -339,7 +339,9 @@ One item in "In Progress" at a time whenever possible.
 ### Priority 8 — Product Presentation And Ecosystem
 
 - [x] Add light, dark, and system theme preferences with accessible contrast
-- [ ] Evaluate an optional link card/grid view with favicon, visits, visitors, referers, and compact actions after density preferences are stable
+- [x] Check the canonical GitHub repository when Admin opens and show a cached, dismissible EN/ZH notice for newer versions
+- [x] Evaluate and add an optional table/card Links view with existing list fields, compact actions, EN/ZH labels, and per-browser persistence
+- [ ] Add privacy-preserving favicon delivery and batched visitor/referrer summaries only after a bounded aggregation and proxy contract is designed
 - [ ] Add per-link social preview title, description, and image controls with optional R2 storage outside the redirect hot path
 - [ ] Expand translations through a community-ready locale workflow instead of blocking the basic deployment on many built-in languages
 - [ ] Consider real-time visit logs, a live globe, and optional Workers AI only after the API and deployment foundations are stable

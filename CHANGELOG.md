@@ -13,6 +13,45 @@ _(none)_
 
 ---
 
+## [0.19.0] - 2026-07-16
+
+### Added
+
+- Added an accessible table/card switch to the Admin Links page, with the selected view stored only in the current browser.
+- Added a responsive card layout that reuses the existing paginated link contract, status rules, limits, tags, and confirmed link actions.
+
+### Security
+
+- Card view uses a local neutral site icon instead of loading destination favicons directly, avoiding third-party requests that could disclose the Admin viewer.
+- Worker routes, redirects, D1, KV, analytics, and API response contracts are unchanged.
+
+### Tests
+
+- Added link-view normalization, storage-failure, effective-status, defensive-tag parsing, and real-browser persistence coverage.
+
+---
+
+## [0.18.0] - 2026-07-16
+
+### Added
+
+- Added a dedicated, manually dispatched GitHub Actions workflow for the isolated official Demo Worker and Admin.
+- Added a Demo-only deployment safety gate bound to an exact release, commit, migration digest, confirmation phrase, and reserved `linketry-demo-*` resource names.
+- Added an authenticated Admin startup check for newer Linketry versions published on the canonical GitHub repository, with a bilingual, dismissible update notice.
+
+### Security
+
+- Demo deployment now fails before Cloudflare writes unless its API token is confirmed as scoped to a separate account and that account, every D1/KV identifier, resource name, and hostname differs from protected production targets.
+- The Demo workflow uses separate credentials and configuration, and cannot deploy the production project site, change production DNS, or run through the production deployment track.
+- GitHub update checks validate the public package metadata, send no Admin token or instance data, cache successful results for six hours, and never block the Admin shell on failure.
+
+### Tests
+
+- Added policy coverage for manual-only dispatch, credential redaction, protected-account rejection, release and resource-name approval, and Cloudflare write ordering.
+- Added semantic-version, cache, external-response, credential-isolation, update-notice, dismissal-persistence, and Admin browser regression coverage.
+
+---
+
 ## [0.17.0] - 2026-07-16
 
 ### Added

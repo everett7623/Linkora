@@ -112,21 +112,56 @@ npm run deploy:migration-digest
 
 A fresh deployment also requires `LINKETRY_FRESH_INSTALL_CONFIRMED=true`. An upgrade requires the backup and review variables above. Update the exact release and commit approval for every production release, and update the migration approval whenever any file under `migrations/` changes.
 
-The gate rejects the Demo track in this production workflow, scans migrations for destructive SQL, reruns the full account/resource preflight, and reads remote D1 migration status. A separate isolated Demo workflow remains planned.
+The gate rejects the Demo track in this production workflow, scans migrations for destructive SQL, reruns the full account/resource preflight, and reads remote D1 migration status. The official Demo uses the separate, manual-only `.github/workflows/deploy-demo.yml` workflow.
 
 ## Official Demo
 
-The Demo track fails closed unless isolation and synthetic-data use are confirmed and protected production targets are supplied:
+Create a protected GitHub environment named `linketry-demo`. Add only these Demo-specific secrets:
 
 ```txt
+LINKETRY_DEMO_CLOUDFLARE_API_TOKEN
+LINKETRY_DEMO_CLOUDFLARE_ACCOUNT_ID
+LINKETRY_DEMO_ADMIN_TOKEN
+```
+
+The API token must be restricted to the isolated Demo account and must have no access to the production account. The workflow does not read the production deployment secrets.
+
+Add these environment variables after creating and reviewing the isolated Demo resources:
+
+```txt
+LINKETRY_DEMO_CREDENTIAL_SCOPE_CONFIRMED=true
 LINKETRY_DEMO_ISOLATION_CONFIRMED=true
 LINKETRY_DEMO_SYNTHETIC_DATA_ONLY=true
+LINKETRY_DEMO_APPROVED_RELEASE=<exact package version>
+LINKETRY_DEMO_APPROVED_COMMIT=<exact 40-character GitHub commit SHA>
+LINKETRY_DEMO_APPROVED_MIGRATIONS_SHA256=<reviewed migration digest>
+LINKETRY_DEMO_WORKER_NAME=linketry-demo-worker
+LINKETRY_DEMO_WORKER_DOMAINS=<isolated Demo short-link hostname>
+LINKETRY_DEMO_API_URL=https://<isolated Demo short-link hostname>
+LINKETRY_DEMO_ADMIN_URL=https://linketry-demo-admin.pages.dev
+LINKETRY_DEMO_PAGES_PROJECT=linketry-demo-admin
+LINKETRY_DEMO_D1_DATABASE_NAME=linketry-demo-d1
+LINKETRY_DEMO_D1_DATABASE_ID=<isolated Demo D1 ID>
+LINKETRY_DEMO_KV_NAMESPACE_ID=<isolated Demo KV ID>
+LINKETRY_DEMO_COMPATIBILITY_DATE=2026-07-16
+LINKETRY_PROTECTED_ACCOUNT_IDS=<comma-separated production Cloudflare account IDs>
 LINKETRY_PROTECTED_RESOURCE_IDS=<comma-separated production D1/KV IDs>
 LINKETRY_PROTECTED_RESOURCE_NAMES=<comma-separated production Worker/Pages/D1/R2/Queue names>
 LINKETRY_PROTECTED_DOMAINS=<comma-separated production hostnames>
 ```
 
-Any overlap between the Demo targets and a protected ID, name, or hostname fails the preflight. The dedicated Demo workflow and reset/read-only policy are still planned separately.
+Generate the migration digest with `npm run deploy:migration-digest`. Update the approved release, commit, and digest for every reviewed Demo deployment.
+
+Run **Deploy Isolated Linketry Demo** from GitHub Actions and type the exact confirmation `DEPLOY LINKETRY DEMO`. Before setting a Worker secret, applying migrations, or deploying, the workflow verifies that:
+
+- the event is a manual dispatch with the exact confirmation;
+- the Demo account differs from every protected production account;
+- Worker, Pages, and D1 names are unique and use the reserved `linketry-demo-*` prefix;
+- D1/KV IDs, resource names, and hostnames do not overlap protected production targets;
+- the selected resources exist in the Demo account;
+- the release, Git commit, non-destructive migration policy, and reviewed migration digest match.
+
+The workflow deploys only the isolated Demo Worker and Admin. It does not deploy the production project site, modify DNS, copy production data, provision resources, seed data, reset data, or configure rate limits. Synthetic seed data, read-only or scheduled-reset behavior, abuse controls, and live smoke tests remain required before public launch.
 
 ## Admin Token: Choose One Deployment Path
 

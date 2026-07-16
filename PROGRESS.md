@@ -11,13 +11,13 @@ Last updated: 2026-07-16
 | Layer                      | Status                 | Notes                                                                                                                                  |
 | -------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | Worker backend             | ✅ Code complete       | Local type-check passing; deployed on Cloudflare Workers                                                                               |
-| Admin frontend             | ✅ V8 complete         | EN/ZH workflows, Simple/Advanced mode, density, optional-module visibility, and light/dark/system themes are implemented and browser tested |
+| Admin frontend             | ✅ V8 complete         | EN/ZH workflows, display preferences, themes, GitHub update notices, and persistent table/card link views are browser tested |
 | Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                    |
 | Documentation              | ✅ Complete            | README, self-hosting guide, project site, analytics guide, backup/reset guide, runbooks, and long-term roadmap                         |
-| Deployment                 | 🟡 Site activation     | Worker and Admin deployed; project-site Pages project created and workflow added; `linketry.com` DNS activation remains               |
+| Deployment                 | 🟡 External activation | Production is deployed; the project site and isolated manual Demo workflow are prepared; DNS activation and live Demo resources remain |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                       |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md` |
-| Current version            | ✅ 0.17.0              | Accessible Admin theme preferences are complete; project-site custom `linketry.com` activation remains a DNS step |
+| Current version            | ✅ 0.19.0              | Admin Links supports persistent table/card views; live project-site and isolated Demo activation remain external follow-up work |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
 
@@ -34,7 +34,7 @@ Last updated: 2026-07-16
 | Admin session | ✅ Complete | Admin uses only canonical Linketry browser-storage keys |
 | Cache and backup | ✅ Complete | D1 remains the source of truth; canonical cache keys and backup markers are enforced |
 | Cloudflare | ✅ Complete | Worker, Pages, D1, KV, R2, and Queue use canonical Linketry resource names |
-| Deployment tracks | 🟡 Rehearsal in progress | Guided D1/KV provisioning, redacted preflight checks, and production workflow enforcement are complete; fresh-account rehearsal remains |
+| Deployment tracks | 🟡 Rehearsal in progress | Guided D1/KV provisioning, redacted preflight checks, production enforcement, and an isolated manual Demo workflow are complete; fresh-account and live Demo rehearsals remain |
 
 ---
 
@@ -109,8 +109,8 @@ Last updated: 2026-07-16
 
 ## Next Steps
 
-1. Complete deployment Bootstrap with a fresh-account first-link rehearsal; guided provisioning, three-track preflight, and production workflow enforcement are complete
-2. Activate the prepared project site on the purchased `linketry.com` apex domain, then build an isolated, read-only or resettable Demo
+1. Complete deployment Bootstrap with a fresh-account first-link rehearsal; guided provisioning, three-track preflight, production enforcement, and the separate Demo workflow are complete
+2. Activate the prepared project site on the purchased `linketry.com` apex domain, then provision synthetic Demo data and add a read-only or scheduled-reset public policy
 3. Add optional Cloudflare Access and asynchronous signed click webhooks without weakening bearer-token recovery or redirect stability
 4. Keep card views, social preview customization, broader locales, real-time visuals, optional AI, and external clients behind the foundational work
 5. Keep the separate supporter/coffee domain and Shlink retirement operations deferred until their external prerequisites are ready

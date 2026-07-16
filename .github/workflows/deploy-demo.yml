@@ -1,0 +1,173 @@
+name: Deploy Isolated Linketry Demo
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type DEPLOY LINKETRY DEMO to continue
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-linketry-demo
+  cancel-in-progress: false
+
+jobs:
+  deploy-demo:
+    name: Deploy isolated Demo
+    runs-on: ubuntu-latest
+    environment: linketry-demo
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.LINKETRY_DEMO_CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.LINKETRY_DEMO_CLOUDFLARE_ACCOUNT_ID }}
+      LINKETRY_ADMIN_TOKEN_OVERRIDE: ${{ secrets.LINKETRY_DEMO_ADMIN_TOKEN }}
+      LINKETRY_WORKER_NAME: ${{ vars.LINKETRY_DEMO_WORKER_NAME }}
+      LINKETRY_WORKER_DOMAINS: ${{ vars.LINKETRY_DEMO_WORKER_DOMAINS }}
+      LINKETRY_API_URL: ${{ vars.LINKETRY_DEMO_API_URL }}
+      LINKETRY_ADMIN_URL: ${{ vars.LINKETRY_DEMO_ADMIN_URL }}
+      LINKETRY_PAGES_PROJECT: ${{ vars.LINKETRY_DEMO_PAGES_PROJECT }}
+      LINKETRY_D1_DATABASE_NAME: ${{ vars.LINKETRY_DEMO_D1_DATABASE_NAME }}
+      LINKETRY_D1_DATABASE_ID: ${{ vars.LINKETRY_DEMO_D1_DATABASE_ID }}
+      LINKETRY_KV_NAMESPACE_ID: ${{ vars.LINKETRY_DEMO_KV_NAMESPACE_ID }}
+      LINKETRY_KV_PREVIEW_ID: ${{ vars.LINKETRY_DEMO_KV_PREVIEW_ID }}
+      LINKETRY_COMPATIBILITY_DATE: ${{ vars.LINKETRY_DEMO_COMPATIBILITY_DATE }}
+      LINKETRY_DEMO_DEPLOY_CONFIRMATION: ${{ inputs.confirmation }}
+      LINKETRY_DEMO_CREDENTIAL_SCOPE_CONFIRMED: ${{ vars.LINKETRY_DEMO_CREDENTIAL_SCOPE_CONFIRMED }}
+      LINKETRY_DEMO_ISOLATION_CONFIRMED: ${{ vars.LINKETRY_DEMO_ISOLATION_CONFIRMED }}
+      LINKETRY_DEMO_SYNTHETIC_DATA_ONLY: ${{ vars.LINKETRY_DEMO_SYNTHETIC_DATA_ONLY }}
+      LINKETRY_DEMO_APPROVED_RELEASE: ${{ vars.LINKETRY_DEMO_APPROVED_RELEASE }}
+      LINKETRY_DEMO_APPROVED_COMMIT: ${{ vars.LINKETRY_DEMO_APPROVED_COMMIT }}
+      LINKETRY_DEMO_APPROVED_MIGRATIONS_SHA256: ${{ vars.LINKETRY_DEMO_APPROVED_MIGRATIONS_SHA256 }}
+      LINKETRY_PROTECTED_ACCOUNT_IDS: ${{ vars.LINKETRY_PROTECTED_ACCOUNT_IDS }}
+      LINKETRY_PROTECTED_RESOURCE_IDS: ${{ vars.LINKETRY_PROTECTED_RESOURCE_IDS }}
+      LINKETRY_PROTECTED_RESOURCE_NAMES: ${{ vars.LINKETRY_PROTECTED_RESOURCE_NAMES }}
+      LINKETRY_PROTECTED_DOMAINS: ${{ vars.LINKETRY_PROTECTED_DOMAINS }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Resolve Linketry version
+        run: |
+          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+          echo "RESOLVED_LINKETRY_VERSION=$PACKAGE_VERSION" >> "$GITHUB_ENV"
+          echo "Linketry Demo version: $PACKAGE_VERSION"
+
+      - name: Test deployment policies
+        run: npm run test:deployment
+
+      - name: Type-check Worker
+        run: npm run type-check --workspace=apps/worker
+
+      - name: Test Worker
+        run: npm run test --workspace=apps/worker
+
+      - name: Test Admin unit rules
+        run: npm run test:unit --workspace=apps/admin
+
+      - name: Build isolated Demo Admin
+        run: npm run build --workspace=apps/admin
+        env:
+          VITE_LINKETRY_API_URL: ${{ env.LINKETRY_API_URL }}
+
+      - name: Generate isolated Demo Worker config
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+
+          const env = process.env;
+          const domains = [...new Set(
+            (env.LINKETRY_WORKER_DOMAINS || '')
+              .split(',')
+              .map((value) => value.trim().toLowerCase())
+              .filter(Boolean)
+          )];
+          const routes = domains
+            .map((domain) => `  { pattern = "${domain}", custom_domain = true }`)
+            .join(',\n');
+          const kv = [
+            '[[kv_namespaces]]',
+            'binding = "KV"',
+            `id = "${env.LINKETRY_KV_NAMESPACE_ID || ''}"`,
+          ];
+          if (env.LINKETRY_KV_PREVIEW_ID) {
+            kv.push(`preview_id = "${env.LINKETRY_KV_PREVIEW_ID}"`);
+          }
+          const config = [
+            `name = "${env.LINKETRY_WORKER_NAME || ''}"`,
+            'main = "src/index.ts"',
+            `compatibility_date = "${env.LINKETRY_COMPATIBILITY_DATE || '2026-07-16'}"`,
+            'compatibility_flags = ["nodejs_compat"]',
+            'routes = [',
+            routes,
+            ']',
+            '',
+            '[vars]',
+            `LINKETRY_VERSION = "${env.RESOLVED_LINKETRY_VERSION || '0.18.0'}"`,
+            '',
+            '[[d1_databases]]',
+            'binding = "DB"',
+            `database_name = "${env.LINKETRY_D1_DATABASE_NAME || ''}"`,
+            `database_id = "${env.LINKETRY_D1_DATABASE_ID || ''}"`,
+            'migrations_dir = "../../migrations"',
+            '',
+            ...kv,
+            '',
+          ].join('\n');
+
+          fs.writeFileSync('apps/worker/wrangler.demo.toml', config);
+          NODE
+
+      - name: Enforce isolated Demo safety gate
+        run: npm run deploy:demo:gate
+
+      - name: Set isolated Demo Admin token
+        run: |
+          printf '%s' "$LINKETRY_ADMIN_TOKEN_OVERRIDE" |
+            npx wrangler secret put LINKETRY_ADMIN_TOKEN --config wrangler.demo.toml
+        working-directory: apps/worker
+
+      - name: Apply isolated Demo migrations
+        run: |
+          npx wrangler d1 migrations apply "$LINKETRY_D1_DATABASE_NAME" \
+            --remote \
+            --config wrangler.demo.toml
+        working-directory: apps/worker
+
+      - name: Deploy isolated Demo Worker
+        run: npx wrangler deploy --config wrangler.demo.toml --strict
+        working-directory: apps/worker
+
+      - name: Deploy isolated Demo Admin
+        run: |
+          npx wrangler pages deploy apps/admin/dist \
+            --project-name "$LINKETRY_PAGES_PROJECT" \
+            --branch main
+
+      - name: Write isolated Demo summary
+        if: always()
+        run: |
+          {
+            echo "## Isolated Linketry Demo"
+            echo ""
+            echo "| Role | Target |"
+            echo "|---|---|"
+            echo "| Admin | ${LINKETRY_ADMIN_URL:-https://${LINKETRY_PAGES_PROJECT}.pages.dev} |"
+            echo "| API and sample redirects | ${LINKETRY_API_URL:-Not configured} |"
+            echo "| Worker | ${LINKETRY_WORKER_NAME:-Not configured} |"
+            echo "| D1 | ${LINKETRY_D1_DATABASE_NAME:-Not configured} |"
+            echo ""
+            echo "This workflow never deploys the production project site or changes production DNS."
+          } >> "$GITHUB_STEP_SUMMARY"

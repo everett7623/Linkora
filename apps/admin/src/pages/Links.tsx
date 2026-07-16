@@ -51,28 +51,22 @@ import { useToast } from '../components/ui/Toast';
 import { buildShortUrl } from '../utils/shortUrl';
 import { downloadDataUrl } from '../utils/download';
 import type { Link as LinkType, PaginatedResult } from '@linketry/shared';
-import dayjs from 'dayjs';
 import { useAdminMode } from '../contexts/AdminModeContext';
 import { stripAdvancedLinkFilters } from '../utils/linkFilters';
 import { useLocale } from '../contexts/LocaleContext';
 import { BulkUtmTool } from '../components/links/BulkUtmTool';
+import { LinkCardGrid } from '../components/links/LinkCardGrid';
+import { LinkViewToolbar } from '../components/links/LinkViewToolbar';
+import {
+  getEffectiveLinkStatus,
+  hasMaxClicks,
+  isLinkExpiredByClicks,
+  isLinkExpiredByTime,
+  parseLinkTags,
+} from '../utils/linkPresentation';
+import { readLinkViewPreference, writeLinkViewPreference, type LinkView } from '../utils/linkView';
 
 const PAGE_SIZE = 20;
-
-function hasMaxClicks(link: LinkType): boolean {
-  return link.max_clicks !== null && link.max_clicks !== undefined;
-}
-
-function isExpiredByLimits(link: LinkType): boolean {
-  const expiredByTime = !!link.expires_at && dayjs(link.expires_at).isBefore(dayjs());
-  const expiredByClicks = hasMaxClicks(link) && link.clicks >= Number(link.max_clicks);
-  return expiredByTime || expiredByClicks;
-}
-
-function getEffectiveStatus(link: LinkType): string {
-  if (link.status === 'active' && isExpiredByLimits(link)) return 'expired';
-  return link.status;
-}
 
 export function Links() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -95,6 +89,7 @@ export function Links() {
   const [sourceDomain, setSourceDomain] = useState('');
   const [targetDomain, setTargetDomain] = useState('');
   const [domainMigrationPreview, setDomainMigrationPreview] = useState<DomainMigrationPreview | null>(null);
+  const [linkView, setLinkView] = useState<LinkView>(readLinkViewPreference);
   const { success, error } = useToast();
   const { isAdvanced } = useAdminMode();
   const { locale, t } = useLocale();
@@ -123,6 +118,11 @@ export function Links() {
   const limits = searchParams.get('limits') ?? '';
   const sort = searchParams.get('sort') ?? 'created_at_desc';
   const page = parseInt(searchParams.get('page') ?? '1', 10);
+
+  const changeLinkView = (view: LinkView) => {
+    setLinkView(view);
+    writeLinkViewPreference(view);
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -622,7 +622,15 @@ export function Links() {
         </div>
       )}
 
-      {/* Table */}
+      <LinkViewToolbar
+        view={linkView}
+        showSelectAll={isAdvanced && linkView === 'cards' && visibleIds.length > 0}
+        allVisibleSelected={allVisibleSelected}
+        onChange={changeLinkView}
+        onToggleAllVisible={toggleAllVisible}
+      />
+
+      {/* Link results */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center h-48">
@@ -637,6 +645,17 @@ export function Links() {
               </Button>
             </Link>
           </div>
+        ) : linkView === 'cards' ? (
+          <LinkCardGrid
+            links={result?.items ?? []}
+            defaultDomain={defaultDomain}
+            isAdvanced={isAdvanced}
+            selectedIds={selectedIds}
+            onToggleSelected={toggleSelected}
+            onCopy={copyLink}
+            onShowQr={showQr}
+            onConfirmAction={confirmAction}
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -665,12 +684,10 @@ export function Links() {
               </thead>
               <tbody className="divide-y divide-slate-800">
                 {result?.items.map((link) => {
-                  const tags = link.tags ? (JSON.parse(link.tags) as string[]) : [];
-                  const effectiveStatus = getEffectiveStatus(link);
-                  const expiredByTime =
-                    !!link.expires_at && dayjs(link.expires_at).isBefore(dayjs());
-                  const expiredByClicks =
-                    hasMaxClicks(link) && link.clicks >= Number(link.max_clicks);
+                  const tags = parseLinkTags(link.tags);
+                  const effectiveStatus = getEffectiveLinkStatus(link);
+                  const expiredByTime = isLinkExpiredByTime(link);
+                  const expiredByClicks = isLinkExpiredByClicks(link);
                   return (
                     <tr key={link.id} className="hover:bg-slate-800/50 transition-colors">
                       {isAdvanced && (

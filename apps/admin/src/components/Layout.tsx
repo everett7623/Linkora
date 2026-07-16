@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { useDisplayPreferences } from '../contexts/DisplayPreferencesContext';
+import { UpdateBanner } from './UpdateBanner';
 
 export function Layout() {
   const { sidebarDensity, tableDensity } = useDisplayPreferences();
@@ -14,6 +15,7 @@ export function Layout() {
     >
       <Sidebar />
       <main className="flex-1 overflow-y-auto bg-slate-950">
+        <UpdateBanner />
         <div className="max-w-7xl mx-auto px-6 py-8">
           <Outlet />
         </div>

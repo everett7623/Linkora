@@ -25,7 +25,7 @@ Linketry is a self-hosted link management, analytics and monitoring platform.
 
 > **New to self-hosting?** Follow the [quick-start guide](docs/SELF_HOSTING.md) and run the [read-only deployment preflight](docs/DEPLOYMENT_PREFLIGHT.md) before provisioning or deployment. Installations older than 0.10 must use the [non-destructive upgrade guide](docs/UPGRADING_PRE_0_10.md) and keep their current D1/KV/R2/Queue bindings until migration is verified.
 
-The official project site lives in `apps/site` and is deployed independently from the Admin. Its automatic Pages URL is [linketry-site.pages.dev](https://linketry-site.pages.dev); `linketry.com` becomes canonical after the purchased apex domain is added to the Pages project and its Cloudflare nameservers are active.
+The official project site lives in `apps/site` and is deployed independently from the Admin. Its automatic Pages URL is [linketry-site.pages.dev](https://linketry-site.pages.dev); `linketry.com` becomes canonical after the purchased apex domain is added to the Pages project and its Cloudflare nameservers are active. The official Demo has a separate manual deployment workflow and must pass protected-account/resource isolation checks before any Cloudflare write; it is not live until synthetic data and a read-only or reset policy are completed.
 
 ---
 
@@ -41,7 +41,9 @@ For a first-time deployment, start with [docs/SELF_HOSTING.md](docs/SELF_HOSTING
 
 - ⚡ Fast short link redirects via Cloudflare Workers + KV cache
 - 🔒 Admin panel with token authentication
+- Authenticated Admin startup checks for newer upstream GitHub versions, with a cached and dismissible EN/ZH update notice
 - 🔗 Create, edit, disable, archive, and delete short links
+- Switch the Links workspace between the default table and a responsive per-browser card view with the same confirmed actions
 - Bulk create short links and bulk update selected links
 - Preview-first bulk UTM add/replace/remove for selected or filtered links, with guarded writes, selective cache clearing, and a downloadable change record
 - 🔍 Search by slug, URL, title; filter by tag, status, source, domain, created date, password, warning, and limits
@@ -146,7 +148,7 @@ The dry-run prints the exact confirmation phrase required by `--apply`. After pr
 npm run deploy:preflight -- --track fresh --check-cloudflare
 ```
 
-See [docs/DEPLOYMENT_PREFLIGHT.md](docs/DEPLOYMENT_PREFLIGHT.md) for required gates and safe output behavior.
+See [docs/DEPLOYMENT_PREFLIGHT.md](docs/DEPLOYMENT_PREFLIGHT.md) for required gates, safe output behavior, and the isolated manual Demo workflow contract.
 
 GitHub Actions production runs are additionally bound to an approved release version, exact commit, migration digest, and fresh-or-upgrade safety state before any Cloudflare write. Generate the reviewed digest with `npm run deploy:migration-digest`.
 

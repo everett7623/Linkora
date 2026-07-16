@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { LINKETRY_VERSION } from '../../../packages/shared/src/version';
 import { messages, type Locale } from '../src/i18n/messages';
 
 const link = {
@@ -358,15 +359,19 @@ async function mockAdminApi(page: Page) {
 
 async function authenticate(page: Page, locale: Locale, mode: 'simple' | 'advanced' = 'simple') {
   await page.addInitScript(
-    ({ nextLocale, nextMode }) => {
+    ({ nextLocale, nextMode, currentVersion }) => {
       window.localStorage.setItem('linketry_token', 'smoke-token');
       window.localStorage.setItem('linketry.locale', nextLocale);
       window.localStorage.setItem('linketry_admin_mode', nextMode);
       if (!window.localStorage.getItem('linketry_theme')) {
         window.localStorage.setItem('linketry_theme', 'dark');
       }
+      window.localStorage.setItem(
+        'linketry_update_check',
+        JSON.stringify({ latestVersion: currentVersion, checkedAt: Date.now() })
+      );
     },
-    { nextLocale: locale, nextMode: mode }
+    { nextLocale: locale, nextMode: mode, currentVersion: LINKETRY_VERSION }
   );
 }
 
@@ -531,6 +536,19 @@ test('display preferences persist density and hide only optional navigation modu
   await expect(shell).toHaveAttribute('data-sidebar-density', 'compact');
   await expect(shell).toHaveAttribute('data-table-density', 'compact');
   await expect(navigation.getByRole('link', { name: messages.en.backups })).toHaveCount(0);
+
+  await navigation.getByRole('link', { name: messages.en.links, exact: true }).click();
+  await expect(page.getByRole('table')).toBeVisible();
+  await page.getByRole('button', { name: messages.en.linkCardView }).click();
+  await expect(page.locator('[data-link-view="cards"]')).toContainText('/docs');
+  await expect
+    .poll(() => page.evaluate(() => window.localStorage.getItem('linketry_link_view')))
+    .toBe('cards');
+
+  await page.reload();
+  await expect(page.locator('[data-link-view="cards"]')).toContainText('/docs');
+  await page.getByRole('button', { name: messages.en.linkTableView }).click();
+  await expect(page.getByRole('table')).toBeVisible();
 
   await page.goto('/backups');
   await expect(page.getByRole('heading', { name: messages.en.backups })).toBeVisible();

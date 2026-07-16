@@ -82,7 +82,7 @@ LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_KV_PREVIEW_ID=<your-kv-preview-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.17.0
+LINKETRY_APPROVED_RELEASE=0.19.0
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<output-of-npm-run-deploy:migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true
@@ -101,6 +101,12 @@ If an Admin variable is missing, the workflow still builds Admin but skips the P
 If a Worker variable is missing, the workflow skips Worker deploy rather than relying on a committed production `wrangler.toml`. `LINKETRY_SHORT_DOMAIN` remains supported as a legacy single-domain fallback when `LINKETRY_WORKER_DOMAINS` is not set.
 
 `LINKETRY_SITE_PROJECT` is a maintainer-only optional deployment and is not required for a self-hosted Linketry instance. Its `linketry.com` apex custom domain must be associated in the Cloudflare Pages project before DNS can serve it.
+
+## Official Demo Deployment
+
+The official Demo never uses the production `Deploy Linketry` workflow. Its manual-only `Deploy Isolated Linketry Demo` workflow reads credentials and variables from the protected `linketry-demo` GitHub environment, requires an exact release/commit/migration approval, and rejects every protected production account, resource, and hostname before a Cloudflare write.
+
+The workflow expects isolated D1, KV, Worker, Pages, token, and domain targets to exist already. It deploys only the Demo Worker and Admin; resource provisioning, synthetic seed data, read-only or scheduled-reset behavior, rate limits, DNS activation, and live smoke tests remain explicit follow-up steps. See [Deployment Preflight](DEPLOYMENT_PREFLIGHT.md#official-demo) for the complete environment contract.
 
 ## Smoke Checks
 
