@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { normalizeAdminMode, type AdminMode } from '../utils/adminMode';
+import { resolveInitialAdminMode, type AdminMode } from '../utils/adminMode';
 import { readBrowserSetting, writeBrowserSetting } from '../utils/browserStorage';
+import { IS_PUBLIC_DEMO } from '../config/demo';
 
 export type { AdminMode } from '../utils/adminMode';
 
@@ -14,9 +15,9 @@ const AdminModeContext = createContext<AdminModeContextValue | null>(null);
 
 function readStoredMode(): AdminMode {
   try {
-    return normalizeAdminMode(readBrowserSetting('adminMode'));
+    return resolveInitialAdminMode(readBrowserSetting('adminMode'), IS_PUBLIC_DEMO);
   } catch {
-    return 'simple';
+    return resolveInitialAdminMode(null, IS_PUBLIC_DEMO);
   }
 }
 

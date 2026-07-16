@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { isFeatureVisible, normalizeAdminMode } from './adminMode.ts';
+import { isFeatureVisible, normalizeAdminMode, resolveInitialAdminMode } from './adminMode.ts';
 import { normalizeApiBase } from './apiBase.ts';
 import { stripAdvancedLinkFilters } from './linkFilters.ts';
 import { enabledAdvancedCapabilityCount } from './capabilities.ts';
@@ -12,6 +12,14 @@ test('Simple mode is the safe default', () => {
   assert.equal(normalizeAdminMode(null), 'simple');
   assert.equal(normalizeAdminMode('unexpected'), 'simple');
   assert.equal(normalizeAdminMode('advanced'), 'advanced');
+});
+
+test('Public Demo starts in Advanced mode without overriding an explicit choice', () => {
+  assert.equal(resolveInitialAdminMode(null, true), 'advanced');
+  assert.equal(resolveInitialAdminMode('unexpected', true), 'advanced');
+  assert.equal(resolveInitialAdminMode('simple', true), 'simple');
+  assert.equal(resolveInitialAdminMode('advanced', false), 'advanced');
+  assert.equal(resolveInitialAdminMode(null, false), 'simple');
 });
 
 test('Advanced features are hidden only in Simple mode', () => {

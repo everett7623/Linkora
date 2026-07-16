@@ -47,6 +47,19 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
+## ✅ Completed - Demo Parity And Responsive Admin (v0.25.0)
+
+- [x] Default fresh public Demo sessions to the complete Advanced navigation without overriding stored user choices
+- [x] Replace the fixed mobile Sidebar with an accessible overlay drawer and full-width main content
+- [x] Seed synthetic redirect rules, import jobs, API tokens, health history, saved views, reports, backups, and audits
+- [x] Bind isolated Demo R2 buckets and Queue only after the fail-closed deployment gate passes
+- [x] Upload valid synthetic backup and Analytics report artifacts for Demo downloads
+- [x] Replace production token instructions on Demo Setup with public read-only isolation guidance
+- [x] Verify the expanded seed against local D1 and add 390px Chromium layout coverage
+- [x] Keep redirects, production Cloudflare resources, and production deployment behavior unchanged
+
+---
+
 ## ✅ Completed — Public Demo And Coffee Entry Points (v0.24.0)
 
 - [x] Provision and smoke-test isolated D1, KV, Worker, and Pages resources in a separate Cloudflare account

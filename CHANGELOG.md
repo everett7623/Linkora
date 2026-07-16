@@ -13,6 +13,33 @@ _(none)_
 
 ---
 
+## [0.25.0] - 2026-07-17
+
+### Added
+
+- Added responsive mobile Admin navigation with an overlay drawer, Escape dismissal, accessible controls, and full-width page content at narrow viewports.
+- Added synthetic Demo records for redirect rules, import history, API tokens, health monitoring, saved Analytics views, scheduled reports, backups, and related audit activity.
+- Added isolated Demo R2/Queue bindings, guarded `linketry-demo-*` resource creation, downloadable synthetic backup/report artifacts, and scheduled advanced-feature bindings.
+
+### Changed
+
+- Public Demo visitors now start in Advanced mode so the complete production navigation is visible, while an explicit stored Simple/Advanced choice remains respected.
+- Replaced production token-recovery instructions on the public Demo Setup page with read-only, synthetic-data, and account-isolation information.
+- Made the Playwright Admin port configurable so browser tests cannot silently attach to an unrelated local server.
+- Updated package/runtime versions, deployment fallbacks, self-hosting examples, progress records, roadmap, and task records to `0.25.0`.
+
+### Security
+
+- Kept all new advanced resources in the isolated Demo account and required the existing safety gate to pass before resource creation or upload.
+- Preserved Worker-side and browser-side Demo write rejection, random internal Admin credentials, protected production inventories, and redirect behavior.
+
+### Tests
+
+- Added Admin unit coverage for Demo mode initialization and Chromium coverage for the 390px mobile drawer/layout behavior.
+- Executed the expanded idempotent seed against local D1 and verified 3 rules, 2 imports, 2 tokens, and 2 backup records.
+
+---
+
 ## [0.24.0] - 2026-07-17
 
 ### Added

@@ -1,6 +1,7 @@
 import React from 'react';
-import { ExternalLink, KeyRound, LayoutDashboard, Server } from 'lucide-react';
+import { CheckCircle2, ExternalLink, Eye, KeyRound, LayoutDashboard, Server } from 'lucide-react';
 import { useLocale } from '../../contexts/LocaleContext';
+import { IS_PUBLIC_DEMO } from '../../config/demo';
 
 interface DeploymentAccessGuideProps {
   apiOrigin: string;
@@ -18,10 +19,18 @@ export function DeploymentAccessGuide({ apiOrigin, compact = false }: Deployment
       className={`border border-slate-800 bg-slate-950/60 ${compact ? 'rounded-lg p-3' : 'p-5'}`}
     >
       <div className="flex items-start gap-3">
-        <KeyRound size={18} className="mt-0.5 shrink-0 text-brand-400" />
+        {IS_PUBLIC_DEMO ? (
+          <Eye size={18} className="mt-0.5 shrink-0 text-amber-300" />
+        ) : (
+          <KeyRound size={18} className="mt-0.5 shrink-0 text-brand-400" />
+        )}
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-semibold text-slate-200">{t('deploymentAccessTitle')}</h3>
-          <p className="mt-1 text-xs text-slate-500">{t('deploymentAccessDescription')}</p>
+          <h3 className="text-sm font-semibold text-slate-200">
+            {t(IS_PUBLIC_DEMO ? 'demoEnvironmentTitle' : 'deploymentAccessTitle')}
+          </h3>
+          <p className="mt-1 text-xs text-slate-500">
+            {t(IS_PUBLIC_DEMO ? 'demoEnvironmentDescription' : 'deploymentAccessDescription')}
+          </p>
         </div>
       </div>
 
@@ -44,22 +53,39 @@ export function DeploymentAccessGuide({ apiOrigin, compact = false }: Deployment
         </div>
       </dl>
 
-      <div className="mt-3 text-xs text-slate-400">
-        <div className="font-medium text-slate-300">{t('tokenHowToTitle')}</div>
-        <ol className="mt-1.5 list-decimal space-y-1 pl-4 text-slate-500">
-          <li>{t('tokenExistingHint')}</li>
-          <li>{t('tokenGeneratedHint')}</li>
-          <li>{t('tokenSaveHint')}</li>
-        </ol>
-        <a
-          href="https://github.com/everett7623/Linketry/blob/main/docs/SELF_HOSTING.md#9-first-login"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 inline-flex items-center gap-1 text-brand-400 hover:text-brand-300"
-        >
-          {t('openTokenGuide')} <ExternalLink size={12} />
-        </a>
-      </div>
+      {IS_PUBLIC_DEMO ? (
+        <div className="mt-3 grid gap-2 text-xs text-slate-400 sm:grid-cols-3">
+          <div className="flex items-start gap-2 rounded-lg bg-slate-900/80 p-3">
+            <CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" />
+            <span>{t('demoEnvironmentSynthetic')}</span>
+          </div>
+          <div className="flex items-start gap-2 rounded-lg bg-slate-900/80 p-3">
+            <CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" />
+            <span>{t('demoEnvironmentReadOnly')}</span>
+          </div>
+          <div className="flex items-start gap-2 rounded-lg bg-slate-900/80 p-3">
+            <CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" />
+            <span>{t('demoEnvironmentIsolated')}</span>
+          </div>
+        </div>
+      ) : (
+        <div className="mt-3 text-xs text-slate-400">
+          <div className="font-medium text-slate-300">{t('tokenHowToTitle')}</div>
+          <ol className="mt-1.5 list-decimal space-y-1 pl-4 text-slate-500">
+            <li>{t('tokenExistingHint')}</li>
+            <li>{t('tokenGeneratedHint')}</li>
+            <li>{t('tokenSaveHint')}</li>
+          </ol>
+          <a
+            href="https://github.com/everett7623/Linketry/blob/main/docs/SELF_HOSTING.md#9-first-login"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-flex items-center gap-1 text-brand-400 hover:text-brand-300"
+          >
+            {t('openTokenGuide')} <ExternalLink size={12} />
+          </a>
+        </div>
+      )}
     </div>
   );
 }

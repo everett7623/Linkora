@@ -17,9 +17,22 @@ Last updated: 2026-07-17
 | Deployment                 | ✅ Production + Demo   | Production, `linketry.com`, and the isolated read-only Demo at `demo.linketry.com` are live                                                                                                              |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                                                                                        |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | ✅ 0.24.0              | The official site links to the live no-token Demo and the owner-managed Coffee page                                                                                                                     |
+| Current version            | ✅ 0.25.0              | The public Demo now exposes the complete production Admin surface with responsive navigation and advanced synthetic samples                                                                             |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.25.0 Demo Parity And Responsive Admin
+
+| Area                    | Status      | Notes                                                                                                  |
+| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------ |
+| Complete Demo surface   | ✅ Complete | Fresh Demo sessions start in Advanced mode and expose all 17 production Admin routes                  |
+| Mobile Admin layout     | ✅ Fixed    | Narrow viewports use an accessible overlay drawer instead of a fixed sidebar that crushes page content |
+| Advanced synthetic data | ✅ Complete | Rules, imports, tokens, health history, saved views, reports, backups, and audit records are populated |
+| Demo capabilities       | ✅ Isolated | Demo-only R2 buckets and Queue are safety-gated and cannot overlap protected production resources      |
+| Setup guidance          | ✅ Corrected | Public Demo Setup explains read-only isolation instead of production Admin-token recovery             |
+| Redirect-path impact    | ✅ None     | Redirect handlers, KV cache behavior, D1 ownership, and production deployment behavior are unchanged  |
 
 ---
 

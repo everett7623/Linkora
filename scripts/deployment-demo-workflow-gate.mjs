@@ -68,6 +68,11 @@ export async function runDemoDeploymentWorkflowGate({
     readEnv(env, 'LINKETRY_WORKER_NAME'),
     readEnv(env, 'LINKETRY_PAGES_PROJECT'),
     readEnv(env, 'LINKETRY_D1_DATABASE_NAME'),
+    ...[
+      readEnv(env, 'LINKETRY_R2_BUCKET'),
+      readEnv(env, 'LINKETRY_R2_PREVIEW_BUCKET'),
+      readEnv(env, 'LINKETRY_VISITS_QUEUE'),
+    ].filter(Boolean),
   ];
   const workerDomains = splitList(readEnv(env, 'LINKETRY_WORKER_DOMAINS'));
   const useWorkersDev = isTrue(readEnv(env, 'LINKETRY_DEMO_USE_WORKERS_DEV'));
@@ -141,8 +146,8 @@ export async function runDemoDeploymentWorkflowGate({
     demoNames.every((name) => DEMO_RESOURCE_PATTERN.test(name)) &&
       new Set(demoNames).size === demoNames.length,
     'demo-resource-prefix',
-    'Core Demo resources are unique and use the reserved linketry-demo-* prefix.',
-    'Demo Worker, Pages, and D1 names must be unique and each use the linketry-demo-* prefix.'
+    'Demo resources are unique and use the reserved linketry-demo-* prefix.',
+    'Demo Worker, Pages, D1, R2, and Queue names must be unique and each use the linketry-demo-* prefix.'
   );
   const compatibilityDate = readEnv(env, 'LINKETRY_COMPATIBILITY_DATE');
   addCheck(

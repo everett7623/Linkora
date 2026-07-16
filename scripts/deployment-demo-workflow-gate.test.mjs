@@ -31,6 +31,9 @@ const baseEnv = {
   LINKETRY_D1_DATABASE_NAME: 'linketry-demo-d1',
   LINKETRY_D1_DATABASE_ID: '11111111-1111-4111-8111-111111111111',
   LINKETRY_KV_NAMESPACE_ID: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+  LINKETRY_R2_BUCKET: 'linketry-demo-backups',
+  LINKETRY_R2_PREVIEW_BUCKET: 'linketry-demo-backups-preview',
+  LINKETRY_VISITS_QUEUE: 'linketry-demo-visits',
   LINKETRY_PROTECTED_ACCOUNT_IDS: 'cccccccccccccccccccccccccccccccc',
   LINKETRY_PROTECTED_RESOURCE_IDS:
     '99999999-9999-4999-8999-999999999999,dddddddddddddddddddddddddddddddd',
@@ -54,6 +57,21 @@ function createRunner() {
       return {
         status: 0,
         stdout: JSON.stringify([{ id: baseEnv.LINKETRY_KV_NAMESPACE_ID, title: 'demo-kv' }]),
+      };
+    }
+    if (args[0] === 'r2') {
+      return {
+        status: 0,
+        stdout: JSON.stringify([
+          { name: baseEnv.LINKETRY_R2_BUCKET },
+          { name: baseEnv.LINKETRY_R2_PREVIEW_BUCKET },
+        ]),
+      };
+    }
+    if (args[0] === 'queues') {
+      return {
+        status: 0,
+        stdout: JSON.stringify([{ queue_name: baseEnv.LINKETRY_VISITS_QUEUE }]),
       };
     }
     return { status: 0, stdout: 'ok' };
@@ -225,6 +243,7 @@ test('Demo workflow keeps its gate before all Cloudflare writes and uses Demo-on
     'utf8'
   );
   const gate = workflow.indexOf('- name: Enforce isolated Demo safety gate');
+  const resources = workflow.indexOf('- name: Ensure isolated Demo advanced resources');
   const secret = workflow.indexOf('- name: Set isolated Demo Admin token');
   const migrations = workflow.indexOf('- name: Apply isolated Demo migrations');
   const seed = workflow.indexOf('- name: Seed isolated synthetic Demo data');
@@ -232,7 +251,8 @@ test('Demo workflow keeps its gate before all Cloudflare writes and uses Demo-on
   const admin = workflow.indexOf('- name: Deploy isolated Demo Admin');
 
   assert.ok(gate > -1);
-  assert.ok(gate < secret);
+  assert.ok(gate < resources);
+  assert.ok(resources < secret);
   assert.ok(secret < migrations);
   assert.ok(migrations < seed);
   assert.ok(seed < worker);
@@ -243,8 +263,15 @@ test('Demo workflow keeps its gate before all Cloudflare writes and uses Demo-on
   assert.match(workflow, /secrets\.LINKETRY_DEMO_CLOUDFLARE_ACCOUNT_ID/);
   assert.match(workflow, /VITE_LINKETRY_DEMO_MODE: 'true'/);
   assert.match(workflow, /LINKETRY_DEMO_USE_WORKERS_DEV/);
+  assert.match(workflow, /LINKETRY_DEMO_R2_BUCKET/);
+  assert.match(workflow, /LINKETRY_DEMO_VISITS_QUEUE/);
+  assert.match(workflow, /\[\[r2_buckets\]\]/);
+  assert.match(workflow, /\[\[queues\.producers\]\]/);
+  assert.match(workflow, /Upload isolated synthetic Demo artifacts/);
   assert.match(workflow, /workers_dev = true/);
   assert.match(workflow, /LINKETRY_DEMO_MODE = "read-only"/);
+  assert.match(workflow, /LINKETRY_DAILY_CRON = "15 3 \* \* \*"/);
+  assert.match(workflow, /LINKETRY_HEALTH_CRON = "15 \* \* \* \*"/);
   assert.match(workflow, /name = "DEMO_RATE_LIMITER"/);
   assert.match(workflow, /limit = 120/);
   assert.match(workflow, /period = 60/);

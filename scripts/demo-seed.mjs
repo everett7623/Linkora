@@ -1,8 +1,12 @@
 import { createHash } from 'node:crypto';
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const DAY_MS = 24 * 60 * 60 * 1_000;
+const DEMO_BACKUP_LATEST_KEY = 'backups/linketry-demo-snapshot.json';
+const DEMO_BACKUP_PREVIOUS_KEY = 'backups/linketry-demo-pre-release.json';
+const DEMO_REPORT_KEY = 'reports/linketry-demo-analytics.csv';
 
 function sqlValue(value) {
   if (value === null || value === undefined) return 'NULL';
@@ -214,11 +218,178 @@ export function buildDemoSeedSql({ origin: originValue, now: nowValue = new Date
     updated_at: now.toISOString(),
   }));
 
+  const redirectRules = [
+    {
+      id: 'linketry-demo-rule-country',
+      link_id: links[0].id,
+      rule_type: 'country',
+      rule_config: JSON.stringify({
+        enabled: true,
+        values: ['de', 'at'],
+        targetUrl: 'https://linketry.com/?utm_source=demo&utm_medium=geo&utm_campaign=product',
+      }),
+      priority: 10,
+      status: 'active',
+      created_at: isoAgo(now, 20),
+      updated_at: now.toISOString(),
+    },
+    {
+      id: 'linketry-demo-rule-device',
+      link_id: links[1].id,
+      rule_type: 'device',
+      rule_config: JSON.stringify({
+        enabled: true,
+        values: ['mobile'],
+        targetUrl: 'https://github.com/everett7623/Linketry#readme',
+      }),
+      priority: 20,
+      status: 'active',
+      created_at: isoAgo(now, 18),
+      updated_at: now.toISOString(),
+    },
+    {
+      id: 'linketry-demo-rule-weighted',
+      link_id: links[2].id,
+      rule_type: 'weighted',
+      rule_config: JSON.stringify({
+        enabled: true,
+        targets: [
+          { url: 'https://linketry.com/#roadmap', weight: 70 },
+          { url: 'https://github.com/everett7623/Linketry', weight: 30 },
+        ],
+      }),
+      priority: 30,
+      status: 'active',
+      created_at: isoAgo(now, 16),
+      updated_at: now.toISOString(),
+    },
+  ];
+
+  const importJobs = [
+    {
+      id: 'linketry-demo-import-shlink',
+      source: 'shlink',
+      filename: 'synthetic-shlink-export.json',
+      total_count: 12,
+      success_count: 10,
+      skipped_count: 1,
+      conflict_count: 1,
+      failed_count: 1,
+      status: 'completed',
+      report:
+        'slug,status,reason\nlegacy-docs,skipped,slug conflict\nbroken-row,failed,invalid URL\n',
+      created_at: isoAgo(now, 24),
+      completed_at: isoAgo(now, 24, -1),
+    },
+    {
+      id: 'linketry-demo-import-generic',
+      source: 'generic',
+      filename: 'synthetic-campaign-links.csv',
+      total_count: 8,
+      success_count: 8,
+      skipped_count: 0,
+      conflict_count: 0,
+      failed_count: 0,
+      status: 'completed',
+      report: 'slug,status,reason\nlaunch-page,created,\nproduct-docs,created,\n',
+      created_at: isoAgo(now, 12),
+      completed_at: isoAgo(now, 12, -1),
+    },
+  ];
+
+  const apiTokens = [
+    {
+      id: 'linketry-demo-token-read',
+      name: 'Synthetic reporting client',
+      token_hash: syntheticHash('api-token-read'),
+      scopes: JSON.stringify(['read']),
+      last_used_at: isoAgo(now, 1, 2),
+      created_at: isoAgo(now, 30),
+      revoked_at: null,
+    },
+    {
+      id: 'linketry-demo-token-revoked',
+      name: 'Retired automation token',
+      token_hash: syntheticHash('api-token-revoked'),
+      scopes: JSON.stringify(['admin']),
+      last_used_at: isoAgo(now, 15),
+      created_at: isoAgo(now, 40),
+      revoked_at: isoAgo(now, 10),
+    },
+  ];
+
+  const backups = [
+    {
+      id: 'linketry-demo-backup-latest',
+      filename: DEMO_BACKUP_LATEST_KEY,
+      storage: 'r2',
+      size: 718,
+      status: 'completed',
+      created_at: isoAgo(now, 1),
+    },
+    {
+      id: 'linketry-demo-backup-previous',
+      filename: DEMO_BACKUP_PREVIOUS_KEY,
+      storage: 'r2',
+      size: 718,
+      status: 'completed',
+      created_at: isoAgo(now, 7),
+    },
+  ];
+
+  const savedViews = [
+    {
+      id: 'linketry-demo-view-campaign',
+      name: 'Launch campaign - 30 days',
+      filters: { days: 30, utm_campaign: 'launch' },
+      created_at: isoAgo(now, 14),
+    },
+    {
+      id: 'linketry-demo-view-mobile',
+      name: 'Mobile traffic - 7 days',
+      filters: { days: 7, device: 'mobile' },
+      created_at: isoAgo(now, 9),
+    },
+  ];
+
+  const healthHistory = [
+    ['linketry-demo-link-product', 'healthy', 200, 142, 0, 0],
+    ['linketry-demo-link-github', 'healthy', 200, 218, 0, 1],
+    ['linketry-demo-link-roadmap', 'warning', 429, 684, 1, 2],
+    ['linketry-demo-link-deploy', 'broken', 503, 1200, 2, 3],
+  ].map(([link_id, status, http_status, response_time_ms, consecutive_failures, hours]) => ({
+    link_id,
+    status,
+    http_status,
+    checked_at: isoAgo(now, 0, hours),
+    response_time_ms,
+    consecutive_failures,
+  }));
+
+  const reportRecords = [
+    {
+      key: DEMO_REPORT_KEY,
+      created_at: isoAgo(now, 1, 3),
+      status: 'completed',
+      size: 135,
+    },
+  ];
+
   const auditLogs = [
     ['demo.seeded', 'system', 'linketry-public-demo', 'Synthetic Demo dataset refreshed'],
     ['link.created', 'link', links[0].id, 'Synthetic product link created'],
     ['link.created', 'link', links[1].id, 'Synthetic GitHub link created'],
     ['settings.updated', 'settings', 'site_name', 'Synthetic Demo settings configured'],
+    [
+      'redirect_rule.create',
+      'redirect_rule',
+      redirectRules[0].id,
+      'Synthetic country rule created',
+    ],
+    ['import.completed', 'import_job', importJobs[0].id, 'Synthetic Shlink import completed'],
+    ['backup.create', 'backup', backups[0].id, 'Synthetic R2 backup completed'],
+    ['api_token.create', 'api_token', apiTokens[0].id, 'Synthetic read token created'],
+    ['health_check.batch', 'health_check', 'synthetic-batch', 'Synthetic health check completed'],
   ].map(([action, target_type, target_id, detail], index) => ({
     id: `linketry-demo-audit-${index + 1}`,
     action,
@@ -313,6 +484,48 @@ export function buildDemoSeedSql({ origin: originValue, now: nowValue = new Date
       tags
     ),
     insertWithStableKey(
+      'redirect_rules',
+      [
+        'id',
+        'link_id',
+        'rule_type',
+        'rule_config',
+        'priority',
+        'status',
+        'created_at',
+        'updated_at',
+      ],
+      redirectRules
+    ),
+    insertWithStableKey(
+      'import_jobs',
+      [
+        'id',
+        'source',
+        'filename',
+        'total_count',
+        'success_count',
+        'skipped_count',
+        'conflict_count',
+        'failed_count',
+        'status',
+        'report',
+        'created_at',
+        'completed_at',
+      ],
+      importJobs
+    ),
+    insertWithStableKey(
+      'api_tokens',
+      ['id', 'name', 'token_hash', 'scopes', 'last_used_at', 'created_at', 'revoked_at'],
+      apiTokens
+    ),
+    insertWithStableKey(
+      'backups',
+      ['id', 'filename', 'storage', 'size', 'status', 'created_at'],
+      backups
+    ),
+    insertWithStableKey(
       'domains',
       ['id', 'domain', 'is_default', 'status', 'created_at', 'updated_at'],
       [
@@ -335,19 +548,96 @@ export function buildDemoSeedSql({ origin: originValue, now: nowValue = new Date
   ('site_name', 'Linketry Public Demo', ${sqlValue(now.toISOString())}),
   ('default_domain', ${sqlValue(hostname)}, ${sqlValue(now.toISOString())}),
   ('default_redirect_type', '302', ${sqlValue(now.toISOString())}),
-  ('analytics_retention_days', '0', ${sqlValue(now.toISOString())})
+  ('analytics_retention_days', '0', ${sqlValue(now.toISOString())}),
+  ('backup_retention_days', '30', ${sqlValue(now.toISOString())}),
+  ('health_monitoring_enabled', 'true', ${sqlValue(now.toISOString())}),
+  ('health_monitoring_limit', '5', ${sqlValue(now.toISOString())}),
+  ('health_failure_threshold', '2', ${sqlValue(now.toISOString())}),
+  ('health_alert_suppression_minutes', '1440', ${sqlValue(now.toISOString())}),
+  ('health_monitoring_cursor', '4', ${sqlValue(now.toISOString())}),
+  ('health_check_history', ${sqlValue(JSON.stringify(healthHistory))}, ${sqlValue(now.toISOString())}),
+  ('health_alert_state', ${sqlValue(JSON.stringify({ failures: { 'linketry-demo-link-roadmap': 1, 'linketry-demo-link-deploy': 2 }, alerted: ['linketry-demo-link-deploy'], lastAlertAt: isoAgo(now, 0, 3) }))}, ${sqlValue(now.toISOString())}),
+  ('analytics_saved_views', ${sqlValue(JSON.stringify(savedViews))}, ${sqlValue(now.toISOString())}),
+  ('analytics_report_schedule', ${sqlValue(JSON.stringify({ enabled: true, days: 30, saved_view_id: savedViews[0].id }))}, ${sqlValue(now.toISOString())}),
+  ('analytics_report_records', ${sqlValue(JSON.stringify(reportRecords))}, ${sqlValue(now.toISOString())})
 ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at;`,
   ];
 
   return `${statements.join('\n\n')}\n`;
 }
 
+export function buildDemoArtifacts({
+  origin: originValue,
+  now: nowValue = new Date(),
+  version = '0.25.0',
+}) {
+  const origin = normalizeOrigin(originValue);
+  const now = new Date(nowValue);
+  if (Number.isNaN(now.getTime())) throw new Error('Demo artifact timestamp is invalid.');
+  const backupBody = JSON.stringify(
+    {
+      name: 'Linketry Backup',
+      version,
+      exportedAt: now.toISOString(),
+      links: [
+        {
+          id: 'linketry-demo-link-product',
+          slug: 'product',
+          domain: new URL(origin).hostname,
+          long_url: 'https://linketry.com/',
+          title: 'Explore Linketry',
+          tags: JSON.stringify(['demo', 'campaign:product']),
+          status: 'active',
+          redirect_type: 302,
+          clicks: 42,
+        },
+      ],
+      tags: [{ id: 'linketry-demo-tag-1', name: 'demo', color: '#f59e0b' }],
+      redirectRules: [],
+      settings: { site_name: 'Linketry Public Demo', default_domain: new URL(origin).hostname },
+    },
+    null,
+    2
+  );
+  const reportBody = [
+    'section,label,value',
+    'summary,total_clicks,84',
+    'summary,unique_visitors,27',
+    'summary,conversions,12',
+    'top_links,product,35',
+    'top_links,github,21',
+  ].join('\n');
+
+  return [
+    {
+      key: DEMO_BACKUP_LATEST_KEY,
+      filename: 'backup-latest.json',
+      contentType: 'application/json; charset=utf-8',
+      body: backupBody,
+    },
+    {
+      key: DEMO_BACKUP_PREVIOUS_KEY,
+      filename: 'backup-previous.json',
+      contentType: 'application/json; charset=utf-8',
+      body: backupBody,
+    },
+    {
+      key: DEMO_REPORT_KEY,
+      filename: 'analytics-report.csv',
+      contentType: 'text/csv; charset=utf-8',
+      body: `${reportBody}\n`,
+    },
+  ];
+}
+
 function parseArgs(argv) {
-  const result = { origin: '', output: '' };
+  const result = { origin: '', output: '', artifactDir: '', version: '0.25.0' };
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     if (argument === '--origin') result.origin = argv[++index] ?? '';
     else if (argument === '--output') result.output = argv[++index] ?? '';
+    else if (argument === '--artifact-dir') result.artifactDir = argv[++index] ?? '';
+    else if (argument === '--version') result.version = argv[++index] ?? '';
     else throw new Error(`Unknown argument: ${argument}`);
   }
   if (!result.origin || !result.output) {
@@ -360,6 +650,15 @@ async function main() {
   const options = parseArgs(process.argv.slice(2));
   const sql = buildDemoSeedSql({ origin: options.origin });
   await writeFile(options.output, sql, 'utf8');
+  if (options.artifactDir) {
+    await mkdir(options.artifactDir, { recursive: true });
+    for (const artifact of buildDemoArtifacts({
+      origin: options.origin,
+      version: options.version,
+    })) {
+      await writeFile(join(options.artifactDir, artifact.filename), artifact.body, 'utf8');
+    }
+  }
   console.log(`Generated synthetic Linketry Demo seed: ${options.output}`);
 }
 

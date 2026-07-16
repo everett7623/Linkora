@@ -144,6 +144,9 @@ LINKETRY_DEMO_PAGES_PROJECT=linketry-demo-admin
 LINKETRY_DEMO_D1_DATABASE_NAME=linketry-demo-d1
 LINKETRY_DEMO_D1_DATABASE_ID=<isolated Demo D1 ID>
 LINKETRY_DEMO_KV_NAMESPACE_ID=<isolated Demo KV ID>
+LINKETRY_DEMO_R2_BUCKET=linketry-demo-backups
+LINKETRY_DEMO_R2_PREVIEW_BUCKET=linketry-demo-backups-preview
+LINKETRY_DEMO_VISITS_QUEUE=linketry-demo-visits
 LINKETRY_DEMO_COMPATIBILITY_DATE=2026-07-16
 LINKETRY_PROTECTED_ACCOUNT_IDS=<comma-separated production Cloudflare account IDs>
 LINKETRY_PROTECTED_RESOURCE_IDS=<comma-separated production D1/KV IDs>
@@ -159,7 +162,7 @@ Run **Deploy Isolated Linketry Demo** from GitHub Actions and type the exact con
 
 - the event is a manual dispatch with the exact confirmation;
 - the Demo account differs from every protected production account;
-- Worker, Pages, and D1 names are unique and use the reserved `linketry-demo-*` prefix;
+- Worker, Pages, D1, optional R2, and optional Queue names are unique and use the reserved `linketry-demo-*` prefix;
 - D1/KV IDs, resource names, and hostnames do not overlap protected production targets;
 - the selected resources exist in the Demo account;
 - the release, Git commit, non-destructive migration policy, and reviewed migration digest match.

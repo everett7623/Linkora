@@ -2,7 +2,7 @@
 
 ## Status
 
-Deployment isolation completed in Linketry v0.18.0; public read-only and synthetic-data controls completed in v0.23.0; isolated resources and `demo.linketry.com` are live as of v0.24.0.
+Deployment isolation completed in Linketry v0.18.0; public read-only controls completed in v0.23.0; `demo.linketry.com` went live in v0.24.0; responsive Admin parity and isolated advanced resources completed in v0.25.0.
 
 ## Scope
 
@@ -18,6 +18,8 @@ Deployment isolation completed in Linketry v0.18.0; public read-only and synthet
 - [x] Apply Cloudflare's native Rate Limiting binding with hashed client keys to Demo API reads.
 - [x] Generate and idempotently refresh synthetic links, visits, conversions, tags, settings, domain, and audit samples after migrations.
 - [x] Create the protected `linketry-demo` GitHub environment and repository-level production protection inventory.
+- [x] Add safety-gated Demo-only R2 buckets and Queue plus synthetic backup/report artifacts.
+- [x] Populate all advanced Admin sections with deterministic synthetic records.
 
 ## Safety Boundary
 
@@ -28,8 +30,8 @@ Deployment isolation completed in Linketry v0.18.0; public read-only and synthet
 
 ## Verification
 
-- Deployment policy tests: 38 passed.
+- Deployment policy tests: 39 passed.
 - Worker type-check and tests: 72 passed.
-- Admin unit tests: 37 passed; 13 Chromium tests and the production build passed.
+- Admin unit tests: 38 passed; focused 390px Chromium coverage and the production build passed.
 - Project-site tests: 3 passed; production build passed.
 - New deployment gate and test files remain below the project JavaScript line limit.

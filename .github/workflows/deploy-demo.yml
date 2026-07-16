@@ -34,6 +34,9 @@ jobs:
       LINKETRY_D1_DATABASE_ID: ${{ vars.LINKETRY_DEMO_D1_DATABASE_ID }}
       LINKETRY_KV_NAMESPACE_ID: ${{ vars.LINKETRY_DEMO_KV_NAMESPACE_ID }}
       LINKETRY_KV_PREVIEW_ID: ${{ vars.LINKETRY_DEMO_KV_PREVIEW_ID }}
+      LINKETRY_R2_BUCKET: ${{ vars.LINKETRY_DEMO_R2_BUCKET }}
+      LINKETRY_R2_PREVIEW_BUCKET: ${{ vars.LINKETRY_DEMO_R2_PREVIEW_BUCKET }}
+      LINKETRY_VISITS_QUEUE: ${{ vars.LINKETRY_DEMO_VISITS_QUEUE }}
       LINKETRY_COMPATIBILITY_DATE: ${{ vars.LINKETRY_DEMO_COMPATIBILITY_DATE }}
       LINKETRY_DEMO_DEPLOY_CONFIRMATION: ${{ inputs.confirmation }}
       LINKETRY_DEMO_CREDENTIAL_SCOPE_CONFIRMED: ${{ vars.LINKETRY_DEMO_CREDENTIAL_SCOPE_CONFIRMED }}
@@ -110,6 +113,34 @@ jobs:
           if (env.LINKETRY_KV_PREVIEW_ID) {
             kv.push(`preview_id = "${env.LINKETRY_KV_PREVIEW_ID}"`);
           }
+          const optionalConfig = [];
+          if (env.LINKETRY_R2_BUCKET && env.LINKETRY_R2_PREVIEW_BUCKET) {
+            optionalConfig.push(
+              '[[r2_buckets]]',
+              'binding = "BACKUPS"',
+              `bucket_name = "${env.LINKETRY_R2_BUCKET}"`,
+              `preview_bucket_name = "${env.LINKETRY_R2_PREVIEW_BUCKET}"`,
+              ''
+            );
+          }
+          if (env.LINKETRY_VISITS_QUEUE) {
+            optionalConfig.push(
+              '[[queues.producers]]',
+              'binding = "VISITS_QUEUE"',
+              `queue = "${env.LINKETRY_VISITS_QUEUE}"`,
+              '',
+              '[[queues.consumers]]',
+              `queue = "${env.LINKETRY_VISITS_QUEUE}"`,
+              'max_batch_size = 10',
+              'max_batch_timeout = 5',
+              ''
+            );
+          }
+          optionalConfig.push(
+            '[triggers]',
+            'crons = ["15 3 * * *", "15 * * * *"]',
+            ''
+          );
           const config = [
             `name = "${env.LINKETRY_WORKER_NAME || ''}"`,
             'main = "src/index.ts"',
@@ -118,8 +149,10 @@ jobs:
             ...routing,
             '',
             '[vars]',
-            `LINKETRY_VERSION = "${env.RESOLVED_LINKETRY_VERSION || '0.24.0'}"`,
+            `LINKETRY_VERSION = "${env.RESOLVED_LINKETRY_VERSION || '0.25.0'}"`,
             'LINKETRY_DEMO_MODE = "read-only"',
+            'LINKETRY_DAILY_CRON = "15 3 * * *"',
+            'LINKETRY_HEALTH_CRON = "15 * * * *"',
             '',
             '[[ratelimits]]',
             'name = "DEMO_RATE_LIMITER"',
@@ -136,6 +169,7 @@ jobs:
             '',
             ...kv,
             '',
+            ...optionalConfig,
           ].join('\n');
 
           fs.writeFileSync('apps/worker/wrangler.demo.toml', config);
@@ -143,6 +177,50 @@ jobs:
 
       - name: Enforce isolated Demo safety gate
         run: npm run deploy:demo:gate
+
+      - name: Ensure isolated Demo advanced resources
+        run: |
+          ensure_r2_bucket() {
+            local name="$1"
+            local inventory
+            inventory="$(npx wrangler r2 bucket list --json)"
+            if ! printf '%s' "$inventory" | node -e '
+              let body = "";
+              process.stdin.on("data", (chunk) => body += chunk);
+              process.stdin.on("end", () => {
+                const parsed = JSON.parse(body);
+                const items = Array.isArray(parsed) ? parsed : parsed.result || [];
+                process.exit(items.some((item) => item.name === process.argv[1]) ? 0 : 1);
+              });
+            ' "$name"; then
+              npx wrangler r2 bucket create "$name"
+            fi
+          }
+
+          ensure_queue() {
+            local name="$1"
+            local inventory
+            inventory="$(npx wrangler queues list --json)"
+            if ! printf '%s' "$inventory" | node -e '
+              let body = "";
+              process.stdin.on("data", (chunk) => body += chunk);
+              process.stdin.on("end", () => {
+                const parsed = JSON.parse(body);
+                const items = Array.isArray(parsed) ? parsed : parsed.result || [];
+                process.exit(items.some((item) => (item.queue_name || item.name) === process.argv[1]) ? 0 : 1);
+              });
+            ' "$name"; then
+              npx wrangler queues create "$name" --message-retention-period-secs 60
+            fi
+          }
+
+          if [[ -n "$LINKETRY_R2_BUCKET" && -n "$LINKETRY_R2_PREVIEW_BUCKET" ]]; then
+            ensure_r2_bucket "$LINKETRY_R2_BUCKET"
+            ensure_r2_bucket "$LINKETRY_R2_PREVIEW_BUCKET"
+          fi
+          if [[ -n "$LINKETRY_VISITS_QUEUE" ]]; then
+            ensure_queue "$LINKETRY_VISITS_QUEUE"
+          fi
 
       - name: Set isolated Demo Admin token
         run: |
@@ -161,7 +239,9 @@ jobs:
         run: |
           node scripts/demo-seed.mjs \
             --origin "$LINKETRY_API_URL" \
-            --output "$RUNNER_TEMP/linketry-demo-seed.sql"
+            --output "$RUNNER_TEMP/linketry-demo-seed.sql" \
+            --artifact-dir "$RUNNER_TEMP/linketry-demo-artifacts" \
+            --version "$RESOLVED_LINKETRY_VERSION"
 
       - name: Seed isolated synthetic Demo data
         run: |
@@ -169,6 +249,26 @@ jobs:
             --remote \
             --config wrangler.demo.toml \
             --file "$RUNNER_TEMP/linketry-demo-seed.sql"
+        working-directory: apps/worker
+
+      - name: Upload isolated synthetic Demo artifacts
+        if: env.LINKETRY_R2_BUCKET != '' && env.LINKETRY_R2_PREVIEW_BUCKET != ''
+        run: |
+          npx wrangler r2 object put "$LINKETRY_R2_BUCKET/backups/linketry-demo-snapshot.json" \
+            --remote \
+            --config wrangler.demo.toml \
+            --file "$RUNNER_TEMP/linketry-demo-artifacts/backup-latest.json" \
+            --content-type "application/json; charset=utf-8"
+          npx wrangler r2 object put "$LINKETRY_R2_BUCKET/backups/linketry-demo-pre-release.json" \
+            --remote \
+            --config wrangler.demo.toml \
+            --file "$RUNNER_TEMP/linketry-demo-artifacts/backup-previous.json" \
+            --content-type "application/json; charset=utf-8"
+          npx wrangler r2 object put "$LINKETRY_R2_BUCKET/reports/linketry-demo-analytics.csv" \
+            --remote \
+            --config wrangler.demo.toml \
+            --file "$RUNNER_TEMP/linketry-demo-artifacts/analytics-report.csv" \
+            --content-type "text/csv; charset=utf-8"
         working-directory: apps/worker
 
       - name: Deploy isolated Demo Worker
@@ -193,6 +293,8 @@ jobs:
             echo "| API and sample redirects | ${LINKETRY_API_URL:-Not configured} |"
             echo "| Worker | ${LINKETRY_WORKER_NAME:-Not configured} |"
             echo "| D1 | ${LINKETRY_D1_DATABASE_NAME:-Not configured} |"
+            echo "| R2 | ${LINKETRY_R2_BUCKET:-Not configured} |"
+            echo "| Queue | ${LINKETRY_VISITS_QUEUE:-Not configured} |"
             echo ""
             echo "This workflow never deploys the production project site or changes production DNS."
           } >> "$GITHUB_STEP_SUMMARY"

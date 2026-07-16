@@ -2,7 +2,7 @@
 
 ## Status
 
-Complete and live. The v0.23.0 safety layer is deployed in an isolated Cloudflare account, and v0.24.0 exposes the public Admin at `https://demo.linketry.com` without a visitor token.
+Complete and live. The v0.23.0 safety layer is deployed in an isolated Cloudflare account, v0.24.0 exposes the public Admin at `https://demo.linketry.com` without a visitor token, and v0.25.0 completes responsive Admin parity and advanced synthetic samples.
 
 ## Completed
 
@@ -15,8 +15,11 @@ Complete and live. The v0.23.0 safety layer is deployed in an isolated Cloudflar
 - [x] Prevented public redirect visits from changing the synthetic Demo analytics dataset.
 - [x] Added privacy-safe API abuse control through Cloudflare's native Rate Limiting binding.
 - [x] Added an idempotent synthetic seed with five links, 84 visits, and 12 conversions.
+- [x] Expanded the synthetic seed with redirect rules, imports, API tokens, health history, saved views, reports, backups, and audit activity.
 - [x] Extended the manual Demo workflow to build, migrate, seed, deploy, and summarize the isolated targets.
+- [x] Added safety-gated Demo-only R2 buckets and Queue plus downloadable synthetic R2 artifacts.
 - [x] Added explicit `workers.dev` routing so the first isolated launch needs no production-zone DNS permission.
+- [x] Defaulted fresh Demo sessions to the complete Admin navigation and fixed the narrow-screen Sidebar layout.
 
 ## Live Activation
 
@@ -30,6 +33,6 @@ Complete and live. The v0.23.0 safety layer is deployed in an isolated Cloudflar
 ## Verification
 
 - Worker type-check passed; 72 Worker tests passed.
-- 37 Admin unit tests and 13 Chromium tests passed; production Demo build passed.
-- 38 deployment safety tests passed.
-- Generated SQL executed against local D1 with 5 synthetic links, 84 visits, and 12 conversions.
+- 38 Admin unit tests passed; focused 390px Chromium layout coverage and the production build passed.
+- 39 deployment safety tests passed.
+- Generated SQL executed against local D1 with 5 synthetic links, 84 visits, 12 conversions, 3 redirect rules, 2 imports, 2 API tokens, and 2 backups.

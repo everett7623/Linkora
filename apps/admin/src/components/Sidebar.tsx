@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { clsx } from 'clsx';
+import { X } from 'lucide-react';
 import { useAdminMode } from '../contexts/AdminModeContext';
 import { isFeatureVisible } from '../utils/adminMode';
 import { useLocale } from '../contexts/LocaleContext';
@@ -8,7 +9,13 @@ import { useDisplayPreferences } from '../contexts/DisplayPreferencesContext';
 import { SidebarFooter } from './sidebar/SidebarFooter';
 import { NAV_GROUPS } from './sidebar/sidebarNavigation';
 
-export function Sidebar() {
+interface SidebarProps {
+  mobile?: boolean;
+  onClose?: () => void;
+  onNavigate?: () => void;
+}
+
+export function Sidebar({ mobile = false, onClose, onNavigate }: SidebarProps) {
   const { mode } = useAdminMode();
   const { sidebarDensity, loadingVisibility, moduleIsVisible } = useDisplayPreferences();
   const { t } = useLocale();
@@ -24,7 +31,11 @@ export function Sidebar() {
     <aside
       className={clsx(
         'flex h-full shrink-0 flex-col border-r border-slate-800 bg-slate-900 transition-[width]',
-        compact ? 'w-52' : 'w-60'
+        mobile
+          ? 'relative z-10 w-60 max-w-[calc(100vw-3rem)] shadow-2xl'
+          : compact
+            ? 'w-52'
+            : 'w-60'
       )}
     >
       {/* Logo */}
@@ -45,6 +56,17 @@ export function Sidebar() {
           />
         </div>
         <span className="font-bold text-lg text-slate-100 tracking-tight">Linketry</span>
+        {mobile && (
+          <button
+            type="button"
+            className="ml-auto inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-100"
+            aria-label={t('closeNavigation')}
+            title={t('closeNavigation')}
+            onClick={onClose}
+          >
+            <X size={19} aria-hidden="true" />
+          </button>
+        )}
       </div>
 
       {/* Nav */}
@@ -69,6 +91,7 @@ export function Sidebar() {
                   key={item.to}
                   to={item.to}
                   end
+                  onClick={onNavigate}
                   className={({ isActive }) =>
                     clsx(
                       'flex items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors',

@@ -24,7 +24,7 @@ Linketry is a self-hosted link management, analytics and monitoring platform.
 
 > **New to self-hosting?** Follow the [quick-start guide](docs/SELF_HOSTING.md) and run the [read-only deployment preflight](docs/DEPLOYMENT_PREFLIGHT.md) before provisioning or deployment. Installations older than 0.10 must use the [non-destructive upgrade guide](docs/UPGRADING_PRE_0_10.md) and keep their current D1/KV/R2/Queue bindings until migration is verified.
 
-The official project site lives in `apps/site`, is deployed independently from the Admin, and is live at [linketry.com](https://linketry.com); [linketry-site.pages.dev](https://linketry-site.pages.dev) remains its automatic Pages URL. The isolated public Demo is live at [demo.linketry.com](https://demo.linketry.com) with synthetic data, read-only enforcement, and native Worker abuse controls. Visitors do not enter a default Demo token; the internal Admin token remains a random Worker secret. Project support uses the owner-managed [Coffee page](https://everettlabs.dev/coffee/).
+The official project site lives in `apps/site`, is deployed independently from the Admin, and is live at [linketry.com](https://linketry.com); [linketry-site.pages.dev](https://linketry-site.pages.dev) remains its automatic Pages URL. The isolated public Demo is live at [demo.linketry.com](https://demo.linketry.com) with the complete production Admin navigation, responsive mobile layout, synthetic advanced-feature records, read-only enforcement, and native Worker abuse controls. Visitors do not enter a default Demo token; the internal Admin token remains a random Worker secret. Project support uses the owner-managed [Coffee page](https://everettlabs.dev/coffee/).
 
 ---
 
