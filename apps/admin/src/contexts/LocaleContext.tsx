@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { messages, type Locale, type MessageKey } from '../i18n/messages';
 import { formatMessage, type MessageVariables } from '../i18n/formatMessage';
+import { DEFAULT_LOCALE, getLocaleDefinition, resolveLocale } from '../i18n/locales';
 import { readBrowserSetting, writeBrowserSetting } from '../utils/browserStorage';
 
 interface LocaleContextValue {
@@ -12,14 +13,16 @@ interface LocaleContextValue {
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 function initialLocale(): Locale {
-  if (typeof window === 'undefined') return 'en';
-  return readBrowserSetting('locale') === 'zh-CN' ? 'zh-CN' : 'en';
+  if (typeof window === 'undefined') return DEFAULT_LOCALE;
+  return resolveLocale(readBrowserSetting('locale'));
 }
 
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const [locale, updateLocale] = useState<Locale>(initialLocale);
   useEffect(() => {
-    document.documentElement.lang = locale;
+    const definition = getLocaleDefinition(locale);
+    document.documentElement.lang = definition.htmlLang;
+    document.documentElement.dir = definition.direction;
   }, [locale]);
   const value = useMemo<LocaleContextValue>(
     () => ({

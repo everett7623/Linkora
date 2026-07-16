@@ -11,13 +11,13 @@ Last updated: 2026-07-16
 | Layer                      | Status                 | Notes                                                                                                                                  |
 | -------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | Worker backend             | ✅ Code complete       | Local type-check passing; deployed on Cloudflare Workers                                                                               |
-| Admin frontend             | ✅ V8 complete         | EN/ZH workflows, display preferences, themes, GitHub update notices, and persistent table/card link views are browser tested |
+| Admin frontend             | ✅ V8 complete         | EN/ZH workflows, typed community locale checks, display preferences, themes, update notices, and table/card link views are browser tested |
 | Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                    |
 | Documentation              | ✅ Complete            | README, self-hosting guide, project site, analytics guide, backup/reset guide, runbooks, and long-term roadmap                         |
 | Deployment                 | 🟡 External activation | Production is deployed; the project site and isolated manual Demo workflow are prepared; DNS activation and live Demo resources remain |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                       |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md` |
-| Current version            | ✅ 0.19.0              | Admin Links supports persistent table/card views; live project-site and isolated Demo activation remain external follow-up work |
+| Current version            | ✅ 0.20.0              | Admin locales use a typed registry and CI catalog gate; live project-site and isolated Demo activation remain external follow-up work |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
 
@@ -112,7 +112,7 @@ Last updated: 2026-07-16
 1. Complete deployment Bootstrap with a fresh-account first-link rehearsal; guided provisioning, three-track preflight, production enforcement, and the separate Demo workflow are complete
 2. Activate the prepared project site on the purchased `linketry.com` apex domain, then provision synthetic Demo data and add a read-only or scheduled-reset public policy
 3. Add optional Cloudflare Access and asynchronous signed click webhooks without weakening bearer-token recovery or redirect stability
-4. Keep card views, social preview customization, broader locales, real-time visuals, optional AI, and external clients behind the foundational work
+4. Keep social preview customization, new reviewed locale catalogs, real-time visuals, optional AI, and external clients behind the foundational work
 5. Keep the separate supporter/coffee domain and Shlink retirement operations deferred until their external prerequisites are ready
 
 ---

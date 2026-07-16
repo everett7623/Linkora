@@ -343,7 +343,7 @@ One item in "In Progress" at a time whenever possible.
 - [x] Evaluate and add an optional table/card Links view with existing list fields, compact actions, EN/ZH labels, and per-browser persistence
 - [ ] Add privacy-preserving favicon delivery and batched visitor/referrer summaries only after a bounded aggregation and proxy contract is designed
 - [ ] Add per-link social preview title, description, and image controls with optional R2 storage outside the redirect hot path
-- [ ] Expand translations through a community-ready locale workflow instead of blocking the basic deployment on many built-in languages
+- [x] Expand translations through a typed, community-ready locale registry, catalog gate, contribution guide, and browser regression workflow
 - [ ] Consider real-time visit logs, a live globe, and optional Workers AI only after the API and deployment foundations are stable
 - [ ] Build browser, Raycast, Shortcuts, MCP, or mobile clients only against the published OpenAPI contract
 

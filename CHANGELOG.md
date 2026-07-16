@@ -13,6 +13,30 @@ _(none)_
 
 ---
 
+## [0.20.0] - 2026-07-16
+
+### Added
+
+- Added one typed Admin locale registry for supported locale codes, native names, HTML language tags, and text direction.
+- Added a contributor guide for complete, reviewed translation catalogs without runtime translation services.
+
+### Changed
+
+- The Admin language selector now renders registered native-language labels and resolves stored locale values through the registry, falling back to English when a value is unknown.
+- The selected locale now synchronizes both the document `lang` and `dir` attributes.
+
+### Tests
+
+- Added an automated locale gate for registry/catalog parity, message-key parity, non-empty translations, and interpolation placeholders.
+- Added real-browser coverage for registered options, document metadata, and locale persistence after reload.
+
+### Security
+
+- Translation catalogs remain bundled locally; no Admin data, tokens, or visited pages are sent to third-party translation services.
+- Worker routes, public redirect templates, D1, KV, analytics, and API contracts are unchanged.
+
+---
+
 ## [0.19.0] - 2026-07-16
 
 ### Added

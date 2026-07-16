@@ -188,8 +188,9 @@ Planned:
 - Done: per-browser sidebar and table density preferences with Simple/Advanced mode compatibility
 - Done: accessible per-browser light, dark, and system-following theme preferences
 - Done: required first-run setup wizard verifies API readiness, one default short domain, and the first link from real instance state
-- In progress: language switcher with English as the default and Simplified Chinese as an option
-- In progress: i18n foundation covers core and advanced link management, deployment, operations, audit, backup/restore, and analytics workflows
+- Done: language switcher with English as the default and Simplified Chinese as an option
+- Done: i18n foundation covers core and advanced link management, deployment, operations, audit, backup/restore, and analytics workflows
+- Done in v0.20.0: typed locale registry, native-language options, catalog/placeholder CI gate, contribution guide, and browser persistence coverage
 - Done: public 404, disabled, expired, password, and warning pages support English and Simplified Chinese without changing redirect semantics
 - Locale-aware date, time zone, number, and CSV/export formatting settings
 - Help text that explains advanced fields only when advanced mode is enabled
@@ -230,7 +231,7 @@ Ordered delivery:
 4. In progress: the independent official project site now covers product positioning, Admin preview, architecture, deployment, docs, roadmap, license, and GitHub, with a safety-gated Pages deployment path. The isolated manual Demo Worker/Admin workflow is prepared. Activate the purchased `linketry.com` apex domain, then provision synthetic Demo data, add read-only or scheduled-reset behavior and rate limits, and verify a separate Demo short-link host.
 5. Add optional Cloudflare Access authentication and asynchronous signed `link.clicked` webhooks without weakening bearer-token recovery or redirect stability.
 6. Done in v0.16.0: Admin density and optional-module visibility preferences.
-7. Theme preferences completed in v0.17.0 and the optional Links card view completed in v0.19.0; follow with per-link social preview controls, broader community-driven locales, and later ecosystem clients built against OpenAPI.
+7. Theme preferences completed in v0.17.0, the optional Links card view in v0.19.0, and the community locale workflow in v0.20.0; follow with reviewed locale contributions, per-link social preview controls, and later ecosystem clients built against OpenAPI.
 
 External prerequisites:
 

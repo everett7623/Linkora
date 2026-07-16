@@ -132,6 +132,8 @@ On Windows PowerShell, use `Copy-Item` instead of `cp`.
 npm run dev --workspace=apps/admin
 ```
 
+Admin translation contributions follow the catalog, placeholder, and browser checks in [docs/TRANSLATIONS.md](docs/TRANSLATIONS.md).
+
 ## Cloudflare Setup
 
 For a new self-hosted deployment, follow [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md). It includes the Cloudflare resource checklist, template configuration, GitHub Actions variables, and smoke tests.

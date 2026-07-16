@@ -4,7 +4,7 @@ import test from 'node:test';
 import { inspectMigrations } from './deployment-workflow-gate.mjs';
 import { runDemoDeploymentWorkflowGate } from './deployment-demo-workflow-gate.mjs';
 
-const version = '0.19.0';
+const version = '0.20.0';
 const commit = 'a'.repeat(40);
 const migrations = [
   { name: '0001_init.sql', source: 'CREATE TABLE links (id TEXT PRIMARY KEY);' },
