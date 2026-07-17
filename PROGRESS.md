@@ -2,7 +2,7 @@
 
 Quick reference for what is done, what is in progress, and what is not started.
 
-Last updated: 2026-07-17
+Last updated: 2026-07-18
 
 ---
 
@@ -10,14 +10,14 @@ Last updated: 2026-07-17
 
 | Layer                      | Status                 | Notes                                                                                                                                                                                                   |
 | -------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Worker backend             | ✅ Code complete       | Redirect-safe scheduled traffic anomaly detection and authenticated alert controls are locally verified; the previous release is deployed on Cloudflare Workers                                        |
+| Worker backend             | ✅ 0.26.0 live         | Production and isolated Demo Workers are healthy; redirect stability, authentication, and Demo read-only boundaries passed post-deployment smoke checks                                                |
 | Admin frontend             | ✅ V8 complete         | EN/ZH, aligned shell controls, visible version metadata, near-real-time Analytics refresh, display preferences, themes, updates, and traffic-alert controls are browser tested            |
 | Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
 | Documentation              | ✅ Complete            | README, architecture/development guides, self-hosting, API, analytics, backup/reset, runbooks, and long-term roadmap                                                                                    |
 | Deployment                 | ✅ Production + Demo   | Production, `linketry.com`, and the isolated read-only Demo at `demo.linketry.com` are live                                                                                                              |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                                                                                        |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | 🟡 0.26.0 code         | Code and release metadata are complete on `main` after this change; production and isolated Demo deployment remain pending                                                       |
+| Current version            | ✅ 0.26.0 live         | Production Worker/Admin and isolated Demo Worker/Admin are deployed and independently verified                                                                                  |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
 
@@ -34,7 +34,8 @@ Last updated: 2026-07-17
 | Filter attribution             | ✅ Guarded   | Visit-only country/device/browser/referrer filters make conversion metrics unavailable until visit-level attribution exists  |
 | Conversion ingestion           | ✅ Hardened  | Optional `event_id` supports idempotent server retries and values are separated by currency                                   |
 | Verification                   | ✅ Complete  | Admin unit/build, Worker type/test, and 18-test Admin browser smoke coverage pass                                              |
-| Production/Demo rollout        | 🟡 Pending   | This release updates `main` only; Cloudflare deployment remains a separate protected action                                  |
+| Production/Demo rollout        | ✅ Complete  | Protected production run `29594282900` and isolated Demo run `29594530129` completed successfully                            |
+| Live smoke checks              | ✅ Complete  | Health/version, Admin metadata, auth `401`, missing-link `404`, Demo write `403`, conversion filters, desktop/mobile layout, and manual refresh passed |
 | Redirect-path impact           | ✅ None      | Redirect handlers, KV cache behavior, D1 link records, and asynchronous visit recording were not changed                     |
 
 ---

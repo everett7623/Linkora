@@ -25,6 +25,16 @@ Improve the production/Demo Admin shell, make the running version visible, add b
 - Admin browser smoke tests: 18 passed.
 - Admin production build and Worker type-check passed.
 
+## Deployment - 2026-07-18
+
+- Production deployment completed through protected GitHub Actions run `29594282900`.
+- Isolated Demo deployment completed through protected GitHub Actions run `29594530129`.
+- Production Worker and Admin report `0.26.0`; Demo Worker and Admin report `0.26.0`.
+- Production unauthenticated Admin API access returns `401`, and an unknown short link returns `404`.
+- Demo Analytics reports 84 clicks, 79 eligible human clicks, and 12 conversion events from synthetic data.
+- Demo country-filtered conversion metrics correctly return unavailable, and Demo conversion writes remain blocked with `403`.
+- Live desktop brand/toolbar heights are both 64px; the 390px Analytics layout has no horizontal overflow; manual refresh updates successfully with no browser errors.
+
 ## Remaining Launch Work
 
 - Rehearse the guided deployment flow on a completely fresh Cloudflare account.
