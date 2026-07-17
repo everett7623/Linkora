@@ -13,6 +13,25 @@ _(none)_
 
 ---
 
+## [0.26.1] - 2026-07-18
+
+### Added
+
+- Deployment preflight now performs read-only R2 bucket and Queue inventory checks whenever those optional resources are configured.
+- Added regression coverage for existing optional resources, not-yet-created resources, and unavailable R2 accounts.
+
+### Fixed
+
+- Cloudflare R2 error `10042` now fails the safety gate before migrations, resource creation, or deployment and identifies that R2 is not enabled for the selected account.
+- Missing optional R2 buckets or Queues remain non-blocking warnings so a guarded deployment can create them after the read-only gate.
+
+### Security
+
+- Preflight output remains credential-redacted, and no Cloudflare mutation is attempted during capability verification.
+- Redirect handlers, D1/KV behavior, migrations, API contracts, and deployed production data were not changed.
+
+---
+
 ## [0.26.0] - 2026-07-17
 
 ### Added

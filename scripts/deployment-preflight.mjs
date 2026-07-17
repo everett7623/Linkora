@@ -1,5 +1,5 @@
 import { pathToFileURL } from 'node:url';
-import { parseJsonOutput, runWrangler } from './lib/wrangler.mjs';
+import { parseJsonOutput, runWrangler, stripAnsi } from './lib/wrangler.mjs';
 
 const TRACKS = new Set(['fresh', 'upgrade', 'demo']);
 const TRUE_VALUES = new Set(['1', 'true', 'yes', 'on']);
@@ -82,6 +82,41 @@ function addCheck(checks, ok, code, passMessage, failMessage = passMessage) {
 
 function addWarning(checks, code, message) {
   checks.push({ status: 'warn', code, message });
+}
+
+function collectNamedResources(value, keys, names = new Set()) {
+  if (Array.isArray(value)) {
+    for (const item of value) collectNamedResources(item, keys, names);
+    return names;
+  }
+  if (!value || typeof value !== 'object') return names;
+
+  for (const key of keys) {
+    if (typeof value[key] === 'string') names.add(value[key]);
+  }
+  for (const nested of Object.values(value)) {
+    if (Array.isArray(nested)) collectNamedResources(nested, keys, names);
+  }
+  return names;
+}
+
+function outputContainsResource(output, resourceName, jsonKeys) {
+  try {
+    return collectNamedResources(parseJsonOutput(output), jsonKeys).has(resourceName);
+  } catch {
+    const escaped = resourceName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`(?:^|[^A-Za-z0-9_-])${escaped}(?:$|[^A-Za-z0-9_-])`, 'm').test(
+      stripAnsi(output)
+    );
+  }
+}
+
+function cloudflareAccessFailure(command, result) {
+  const output = `${result?.stdout ?? ''}\n${result?.stderr ?? ''}`;
+  if (command.key === 'r2' && /(?:code:\s*10042|\[code:\s*10042\])/i.test(output)) {
+    return 'Wrangler R2 read access failed because R2 is not enabled for the selected Cloudflare account (code 10042). Enable R2 in that exact account, or leave both R2 bindings unset.';
+  }
+  return `Wrangler ${command.key} read access failed; verify the selected account and token permissions.`;
 }
 
 function collectTargets(env) {
@@ -334,6 +369,12 @@ async function validateCloudflareResources(env, targets, checks, runner = runWra
     { key: 'd1', args: ['d1', 'list', '--json'] },
     { key: 'kv', args: ['kv', 'namespace', 'list'] },
   ];
+  if (targets.r2Bucket && targets.r2PreviewBucket) {
+    commands.push({ key: 'r2', args: ['r2', 'bucket', 'list'] });
+  }
+  if (targets.visitsQueue) {
+    commands.push({ key: 'queue', args: ['queues', 'list'] });
+  }
   const results = new Map();
 
   for (const command of commands) {
@@ -344,7 +385,7 @@ async function validateCloudflareResources(env, targets, checks, runner = runWra
       ok,
       `cloudflare-${command.key}-access`,
       `Wrangler ${command.key} read access succeeded.`,
-      `Wrangler ${command.key} read access failed; verify the selected account and token permissions.`
+      cloudflareAccessFailure(command, result)
     );
     if (ok) results.set(command.key, result.stdout);
   }
@@ -394,6 +435,43 @@ async function validateCloudflareResources(env, targets, checks, runner = runWra
         'cloudflare-kv-json',
         '',
         'Could not parse the read-only Wrangler KV namespace list response.'
+      );
+    }
+  }
+
+  if (results.has('r2')) {
+    const missingBuckets = [targets.r2Bucket, targets.r2PreviewBucket].filter(
+      (bucket) => !outputContainsResource(results.get('r2'), bucket, ['name'])
+    );
+    if (missingBuckets.length === 0) {
+      addCheck(
+        checks,
+        true,
+        'cloudflare-r2-target',
+        'Configured R2 production and preview buckets exist in the selected account.'
+      );
+    } else {
+      addWarning(
+        checks,
+        'cloudflare-r2-target',
+        'One or more configured R2 buckets do not exist yet; the guarded deployment may create them after this read-only gate.'
+      );
+    }
+  }
+
+  if (results.has('queue')) {
+    if (outputContainsResource(results.get('queue'), targets.visitsQueue, ['queue_name', 'name'])) {
+      addCheck(
+        checks,
+        true,
+        'cloudflare-queue-target',
+        'Configured Visit Queue exists in the selected account.'
+      );
+    } else {
+      addWarning(
+        checks,
+        'cloudflare-queue-target',
+        'The configured Visit Queue does not exist yet; the guarded deployment may create it after this read-only gate.'
       );
     }
   }
@@ -479,7 +557,7 @@ Usage:
   npm run deploy:preflight -- --track <fresh|upgrade|demo> [--check-cloudflare] [--json]
 
 The command is read-only. By default it validates local environment configuration only.
---check-cloudflare additionally runs Wrangler whoami, D1 list, and KV namespace list.
+--check-cloudflare additionally runs Wrangler whoami, D1/KV lists, and read-only R2/Queue lists when configured.
 It never creates, migrates, deploys, resets, seeds, or replaces resources.`);
 }
 

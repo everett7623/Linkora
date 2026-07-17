@@ -18,19 +18,20 @@ Core Demo rollout is complete and live at `https://demo.linketry.com`. The respo
 
 ## Current Cloudflare State
 
-- D1, KV, Worker, Pages, the `workers.dev` API hostname, and `demo.linketry.com` are live in the isolated Demo account.
-- The old Demo API token can deploy the core profile but receives Cloudflare API error `10000` when listing R2 buckets.
-- The successful core rollout therefore omitted R2 bindings, Queue bindings, and synthetic R2 artifact uploads.
-- GitHub environment variables retain the planned names `linketry-demo-backups`, `linketry-demo-backups-preview`, and `linketry-demo-visits` for the next rollout.
+- D1, KV, Queue, Worker, Pages, the `workers.dev` API hostname, and `demo.linketry.com` are live in the isolated Demo account.
+- The exposed old Demo API token was revoked/replaced and the protected GitHub environment secret was updated.
+- The replacement token passes account, D1, KV, Queue, Worker, and Pages checks, but the isolated account returns Cloudflare R2 error `10042` before bucket inventory.
+- The successful core rollout therefore omitted only R2 bindings and synthetic R2 artifact uploads; the two R2 environment variables are temporarily unset.
 - `demoapi.linketry.com` is not active; the isolated API continues to use `https://linketry-demo-worker.tuomeixi.workers.dev`.
 
 ## Follow-up
 
-- [ ] Revoke the old Demo API token because it was shared in conversation history.
-- [ ] Create a replacement token for the isolated account with the existing core deployment permissions plus R2 and Queues access.
-- [ ] Replace `LINKETRY_DEMO_CLOUDFLARE_API_TOKEN` in the protected `linketry-demo` GitHub environment.
-- [ ] Approve the exact release, commit, and unchanged migration digest before the next manual rollout.
-- [ ] Rerun the isolated Demo workflow and verify R2 backup downloads, report downloads, and Queue capability status.
+- [x] Revoke/replace the old Demo API token because it was shared in conversation history.
+- [x] Replace `LINKETRY_DEMO_CLOUDFLARE_API_TOKEN` in the protected `linketry-demo` GitHub environment.
+- [x] Verify account identity, D1, KV, Queue, Worker, Pages, and guarded core deployment run `29600589228`.
+- [ ] Enable R2 API access in the exact isolated account so `wrangler r2 bucket list` no longer returns `10042`.
+- [ ] Restore the two R2 environment variables, approve the exact release/commit/digest, and rerun the isolated Demo workflow.
+- [ ] Verify R2 backup downloads and report downloads after the successful R2 rollout.
 - [ ] Decide whether `demoapi.linketry.com` should be implemented through an owner-managed cross-account domain arrangement or remain on `workers.dev`.
 
 ## Safety Boundary

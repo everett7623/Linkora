@@ -22,13 +22,15 @@ All tracks validate:
 - paired R2 production/preview buckets when R2 is enabled
 - Queue remaining optional for the basic deployment
 
-Add `--check-cloudflare` to run three additional read-only Wrangler commands:
+Add `--check-cloudflare` to run read-only Wrangler account and resource inventory commands:
 
 ```bash
 npm run deploy:preflight -- --track fresh --check-cloudflare
 ```
 
-This verifies `wrangler whoami`, lists D1 databases, lists KV namespaces, and confirms that the configured D1/KV IDs exist in the selected account. It does not claim to prove write permission; the later provisioning/deployment command still needs the documented Workers, D1, KV, and Pages permissions.
+This verifies `wrangler whoami`, lists D1 databases and KV namespaces, and confirms that the configured D1/KV IDs exist in the selected account. When optional R2 buckets or a Queue are configured, it also lists those services before any deployment write. Existing optional resources pass; resources that have not been created yet produce a warning so the guarded workflow can create them later. An unavailable service or denied inventory call fails the gate. Cloudflare R2 error `10042` is reported explicitly as R2 not being enabled for the selected account.
+
+The read checks do not claim to prove write permission; the later provisioning/deployment command still needs the documented Workers, D1, KV, Pages, and optional R2/Queues permissions.
 
 Use `--json` for a machine-readable redacted report. Cloudflare tokens are never included, and account/D1/KV identifiers are masked.
 
@@ -171,7 +173,7 @@ Run **Deploy Isolated Linketry Demo** from GitHub Actions and type the exact con
 - the Demo account differs from every protected production account;
 - Worker, Pages, D1, optional R2, and optional Queue names are unique and use the reserved `linketry-demo-*` prefix;
 - D1/KV IDs, resource names, and hostnames do not overlap protected production targets;
-- the selected resources exist in the Demo account;
+- the selected core resources exist in the Demo account, and configured optional R2/Queue services permit read-only inventory;
 - the release, Git commit, non-destructive migration policy, and reviewed migration digest match.
 
 The workflow deploys only the isolated Demo Worker and Admin. After the safety gate and migrations, it idempotently refreshes synthetic links, visits, conversions, tags, a Demo domain, settings, audit samples, and disabled advanced-feature configuration. The Demo Admin asks for the public `LINKETRY_DEMO_ACCESS_CODE` preview code, while browser and Worker layers reject writes, redirect analytics does not record real visitors, and API reads use Cloudflare's native Rate Limiting binding with a hashed client key and a 120-request/minute policy. The preview code is a UX gate, not API authentication; the internal `LINKETRY_ADMIN_TOKEN` remains a random Worker secret and is never exposed in the frontend. After deployment, a live parity gate verifies the exact Admin/Worker version, canonical dark/light Logo assets, 18 production read APIs, and the `403` write boundary. The workflow does not deploy automatically, deploy the production project site, modify DNS, copy production data, or provision core resources.

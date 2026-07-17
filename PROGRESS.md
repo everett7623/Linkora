@@ -17,9 +17,24 @@ Last updated: 2026-07-18
 | Deployment                 | ✅ Production + Demo   | Production, `linketry.com`, and the isolated read-only Demo at `demo.linketry.com` are live                                                                                                              |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                                                                                        |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | ✅ 0.26.0 live         | Production Worker/Admin and isolated Demo Worker/Admin are deployed and independently verified                                                                                  |
+| Current version            | 🟡 0.26.1 ready        | Deployment preflight fix is ready; production Worker/Admin and isolated Demo Worker/Admin remain verified on 0.26.0                                                             |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.26.1 Optional Cloudflare Capability Preflight
+
+| Area                         | Status      | Notes                                                                                                                      |
+| ---------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------- |
+| R2 capability check          | ✅ Complete | Configured R2 bindings trigger a read-only bucket inventory before any migration, resource creation, or deployment write  |
+| Queue capability check       | ✅ Complete | Configured Visit Queue bindings trigger a read-only Queue inventory in the same fail-closed gate                           |
+| Missing optional resources   | ✅ Guarded  | Successful inventory with missing names warns and permits the later guarded creation step                                  |
+| R2 account error             | ✅ Explained | Cloudflare code `10042` identifies R2 as unavailable in the exact selected account and blocks before writes               |
+| Live Demo core               | ✅ Healthy  | Rotated-token core deployment run `29600589228` passed; D1, KV, Queue, Worker, Pages, Analytics, and read-only boundaries are healthy |
+| Live Demo R2                 | 🟡 External | The Demo account still returns Cloudflare `10042`; R2 variables remain disabled until that account accepts R2 API access   |
+| Verification                 | ✅ Complete | 53 deployment, 81 Worker, 47 Admin unit, 18 Admin browser, and 4 project-site tests passed; type-checks and builds passed   |
+| Redirect-path impact         | ✅ None     | Redirect handlers, asynchronous analytics, D1/KV ownership, migrations, and deployed runtime code were not changed        |
 
 ---
 
@@ -147,7 +162,7 @@ Last updated: 2026-07-18
 | Core Demo rollout     | ✅ Live         | D1, KV, Worker, Pages, migrations, synthetic data, and all 17 Admin routes are live                |
 | Responsive verification | ✅ Passed     | The 390x844 layout has no horizontal overflow and exposes the complete navigation drawer           |
 | Read-only enforcement | ✅ Passed       | A live create attempt is rejected by the public Demo client guard                                 |
-| R2 and Queue runtime  | 🟡 Pending token | Code and protected names are ready; the old token lacks the required Cloudflare account permissions |
+| R2 and Queue runtime  | 🟡 Partial      | The rotated token and Queue are active; R2 remains disabled after the selected account returned Cloudflare `10042` |
 | API custom domain     | 🟡 Pending decision | The isolated API remains on `workers.dev`; `demoapi.linketry.com` is not active                  |
 | Production impact     | ✅ None         | Production Cloudflare resources, DNS, credentials, data, and redirects were not changed            |
 
@@ -170,7 +185,7 @@ Last updated: 2026-07-18
 | Complete Demo surface   | ✅ Complete | Fresh Demo sessions start in Advanced mode and expose all 17 production Admin routes                  |
 | Mobile Admin layout     | ✅ Fixed    | Narrow viewports use an accessible overlay drawer instead of a fixed sidebar that crushes page content |
 | Advanced synthetic data | ✅ Complete | Rules, imports, tokens, health history, saved views, reports, backups, and audit records are populated |
-| Demo capabilities       | 🟡 Staged   | Demo-only R2 and Queue names are safety-gated; live bindings await a replacement scoped token          |
+| Demo capabilities       | 🟡 Partial  | The Demo Queue is live; R2 names remain safety-gated while the selected account returns Cloudflare `10042` |
 | Setup guidance          | ✅ Corrected | Public Demo Setup explains read-only isolation instead of production Admin-token recovery             |
 | Redirect-path impact    | ✅ None     | Redirect handlers, KV cache behavior, D1 ownership, and production deployment behavior are unchanged  |
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Deployment isolation completed in Linketry v0.18.0; public read-only controls completed in v0.23.0; `demo.linketry.com` went live in v0.24.0; responsive Admin parity and advanced resource support completed in v0.25.0; Wrangler inventory compatibility was repaired in v0.25.1; v0.25.2 records the live core rollout and pending advanced-token activation.
+Deployment isolation completed in Linketry v0.18.0; public read-only controls completed in v0.23.0; `demo.linketry.com` went live in v0.24.0; responsive Admin parity and advanced resource support completed in v0.25.0; Wrangler inventory compatibility was repaired in v0.25.1; the rotated-token core and Queue rollout is live, while R2 remains blocked by Cloudflare account error `10042`.
 
 ## Scope
 
@@ -27,7 +27,7 @@ Deployment isolation completed in Linketry v0.18.0; public read-only controls co
 - The Demo API token must be scoped to a separate Cloudflare account with no production write capability.
 - The workflow remains manual until the separate account, resources, credentials, and hostnames are reviewed.
 - Separate-account core resource provisioning, Pages custom-domain activation, and live Demo smoke tests are complete.
-- Live R2 and Queue activation remains pending a replacement token with those account permissions.
+- The replacement token and Queue binding are active; live R2 activation remains blocked because the isolated account returns Cloudflare code `10042` before bucket inventory.
 - Redirect logic, D1 schema, production workflow behavior, and production data are not changed by this slice.
 
 ## Verification

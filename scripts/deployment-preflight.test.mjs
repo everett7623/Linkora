@@ -191,3 +191,158 @@ test('Cloudflare checks verify the selected D1 and KV resources using read-only 
     'pass'
   );
 });
+
+test('Cloudflare checks verify configured R2 and Queue access before deployment writes', async () => {
+  const env = {
+    ...baseEnv,
+    LINKETRY_R2_BUCKET: 'linketry-backups-new',
+    LINKETRY_R2_PREVIEW_BUCKET: 'linketry-backups-preview-new',
+    LINKETRY_VISITS_QUEUE: 'linketry-visits-new',
+  };
+  const calls = [];
+  const runner = async (args) => {
+    calls.push(args.join(' '));
+    if (args[0] === 'd1') {
+      return {
+        status: 0,
+        stdout: JSON.stringify([
+          { uuid: env.LINKETRY_D1_DATABASE_ID, name: env.LINKETRY_D1_DATABASE_NAME },
+        ]),
+      };
+    }
+    if (args[0] === 'kv') {
+      return {
+        status: 0,
+        stdout: JSON.stringify([{ id: env.LINKETRY_KV_NAMESPACE_ID, title: 'linketry-new' }]),
+      };
+    }
+    if (args[0] === 'r2') {
+      return {
+        status: 0,
+        stdout: `name\n${env.LINKETRY_R2_BUCKET}\n${env.LINKETRY_R2_PREVIEW_BUCKET}`,
+      };
+    }
+    if (args[0] === 'queues') {
+      return { status: 0, stdout: JSON.stringify([{ queue_name: env.LINKETRY_VISITS_QUEUE }]) };
+    }
+    return { status: 0, stdout: 'authenticated' };
+  };
+
+  const report = await runPreflight({
+    track: 'fresh',
+    env,
+    checkCloudflare: true,
+    runner,
+  });
+
+  assert.equal(report.ok, true);
+  assert.deepEqual(calls, [
+    `whoami --account ${env.CLOUDFLARE_ACCOUNT_ID}`,
+    'd1 list --json',
+    'kv namespace list',
+    'r2 bucket list',
+    'queues list',
+  ]);
+  assert.equal(
+    report.checks.find((check) => check.code === 'cloudflare-r2-target')?.status,
+    'pass'
+  );
+  assert.equal(
+    report.checks.find((check) => check.code === 'cloudflare-queue-target')?.status,
+    'pass'
+  );
+});
+
+test('Cloudflare checks warn when optional resources can be listed but are not created yet', async () => {
+  const env = {
+    ...baseEnv,
+    LINKETRY_R2_BUCKET: 'linketry-backups-new',
+    LINKETRY_R2_PREVIEW_BUCKET: 'linketry-backups-preview-new',
+    LINKETRY_VISITS_QUEUE: 'linketry-visits-new',
+  };
+  const runner = async (args) => {
+    if (args[0] === 'd1') {
+      return {
+        status: 0,
+        stdout: JSON.stringify([
+          { uuid: env.LINKETRY_D1_DATABASE_ID, name: env.LINKETRY_D1_DATABASE_NAME },
+        ]),
+      };
+    }
+    if (args[0] === 'kv') {
+      return {
+        status: 0,
+        stdout: JSON.stringify([{ id: env.LINKETRY_KV_NAMESPACE_ID }]),
+      };
+    }
+    if (args[0] === 'r2' || args[0] === 'queues') {
+      return { status: 0, stdout: '[]' };
+    }
+    return { status: 0, stdout: 'authenticated' };
+  };
+
+  const report = await runPreflight({
+    track: 'fresh',
+    env,
+    checkCloudflare: true,
+    runner,
+  });
+
+  assert.equal(report.ok, true);
+  assert.equal(
+    report.checks.find((check) => check.code === 'cloudflare-r2-target')?.status,
+    'warn'
+  );
+  assert.equal(
+    report.checks.find((check) => check.code === 'cloudflare-queue-target')?.status,
+    'warn'
+  );
+});
+
+test('Cloudflare checks explain R2 account code 10042 before deployment writes', async () => {
+  const env = {
+    ...baseEnv,
+    LINKETRY_R2_BUCKET: 'linketry-backups-new',
+    LINKETRY_R2_PREVIEW_BUCKET: 'linketry-backups-preview-new',
+  };
+  const runner = async (args) => {
+    if (args[0] === 'd1') {
+      return {
+        status: 0,
+        stdout: JSON.stringify([
+          { uuid: env.LINKETRY_D1_DATABASE_ID, name: env.LINKETRY_D1_DATABASE_NAME },
+        ]),
+      };
+    }
+    if (args[0] === 'kv') {
+      return {
+        status: 0,
+        stdout: JSON.stringify([{ id: env.LINKETRY_KV_NAMESPACE_ID }]),
+      };
+    }
+    if (args[0] === 'r2') {
+      return {
+        status: 1,
+        stdout: '',
+        stderr: 'Please enable R2 through the Cloudflare Dashboard. [code: 10042]',
+      };
+    }
+    return { status: 0, stdout: 'authenticated' };
+  };
+
+  const report = await runPreflight({
+    track: 'fresh',
+    env,
+    checkCloudflare: true,
+    runner,
+  });
+  const accessCheck = report.checks.find((check) => check.code === 'cloudflare-r2-access');
+
+  assert.equal(report.ok, false);
+  assert.equal(accessCheck?.status, 'fail');
+  assert.match(accessCheck?.message ?? '', /selected Cloudflare account \(code 10042\)/);
+  assert.equal(
+    report.checks.some((check) => check.code === 'cloudflare-r2-target'),
+    false
+  );
+});

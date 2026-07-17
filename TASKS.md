@@ -11,6 +11,16 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
+## ✅ Completed - Optional Cloudflare Capability Preflight (v0.26.1)
+
+- [x] Check configured R2 and Queue services through read-only Wrangler inventory before every deployment write
+- [x] Treat missing optional resource names as warnings so the guarded workflow can create them later
+- [x] Fail early with exact guidance when the selected Cloudflare account returns R2 code `10042`
+- [x] Keep credentials redacted and preserve redirect, D1/KV, migrations, and deployed runtime behavior
+- [x] Record the rotated-token core Demo success and the remaining Cloudflare account-level R2 blocker
+
+---
+
 ## ✅ Completed - Admin Shell And Analytics Accuracy (v0.26.0)
 
 - [x] Align the Sidebar brand row and desktop content toolbar
@@ -115,7 +125,8 @@ One item in "In Progress" at a time whenever possible.
 
 ## 🟡 Next - Operations And UX Planning
 
-- [ ] Demo follow-up: rotate the exposed old token, grant isolated R2/Queues access, rerun the guarded deployment, and verify artifact downloads
+- [x] Demo follow-up: rotate the exposed old token, verify isolated Queue access, and rerun the guarded core deployment
+- [ ] Demo follow-up: resolve Cloudflare R2 account error `10042`, restore the two R2 environment variables, rerun the guarded deployment, and verify artifact downloads
 - [ ] Demo follow-up: decide whether to keep the isolated API on `workers.dev` or implement `demoapi.linketry.com`
 - [ ] V9+: Integrate next high-value Shlink capabilities into Linketry (multi-segment slugs, extra-path forwarding, expired-link cleanup)
 
