@@ -13,6 +13,20 @@ _(none)_
 
 ---
 
+## [0.26.2] - 2026-07-18
+
+### Changed
+
+- Production and isolated Demo workflows now use `actions/checkout@v6` and `actions/setup-node@v6`, whose action runtime is Node.js 24.
+- Deployment policy tests now require the Node.js 24 action versions and reject a regression to the deprecated Node.js 20 `@v4` actions.
+
+### Security
+
+- Workflow permissions, protected environments, release approvals, migration gates, Cloudflare credentials, and deployment ordering are unchanged.
+- Redirect handlers, Worker runtime behavior, D1/KV data, migrations, and production resources were not changed.
+
+---
+
 ## [0.26.1] - 2026-07-18
 
 ### Added

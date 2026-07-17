@@ -11,6 +11,16 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
+## ✅ Completed - GitHub Actions Node.js 24 Runtime (v0.26.2)
+
+- [x] Upgrade production and isolated Demo workflows from `actions/checkout@v4` to `@v6`
+- [x] Upgrade both workflows from `actions/setup-node@v4` to `@v6`
+- [x] Preserve explicit Node.js 24 and npm cache configuration
+- [x] Add workflow policy assertions that prevent a regression to the deprecated Node.js 20 actions
+- [x] Preserve deployment permissions, safety gates, Cloudflare write ordering, and runtime behavior
+
+---
+
 ## ✅ Completed - Optional Cloudflare Capability Preflight (v0.26.1)
 
 - [x] Check configured R2 and Queue services through read-only Wrangler inventory before every deployment write

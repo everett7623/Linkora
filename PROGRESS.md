@@ -17,9 +17,22 @@ Last updated: 2026-07-18
 | Deployment                 | ✅ Production + Demo   | Production, `linketry.com`, and the isolated read-only Demo at `demo.linketry.com` are live                                                                                                              |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                                                                                        |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | ✅ 0.26.1 Demo live    | Deployment preflight fix and isolated Demo Worker/Admin are live; production Worker/Admin remain verified on 0.26.0          |
+| Current version            | 🟡 0.26.2 ready        | Node.js 24 Actions maintenance is ready; isolated Demo is live on 0.26.1 and production remains verified on 0.26.0            |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.26.2 GitHub Actions Node.js 24 Runtime
+
+| Area                    | Status      | Notes                                                                                                      |
+| ----------------------- | ----------- | ---------------------------------------------------------------------------------------------------------- |
+| Checkout action         | ✅ Updated  | Production and Demo workflows use `actions/checkout@v6`                                                    |
+| Node setup action       | ✅ Updated  | Production and Demo workflows use `actions/setup-node@v6` with explicit Node.js 24 and npm caching        |
+| Regression policy       | ✅ Complete | Workflow contract tests require both v6 actions and reject the deprecated Node.js 20 v4 actions           |
+| Deployment boundaries   | ✅ Preserved | Permissions, credentials, release approvals, Cloudflare gates, migrations, and write ordering are unchanged |
+| Verification            | ✅ Complete | 53 deployment, 81 Worker, 47 Admin unit, 18 Admin browser, and 4 project-site tests passed; builds passed |
+| Runtime impact          | ✅ None     | Redirects, Worker code, D1/KV data, migrations, and deployed Cloudflare resources were not changed        |
 
 ---
 

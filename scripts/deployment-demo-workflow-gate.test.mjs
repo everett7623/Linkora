@@ -265,6 +265,9 @@ test('Demo workflow keeps its gate before all Cloudflare writes and uses Demo-on
   assert.ok(parity < summary);
   assert.match(workflow, /workflow_dispatch:/);
   assert.doesNotMatch(workflow, /\n  push:/);
+  assert.match(workflow, /uses: actions\/checkout@v6/);
+  assert.match(workflow, /uses: actions\/setup-node@v6/);
+  assert.doesNotMatch(workflow, /uses: actions\/(?:checkout|setup-node)@v4/);
   assert.match(workflow, /secrets\.LINKETRY_DEMO_CLOUDFLARE_API_TOKEN/);
   assert.match(workflow, /secrets\.LINKETRY_DEMO_CLOUDFLARE_ACCOUNT_ID/);
   assert.match(workflow, /VITE_LINKETRY_DEMO_MODE: 'true'/);
