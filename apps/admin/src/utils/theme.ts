@@ -1,6 +1,8 @@
 export type ThemePreference = 'system' | 'light' | 'dark';
 export type ResolvedTheme = Exclude<ThemePreference, 'system'>;
 
+export const DEFAULT_THEME_PREFERENCE: ThemePreference = 'dark';
+
 export const THEME_COLORS: Record<ResolvedTheme, string> = {
   light: '#f8fafc',
   dark: '#0f172a',

@@ -1,7 +1,10 @@
 # Linketry
 
 <p align="center">
-  <img src="apps/admin/public/linketry-logo.png" alt="Linketry logo" width="360" />
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset="https://linketry.com/favicon-light.svg" />
+    <img src="https://linketry.com/favicon.svg" alt="Linketry logo" width="120" />
+  </picture>
 </p>
 
 Linketry is a self-hosted link management, analytics and monitoring platform.

@@ -17,9 +17,20 @@ Last updated: 2026-07-17
 | Deployment                 | ✅ Production + Demo   | Production, `linketry.com`, and the isolated read-only Demo at `demo.linketry.com` are live                                                                                                              |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                                                                                        |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | ✅ 0.25.2              | The verified Demo rollout and remaining R2/Queue credential work are now recorded accurately                                                                                                           |
+| Current version            | ✅ 0.25.3              | Canonical dark/light Linketry logo assets and GitHub/Admin/project-site display metadata are synchronized                                                                                              |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.25.3 Brand Logo Refresh
+
+| Area                 | Status      | Notes                                                                                     |
+| -------------------- | ----------- | ----------------------------------------------------------------------------------------- |
+| Canonical logo       | ✅ Complete | GitHub README, Admin, and project-site surfaces use the `linketry.com` SVG mark            |
+| Day logo             | ✅ Complete | Matching `favicon-light.svg` assets exist for light displays                              |
+| Default presentation | ✅ Complete | Admin and the project site keep dark/night presentation as the default when no preference exists |
+| Runtime impact       | ✅ None     | Redirect handlers, API contracts, D1, KV, R2, Queue, and production data were not changed |
 
 ---
 

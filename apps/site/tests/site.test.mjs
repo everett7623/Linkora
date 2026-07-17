@@ -22,6 +22,8 @@ test('project site publishes the complete public-launch content contract', () =>
 
 test('project site uses canonical Linketry identity and public links', () => {
   assert.match(page, /<link rel="canonical" href="https:\/\/linketry\.com\/"/);
+  assert.match(page, /https:\/\/linketry\.com\/favicon\.svg/);
+  assert.match(page, /\/favicon-light\.svg/);
   assert.match(page, /https:\/\/github\.com\/everett7623\/Linketry/);
   assert.match(page, /https:\/\/demo\.linketry\.com/);
   assert.match(page, /https:\/\/everettlabs\.dev\/coffee\//);

@@ -3,6 +3,7 @@ import { readBrowserSetting, writeBrowserSetting } from '../utils/browserStorage
 import {
   normalizeThemePreference,
   resolveTheme,
+  DEFAULT_THEME_PREFERENCE,
   THEME_COLORS,
   type ResolvedTheme,
   type ThemePreference,
@@ -22,7 +23,7 @@ function systemPrefersDark(): boolean {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [preference, updatePreference] = useState(() =>
-    normalizeThemePreference(readBrowserSetting('theme'))
+    normalizeThemePreference(readBrowserSetting('theme') ?? DEFAULT_THEME_PREFERENCE)
   );
   const [prefersDark, setPrefersDark] = useState(systemPrefersDark);
   const resolvedTheme = resolveTheme(preference, prefersDark);

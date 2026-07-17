@@ -11,6 +11,7 @@ import { getOverview } from '../api/links';
 import { useLocale } from '../contexts/LocaleContext';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { DeploymentAccessGuide } from '../components/setup/DeploymentAccessGuide';
+import { BrandMark } from '../components/BrandMark';
 
 export function Login() {
   const [token, setToken] = useState('');
@@ -55,12 +56,8 @@ export function Login() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="relative mb-4 h-24 w-full max-w-[360px] overflow-hidden rounded-2xl bg-white shadow-lg shadow-brand-600/20">
-            <img
-              src="/linketry-logo.png"
-              alt="Linketry"
-              className="absolute left-0 top-1/2 w-full -translate-y-1/2"
-            />
+          <div className="mb-4 rounded-2xl shadow-lg shadow-brand-600/20">
+            <BrandMark size="lg" decorative={false} />
           </div>
           <h1 className="text-2xl font-bold text-slate-100">Linketry Admin</h1>
           <p className="text-sm text-slate-400 mt-1">{t('adminSubtitle')}</p>

@@ -8,6 +8,7 @@ import { useLocale } from '../contexts/LocaleContext';
 import { useDisplayPreferences } from '../contexts/DisplayPreferencesContext';
 import { SidebarFooter } from './sidebar/SidebarFooter';
 import { NAV_GROUPS } from './sidebar/sidebarNavigation';
+import { BrandMark } from './BrandMark';
 
 interface SidebarProps {
   mobile?: boolean;
@@ -45,16 +46,7 @@ export function Sidebar({ mobile = false, onClose, onNavigate }: SidebarProps) {
           compact ? 'px-4 py-3.5' : 'px-5 py-5'
         )}
       >
-        <div
-          className="relative h-7 w-11 shrink-0 overflow-hidden rounded-md bg-white"
-          aria-hidden="true"
-        >
-          <img
-            src="/linketry-logo.png"
-            alt=""
-            className="absolute -left-3 -top-[53px] w-[132px] max-w-none"
-          />
-        </div>
+        <BrandMark size="sm" />
         <span className="font-bold text-lg text-slate-100 tracking-tight">Linketry</span>
         {mobile && (
           <button

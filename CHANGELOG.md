@@ -13,6 +13,20 @@ _(none)_
 
 ---
 
+## [0.25.3] - 2026-07-17
+
+### Changed
+
+- Replaced GitHub README and Admin brand display with the canonical `https://linketry.com/favicon.svg` logo.
+- Added matching light-mode favicon assets for Admin and the official project site while keeping the default presentation dark.
+- Added OpenGraph and Twitter logo metadata for the official project site.
+
+### Removed
+
+- Removed the superseded raster logo asset so the repository has one canonical logo source.
+
+---
+
 ## [0.25.2] - 2026-07-17
 
 ### Documentation

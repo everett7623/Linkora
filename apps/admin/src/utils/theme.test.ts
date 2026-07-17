@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { normalizeThemePreference, resolveTheme } from './theme.ts';
+import { DEFAULT_THEME_PREFERENCE, normalizeThemePreference, resolveTheme } from './theme.ts';
+
+test('new sessions default to the dark product presentation', () => {
+  assert.equal(DEFAULT_THEME_PREFERENCE, 'dark');
+});
 
 test('theme preference safely defaults to the operating system', () => {
   assert.equal(normalizeThemePreference(null), 'system');

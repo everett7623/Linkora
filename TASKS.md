@@ -11,6 +11,16 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
+## ✅ Completed - Brand Logo Refresh (v0.25.3)
+
+- [x] Replace GitHub README logo with the canonical `https://linketry.com/favicon.svg` brand mark
+- [x] Replace Admin login and Sidebar raster logo usage with theme-aware SVG assets
+- [x] Add matching light-mode SVG logo assets for day display
+- [x] Add project-site OpenGraph and Twitter logo metadata
+- [x] Keep default project presentation in dark/night mode
+
+---
+
 ## 🟡 Next - Operations And UX Planning
 
 - [ ] Demo follow-up: rotate the exposed old token, grant isolated R2/Queues access, rerun the guarded deployment, and verify artifact downloads
