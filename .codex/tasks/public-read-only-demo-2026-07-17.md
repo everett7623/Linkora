@@ -2,7 +2,7 @@
 
 ## Status
 
-Complete and live. The v0.23.0 safety layer is deployed in an isolated Cloudflare account, v0.24.0 exposes the public Admin at `https://demo.linketry.com` without a visitor token, and v0.25.0 completes responsive Admin parity and advanced synthetic samples.
+Core profile complete and live. The v0.23.0 safety layer is deployed in an isolated Cloudflare account, v0.24.0 exposes the public Admin at `https://demo.linketry.com` without a visitor token, v0.25.0 completes responsive Admin parity and advanced synthetic samples, and v0.25.2 records the pending R2/Queue credential follow-up.
 
 ## Completed
 
@@ -17,7 +17,7 @@ Complete and live. The v0.23.0 safety layer is deployed in an isolated Cloudflar
 - [x] Added an idempotent synthetic seed with five links, 84 visits, and 12 conversions.
 - [x] Expanded the synthetic seed with redirect rules, imports, API tokens, health history, saved views, reports, backups, and audit activity.
 - [x] Extended the manual Demo workflow to build, migrate, seed, deploy, and summarize the isolated targets.
-- [x] Added safety-gated Demo-only R2 buckets and Queue plus downloadable synthetic R2 artifacts.
+- [x] Added safety-gated Demo-only R2/Queue configuration and generated downloadable synthetic artifacts.
 - [x] Added explicit `workers.dev` routing so the first isolated launch needs no production-zone DNS permission.
 - [x] Defaulted fresh Demo sessions to the complete Admin navigation and fixed the narrow-screen Sidebar layout.
 
@@ -30,9 +30,18 @@ Complete and live. The v0.23.0 safety layer is deployed in an isolated Cloudflar
 - [x] Activated `demo.linketry.com` on the Demo Pages project through owner-managed DNS.
 - [x] Kept the internal Admin token random and unexposed; visitors open the read-only Demo without a token.
 
+## Outstanding Activation
+
+- [ ] Replace and revoke the old Demo Cloudflare token after it was shared in conversation history.
+- [ ] Grant the replacement isolated-account token R2 and Queues permissions.
+- [ ] Rerun the guarded workflow to create/bind the planned R2 buckets and Queue and upload synthetic artifacts.
+- [ ] Verify backup/report downloads and Queue capability status on the live Demo.
+- [ ] Decide whether the isolated Worker should remain on `workers.dev` or add `demoapi.linketry.com` through a separately approved domain arrangement.
+
 ## Verification
 
 - Worker type-check passed; 72 Worker tests passed.
 - 38 Admin unit tests passed; focused 390px Chromium layout coverage and the production build passed.
 - 39 deployment safety tests passed.
 - Generated SQL executed against local D1 with 5 synthetic links, 84 visits, 12 conversions, 3 redirect rules, 2 imports, 2 API tokens, and 2 backups.
+- Live core deployment run `29536944045` completed successfully; optional R2 artifact upload was skipped because the bindings were intentionally omitted for the old token.

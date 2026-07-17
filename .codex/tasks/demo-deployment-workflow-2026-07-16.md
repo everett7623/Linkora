@@ -2,7 +2,7 @@
 
 ## Status
 
-Deployment isolation completed in Linketry v0.18.0; public read-only controls completed in v0.23.0; `demo.linketry.com` went live in v0.24.0; responsive Admin parity and isolated advanced resources completed in v0.25.0; current Wrangler inventory compatibility was repaired in v0.25.1.
+Deployment isolation completed in Linketry v0.18.0; public read-only controls completed in v0.23.0; `demo.linketry.com` went live in v0.24.0; responsive Admin parity and advanced resource support completed in v0.25.0; Wrangler inventory compatibility was repaired in v0.25.1; v0.25.2 records the live core rollout and pending advanced-token activation.
 
 ## Scope
 
@@ -18,7 +18,7 @@ Deployment isolation completed in Linketry v0.18.0; public read-only controls co
 - [x] Apply Cloudflare's native Rate Limiting binding with hashed client keys to Demo API reads.
 - [x] Generate and idempotently refresh synthetic links, visits, conversions, tags, settings, domain, and audit samples after migrations.
 - [x] Create the protected `linketry-demo` GitHub environment and repository-level production protection inventory.
-- [x] Add safety-gated Demo-only R2 buckets and Queue plus synthetic backup/report artifacts.
+- [x] Add safety-gated support for Demo-only R2 buckets, Queue bindings, and synthetic backup/report artifacts.
 - [x] Populate all advanced Admin sections with deterministic synthetic records.
 - [x] Keep R2 and Queue discovery compatible with current Wrangler table output.
 
@@ -26,7 +26,8 @@ Deployment isolation completed in Linketry v0.18.0; public read-only controls co
 
 - The Demo API token must be scoped to a separate Cloudflare account with no production write capability.
 - The workflow remains manual until the separate account, resources, credentials, and hostnames are reviewed.
-- Separate-account resource provisioning, Pages custom-domain activation, and live Demo smoke tests are complete.
+- Separate-account core resource provisioning, Pages custom-domain activation, and live Demo smoke tests are complete.
+- Live R2 and Queue activation remains pending a replacement token with those account permissions.
 - Redirect logic, D1 schema, production workflow behavior, and production data are not changed by this slice.
 
 ## Verification
@@ -34,5 +35,6 @@ Deployment isolation completed in Linketry v0.18.0; public read-only controls co
 - Deployment policy tests: 39 passed.
 - Worker type-check and tests: 72 passed.
 - Admin unit tests: 38 passed; focused 390px Chromium coverage and the production build passed.
-- Project-site tests: 3 passed; production build passed.
+- Project-site tests: 4 passed; production build passed.
 - New deployment gate and test files remain below the project JavaScript line limit.
+- Successful core rollout: GitHub Actions run `29536944045` at commit `b65bef258e3964af3ed796a51a59f10989c12246`.

@@ -17,9 +17,22 @@ Last updated: 2026-07-17
 | Deployment                 | ✅ Production + Demo   | Production, `linketry.com`, and the isolated read-only Demo at `demo.linketry.com` are live                                                                                                              |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                                                                                        |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | ✅ 0.25.1              | The isolated Demo deployment is compatible with current Wrangler R2 and Queue inventory output                                                                                                         |
+| Current version            | ✅ 0.25.2              | The verified Demo rollout and remaining R2/Queue credential work are now recorded accurately                                                                                                           |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.25.2 Demo Rollout Record
+
+| Area                  | Status          | Notes                                                                                              |
+| --------------------- | --------------- | -------------------------------------------------------------------------------------------------- |
+| Core Demo rollout     | ✅ Live         | D1, KV, Worker, Pages, migrations, synthetic data, and all 17 Admin routes are live                |
+| Responsive verification | ✅ Passed     | The 390x844 layout has no horizontal overflow and exposes the complete navigation drawer           |
+| Read-only enforcement | ✅ Passed       | A live create attempt is rejected by the public Demo client guard                                 |
+| R2 and Queue runtime  | 🟡 Pending token | Code and protected names are ready; the old token lacks the required Cloudflare account permissions |
+| API custom domain     | 🟡 Pending decision | The isolated API remains on `workers.dev`; `demoapi.linketry.com` is not active                  |
+| Production impact     | ✅ None         | Production Cloudflare resources, DNS, credentials, data, and redirects were not changed            |
 
 ---
 
@@ -40,7 +53,7 @@ Last updated: 2026-07-17
 | Complete Demo surface   | ✅ Complete | Fresh Demo sessions start in Advanced mode and expose all 17 production Admin routes                  |
 | Mobile Admin layout     | ✅ Fixed    | Narrow viewports use an accessible overlay drawer instead of a fixed sidebar that crushes page content |
 | Advanced synthetic data | ✅ Complete | Rules, imports, tokens, health history, saved views, reports, backups, and audit records are populated |
-| Demo capabilities       | ✅ Isolated | Demo-only R2 buckets and Queue are safety-gated and cannot overlap protected production resources      |
+| Demo capabilities       | 🟡 Staged   | Demo-only R2 and Queue names are safety-gated; live bindings await a replacement scoped token          |
 | Setup guidance          | ✅ Corrected | Public Demo Setup explains read-only isolation instead of production Admin-token recovery             |
 | Redirect-path impact    | ✅ None     | Redirect handlers, KV cache behavior, D1 ownership, and production deployment behavior are unchanged  |
 

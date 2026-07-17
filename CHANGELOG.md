@@ -13,6 +13,20 @@ _(none)_
 
 ---
 
+## [0.25.2] - 2026-07-17
+
+### Documentation
+
+- Recorded the successful isolated Demo core rollout, live route/mobile/read-only verification, deployed synthetic record counts, and exact GitHub Actions run.
+- Corrected the operational status of optional R2 and Queue capabilities: repository support is complete, while live activation awaits a replacement scoped Cloudflare token.
+- Added explicit follow-up tasks for token rotation, advanced resource activation, download verification, and the optional `demoapi.linketry.com` decision.
+
+### Security
+
+- Documented that the old Demo token must be revoked after appearing in conversation history and that production Cloudflare resources were not modified.
+
+---
+
 ## [0.25.1] - 2026-07-17
 
 ### Fixed

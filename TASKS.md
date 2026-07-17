@@ -11,8 +11,10 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
-## 🟡 Next — Operations And UX Planning
+## 🟡 Next - Operations And UX Planning
 
+- [ ] Demo follow-up: rotate the exposed old token, grant isolated R2/Queues access, rerun the guarded deployment, and verify artifact downloads
+- [ ] Demo follow-up: decide whether to keep the isolated API on `workers.dev` or implement `demoapi.linketry.com`
 - [ ] V9+: Integrate next high-value Shlink capabilities into Linketry (multi-segment slugs, extra-path forwarding, expired-link cleanup)
 
 - [x] V7: Add configurable backup retention, starting with a 30-day default
@@ -44,6 +46,16 @@ One item in "In Progress" at a time whenever possible.
 - [x] V8: Add accessible per-browser light, dark, and system theme preferences
 - [x] V9: Add public read-only stats pages with privacy controls
 - [x] V9: Improve bot classification and conversion attribution
+
+---
+
+## ✅ Completed - Demo Live Rollout Record (v0.25.2)
+
+- [x] Record the successful isolated core deployment and exact GitHub Actions run
+- [x] Record live verification for all 17 routes, 390px mobile layout, synthetic data, and read-only blocking
+- [x] Correct the R2/Queue status from live to pending replacement-token activation
+- [x] Record token rotation, advanced capability verification, and `demoapi.linketry.com` as explicit follow-up work
+- [x] Confirm that production Cloudflare resources and redirect behavior were not changed
 
 ---
 
