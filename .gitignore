@@ -5,6 +5,7 @@ playwright-report/
 .wrangler/
 .dev.vars
 apps/worker/wrangler.toml
+apps/demo-api/wrangler.jsonc
 *.local
 .env
 .env.*

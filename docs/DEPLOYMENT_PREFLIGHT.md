@@ -146,7 +146,10 @@ LINKETRY_DEMO_APPROVED_MIGRATIONS_SHA256=<reviewed migration digest>
 LINKETRY_DEMO_WORKER_NAME=linketry-demo-worker
 LINKETRY_DEMO_USE_WORKERS_DEV=true
 LINKETRY_DEMO_WORKER_DOMAINS=linketry-demo-worker.<Demo account subdomain>.workers.dev
-LINKETRY_DEMO_API_URL=https://linketry-demo-worker.<Demo account subdomain>.workers.dev
+LINKETRY_DEMO_API_ORIGIN_URL=https://linketry-demo-worker.<Demo account subdomain>.workers.dev
+LINKETRY_DEMO_API_URL=https://demoapi.linketry.com
+LINKETRY_DEMO_API_PAGES_PROJECT=linketry-demo-api
+LINKETRY_DEMO_API_CUSTOM_DOMAIN=demoapi.linketry.com
 LINKETRY_DEMO_ADMIN_URL=https://demo.linketry.com
 LINKETRY_DEMO_ACCESS_CODE=LinketryDemo
 LINKETRY_DEMO_PAGES_PROJECT=linketry-demo-admin
@@ -163,7 +166,9 @@ LINKETRY_PROTECTED_RESOURCE_NAMES=<comma-separated production Worker/Pages/D1/R2
 LINKETRY_PROTECTED_DOMAINS=<comma-separated production hostnames>
 ```
 
-The isolated Worker uses the Demo account's automatic `workers.dev` hostname. With `LINKETRY_DEMO_USE_WORKERS_DEV=true`, the workflow enables `workers_dev` and does not misconfigure that hostname as a custom domain. The public Admin is active at `https://demo.linketry.com` through a separately reviewed Pages custom-domain and DNS arrangement; this does not grant the Demo token access to production resources.
+The isolated Worker uses the Demo account's automatic `workers.dev` hostname as `LINKETRY_DEMO_API_ORIGIN_URL`. With `LINKETRY_DEMO_USE_WORKERS_DEV=true`, the workflow enables `workers_dev` and does not misconfigure that hostname as a custom Worker domain. `LINKETRY_DEMO_API_URL` is the address compiled into the Admin: keep it on the Worker origin for the first gateway deployment, then change it to `https://demoapi.linketry.com` only after the Pages custom domain and DNS record are active.
+
+The `linketry-demo-api` Pages Function has one `DEMO_API` Service Binding to `linketry-demo-worker`. It proxies only `/health` and `/api/*`; redirects, synthetic short-link URLs, and every D1/KV/Queue binding remain on the isolated Worker origin. The workflow idempotently creates the API Pages project after the safety gate, deploys it, verifies its `pages.dev` address, and registers `demoapi.linketry.com` with the project. It does not edit the `linketry.com` zone. Add a DNS-only CNAME named `demoapi` pointing to `linketry-demo-api.pages.dev`, wait for Pages to report the custom domain active, update `LINKETRY_DEMO_API_URL`, approve the new commit, and rerun the workflow. Keep `LINKETRY_DEMO_API_ORIGIN_URL` unchanged as the fallback and sample-redirect hostname.
 
 Generate the migration digest with `npm run deploy:migration-digest`. Update the approved release, commit, and digest for every reviewed Demo deployment.
 
@@ -171,12 +176,12 @@ Run **Deploy Isolated Linketry Demo** from GitHub Actions and type the exact con
 
 - the event is a manual dispatch with the exact confirmation;
 - the Demo account differs from every protected production account;
-- Worker, Pages, D1, optional R2, and optional Queue names are unique and use the reserved `linketry-demo-*` prefix;
+- Worker, Admin/API Pages, D1, optional R2, and optional Queue names are unique and use the reserved `linketry-demo-*` prefix;
 - D1/KV IDs, resource names, and hostnames do not overlap protected production targets;
 - the selected core resources exist in the Demo account, and configured optional R2/Queue services permit read-only inventory;
 - the release, Git commit, non-destructive migration policy, and reviewed migration digest match.
 
-The workflow deploys only the isolated Demo Worker and Admin. After the safety gate and migrations, it idempotently refreshes synthetic links, visits, conversions, tags, a Demo domain, settings, audit samples, and disabled advanced-feature configuration. The Demo Admin asks for the public `LINKETRY_DEMO_ACCESS_CODE` preview code, while browser and Worker layers reject writes, redirect analytics does not record real visitors, and API reads use Cloudflare's native Rate Limiting binding with a hashed client key and a 120-request/minute policy. The preview code is a UX gate, not API authentication; the internal `LINKETRY_ADMIN_TOKEN` remains a random Worker secret and is never exposed in the frontend. After deployment, a live parity gate verifies the exact Admin/Worker version, canonical dark/light Logo assets, 18 production read APIs, and the `403` write boundary. The workflow does not deploy automatically, deploy the production project site, modify DNS, copy production data, or provision core resources.
+The workflow deploys only the isolated Demo Worker, API gateway, and Admin. After the safety gate and migrations, it idempotently refreshes synthetic links, visits, conversions, tags, a Demo domain, settings, audit samples, and disabled advanced-feature configuration. The Demo Admin asks for the public `LINKETRY_DEMO_ACCESS_CODE` preview code, while browser and Worker layers reject writes, redirect analytics does not record real visitors, and API reads use Cloudflare's native Rate Limiting binding with a hashed client key and a 120-request/minute policy. The preview code is a UX gate, not API authentication; the internal `LINKETRY_ADMIN_TOKEN` remains a random Worker secret and is never exposed in the frontend. After deployment, live parity gates verify the exact Admin/Worker version, canonical dark/light Logo assets, 18 production read APIs, and the `403` write boundary through both the API gateway and configured public API. The workflow does not deploy automatically, deploy the production project site, modify DNS, or copy production data.
 
 ## Admin Token: Choose One Deployment Path
 

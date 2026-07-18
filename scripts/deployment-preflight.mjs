@@ -124,6 +124,7 @@ function collectTargets(env) {
     readEnv(env, 'LINKETRY_WORKER_DOMAINS') || readEnv(env, 'LINKETRY_SHORT_DOMAIN')
   );
   const apiUrl = readEnv(env, 'LINKETRY_API_URL');
+  const apiOriginUrl = readEnv(env, 'LINKETRY_API_ORIGIN_URL') || apiUrl;
   const adminUrl = readEnv(env, 'LINKETRY_ADMIN_URL');
   return {
     accountId: readEnv(env, 'CLOUDFLARE_ACCOUNT_ID'),
@@ -131,6 +132,10 @@ function collectTargets(env) {
     workerDomains: domains,
     apiUrl,
     apiHostname: hostnameFromUrl(apiUrl),
+    apiOriginUrl,
+    apiOriginHostname: hostnameFromUrl(apiOriginUrl),
+    apiPagesProject: readEnv(env, 'LINKETRY_API_PAGES_PROJECT'),
+    apiCustomDomain: normalizeHostname(readEnv(env, 'LINKETRY_API_CUSTOM_DOMAIN')),
     adminUrl,
     adminHostname: adminUrl ? hostnameFromUrl(adminUrl) : '',
     pagesProject: readEnv(env, 'LINKETRY_PAGES_PROJECT'),
@@ -185,10 +190,10 @@ function validateCoreConfiguration(env, targets, checks) {
   );
   addCheck(
     checks,
-    Boolean(targets.apiHostname) && targets.workerDomains.includes(targets.apiHostname),
+    Boolean(targets.apiOriginHostname) && targets.workerDomains.includes(targets.apiOriginHostname),
     'api-domain-binding',
-    'The API hostname is included in the Worker domains.',
-    'The LINKETRY_API_URL hostname must be present in LINKETRY_WORKER_DOMAINS or LINKETRY_SHORT_DOMAIN.'
+    'The API origin hostname is included in the Worker domains.',
+    'The LINKETRY_API_ORIGIN_URL hostname must be present in LINKETRY_WORKER_DOMAINS or LINKETRY_SHORT_DOMAIN.'
   );
   addCheck(
     checks,
@@ -310,6 +315,24 @@ function validateTrack(track, env, targets, checks) {
     'Demo is restricted to synthetic data.',
     'Set LINKETRY_DEMO_SYNTHETIC_DATA_ONLY=true only when no production data will be used.'
   );
+  addCheck(
+    checks,
+    RESOURCE_NAME_PATTERN.test(targets.apiPagesProject) &&
+      targets.apiPagesProject !== targets.pagesProject &&
+      targets.apiPagesProject !== targets.workerName,
+    'demo-api-pages-project',
+    'The Demo API gateway uses a separate Pages project.',
+    'LINKETRY_API_PAGES_PROJECT must be a valid Pages name distinct from the Demo Admin and Worker.'
+  );
+  addCheck(
+    checks,
+    Boolean(targets.apiCustomDomain) &&
+      targets.apiHostname &&
+      [targets.apiOriginHostname, targets.apiCustomDomain].includes(targets.apiHostname),
+    'demo-api-public-domain',
+    'The public Demo API uses either its reviewed custom domain or the isolated Worker fallback.',
+    'LINKETRY_API_CUSTOM_DOMAIN must be a valid hostname and LINKETRY_API_URL must use it or the isolated Worker fallback.'
+  );
 
   const protectedIds = splitList(readEnv(env, 'LINKETRY_PROTECTED_RESOURCE_IDS'));
   const protectedNames = splitList(readEnv(env, 'LINKETRY_PROTECTED_RESOURCE_NAMES'));
@@ -328,6 +351,7 @@ function validateTrack(track, env, targets, checks) {
   const targetNames = [
     targets.workerName,
     targets.pagesProject,
+    targets.apiPagesProject,
     targets.d1Name,
     targets.r2Bucket,
     targets.r2PreviewBucket,
@@ -338,6 +362,7 @@ function validateTrack(track, env, targets, checks) {
   const targetDomains = [
     ...targets.workerDomains,
     targets.apiHostname,
+    targets.apiCustomDomain,
     targets.adminHostname,
   ].filter(Boolean);
   addCheck(
@@ -511,6 +536,9 @@ export async function runPreflight({
     workerName: targets.workerName || 'not configured',
     workerDomains: targets.workerDomains,
     apiUrl: targets.apiUrl || 'not configured',
+    apiOriginUrl: targets.apiOriginUrl || 'not configured',
+    apiPagesProject: targets.apiPagesProject || 'not configured',
+    apiCustomDomain: targets.apiCustomDomain || 'not configured',
     adminUrl: targets.adminUrl || 'automatic Pages URL',
     pagesProject: targets.pagesProject || 'not configured',
     d1: `${targets.d1Name || 'not configured'} (${maskIdentifier(targets.d1Id)})`,

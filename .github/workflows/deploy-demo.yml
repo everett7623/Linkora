@@ -29,6 +29,9 @@ jobs:
       LINKETRY_DEMO_USE_WORKERS_DEV: ${{ vars.LINKETRY_DEMO_USE_WORKERS_DEV }}
       LINKETRY_DEMO_ACCESS_CODE: ${{ vars.LINKETRY_DEMO_ACCESS_CODE }}
       LINKETRY_API_URL: ${{ vars.LINKETRY_DEMO_API_URL }}
+      LINKETRY_API_ORIGIN_URL: ${{ vars.LINKETRY_DEMO_API_ORIGIN_URL || vars.LINKETRY_DEMO_API_URL }}
+      LINKETRY_API_PAGES_PROJECT: ${{ vars.LINKETRY_DEMO_API_PAGES_PROJECT || 'linketry-demo-api' }}
+      LINKETRY_API_CUSTOM_DOMAIN: ${{ vars.LINKETRY_DEMO_API_CUSTOM_DOMAIN || 'demoapi.linketry.com' }}
       LINKETRY_ADMIN_URL: ${{ vars.LINKETRY_DEMO_ADMIN_URL }}
       LINKETRY_PAGES_PROJECT: ${{ vars.LINKETRY_DEMO_PAGES_PROJECT }}
       LINKETRY_D1_DATABASE_NAME: ${{ vars.LINKETRY_DEMO_D1_DATABASE_NAME }}
@@ -81,6 +84,9 @@ jobs:
 
       - name: Test Admin unit rules
         run: npm run test:unit --workspace=apps/admin
+
+      - name: Test isolated Demo API gateway
+        run: npm run test --workspace=apps/demo-api
 
       - name: Build isolated Demo Admin
         run: npm run build --workspace=apps/admin
@@ -151,7 +157,7 @@ jobs:
             ...routing,
             '',
             '[vars]',
-            `LINKETRY_VERSION = "${env.RESOLVED_LINKETRY_VERSION || '0.26.4'}"`,
+            `LINKETRY_VERSION = "${env.RESOLVED_LINKETRY_VERSION || '0.26.5'}"`,
             'LINKETRY_DEMO_MODE = "read-only"',
             'LINKETRY_DAILY_CRON = "15 3 * * *"',
             'LINKETRY_HEALTH_CRON = "15 * * * *"',
@@ -177,8 +183,47 @@ jobs:
           fs.writeFileSync('apps/worker/wrangler.demo.toml', config);
           NODE
 
+      - name: Generate isolated Demo API gateway config
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+
+          const config = {
+            $schema: '../../node_modules/wrangler/config-schema.json',
+            name: process.env.LINKETRY_API_PAGES_PROJECT || '',
+            pages_build_output_dir: './public',
+            compatibility_date: process.env.LINKETRY_COMPATIBILITY_DATE || '2026-07-16',
+            services: [
+              {
+                binding: 'DEMO_API',
+                service: process.env.LINKETRY_WORKER_NAME || '',
+              },
+            ],
+          };
+
+          fs.writeFileSync('apps/demo-api/wrangler.jsonc', `${JSON.stringify(config, null, 2)}\n`);
+          NODE
+
       - name: Enforce isolated Demo safety gate
         run: npm run deploy:demo:gate
+
+      - name: Ensure isolated Demo API Pages project
+        run: |
+          inventory="$(npx wrangler pages project list --json)"
+          if ! printf '%s' "$inventory" | node -e '
+            let body = "";
+            process.stdin.on("data", (chunk) => body += chunk);
+            process.stdin.on("end", () => {
+              const name = process.argv[1];
+              const payload = JSON.parse(body);
+              const projects = Array.isArray(payload) ? payload : payload.result;
+              process.exit(Array.isArray(projects) && projects.some((project) => project.name === name) ? 0 : 1);
+            });
+          ' "$LINKETRY_API_PAGES_PROJECT"; then
+            npx wrangler pages project create "$LINKETRY_API_PAGES_PROJECT" \
+              --production-branch main \
+              --compatibility-date "${LINKETRY_COMPATIBILITY_DATE:-2026-07-16}"
+          fi
 
       - name: Ensure isolated Demo advanced resources
         run: |
@@ -242,7 +287,7 @@ jobs:
       - name: Generate isolated synthetic Demo data
         run: |
           node scripts/demo-seed.mjs \
-            --origin "$LINKETRY_API_URL" \
+            --origin "$LINKETRY_API_ORIGIN_URL" \
             --output "$RUNNER_TEMP/linketry-demo-seed.sql" \
             --artifact-dir "$RUNNER_TEMP/linketry-demo-artifacts" \
             --version "$RESOLVED_LINKETRY_VERSION"
@@ -289,11 +334,33 @@ jobs:
         run: npx wrangler deploy --config wrangler.demo.toml --strict
         working-directory: apps/worker
 
+      - name: Deploy isolated Demo API gateway
+        run: |
+          npx wrangler pages deploy public \
+            --cwd apps/demo-api \
+            --project-name "$LINKETRY_API_PAGES_PROJECT" \
+            --branch main \
+            --commit-hash "$GITHUB_SHA"
+
+      - name: Register isolated Demo API custom domain
+        run: |
+          node scripts/cloudflare-pages-domain.mjs \
+            --account-id "$CLOUDFLARE_ACCOUNT_ID" \
+            --project "$LINKETRY_API_PAGES_PROJECT" \
+            --domain "$LINKETRY_API_CUSTOM_DOMAIN"
+
       - name: Deploy isolated Demo Admin
         run: |
           npx wrangler pages deploy apps/admin/dist \
             --project-name "$LINKETRY_PAGES_PROJECT" \
             --branch main
+
+      - name: Verify isolated Demo API gateway
+        run: |
+          node scripts/demo-live-smoke.mjs \
+            --admin-url "${LINKETRY_ADMIN_URL:-https://${LINKETRY_PAGES_PROJECT}.pages.dev}" \
+            --api-url "https://${LINKETRY_API_PAGES_PROJECT}.pages.dev" \
+            --version "$RESOLVED_LINKETRY_VERSION"
 
       - name: Verify Demo production parity
         run: |
@@ -311,7 +378,10 @@ jobs:
             echo "| Role | Target |"
             echo "|---|---|"
             echo "| Admin | ${LINKETRY_ADMIN_URL:-https://${LINKETRY_PAGES_PROJECT}.pages.dev} |"
-            echo "| API and sample redirects | ${LINKETRY_API_URL:-Not configured} |"
+            echo "| Public API | ${LINKETRY_API_URL:-Not configured} |"
+            echo "| API gateway | https://${LINKETRY_API_PAGES_PROJECT}.pages.dev |"
+            echo "| API custom domain | ${LINKETRY_API_CUSTOM_DOMAIN:-Not configured} |"
+            echo "| Worker fallback and sample redirects | ${LINKETRY_API_ORIGIN_URL:-Not configured} |"
             echo "| Worker | ${LINKETRY_WORKER_NAME:-Not configured} |"
             echo "| D1 | ${LINKETRY_D1_DATABASE_NAME:-Not configured} |"
             echo "| R2 | ${LINKETRY_R2_BUCKET:-Not configured} |"

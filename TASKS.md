@@ -7,7 +7,20 @@ One item in "In Progress" at a time whenever possible.
 
 ## 🔴 In Progress
 
+- [ ] Roll out v0.26.5, activate the `demoapi.linketry.com` CNAME, switch the Demo Admin API URL, and verify production/Demo parity
 - [ ] External release prerequisites: activate R2 in the isolated Demo account and configure the fine-grained `LINKETRY_GITHUB_UPDATE_TOKEN`
+
+---
+
+## ✅ Completed - Branded Demo API Gateway (v0.26.5)
+
+- [x] Keep `linketry.com` as the project/Demo namespace while production remains on `admin.uukk.de` and `go.uukk.de`
+- [x] Add a Demo-account Pages Function with a Service Binding to `linketry-demo-worker`
+- [x] Proxy only `/health` and `/api/*` and fail closed when the binding is unavailable
+- [x] Separate the public Demo API URL from the `workers.dev` origin/fallback in deployment preflight
+- [x] Guard API Pages project creation, deployment ordering, and custom-domain registration
+- [x] Preserve isolated D1/KV/Queue/R2 ownership and avoid redirect-path changes
+- [x] Pass gateway, deployment-policy, Wrangler compile, and release-metadata checks
 
 ---
 
@@ -171,7 +184,7 @@ One item in "In Progress" at a time whenever possible.
 
 - [x] Demo follow-up: rotate the exposed old token, verify isolated Queue access, and rerun the guarded core deployment
 - [ ] Demo follow-up: activate the account R2 subscription, resolve error `10042`, restore the two R2 variables, rerun deployment, and verify artifact downloads
-- [x] Demo follow-up: keep the isolated API on `workers.dev`; a branded API should use a separate Demo-owned domain rather than `demoapi.linketry.com`
+- [x] Demo follow-up: implement `demoapi.linketry.com` through a Demo-account Pages Function and Service Binding, retaining `workers.dev` as the fallback origin
 - [ ] Production follow-up: add a repository-scoped Actions-write token as `LINKETRY_GITHUB_UPDATE_TOKEN`, redeploy, and verify one-click readiness
 - [ ] V9+: Integrate next high-value Shlink capabilities into Linketry (multi-segment slugs, extra-path forwarding, expired-link cleanup)
 

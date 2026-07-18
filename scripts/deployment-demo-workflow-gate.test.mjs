@@ -26,6 +26,9 @@ const baseEnv = {
   LINKETRY_WORKER_NAME: 'linketry-demo-worker',
   LINKETRY_WORKER_DOMAINS: 'go.demo-linketry.net',
   LINKETRY_API_URL: 'https://go.demo-linketry.net',
+  LINKETRY_API_ORIGIN_URL: 'https://go.demo-linketry.net',
+  LINKETRY_API_PAGES_PROJECT: 'linketry-demo-api',
+  LINKETRY_API_CUSTOM_DOMAIN: 'demoapi.demo-linketry.net',
   LINKETRY_ADMIN_URL: 'https://linketry-demo-admin.pages.dev',
   LINKETRY_PAGES_PROJECT: 'linketry-demo-admin',
   LINKETRY_D1_DATABASE_NAME: 'linketry-demo-d1',
@@ -194,6 +197,49 @@ test('Demo gate rejects duplicate core resource names', async () => {
   );
 });
 
+test('Demo gate rejects an API gateway that overlaps another Demo resource', async () => {
+  const { runner, calls } = createRunner();
+  const report = await runDemoDeploymentWorkflowGate({
+    env: {
+      ...baseEnv,
+      LINKETRY_API_PAGES_PROJECT: baseEnv.LINKETRY_WORKER_NAME,
+    },
+    version,
+    migrations,
+    runner,
+  });
+
+  assert.equal(report.ok, false);
+  assert.equal(calls.length, 0);
+  assert.equal(
+    report.checks.find((check) => check.code === 'demo-resource-prefix')?.status,
+    'fail'
+  );
+});
+
+test('Demo gate permits a reviewed public API domain with an isolated Worker origin', async () => {
+  const { runner } = createRunner();
+  const report = await runDemoDeploymentWorkflowGate({
+    env: {
+      ...baseEnv,
+      LINKETRY_API_URL: baseEnv.LINKETRY_API_CUSTOM_DOMAIN.replace(/^/, 'https://'),
+    },
+    version,
+    migrations,
+    runner,
+  });
+
+  assert.equal(report.ok, true);
+  assert.equal(
+    report.preflight.checks.find((check) => check.code === 'api-domain-binding')?.status,
+    'pass'
+  );
+  assert.equal(
+    report.preflight.checks.find((check) => check.code === 'demo-api-public-domain')?.status,
+    'pass'
+  );
+});
+
 test('Demo gate rejects compatibility-date config injection', async () => {
   const { runner, calls } = createRunner();
   const report = await runDemoDeploymentWorkflowGate({
@@ -218,6 +264,7 @@ test('Demo gate accepts workers.dev only through the explicit isolated routing m
     LINKETRY_DEMO_USE_WORKERS_DEV: 'true',
     LINKETRY_WORKER_DOMAINS: 'linketry-demo-worker.demo-account.workers.dev',
     LINKETRY_API_URL: 'https://linketry-demo-worker.demo-account.workers.dev',
+    LINKETRY_API_ORIGIN_URL: 'https://linketry-demo-worker.demo-account.workers.dev',
   };
   const report = await runDemoDeploymentWorkflowGate({ env, version, migrations, runner });
 
@@ -243,25 +290,33 @@ test('Demo workflow keeps its gate before all Cloudflare writes and uses Demo-on
     'utf8'
   );
   const gate = workflow.indexOf('- name: Enforce isolated Demo safety gate');
+  const apiProject = workflow.indexOf('- name: Ensure isolated Demo API Pages project');
   const resources = workflow.indexOf('- name: Ensure isolated Demo advanced resources');
   const secret = workflow.indexOf('- name: Set isolated Demo Admin token');
   const migrations = workflow.indexOf('- name: Apply isolated Demo migrations');
   const seed = workflow.indexOf('- name: Seed isolated synthetic Demo data');
   const featureSeed = workflow.indexOf('- name: Seed synthetic Demo feature settings');
   const worker = workflow.indexOf('- name: Deploy isolated Demo Worker');
+  const apiGateway = workflow.indexOf('- name: Deploy isolated Demo API gateway');
+  const apiDomain = workflow.indexOf('- name: Register isolated Demo API custom domain');
   const admin = workflow.indexOf('- name: Deploy isolated Demo Admin');
+  const apiGatewayParity = workflow.indexOf('- name: Verify isolated Demo API gateway');
   const parity = workflow.indexOf('- name: Verify Demo production parity');
   const summary = workflow.indexOf('- name: Write isolated Demo summary');
 
   assert.ok(gate > -1);
-  assert.ok(gate < resources);
+  assert.ok(gate < apiProject);
+  assert.ok(apiProject < resources);
   assert.ok(resources < secret);
   assert.ok(secret < migrations);
   assert.ok(migrations < seed);
   assert.ok(seed < featureSeed);
   assert.ok(featureSeed < worker);
-  assert.ok(worker < admin);
-  assert.ok(admin < parity);
+  assert.ok(worker < apiGateway);
+  assert.ok(apiGateway < apiDomain);
+  assert.ok(apiDomain < admin);
+  assert.ok(admin < apiGatewayParity);
+  assert.ok(apiGatewayParity < parity);
   assert.ok(parity < summary);
   assert.match(workflow, /workflow_dispatch:/);
   assert.doesNotMatch(workflow, /\n  push:/);
@@ -274,6 +329,10 @@ test('Demo workflow keeps its gate before all Cloudflare writes and uses Demo-on
   assert.match(workflow, /VITE_LINKETRY_DEMO_ACCESS_CODE/);
   assert.match(workflow, /LINKETRY_DEMO_ACCESS_CODE/);
   assert.match(workflow, /LINKETRY_DEMO_USE_WORKERS_DEV/);
+  assert.match(workflow, /LINKETRY_DEMO_API_ORIGIN_URL/);
+  assert.match(workflow, /LINKETRY_DEMO_API_PAGES_PROJECT/);
+  assert.match(workflow, /LINKETRY_DEMO_API_CUSTOM_DOMAIN/);
+  assert.match(workflow, /scripts\/demo-seed\.mjs \\\n\s+--origin "\$LINKETRY_API_ORIGIN_URL"/);
   assert.match(workflow, /LINKETRY_DEMO_R2_BUCKET/);
   assert.match(workflow, /LINKETRY_DEMO_VISITS_QUEUE/);
   assert.match(workflow, /wrangler r2 bucket list\)/);
@@ -282,6 +341,9 @@ test('Demo workflow keeps its gate before all Cloudflare writes and uses Demo-on
   assert.match(workflow, /\[\[r2_buckets\]\]/);
   assert.match(workflow, /\[\[queues\.producers\]\]/);
   assert.match(workflow, /Upload isolated synthetic Demo artifacts/);
+  assert.match(workflow, /binding: 'DEMO_API'/);
+  assert.match(workflow, /pages deploy public/);
+  assert.match(workflow, /scripts\/cloudflare-pages-domain\.mjs/);
   assert.match(workflow, /workers_dev = true/);
   assert.match(workflow, /LINKETRY_DEMO_MODE = "read-only"/);
   assert.match(workflow, /LINKETRY_DAILY_CRON = "15 3 \* \* \*"/);

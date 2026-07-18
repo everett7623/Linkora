@@ -22,9 +22,10 @@ Core Demo rollout is complete and live at `https://demo.linketry.com`. The accou
 - The exposed old Demo API token was revoked/replaced and the protected GitHub environment secret was updated.
 - The replacement token passes account, D1, KV, Queue, Worker, and Pages checks, but the isolated account returns Cloudflare R2 error `10042` before bucket inventory.
 - The successful core rollout therefore omitted only R2 bindings and synthetic R2 artifact uploads; the two R2 environment variables are temporarily unset.
-- `demoapi.linketry.com` is not active; the isolated API continues to use `https://linketry-demo-worker.tuomeixi.workers.dev`.
+- `demoapi.linketry.com` is not active yet; the isolated API continues to use `https://linketry-demo-worker.tuomeixi.workers.dev` until the staged DNS cutover completes.
 - Guarded v0.26.4 R2 recheck run `29639154619` still returned account-level code `10042`; all mutation and deployment steps were skipped and both R2 variables were removed again.
-- `demoapi.linketry.com` was rejected as the default design because it would depend on the production `linketry.com` DNS zone. A future branded API should use a separate domain fully owned by the Demo account.
+- `demoapi.linketry.com` is the preferred public API name because `linketry.com` is the project site and Demo namespace, while production uses `admin.uukk.de` and `go.uukk.de`.
+- Direct cross-account CNAME routing to `workers.dev` is not used. v0.26.5 implements a Pages Function in the Demo account with a Service Binding to `linketry-demo-worker`; the `linketry.com` zone supplies only the public CNAME.
 
 ## Follow-up
 
@@ -34,7 +35,10 @@ Core Demo rollout is complete and live at `https://demo.linketry.com`. The accou
 - [ ] Enable R2 API access in the exact isolated account so `wrangler r2 bucket list` no longer returns `10042`.
 - [ ] Restore the two R2 environment variables, approve the exact release/commit/digest, and rerun the isolated Demo workflow.
 - [ ] Verify R2 backup downloads and report downloads after the successful R2 rollout.
-- [x] Keep the isolated API on `workers.dev`; use a separate Demo-owned domain only if branded Admin/API hostnames become necessary.
+- [x] Implement the Demo-account Pages API gateway, isolated deployment gates, domain-registration helper, and local regression coverage.
+- [ ] Deploy the API gateway and verify `https://linketry-demo-api.pages.dev`.
+- [ ] Add DNS-only CNAME `demoapi` to `linketry-demo-api.pages.dev` and wait for the Pages custom domain to become active.
+- [ ] Switch `LINKETRY_DEMO_API_URL` to `https://demoapi.linketry.com`, redeploy the Admin, and retain the Worker origin variable as fallback.
 
 ## Safety Boundary
 
@@ -42,4 +46,5 @@ Core Demo rollout is complete and live at `https://demo.linketry.com`. The accou
 - The Demo remains synthetic-only, public-read-only, rate-limited, and isolated from the protected production account.
 - R2 and Queue provisioning remains behind the fail-closed Demo deployment gate.
 - Cloudflare's [R2 getting-started guide](https://developers.cloudflare.com/r2/get-started/) requires an R2 subscription; activate it from **Storage & databases → R2 → Overview** in the isolated account before retrying.
-- Cloudflare documents [subdomain zone setup](https://developers.cloudflare.com/dns/zone-setups/subdomain-setup/) as Enterprise-only; the free-account isolation path therefore does not delegate `demo.linketry.com` into the Demo account.
+- Cloudflare Pages supports [custom subdomains through CNAME](https://developers.cloudflare.com/pages/configuration/custom-domains/) without moving the parent zone into the Demo account.
+- Pages Functions support [Service Bindings](https://developers.cloudflare.com/pages/functions/bindings/#service-bindings), so requests can invoke the Demo Worker without exposing or duplicating its D1/KV/Queue bindings.

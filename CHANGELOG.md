@@ -13,6 +13,26 @@ _(none)_
 
 ---
 
+## [0.26.5] - 2026-07-18
+
+### Added
+
+- Added an isolated Cloudflare Pages Function gateway for the official Demo API with a Service Binding to the Demo Worker.
+- Added guarded, idempotent creation of the Demo API Pages project and registration of its reviewed custom domain.
+- Added gateway forwarding, failure-state, deployment-order, domain-registration, and isolation regression coverage.
+
+### Changed
+
+- Demo deployment configuration now separates the public Admin API URL from the isolated `workers.dev` origin used for fallback and sample redirects.
+- The official Demo workflow verifies the branded gateway independently before running the complete Admin/API parity gate.
+
+### Security
+
+- The gateway proxies only `/health` and `/api/*`, has no direct D1/KV/R2/Queue bindings, and remains inside the isolated Demo account.
+- Production `admin.uukk.de` / `go.uukk.de`, redirect handlers, analytics scheduling, migrations, and production data are unchanged.
+
+---
+
 ## [0.26.4] - 2026-07-18
 
 ### Added

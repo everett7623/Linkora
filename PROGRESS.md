@@ -10,16 +10,32 @@ Last updated: 2026-07-18
 
 | Layer                      | Status                 | Notes                                                                                                                                                                                                   |
 | -------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Worker backend             | ✅ 0.26.4 live         | Production and isolated Demo Workers are healthy; production keeps Queue/R2 while Demo keeps Queue and omits unavailable R2 |
+| Worker backend             | ✅ 0.26.4 live         | Production and isolated Demo Workers are healthy; v0.26.5 deployment-only gateway release is ready for rollout |
 | Admin frontend             | ✅ V8 complete         | EN/ZH, aligned shell controls, visible version metadata, near-real-time Analytics refresh, display preferences, themes, updates, and traffic-alert controls are browser tested            |
 | Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
 | Documentation              | ✅ Complete            | README, architecture/development guides, self-hosting, API, analytics, backup/reset, runbooks, and long-term roadmap                                                                                    |
 | Deployment                 | ✅ Production + Demo   | Production, `linketry.com`, and the isolated read-only Demo at `demo.linketry.com` are live                                                                                                              |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                                                                                        |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | ✅ 0.26.4 live         | Production and isolated Demo report the same Worker/Admin release and release-readiness UI                                |
+| Current version            | 🟡 0.26.5 ready        | Code and release metadata are synchronized; production and Demo rollout is pending                                        |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.26.5 Branded Demo API Gateway
+
+| Area                       | Status       | Notes                                                                                                                    |
+| -------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Product namespace          | ✅ Decided   | `linketry.com`, `demo.linketry.com`, and `demoapi.linketry.com` serve the project/Demo; production remains on `uukk.de` |
+| Isolated gateway           | ✅ Complete  | A Demo-account Pages Function proxies only `/health` and `/api/*` through a Service Binding to the Demo Worker          |
+| Data/resource ownership    | ✅ Preserved | D1, KV, Queue, optional R2, redirect handling, and the read-only policy remain exclusively on the Demo Worker           |
+| Deployment gate            | ✅ Complete  | Public API, Worker origin, gateway project, custom domain, protected resources, and write ordering are validated        |
+| Custom-domain registration | ✅ Complete  | The guarded workflow idempotently associates `demoapi.linketry.com` with `linketry-demo-api` after gateway deployment   |
+| DNS activation             | 🟡 Pending   | Add DNS-only CNAME `demoapi` to `linketry-demo-api.pages.dev`, then switch the Admin API URL after Pages reports active |
+| Verification               | ✅ Local     | 6 gateway and 60 deployment-policy tests pass; Wrangler compiles the Pages Function successfully                        |
+| Live rollout               | 🟡 Pending   | Deploy v0.26.5 to Demo and production, then verify version parity and the branded endpoint                               |
+| Redirect-path impact       | ✅ None      | Production/Demo redirect handlers and asynchronous analytics code were not changed                                     |
 
 ---
 
@@ -39,7 +55,7 @@ Last updated: 2026-07-18
 | Fresh-account rehearsal    | ✅ Complete  | The new isolated Demo account completed core D1/KV/Queue/Worker/Pages deployment and live smoke checks |
 | Demo R2 activation         | 🟡 External  | Run `29639154619` still returns account-level code `10042`; every Cloudflare write step was skipped    |
 | One-click upgrade token    | 🟡 External  | `LINKETRY_GITHUB_UPDATE_TOKEN` is absent; creating the fine-grained GitHub token requires owner action  |
-| Demo API isolation         | ✅ Decided   | Keep the API on its Demo-account `workers.dev` hostname; do not couple it to the production DNS zone   |
+| Branded Demo API           | ✅ Implemented | v0.26.5 adds `demoapi.linketry.com` through a Demo-account Pages Function; live DNS activation is tracked above |
 | Redirect-path impact       | ✅ None      | Redirect handlers, analytics scheduling, D1/KV data, migrations, and production resources are unchanged |
 
 ---
@@ -219,7 +235,7 @@ Last updated: 2026-07-18
 | Responsive verification | ✅ Passed     | The 390x844 layout has no horizontal overflow and exposes the complete navigation drawer           |
 | Read-only enforcement | ✅ Passed       | A live create attempt is rejected by the public Demo client guard                                 |
 | R2 and Queue runtime  | 🟡 Partial      | The rotated token and Queue are active; R2 remains disabled after the selected account returned Cloudflare `10042` |
-| API custom domain     | 🟡 Pending decision | The isolated API remains on `workers.dev`; `demoapi.linketry.com` is not active                  |
+| API custom domain     | ↪ Superseded | The original pending decision was resolved by the isolated Pages gateway implemented in v0.26.5 |
 | Production impact     | ✅ None         | Production Cloudflare resources, DNS, credentials, data, and redirects were not changed            |
 
 ---
