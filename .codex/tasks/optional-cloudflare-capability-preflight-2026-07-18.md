@@ -13,6 +13,7 @@ Implemented in Linketry v0.26.1. The code and regression coverage are complete; 
 - Live Demo verification passed for v0.26.0 health, D1/KV-backed reads, Queue binding, all Admin routes, synthetic Analytics, and the `403` write boundary.
 - After the v0.26.1 preflight shipped, run `29602738195` restored both R2 variables and failed in the new read-only gate with exact code `10042`; every mutation step was skipped.
 - The R2 variables were removed again, and guarded core run `29602948600` deployed the v0.26.1 Worker/Admin with Queue enabled.
+- On 2026-07-18, v0.26.4 run `29639154619` restored both variables and again failed in the read-only gate with code `10042`; all writes were skipped and the variables were removed.
 
 ## Completed
 

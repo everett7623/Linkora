@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress. Read-only deployment-track preflight, guided D1/KV provisioning, production workflow enforcement, and the isolated manual Demo workflow are complete; fresh-account deployment rehearsal remains.
+Complete. Read-only deployment-track preflight, guided D1/KV provisioning, production workflow enforcement, and the isolated manual Demo workflow are implemented; the new isolated Demo account supplied the recorded fresh-account core rehearsal.
 
 ## Completed In This Slice
 
@@ -29,14 +29,14 @@ In progress. Read-only deployment-track preflight, guided D1/KV provisioning, pr
 ## Remaining
 
 - [x] Build a separate Demo workflow with isolated credentials and no production workflow, DNS, site, backup, or data access path.
-- [ ] Rehearse the basic path on a fresh Cloudflare account and record first-link smoke results.
+- [x] Rehearse the basic path on a fresh Cloudflare account and record live Worker/Admin, D1/KV, Queue, synthetic-link, API, and write-boundary smoke results.
 - [x] Rehearse an existing-instance upgrade and record existing-link/data preservation results.
 
 ## Safety Notes
 
 - Redirect code was not changed.
 - D1 remains the source of truth; KV remains cache only.
-- The live Bootstrap verification used dry-run mode only; no Cloudflare resource was created, migrated, deployed, reset, seeded, or rebound.
+- The reusable `deploy:bootstrap` CLI verification used dry-run mode only. The separate official Demo workflow performed the live fresh-account resource, migration, seed, and deployment rehearsal under its isolated safety gates.
 
 ## Verification
 
@@ -51,3 +51,7 @@ In progress. Read-only deployment-track preflight, guided D1/KV provisioning, pr
 - Admin unit tests: 20 passed.
 - Admin Chromium smoke tests: 7 passed.
 - Admin production build: passed.
+- Fresh-account evidence: isolated Demo account `a414...ddf35` reused no production IDs, names, credentials, or data.
+- Initial complete isolated rollout: run `29536944045`; current v0.26.4 parity rollout: run `29636513938`.
+- Current live smoke: Worker/Admin v0.26.4, D1/KV/Queue reads, 18 production-parity APIs, synthetic data, and read-only write rejection passed.
+- R2 remains an optional external account prerequisite and does not block the basic deployment profile.

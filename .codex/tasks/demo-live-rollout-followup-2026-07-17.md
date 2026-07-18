@@ -2,7 +2,7 @@
 
 ## Status
 
-Core Demo rollout is complete and live at `https://demo.linketry.com`. The responsive Admin and expanded synthetic dataset shipped in v0.25.0, Wrangler inventory compatibility shipped in v0.25.1, and this v0.25.2 record captures the verified live state and remaining Cloudflare credential work.
+Core Demo rollout is complete and live at `https://demo.linketry.com`. The account is the recorded fresh-account core rehearsal. R2 subscription activation and the optional GitHub online-upgrade token remain external owner actions.
 
 ## Delivered
 
@@ -23,6 +23,8 @@ Core Demo rollout is complete and live at `https://demo.linketry.com`. The respo
 - The replacement token passes account, D1, KV, Queue, Worker, and Pages checks, but the isolated account returns Cloudflare R2 error `10042` before bucket inventory.
 - The successful core rollout therefore omitted only R2 bindings and synthetic R2 artifact uploads; the two R2 environment variables are temporarily unset.
 - `demoapi.linketry.com` is not active; the isolated API continues to use `https://linketry-demo-worker.tuomeixi.workers.dev`.
+- Guarded v0.26.4 R2 recheck run `29639154619` still returned account-level code `10042`; all mutation and deployment steps were skipped and both R2 variables were removed again.
+- `demoapi.linketry.com` was rejected as the default design because it would depend on the production `linketry.com` DNS zone. A future branded API should use a separate domain fully owned by the Demo account.
 
 ## Follow-up
 
@@ -32,10 +34,12 @@ Core Demo rollout is complete and live at `https://demo.linketry.com`. The respo
 - [ ] Enable R2 API access in the exact isolated account so `wrangler r2 bucket list` no longer returns `10042`.
 - [ ] Restore the two R2 environment variables, approve the exact release/commit/digest, and rerun the isolated Demo workflow.
 - [ ] Verify R2 backup downloads and report downloads after the successful R2 rollout.
-- [ ] Decide whether `demoapi.linketry.com` should be implemented through an owner-managed cross-account domain arrangement or remain on `workers.dev`.
+- [x] Keep the isolated API on `workers.dev`; use a separate Demo-owned domain only if branded Admin/API hostnames become necessary.
 
 ## Safety Boundary
 
 - Production Cloudflare resources, credentials, DNS, data, deployment workflow, and redirect behavior were not modified.
 - The Demo remains synthetic-only, public-read-only, rate-limited, and isolated from the protected production account.
 - R2 and Queue provisioning remains behind the fail-closed Demo deployment gate.
+- Cloudflare's [R2 getting-started guide](https://developers.cloudflare.com/r2/get-started/) requires an R2 subscription; activate it from **Storage & databases → R2 → Overview** in the isolated account before retrying.
+- Cloudflare documents [subdomain zone setup](https://developers.cloudflare.com/dns/zone-setups/subdomain-setup/) as Enterprise-only; the free-account isolation path therefore does not delegate `demo.linketry.com` into the Demo account.

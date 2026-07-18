@@ -7,7 +7,7 @@ One item in "In Progress" at a time whenever possible.
 
 ## 🔴 In Progress
 
-- [ ] V9+: Complete Beginner Deployment Bootstrap (guided provisioning, production gates, and isolated Demo workflow complete; fresh-account rehearsal remains)
+- [ ] External release prerequisites: activate R2 in the isolated Demo account and configure the fine-grained `LINKETRY_GITHUB_UPDATE_TOKEN`
 
 ---
 
@@ -170,8 +170,9 @@ One item in "In Progress" at a time whenever possible.
 ## 🟡 Next - Operations And UX Planning
 
 - [x] Demo follow-up: rotate the exposed old token, verify isolated Queue access, and rerun the guarded core deployment
-- [ ] Demo follow-up: resolve Cloudflare R2 account error `10042`, restore the two R2 environment variables, rerun the guarded deployment, and verify artifact downloads
-- [ ] Demo follow-up: decide whether to keep the isolated API on `workers.dev` or implement `demoapi.linketry.com`
+- [ ] Demo follow-up: activate the account R2 subscription, resolve error `10042`, restore the two R2 variables, rerun deployment, and verify artifact downloads
+- [x] Demo follow-up: keep the isolated API on `workers.dev`; a branded API should use a separate Demo-owned domain rather than `demoapi.linketry.com`
+- [ ] Production follow-up: add a repository-scoped Actions-write token as `LINKETRY_GITHUB_UPDATE_TOKEN`, redeploy, and verify one-click readiness
 - [ ] V9+: Integrate next high-value Shlink capabilities into Linketry (multi-segment slugs, extra-path forwarding, expired-link cleanup)
 
 - [x] V7: Add configurable backup retention, starting with a 30-day default
@@ -555,7 +556,7 @@ One item in "In Progress" at a time whenever possible.
 - [x] Add permission and configuration preflight checks without printing tokens or secrets
 - [x] Reconcile manual and GitHub Actions `LINKETRY_ADMIN_TOKEN` guidance into two clearly separated deployment paths
 - [x] Recover the v0.20 deployment through the v0.20.1 workflow fallback fix and exact production release/commit approvals
-- [ ] Validate the complete basic deployment on a fresh Cloudflare account and record the smoke-test result
+- [x] Validate the complete basic deployment on the new isolated Demo Cloudflare account and record the smoke-test result
 - [x] Add separate upgrade and fresh-install smoke checklists, including existing-link redirect verification for production upgrades and first-link creation for beginners
 
 ### Priority 5 — Official Project Site And Safe Demo

@@ -36,6 +36,10 @@ Last updated: 2026-07-18
 | Production rollout         | ✅ Complete  | Run `29636582863` deployed v0.26.4 Worker, Admin, and project site from commit `7e56405`               |
 | Live release status        | ✅ Verified  | Demo Settings reports installed/latest v0.26.4 and accurately identifies manual deployment mode        |
 | Version parity             | ✅ Verified  | Both Workers report v0.26.4; both Admins return 200 and expose the v0.26.4 favicon cache key           |
+| Fresh-account rehearsal    | ✅ Complete  | The new isolated Demo account completed core D1/KV/Queue/Worker/Pages deployment and live smoke checks |
+| Demo R2 activation         | 🟡 External  | Run `29639154619` still returns account-level code `10042`; every Cloudflare write step was skipped    |
+| One-click upgrade token    | 🟡 External  | `LINKETRY_GITHUB_UPDATE_TOKEN` is absent; creating the fine-grained GitHub token requires owner action  |
+| Demo API isolation         | ✅ Decided   | Keep the API on its Demo-account `workers.dev` hostname; do not couple it to the production DNS zone   |
 | Redirect-path impact       | ✅ None      | Redirect handlers, analytics scheduling, D1/KV data, migrations, and production resources are unchanged |
 
 ---
