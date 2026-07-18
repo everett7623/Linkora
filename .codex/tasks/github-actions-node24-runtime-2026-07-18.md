@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented and live-verified in the isolated Demo on Linketry v0.26.2 after the previous deployment reported that `actions/checkout@v4` and `actions/setup-node@v4` still target the deprecated Node.js 20 action runtime.
+Implemented and live-verified in production and the isolated Demo on Linketry v0.26.2 after the previous deployment reported that `actions/checkout@v4` and `actions/setup-node@v4` still target the deprecated Node.js 20 action runtime.
 
 ## Scope
 
@@ -34,3 +34,6 @@ Implemented and live-verified in the isolated Demo on Linketry v0.26.2 after the
 - Workflow inventory contains only `actions/checkout@v6` and `actions/setup-node@v6` for checkout and Node setup.
 - Isolated Demo run `29604677229` executed both v6 actions without annotations or Node.js 20 deprecation warnings.
 - The same run passed every deployment gate and verified Admin/Worker v0.26.2, 18 read APIs, canonical brand assets, and the Demo write rejection.
+- Production run `29625316532` executed both v6 actions without annotations, found no pending migrations, and deployed Worker, Admin, and project site successfully.
+- Production and Demo Worker/Admin endpoints all report v0.26.2; production preserves Queue and R2 bindings while the isolated Demo preserves Queue and its intentional read-only boundary.
+- Live boundary checks returned production anonymous API `401`, Demo write `403`, and production missing slug `404`.
