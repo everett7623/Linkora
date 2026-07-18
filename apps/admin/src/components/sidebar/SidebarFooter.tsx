@@ -6,6 +6,7 @@ import { useLocale } from '../../contexts/LocaleContext';
 import { IS_PUBLIC_DEMO } from '../../config/demo';
 import { AdminModeControl, DemoReadOnlyStatus } from '../AdminShellControls';
 import { SidebarUtilityActions } from './SidebarUtilityActions';
+import { SidebarVersionStatus } from './SidebarVersionStatus';
 
 export function SidebarFooter({
   collapsed,
@@ -19,8 +20,6 @@ export function SidebarFooter({
   const { logout } = useAuth();
   const { t } = useLocale();
 
-  if (!mobile && IS_PUBLIC_DEMO) return null;
-
   return (
     <div
       className={clsx(
@@ -29,20 +28,21 @@ export function SidebarFooter({
         compact ? 'py-2.5' : 'py-4'
       )}
     >
+      <SidebarVersionStatus collapsed={collapsed && !mobile} />
       {mobile ? (
-        <div className="space-y-2">
+        <div className="mt-2 space-y-2">
           <SidebarUtilityActions />
           <div className="grid grid-cols-[1fr_auto] gap-2">
             <AdminModeControl />
             <DemoReadOnlyStatus compact />
           </div>
         </div>
-      ) : (
+      ) : !IS_PUBLIC_DEMO ? (
         <button
           type="button"
           onClick={logout}
           className={clsx(
-            'flex w-full items-center rounded-lg py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-red-400',
+            'mt-1 flex w-full items-center rounded-lg py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-red-400',
             collapsed ? 'justify-center px-2' : 'gap-3 px-3'
           )}
           aria-label={t('logout')}
@@ -51,7 +51,7 @@ export function SidebarFooter({
           <LogOut size={18} aria-hidden="true" />
           {!collapsed && t('logout')}
         </button>
-      )}
+      ) : null}
     </div>
   );
 }

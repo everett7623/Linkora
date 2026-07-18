@@ -11,6 +11,19 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
+## ✅ Completed - Sidebar Version And Update Status (v0.26.7)
+
+- [x] Remove the version text from the Logo row and the duplicate top-right update control
+- [x] Add one bottom-left version/update control for expanded, collapsed, and mobile navigation
+- [x] Preserve the automatic check on Admin open and 15-minute visible-session refresh
+- [x] Keep available-version status visible after the release banner is dismissed
+- [x] Recheck GitHub and resurface the release action when the footer control is clicked
+- [x] Add update-notification, toolbar, desktop, collapsed, and mobile regression coverage
+- [x] Verify the local Admin at 1440x900 and 390x844 without horizontal overflow
+- [x] Preserve explicit upgrade confirmation, protected credentials, redirect behavior, and Demo isolation
+
+---
+
 ## ✅ Completed - Demo Gateway Repeat Deployment (v0.26.6)
 
 - [x] Diagnose failed cutover run `29646559998` before any Cloudflare runtime write

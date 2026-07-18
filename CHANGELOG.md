@@ -13,6 +13,25 @@ _(none)_
 
 ---
 
+## [0.26.7] - 2026-07-19
+
+### Changed
+
+- Moved the running version and update status from the Logo row and top toolbar to a dedicated sidebar-footer control on desktop, collapsed, and mobile layouts.
+- The footer keeps an available-version indicator visible after the release banner is dismissed and can force a fresh check to show the release action again.
+
+### Fixed
+
+- Removed the competing top-right update control so the shell utilities remain aligned and the version action has one predictable location.
+- Added responsive and update-notification regression coverage for automatic checks, persistent update discovery, and the sidebar layouts.
+
+### Security
+
+- Update discovery remains anonymous; applying a release still requires an explicit operator action and the protected GitHub update capability.
+- Redirect handlers, analytics scheduling, D1/KV behavior, migrations, production data, and Demo isolation are unchanged.
+
+---
+
 ## [0.26.6] - 2026-07-18
 
 ### Fixed

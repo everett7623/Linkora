@@ -2,7 +2,7 @@
 
 Quick reference for what is done, what is in progress, and what is not started.
 
-Last updated: 2026-07-18
+Last updated: 2026-07-19
 
 ---
 
@@ -11,15 +11,30 @@ Last updated: 2026-07-18
 | Layer                      | Status                 | Notes                                                                                                                                                                                                   |
 | -------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Worker backend             | ✅ 0.26.6 live         | Production and isolated Demo Workers are healthy; branded Demo API and Worker fallback are both active |
-| Admin frontend             | ✅ V8 complete         | EN/ZH, aligned shell controls, visible version metadata, near-real-time Analytics refresh, display preferences, themes, updates, and traffic-alert controls are browser tested            |
+| Admin frontend             | ✅ 0.26.7 ready        | EN/ZH, footer-based version/update status, near-real-time Analytics refresh, display preferences, themes, updates, and traffic-alert controls are browser tested                          |
 | Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
 | Documentation              | ✅ Complete            | README, architecture/development guides, self-hosting, API, analytics, backup/reset, runbooks, and long-term roadmap                                                                                    |
 | Deployment                 | ✅ Production + Demo   | Production, `linketry.com`, and the isolated read-only Demo at `demo.linketry.com` are live                                                                                                              |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                                                                                        |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | ✅ 0.26.6 live         | Production and isolated Demo Worker/Admin releases are synchronized and live |
+| Current version            | 🟡 0.26.7 ready        | Local production/Demo build parity is complete; live rollout remains pending |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.26.7 Sidebar Version And Update Status
+
+| Area                    | Status       | Notes                                                                                                                            |
+| ----------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| Footer placement        | ✅ Complete  | Running version and update state live at the bottom-left on expanded, collapsed, and mobile navigation                          |
+| Automatic discovery     | ✅ Preserved | Admin checks on open, refreshes visible sessions every 15 minutes, and never requires the operator to visit Settings            |
+| Persistent notice       | ✅ Complete  | Available-version status remains visible after the release banner is dismissed; clicking it rechecks and resurfaces the action |
+| Toolbar alignment       | ✅ Complete  | The duplicate top-right update control and the version text under the Logo were removed                                         |
+| Responsive verification | ✅ Complete  | Desktop, collapsed, and 390px mobile layouts have no horizontal overflow or footer overlap                                      |
+| Test verification       | ✅ Complete  | 63 deployment, 81 Worker, 48 Admin unit, 20 Admin browser, 6 Demo API, and 4 site tests pass; builds pass                       |
+| Release action boundary | ✅ Preserved | Applying an update still requires an explicit click; one-click mode still depends on the protected GitHub token                 |
+| Redirect-path impact    | ✅ None      | Redirect handlers, asynchronous analytics, D1/KV data, migrations, and production domains are unchanged                         |
 
 ---
 

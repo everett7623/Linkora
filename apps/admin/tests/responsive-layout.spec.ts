@@ -66,14 +66,10 @@ test('Mobile Admin uses a drawer without shrinking the page content', async ({ p
   await openNavigation.click();
   await expect(page.getByRole('link', { name: messages.en.analytics })).toBeVisible();
 
-  const versionLinkName = messages.en.viewVersionChangelog.replace(
-    '{version}',
-    LINKETRY_VERSION
-  );
-  await expect(page.getByRole('link', { name: versionLinkName })).toHaveAttribute(
-    'href',
-    'https://github.com/everett7623/Linketry/blob/main/CHANGELOG.md'
-  );
+  const versionStatus = page.locator('aside:visible').getByTestId('sidebar-version');
+  await expect(versionStatus).toBeVisible();
+  await expect(versionStatus).toHaveAccessibleName(messages.en.checkForUpdates);
+  await expect(versionStatus.getByText(`v${LINKETRY_VERSION}`, { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: messages.en.closeNavigation })).toHaveCount(2);
 
   await page.keyboard.press('Escape');
@@ -139,7 +135,8 @@ test('Desktop Admin can collapse navigation and use the wider workspace', async 
 
   const chromeHeights = await page.evaluate(() => ({
     brand: document.querySelector('[data-testid="sidebar-brand"]')?.getBoundingClientRect().height,
-    toolbar: document.querySelector('[data-testid="desktop-toolbar"]')?.getBoundingClientRect().height,
+    toolbar: document.querySelector('[data-testid="desktop-toolbar"]')?.getBoundingClientRect()
+      .height,
   }));
   expect(chromeHeights).toEqual({ brand: 64, toolbar: 64 });
 
@@ -152,6 +149,9 @@ test('Desktop Admin can collapse navigation and use the wider workspace', async 
 
   await collapseNavigation.click();
   await expect(page.getByRole('button', { name: messages.en.expandNavigation })).toBeVisible();
+  await expect(page.getByTestId('sidebar-version')).toHaveAccessibleName(
+    messages.en.checkForUpdates
+  );
   await expect
     .poll(() => page.locator('aside').evaluate((element) => element.getBoundingClientRect().width))
     .toBe(80);

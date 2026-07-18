@@ -9,7 +9,6 @@ import { useLocale } from '../contexts/LocaleContext';
 import { NAV_GROUPS } from './sidebar/sidebarNavigation';
 import { SidebarUtilityActions } from './sidebar/SidebarUtilityActions';
 import { AdminModeControl, DemoReadOnlyStatus } from './AdminShellControls';
-import { UpdateCheckButton } from './UpdateCheckButton';
 import { UpdateCheckProvider, useUpdateCheckContext } from '../contexts/UpdateCheckContext';
 
 export function Layout() {
@@ -88,11 +87,6 @@ function LayoutContent() {
             </span>
           </div>
           <div className="ml-auto flex shrink-0 items-center gap-2">
-            <UpdateCheckButton
-              checking={updateCheck.checking}
-              updateAvailable={Boolean(updateCheck.update)}
-              onCheck={() => updateCheck.checkNow({ forceRefresh: true, revealDismissed: true })}
-            />
             <AdminModeControl />
             <SidebarUtilityActions placement="toolbar" />
             <DemoReadOnlyStatus compact />
@@ -109,13 +103,6 @@ function LayoutContent() {
             <Menu size={20} aria-hidden="true" />
           </button>
           <span className="truncate text-sm font-semibold text-slate-100">Linketry</span>
-          <div className="ml-auto">
-            <UpdateCheckButton
-              checking={updateCheck.checking}
-              updateAvailable={Boolean(updateCheck.update)}
-              onCheck={() => updateCheck.checkNow({ forceRefresh: true, revealDismissed: true })}
-            />
-          </div>
         </div>
         <DemoModeBanner />
         <UpdateBanner update={updateCheck.update} onDismiss={updateCheck.dismiss} />

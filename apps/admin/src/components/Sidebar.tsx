@@ -9,8 +9,6 @@ import { useDisplayPreferences } from '../contexts/DisplayPreferencesContext';
 import { SidebarFooter } from './sidebar/SidebarFooter';
 import { NAV_GROUPS } from './sidebar/sidebarNavigation';
 import { BrandMark } from './BrandMark';
-import { LINKETRY_VERSION } from '@linketry/shared';
-import { GITHUB_CHANGELOG_URL } from '../api/updates';
 
 interface SidebarProps {
   collapsed?: boolean;
@@ -52,29 +50,17 @@ export function Sidebar({ collapsed = false, mobile = false, onClose, onNavigate
           collapsed && !mobile ? 'justify-center px-2' : compact ? 'px-4' : 'px-5'
         )}
       >
-        <a
-          href={GITHUB_CHANGELOG_URL}
-          target="_blank"
-          rel="noopener noreferrer"
+        <div
           className={clsx(
             'flex min-w-0 items-center gap-2.5',
             collapsed && !mobile && 'justify-center'
           )}
-          aria-label={t('viewVersionChangelog', { version: LINKETRY_VERSION })}
-          title={t('viewVersionChangelog', { version: LINKETRY_VERSION })}
         >
           <BrandMark size="sm" />
           {!collapsed && (
-            <span className="flex min-w-0 flex-col">
-              <span className="truncate text-lg font-bold leading-5 tracking-tight text-slate-100">
-                Linketry
-              </span>
-              <span className="mt-0.5 font-mono text-[10px] leading-3 text-slate-500 transition-colors hover:text-brand-400">
-                v{LINKETRY_VERSION}
-              </span>
-            </span>
+            <span className="truncate text-lg font-bold leading-5 text-slate-100">Linketry</span>
           )}
-        </a>
+        </div>
         {mobile && (
           <button
             type="button"

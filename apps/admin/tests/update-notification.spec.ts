@@ -75,18 +75,47 @@ test('authenticated Admin opening shows and dismisses a cached GitHub update not
       messages.en.updateAvailableDescription.replace('{currentVersion}', LINKETRY_VERSION)
     )
   ).toBeVisible();
+  const versionStatus = page.getByTestId('sidebar-version');
+  await expect(versionStatus).toHaveAccessibleName(
+    messages.en.updateAvailableTitle.replace('{version}', latestVersion)
+  );
+  await expect(
+    versionStatus.getByText(
+      messages.en.sidebarUpdateAvailable.replace('{version}', latestVersion),
+      { exact: true }
+    )
+  ).toBeVisible();
   expect(githubRequests).toBe(1);
   expect(githubAuthorization).toBeUndefined();
 
   await page.getByRole('button', { name: messages.en.dismissUpdate }).click();
-  await expect(page.getByText(latestVersion)).toHaveCount(0);
+  await expect(
+    page.getByText(messages.en.updateAvailableTitle.replace('{version}', latestVersion))
+  ).toHaveCount(0);
+  await expect(versionStatus).toHaveAccessibleName(
+    messages.en.updateAvailableTitle.replace('{version}', latestVersion)
+  );
   await expect
     .poll(() => page.evaluate(() => localStorage.getItem('linketry_dismissed_update_version')))
     .toBe(latestVersion);
 
   await page.reload();
-  await expect(page.getByText(latestVersion)).toHaveCount(0);
+  await expect(
+    page.getByText(messages.en.updateAvailableTitle.replace('{version}', latestVersion))
+  ).toHaveCount(0);
+  await expect(page.getByTestId('sidebar-version')).toHaveAccessibleName(
+    messages.en.updateAvailableTitle.replace('{version}', latestVersion)
+  );
   expect(githubRequests).toBe(1);
+
+  await page.getByTestId('sidebar-version').click();
+  await expect(
+    page
+      .locator('main')
+      .getByRole('status')
+      .getByText(messages.en.updateAvailableTitle.replace('{version}', latestVersion))
+  ).toBeVisible();
+  expect(githubRequests).toBe(2);
 });
 
 test('manual update check bypasses a fresh cache and reveals the latest GitHub version', async ({
@@ -143,10 +172,7 @@ test('manual update check bypasses a fresh cache and reveals the latest GitHub v
 
   await page.goto('/overview');
   expect(githubRequests).toBe(0);
-  await page
-    .getByTestId('desktop-toolbar')
-    .getByRole('button', { name: messages.en.checkForUpdates })
-    .click();
+  await page.getByTestId('sidebar-version').click();
 
   await expect(
     page

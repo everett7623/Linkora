@@ -44,7 +44,7 @@ async function mockDashboardApi(page: Page) {
   });
 }
 
-test('Desktop toolbar groups language, theme, and active coffee support actions', async ({
+test('Desktop toolbar keeps utilities while version and update status stay in the sidebar footer', async ({
   page,
 }) => {
   await page.addInitScript((version) => {
@@ -63,10 +63,16 @@ test('Desktop toolbar groups language, theme, and active coffee support actions'
   const toolbar = page.getByTestId('desktop-toolbar');
   const actions = toolbar.getByRole('group', { name: messages.en.quickActions });
   await expect(actions.locator('button, a')).toHaveCount(3);
-  await expect(toolbar.getByRole('button', { name: messages.en.checkForUpdates })).toBeVisible();
+  await expect(toolbar.getByRole('button', { name: messages.en.checkForUpdates })).toHaveCount(0);
   await expect(
     page.locator('aside').getByRole('group', { name: messages.en.quickActions })
   ).toHaveCount(0);
+
+  const versionStatus = page.getByTestId('sidebar-version');
+  await expect(versionStatus).toBeVisible();
+  await expect(versionStatus).toHaveAccessibleName(messages.en.checkForUpdates);
+  await expect(versionStatus.getByText(`v${LINKETRY_VERSION}`, { exact: true })).toBeVisible();
+  await expect(versionStatus.getByText(messages.en.upToDate, { exact: true })).toBeVisible();
 
   const brandMark = page.getByTestId('sidebar-brand').getByTestId('brand-mark');
   await expect(brandMark).toHaveAttribute('src', `/favicon.svg?v=${LINKETRY_VERSION}`);
