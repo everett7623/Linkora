@@ -41,3 +41,11 @@ Audit Linketry as an open-source self-hosted short-link product, then improve th
 - 6 Demo API and 4 project-site tests passed.
 - Admin, site, and Pages Function production builds passed.
 - The official npm registry reported zero known production dependency vulnerabilities.
+
+## Deployment
+
+- Pushed commit `cf21821e24f74cb8e922b479144d4f9e51bad3de` to `main`.
+- Production run `29688775610` completed successfully.
+- Isolated Demo run `29688826084` completed successfully and passed its production-parity check.
+- Production and Demo health endpoints plus both Admin assets report v0.27.0.
+- The project site still exposes `demo.linketry.com` and the configured coffee link.

@@ -10,14 +10,14 @@ Last updated: 2026-07-19
 
 | Layer                      | Status                 | Notes                                                                                                                                                                                                   |
 | -------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Worker backend             | ✅ 0.26.7 live         | Production and isolated Demo Workers are healthy; branded Demo API and Worker fallback are both active |
-| Admin frontend             | ✅ 0.27.0 ready        | Progressive Analytics filters, Conversion Overview, route-level loading, EN/ZH, themes, updates, and traffic-alert controls are browser tested                                          |
+| Worker backend             | ✅ 0.27.0 live         | Production and isolated Demo Workers are healthy; branded Demo API and Worker fallback are both active |
+| Admin frontend             | ✅ 0.27.0 live         | Progressive Analytics filters, Conversion Overview, route-level loading, EN/ZH, themes, updates, and traffic-alert controls are browser tested                                          |
 | Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
 | Documentation              | ✅ Complete            | README, architecture/development guides, self-hosting, API, analytics, backup/reset, runbooks, and long-term roadmap                                                                                    |
 | Deployment                 | ✅ Production + Demo   | Production, `linketry.com`, and the isolated read-only Demo at `demo.linketry.com` are live                                                                                                              |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                                                                                        |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | 🟡 0.27.0 ready        | Full local regression passed; production and isolated Demo remain live on 0.26.7 until synchronized rollout |
+| Current version            | ✅ 0.27.0 live         | Production and isolated Demo Worker/Admin releases are synchronized and independently verified |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
 
@@ -35,6 +35,8 @@ Last updated: 2026-07-19
 | Product gap audit            | ✅ Complete  | `docs/PRODUCT_GAP_AUDIT.md` prioritizes pre-1.0, core enhancement, optional, and non-goal work                       |
 | Dependency security          | ✅ Clean     | Official npm production audit reports zero known vulnerabilities                                                     |
 | Test verification            | ✅ Complete  | 63 deployment, 82 Worker, 48 Admin unit, 20 Admin browser, 6 Demo API, and 4 site tests pass; all builds pass       |
+| Live rollout                 | ✅ Complete  | Production run `29688775610` and Demo run `29688826084` deployed v0.27.0 successfully                             |
+| Live parity                  | ✅ Verified  | Both health endpoints and both Admin favicon cache keys report v0.27.0; project-site Demo and coffee links remain active |
 | Redirect-path impact         | ✅ None      | Redirect handlers, asynchronous visit writes, D1/KV behavior, migrations, and production domains are unchanged      |
 
 ---

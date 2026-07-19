@@ -7,7 +7,7 @@ One item in "In Progress" at a time whenever possible.
 
 ## 🔴 In Progress
 
-- [ ] Complete v0.27.0 full regression and synchronized production/Demo rollout
+- [ ] Pre-1.0 accessibility baseline and fresh-account deployment rehearsal
 
 ---
 
@@ -31,6 +31,8 @@ One item in "In Progress" at a time whenever possible.
 - [x] Record pre-1.0, core, optional, and deliberate non-goal product gaps
 - [x] Confirm zero known production dependency vulnerabilities through the official npm registry
 - [x] Pass 63 deployment, 82 Worker, 48 Admin unit, 20 Admin browser, 6 Demo API, and 4 site tests plus all builds
+- [x] Deploy production run `29688775610` and isolated Demo run `29688826084`
+- [x] Verify both health endpoints and both Admin assets report v0.27.0
 - [x] Preserve redirect stability, asynchronous analytics, migrations, D1/KV ownership, and Demo isolation
 
 ---
