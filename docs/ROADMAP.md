@@ -249,7 +249,7 @@ Planned:
 - Done in v0.22.0: scheduled volume and bot-rate anomaly alerts with bounded aggregate windows and no redirect-path work; source/country shifts remain deferred pending a minimum-volume privacy contract
 - Evaluate opt-in fallback_url failover from previously recorded health state; never probe a destination synchronously during redirect
 - Long-idle auto-archive rules with review queue and dry-run mode
-- Additional import adapters when demand and real export fixtures are available, including Bitly, Rebrandly, and TinyURL
+- Fixture-backed mainstream imports: Bitly and Short.io CSV first, Rebrandly JSON/API second, and other providers only after a current export contract is verified
 
 ## Pre-1.0: Integration And Public Launch
 

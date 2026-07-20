@@ -18,6 +18,37 @@ _(none)_
 
 ---
 
+## 🟡 Next - Mainstream Import Adapters (v0.28.0)
+
+- [x] Verify the current official Bitly, Short.io, and Rebrandly export/API contracts
+- [ ] Collect representative redacted Bitly and Short.io CSV fixtures
+- [ ] Add fixture-backed Bitly CSV detection, normalization, preview, and confirm coverage
+- [ ] Add fixture-backed Short.io CSV detection, normalization, preview, and confirm coverage
+- [ ] Preserve source slugs, short domains, titles, tags, click totals, timestamps, expiry, and verified status fields when supplied
+- [ ] Keep default conflicts on `skip` and cover `rename`, explicit `overwrite`, invalid rows, and downloadable failure reports
+- [ ] Add conservative source auto-detection and explicit Admin source choices without claiming unrelated Generic files
+- [ ] Evaluate Rebrandly JSON/API import as phase 2 after confirming a real redacted payload and pagination
+- [ ] Keep Kutt, TinyURL, BL.INK, and Cuttly behind Generic import until their current export contracts are fixture-backed
+- [ ] Preserve redirects, asynchronous analytics, D1/KV ownership, migrations, secrets, and production data
+
+Task record: `.codex/tasks/mainstream-import-adapters-2026-07-20.md`
+
+---
+
+## ✅ Completed - Online Upgrade Bootstrap Continuity (v0.27.7)
+
+- [x] Capture production run `29728335970`, deployment `5518928695`, Worker/Admin v0.27.6, and source/target code evidence
+- [x] Detect a just-loaded target build when the source build predates session feedback
+- [x] Require an actual reload and fresh exact target cache for the one-time bootstrap fallback
+- [x] Keep explicit upgrade feedback primary and avoid duplicate polling or refresh loops
+- [x] Preserve normal navigation, fresh installs, unchanged builds, and manual update checks
+- [x] Add unit and real-browser coverage for the first-transition boundary
+- [x] Synchronize v0.27.7 release metadata, deployment guidance, progress, task, and comprehensive development documentation
+- [x] Pass 58 Admin unit, 25 Admin browser, 84 Worker, 64 deployment, 6 Demo API, and 4 project-site tests plus affected builds
+- [x] Publish v0.27.7 to `main` with `[skip ci]` while production remains on v0.27.6 for the owner-controlled upgrade test
+
+---
+
 ## ✅ Completed - Online Upgrade Refresh Feedback (v0.27.6)
 
 - [x] Preserve the successful deployment target across same-tab Admin refreshes
@@ -1085,7 +1116,7 @@ Deployment experience:
 - [x] Scheduled privacy-safe traffic anomaly alerts with explainable thresholds and suppression
 - [ ] Evaluate opt-in fallback_url failover using previously recorded health state, without synchronous redirect-path probes
 - [ ] Long-idle auto-archive rules with review queue and dry-run mode
-- [ ] Additional fixture-backed import adapters when demand is clear: Bitly, Rebrandly, and TinyURL
+- [ ] Deliver the fixture-backed mainstream import plan tracked for v0.28.0: Bitly and Short.io first, then Rebrandly JSON/API; keep other sources on Generic import until verified
 
 ## 🔵 Backlog — V10 Collaboration And Governance
 

@@ -10,17 +10,33 @@ Last updated: 2026-07-20
 
 | Layer                      | Status                 | Notes                                                                                                                                                                                                   |
 | -------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Worker backend             | ✅ 0.27.5 live         | Production health reports v0.27.5 after online-upgrade run `29725992523`                                                                                                                                  |
-| Admin frontend             | ✅ 0.27.5 live         | Production Admin HTML reports v0.27.5; v0.27.6 preserves upgrade results across Pages refreshes                                                                                                           |
+| Worker backend             | ✅ 0.27.6 live         | Production health reports v0.27.6 after online-upgrade run `29728335970`                                                                                                                                  |
+| Admin frontend             | ✅ 0.27.6 live         | Cache-bypassed production Admin HTML reports v0.27.6; v0.27.7 bridges source builds that predate upgrade feedback                                                                                          |
 | Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
 | Documentation              | ✅ Complete            | README, architecture/development guides, self-hosting, API, analytics, backup/reset, runbooks, and long-term roadmap                                                                                    |
 | Deployment                 | ✅ Production + Demo   | Production, `linketry.com`, and the isolated read-only Demo at `demo.linketry.com` are live                                                                                                             |
 | End-to-end test            | ✅ V1-V6 slices passed | Full V1-V3 regression passed; V4 and V6 production smoke passed; final V4 core regression passed                                                                                                        |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | ✅ 0.27.5 live         | Production Worker/Admin are synchronized on v0.27.5 and deployment `5518487300` is recorded under `production`                                                                                            |
-| Repository update target   | ✅ 0.27.6 published    | v0.27.6 is published to `main` with `[skip ci]`; production remains on v0.27.5 until the owner confirms the in-app upgrade                                                                                |
+| Current version            | ✅ 0.27.6 live         | Production Worker/Admin are synchronized on v0.27.6 and deployment `5518928695` is recorded under `production`                                                                                            |
+| Repository update target   | ✅ 0.27.7 published    | v0.27.7 is published to `main` with `[skip ci]`; production remains on v0.27.6 until the owner confirms the in-app upgrade                                                                                |
+| Next planned work          | 🟡 0.28.0 imports     | Bitly and Short.io fixture-backed CSV adapters first; Rebrandly JSON/API follows after payload and pagination verification                                                                              |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.27.7 Online Upgrade Bootstrap Continuity
+
+| Area                     | Status       | Notes                                                                                                                          |
+| ------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| Production evidence      | ✅ Verified  | Run `29728335970`, deployment `5518928695`, Worker health, and cache-bypassed Admin HTML confirm v0.27.6                      |
+| Source/target boundary   | ✅ Confirmed | v0.27.5 could not execute session-feedback code first introduced by the v0.27.6 target build                                  |
+| Loaded-build tracking    | ✅ Complete  | Admin records only the last loaded semantic version and never stores credentials                                               |
+| Bootstrap fallback       | ✅ Complete  | A real reload plus a fresh exact target cache can infer completion when the explicit session marker is unavailable             |
+| False-positive boundary  | ✅ Complete  | Fresh navigation, fresh installs, unchanged builds, and ordinary update checks do not display upgrade completion               |
+| Regression verification  | ✅ Complete  | 58 Admin unit, 25 browser, 84 Worker, 64 deployment, 6 Demo API, and 4 site tests pass; affected builds pass                  |
+| Redirect/data impact     | ✅ None      | Redirects, analytics, D1, KV, migrations, secrets, deployment gates, and production data are unchanged                         |
+| Release status           | ✅ Published | v0.27.7 is published to `main` with `[skip ci]`; production remains on v0.27.6 for the owner-controlled upgrade test            |
 
 ---
 
@@ -28,14 +44,14 @@ Last updated: 2026-07-20
 
 | Area                     | Status       | Notes                                                                                                                          |
 | ------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| Production evidence      | ✅ Verified  | Run `29725992523`, deployment `5518487300`, Worker health, and fresh Admin assets confirm v0.27.5                              |
+| Production evidence      | ✅ Verified  | Run `29728335970`, deployment `5518928695`, Worker health, and fresh Admin assets confirm v0.27.6                              |
 | Root cause               | ✅ Confirmed | Upgrade phase existed only in component memory and was lost when a stale Pages response reloaded the previous Admin build      |
 | Tab-scoped feedback      | ✅ Complete  | A validated 30-minute `sessionStorage` record retains only target version, timestamp, and bounded-refresh state                |
 | Propagation handling     | ✅ Complete  | A stale build suppresses duplicate deployment, explains propagation, and receives one follow-up refresh                       |
 | Completion confirmation  | ✅ Complete  | The target build displays a dismissible upgrade-complete notice and clears the tab-scoped record on dismissal                 |
 | Regression verification  | ✅ Complete  | 54 Admin unit, 24 browser, 84 Worker, 64 deployment, 6 Demo API, and 4 site tests pass; affected builds pass                  |
 | Redirect/data impact     | ✅ None      | Redirects, analytics, D1, KV, migrations, secrets, deployment gates, and production data are unchanged                         |
-| Release status           | ✅ Published | v0.27.6 is published to `main` with `[skip ci]`; production remains on v0.27.5 for the owner-controlled upgrade test            |
+| Release status           | ✅ Deployed  | v0.27.6 is live after owner-controlled run `29728335970`; deployment `5518928695` is recorded under `production`              |
 
 ---
 

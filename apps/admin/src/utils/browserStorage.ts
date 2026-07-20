@@ -6,6 +6,7 @@ export type BrowserSetting =
   | 'demoAccess'
   | 'dismissedUpdateVersion'
   | 'linkView'
+  | 'lastLoadedVersion'
   | 'locale'
   | 'sidebarCollapsed'
   | 'sidebarDensity'
@@ -28,6 +29,7 @@ const STORAGE_KEYS: Record<BrowserSetting, string> = {
   demoAccess: 'linketry_demo_access',
   dismissedUpdateVersion: 'linketry_dismissed_update_version',
   linkView: 'linketry_link_view',
+  lastLoadedVersion: 'linketry_last_loaded_version',
   locale: 'linketry.locale',
   sidebarCollapsed: 'linketry_sidebar_collapsed',
   sidebarDensity: 'linketry_sidebar_density',

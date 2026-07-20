@@ -5,9 +5,11 @@ import {
   UPGRADE_FEEDBACK_TTL_MS,
   clearUpgradeFeedback,
   markFollowUpRefreshScheduled,
+  readOrInferUpgradeFeedback,
   readUpgradeFeedback,
   rememberSuccessfulDeployment,
 } from './upgradeFeedback.ts';
+import { serializeVersionCheckCache } from './versionCheck.ts';
 
 function memoryStorage(initialValue: string | null = null) {
   const values = new Map<string, string>();
@@ -65,4 +67,46 @@ test('clears upgrade feedback after dismissal', () => {
   clearUpgradeFeedback(storage);
 
   assert.equal(readUpgradeFeedback(storage, 1500), null);
+});
+
+test('infers completion when a newer Admin build replaces the loaded version', () => {
+  const session = memoryStorage();
+  const persistent = memoryStorage();
+  persistent.setItem('linketry_last_loaded_version', '1.2.2');
+
+  const feedback = readOrInferUpgradeFeedback('1.2.3', session, persistent, 1000);
+
+  assert.deepEqual(feedback, {
+    targetVersion: '1.2.3',
+    createdAt: 1000,
+    followUpRefreshScheduled: true,
+  });
+  assert.equal(persistent.getItem('linketry_last_loaded_version'), '1.2.3');
+  assert.deepEqual(readUpgradeFeedback(session, 1500), feedback);
+});
+
+test('bridges an older source build through its fresh update cache', () => {
+  const session = memoryStorage();
+  const persistent = memoryStorage();
+  persistent.setItem(
+    'linketry_update_check',
+    serializeVersionCheckCache({ latestVersion: '1.2.3', checkedAt: 1000 })
+  );
+
+  const feedback = readOrInferUpgradeFeedback('1.2.3', session, persistent, 1500, true);
+
+  assert.equal(feedback?.targetVersion, '1.2.3');
+  assert.equal(feedback?.followUpRefreshScheduled, true);
+});
+
+test('does not infer completion on a fresh or unchanged build', () => {
+  const session = memoryStorage();
+  const persistent = memoryStorage();
+
+  assert.equal(readOrInferUpgradeFeedback('1.2.3', session, persistent, 1000), null);
+  persistent.setItem(
+    'linketry_update_check',
+    serializeVersionCheckCache({ latestVersion: '1.2.3', checkedAt: 1000 })
+  );
+  assert.equal(readOrInferUpgradeFeedback('1.2.3', session, persistent, 1500), null);
 });

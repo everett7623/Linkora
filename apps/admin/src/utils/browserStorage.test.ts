@@ -85,3 +85,15 @@ test('stores update checks and dismissed versions separately', () => {
   );
   assert.equal(storage.getItem('linketry_dismissed_update_version'), '0.19.0');
 });
+
+test('stores the last loaded build separately from update discovery', () => {
+  const storage = memoryStorage();
+  writeBrowserSetting('lastLoadedVersion', '0.27.6', storage);
+  writeBrowserSetting('updateCheck', '{"latestVersion":"0.27.7","checkedAt":1}', storage);
+
+  assert.equal(storage.getItem('linketry_last_loaded_version'), '0.27.6');
+  assert.equal(
+    storage.getItem('linketry_update_check'),
+    '{"latestVersion":"0.27.7","checkedAt":1}'
+  );
+});

@@ -44,17 +44,23 @@ The generic adapter still falls back to built-in aliases such as `code`, `alias`
 
 ## Candidate Adapters
 
-The original Linketry plan identified Bitly, Rebrandly, and TinyURL as useful migration sources. They remain candidates rather than implemented adapters.
+The v0.28.0 migration plan prioritizes platforms with a current official export contract. Bitly and Short.io are the first file-import targets; Rebrandly follows as a JSON/API target after its pagination and payload are verified against a redacted response.
 
-| Candidate | Status                       | Requirement before implementation                         |
-| --------- | ---------------------------- | --------------------------------------------------------- |
-| Bitly     | Planned when demand is clear | Real redacted API/export fixtures and pagination behavior |
-| Rebrandly | Deferred                     | Real redacted export fixtures and domain/slug examples    |
-| TinyURL   | Deferred                     | Real redacted export fixtures and account/export shape    |
+| Candidate | Status                   | Requirement before implementation                                         |
+| --------- | ------------------------ | ------------------------------------------------------------------------- |
+| Bitly     | Planned for v0.28.0      | Redacted CSV fixture matching the current documented export columns       |
+| Short.io  | Planned for v0.28.0      | Redacted CSV fixture covering domain, path, tags, timestamps, and expiry  |
+| Rebrandly | Planned phase 2          | Redacted JSON/API fixture plus verified pagination and credential handling |
+| Kutt      | Fixture-gated            | Current official export or API payload contract                           |
+| TinyURL   | Deferred to Generic      | Current official export contract and representative account export       |
+| BL.INK    | Deferred to Generic      | Current official export contract and representative account export       |
+| Cuttly    | Deferred to Generic      | Current official export contract and representative account export       |
 
 Do not infer a production field contract from an old planning table or a platform name. Before implementation, collect representative current exports, record format/version details, confirm how custom domains and click totals are represented, and define fixtures that contain no credentials or personal data.
 
 Prioritize adapters based on user migration demand and maintainability. A platform-specific adapter should provide more reliable normalization than the Generic importer; otherwise, document a Generic field mapping instead.
+
+The detailed acceptance checklist is tracked in `.codex/tasks/mainstream-import-adapters-2026-07-20.md`.
 
 ## Adding an Adapter
 

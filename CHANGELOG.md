@@ -13,6 +13,32 @@ _(none)_
 
 ---
 
+## [0.27.7] - 2026-07-20
+
+### Fixed
+
+- Added a target-build completion fallback for upgrades initiated by source builds that predate tab-scoped upgrade feedback.
+- Limited the bootstrap fallback to an actual browser reload with a fresh anonymous update cache matching the exact loaded version, preventing ordinary page opens and manual update checks from being misclassified.
+- Recorded the last loaded Admin build version so later version transitions can be confirmed without relying exclusively on component memory or one session marker.
+
+### Security
+
+- The fallback stores only semantic version strings and reuses the existing anonymous update-check timestamp; Admin tokens, repository tokens, workflow credentials, and deployment inputs are not read or persisted.
+- Redirect handlers, asynchronous analytics, D1/KV ownership, migrations, deployment gates, and production data are unchanged.
+
+### Tests
+
+- Added unit coverage for older-build transitions, source-build cache bridging, fresh navigation, unchanged builds, and storage separation.
+- Added a real-browser regression that removes the new session marker, performs a genuine reload, and verifies target-build completion without breaking normal update discovery.
+- Passed 58 Admin unit tests, 25 Admin browser tests, and the Admin production build.
+- Passed Worker type-check and 84 tests, 64 deployment safety tests, 6 Demo API tests, and 4 project-site tests plus its production build.
+
+### Documentation
+
+- Recorded the fixture-backed v0.28.0 import plan: Bitly and Short.io CSV first, Rebrandly JSON/API second, with unverified providers remaining on Generic import.
+
+---
+
 ## [0.27.6] - 2026-07-20
 
 ### Changed

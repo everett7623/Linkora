@@ -3,7 +3,7 @@ import { LINKETRY_VERSION } from '@linketry/shared';
 import {
   clearUpgradeFeedback,
   markFollowUpRefreshScheduled,
-  readUpgradeFeedback,
+  readOrInferUpgradeFeedback,
   rememberSuccessfulDeployment,
 } from '../utils/upgradeFeedback.ts';
 import {
@@ -13,7 +13,9 @@ import {
 
 export function useUpgradeFeedback() {
   const scheduleReload = useUpgradeReload();
-  const [feedback, setFeedback] = useState(readUpgradeFeedback);
+  const [feedback, setFeedback] = useState(() =>
+    readOrInferUpgradeFeedback(LINKETRY_VERSION)
+  );
   const completed = feedback?.targetVersion === LINKETRY_VERSION;
   const autoRefreshing = Boolean(
     feedback && !completed && !feedback.followUpRefreshScheduled

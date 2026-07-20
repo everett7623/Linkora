@@ -1,4 +1,13 @@
-import { normalizeVersion } from './versionCheck.ts';
+import {
+  isNewerVersion,
+  normalizeVersion,
+  readVersionCheckCache,
+} from './versionCheck.ts';
+import {
+  readBrowserSetting,
+  writeBrowserSetting,
+  type StorageLike,
+} from './browserStorage.ts';
 
 export const UPGRADE_FEEDBACK_STORAGE_KEY = 'linketry.upgrade-feedback';
 export const UPGRADE_FEEDBACK_TTL_MS = 30 * 60 * 1000;
@@ -18,6 +27,20 @@ function browserSessionStorage(): SessionStorage | null {
   } catch {
     return null;
   }
+}
+
+function browserLocalStorage(): StorageLike | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+function browserNavigationWasReload(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.performance.getEntriesByType('navigation')[0]?.toJSON().type === 'reload';
 }
 
 function removeStoredFeedback(storage: SessionStorage): void {
@@ -65,6 +88,46 @@ export function readUpgradeFeedback(
     removeStoredFeedback(storage);
     return null;
   }
+}
+
+export function readOrInferUpgradeFeedback(
+  currentVersion: string,
+  sessionStorage: SessionStorage | null = browserSessionStorage(),
+  persistentStorage: StorageLike | null = browserLocalStorage(),
+  now = Date.now(),
+  navigationWasReload = browserNavigationWasReload()
+): UpgradeFeedback | null {
+  const explicit = readUpgradeFeedback(sessionStorage, now);
+  const normalizedCurrent = normalizeVersion(currentVersion);
+  if (!normalizedCurrent || !persistentStorage) return explicit;
+
+  let previousVersion: string | null;
+  let cachedTarget: string | null;
+  try {
+    const storedPrevious = readBrowserSetting('lastLoadedVersion', persistentStorage);
+    previousVersion = storedPrevious ? normalizeVersion(storedPrevious) : null;
+    cachedTarget = readVersionCheckCache(
+      readBrowserSetting('updateCheck', persistentStorage),
+      now
+    )?.latestVersion ?? null;
+    writeBrowserSetting('lastLoadedVersion', normalizedCurrent, persistentStorage);
+  } catch {
+    return explicit;
+  }
+
+  if (explicit) return explicit;
+  const loadedNewerBuild = previousVersion
+    ? isNewerVersion(normalizedCurrent, previousVersion)
+    : navigationWasReload && cachedTarget === normalizedCurrent;
+  if (!loadedNewerBuild) return null;
+
+  const inferred = {
+    targetVersion: normalizedCurrent,
+    createdAt: now,
+    followUpRefreshScheduled: true,
+  };
+  if (sessionStorage) storeFeedback(sessionStorage, inferred);
+  return inferred;
 }
 
 export function rememberSuccessfulDeployment(

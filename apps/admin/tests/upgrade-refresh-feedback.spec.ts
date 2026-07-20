@@ -14,16 +14,23 @@ function apiResponse(data: unknown) {
 async function preparePage(
   page: Page,
   latestVersion: string,
-  feedback: { targetVersion: string; followUpRefreshScheduled: boolean }
+  feedback: { targetVersion: string; followUpRefreshScheduled: boolean } | null,
+  cachedTarget: string | null = null
 ) {
   await page.addInitScript(
-    ({ key, value }) => {
+    ({ key, value, target }) => {
       localStorage.setItem('linketry_token', 'test-token');
       localStorage.setItem('linketry.locale', 'en');
       localStorage.setItem('linketry_theme', 'dark');
-      sessionStorage.setItem(key, JSON.stringify({ ...value, createdAt: Date.now() }));
+      if (value) sessionStorage.setItem(key, JSON.stringify({ ...value, createdAt: Date.now() }));
+      if (target) {
+        localStorage.setItem(
+          'linketry_update_check',
+          JSON.stringify({ latestVersion: target, checkedAt: Date.now() })
+        );
+      }
     },
-    { key: UPGRADE_FEEDBACK_STORAGE_KEY, value: feedback }
+    { key: UPGRADE_FEEDBACK_STORAGE_KEY, value: feedback, target: cachedTarget }
   );
   await page.route('https://api.github.com/**', async (route) => {
     await route.fulfill({
@@ -79,6 +86,22 @@ test('newly loaded target build confirms the completed online upgrade', async ({
   await expect
     .poll(() => page.evaluate((key) => sessionStorage.getItem(key), UPGRADE_FEEDBACK_STORAGE_KEY))
     .toBeNull();
+});
+
+test('target build infers completion from an older source build update cache', async ({ page }) => {
+  await preparePage(page, LINKETRY_VERSION, null, LINKETRY_VERSION);
+
+  await page.goto('/overview');
+  await expect(page.getByText(messages.en.upgradeCompletedDescription)).toHaveCount(0);
+  await page.evaluate(() => localStorage.removeItem('linketry_last_loaded_version'));
+  await page.reload();
+
+  await expect(
+    page.getByText(
+      messages.en.upgradeCompletedTitle.replace('{version}', LINKETRY_VERSION)
+    )
+  ).toBeVisible();
+  await expect(page.getByText(messages.en.upgradeCompletedDescription)).toBeVisible();
 });
 
 test('stale build requests a manual refresh after the bounded retry', async ({ page }) => {
