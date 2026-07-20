@@ -16,9 +16,11 @@ Use these sources in order:
 
 Historical plans explain product intent but do not override current code, versioned APIs, migrations, or deployment documentation.
 
+Security reports follow `SECURITY.md`; compatibility, supported tooling, backups, and rollback follow `SUPPORT.md`. A normal feature change must not weaken either contract silently.
+
 ## Prerequisites
 
-- Node.js 24 recommended
+- Node.js 24.x
 - npm 10 or newer
 - A Cloudflare account for remote D1/KV/R2/Queue work
 - Wrangler from the repository dependencies

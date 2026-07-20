@@ -17,6 +17,15 @@ The review covered:
 
 The complete dependency audit reports no known vulnerabilities. Vite is updated to the supported 6.4 line; React, Tailwind, and React Router major releases remain separate work because they need dedicated migration testing.
 
+## Completed In 0.28.3
+
+| Area                     | Result                                                                                                                                                              |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Security reporting       | Policy designates GitHub private vulnerability reporting as canonical and prohibits public disclosure; repository activation remains a separate P0 external gate.  |
+| Compatibility policy     | Patch/minor pre-1.0 behavior, `/api/v1`, forward-only migrations, supported Node/npm/Wrangler ranges, and third-party boundaries are documented and tested.          |
+| Backup and rollback      | Operator backup ownership, protected upgrade verification, migration-aware rollback, credential rotation, and D1/KV recovery boundaries form one maintained contract. |
+| Community support        | Reproducible public issues are separated from private security reports and documented as best effort without an implied uptime or recovery SLA.                     |
+
 ## Completed In 0.28.2
 
 | Area                     | Result                                                                                                                                                                            |
@@ -68,6 +77,10 @@ The complete dependency audit reports no known vulnerabilities. Vite is updated 
 
 ## P0 Before 1.0
 
+### Private vulnerability reporting activation
+
+The repository policy and canonical advisory URL are documented and tested in v0.28.3, but the GitHub repository setting is external state. A read-only API check on 2026-07-21 returned `enabled: false`. Before public 1.0, enable **Settings → Security → Code security → Private vulnerability reporting**, verify the advisory form opens for a non-maintainer, and retain the evidence. Until then, public issues may request private contact only and must contain no vulnerability details.
+
 ### Fresh-account deployment rehearsal
 
 The maintained owner checklist and automation now cover repository setup, scoped credentials, D1/KV creation, first deployment, first login, first domain, first redirect, optional R2 backup, upgrade, and rollback. Before 1.0, repeat the exact checklist in an independent owner-controlled fork/account and retain the evidence; local automation and contract tests do not replace this external validation.
@@ -83,10 +96,6 @@ The automated baseline now covers the core routes, dialogs, mobile navigation, k
 ### Large-data operating envelope
 
 Import files have a tested 10 MiB UTF-8 content limit, a 50,000-item normalization limit, Admin preflight rejection, Worker HTTP 413 enforcement, and bounded asynchronous D1 writes. Sequential Shlink API pulls use a lower explicit 5,000-item/100-page boundary and direct larger migrations to reviewed file batches. The v0.28.2 local D1-compatible scale profile now covers Links, Visits/Analytics, Audit, and Health History correctness plus conservative response-time budgets. Before 1.0, repeat the profile against an owner-controlled remote D1 instance to capture network and platform variance; local timings are not presented as remote latency guarantees.
-
-### Release and support policy
-
-Publish a stable pre-1.0 compatibility policy covering API changes, migration support, security reports, supported Node/Wrangler versions, backup expectations, and the minimum rollback procedure.
 
 ## P1 Core Enhancements
 

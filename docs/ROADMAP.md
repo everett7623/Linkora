@@ -214,6 +214,18 @@ Status: complete in the repository; production remains owner-controlled.
 - Remote D1 network latency remains an owner-controlled environment rehearsal, not a local-test claim
 - Redirect handlers, asynchronous analytics ingestion, D1/KV ownership, migrations, production data, and Demo isolation are unchanged
 
+## 0.28.3: Support And Compatibility Policy
+
+Status: complete in the repository; production remains owner-controlled.
+
+- GitHub private vulnerability reporting is the canonical security channel and live credentials are prohibited from reports
+- Repository policy is complete; enabling the GitHub private-reporting setting remains an external pre-1.0 gate
+- The latest release on `main` is the maintained pre-1.0 line, with patch/minor compatibility expectations documented
+- Node 24, npm 10+, Wrangler 4.111+ within major 4, current browsers, and protected deployment workflows define the supported toolchain
+- Instance owners receive one backup checklist, post-upgrade verification sequence, and migration-aware minimum rollback procedure
+- Automated deployment tests prevent security links, toolchain metadata, compatibility language, and rollback requirements from drifting
+- Redirect handlers, Worker runtime behavior, D1/KV ownership, migrations, production data, and Demo isolation are unchanged
+
 ## Long-Term Product Principles
 
 Linketry is intended to remain useful for long-term self-hosted operation, not just a one-time migration tool.

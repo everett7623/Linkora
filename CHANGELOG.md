@@ -13,6 +13,28 @@ _(none)_
 
 ---
 
+## [0.28.3] - 2026-07-21
+
+### Added
+
+- Added a GitHub-native `SECURITY.md` with private vulnerability reporting, credential-redaction requirements, response targets, and project security boundaries.
+- Added a root `SUPPORT.md` covering the supported release line, pre-1.0 compatibility, toolchain versions, backup ownership, protected upgrades, rollback, and best-effort support scope.
+- Added an automated support-policy contract that verifies private reporting, SemVer language, forward-only migrations, D1/KV recovery ownership, package engines, Wrangler range, and public documentation links.
+
+### Changed
+
+- Root package metadata now requires Node 24 and npm 10 or newer; the maintained Wrangler range remains 4.111.0 or newer within major version 4.
+- README, development, self-hosting, product-gap, roadmap, progress, and task documentation now share one security and support contract.
+
+### Tests
+
+- Passed 75 deployment, 98 Worker, 58 Admin unit, 25 Admin browser, 6 Demo API, and 4 project-site tests.
+- Passed Worker type-check, Admin/Site production builds, and the official npm registry audit with zero known vulnerabilities.
+- A read-only GitHub API check reports private vulnerability reporting as disabled; repository activation remains an explicit external pre-1.0 gate.
+- Redirect handlers, Worker runtime behavior, D1/KV ownership, migrations, production data, and Demo isolation are unchanged.
+
+---
+
 ## [0.28.2] - 2026-07-21
 
 ### Added

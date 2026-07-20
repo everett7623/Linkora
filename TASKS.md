@@ -11,6 +11,18 @@ _(none)_
 
 ---
 
+## ✅ Completed - Support And Compatibility Policy (v0.28.3)
+
+- [x] Add private vulnerability-reporting guidance
+- [x] Define pre-1.0 compatibility and supported toolchain boundaries
+- [x] Define backup, upgrade, and minimum rollback expectations
+- [x] Add an automated documentation contract test
+- [x] Link public documentation and complete release verification
+
+Task record: `.codex/tasks/support-compatibility-policy-2026-07-21.md`
+
+---
+
 ## ✅ Completed - Data Scale Contract (v0.28.2)
 
 - [x] Stabilize Links and Audit pagination with deterministic ID tie-breakers
@@ -25,6 +37,7 @@ Task record: `.codex/tasks/data-scale-contract-2026-07-21.md`
 ## External Prerequisites
 
 - [ ] Activate/configure optional R2 bindings in the isolated Demo account
+- [ ] Enable GitHub private vulnerability reporting before the public 1.0 launch (read-only API check on 2026-07-21 returned `enabled: false`)
 - [x] Configure the fine-grained `LINKETRY_GITHUB_UPDATE_TOKEN` for one-click upgrades
 
 ---

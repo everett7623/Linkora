@@ -31,7 +31,7 @@ Use your own domains everywhere below. Do not copy another deployment's domains,
 
 ## 1. Prerequisites
 
-- Node.js 24 recommended
+- Node.js 24.x
 - npm 10+
 - GitHub CLI (`gh`) authenticated to the account that owns your fork
 - A Cloudflare account
@@ -224,7 +224,7 @@ curl https://go.example.com/health
 Expected shape:
 
 ```json
-{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.28.2" } }
+{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.28.3" } }
 ```
 
 ### Build and Deploy Admin
@@ -290,7 +290,7 @@ LINKETRY_D1_DATABASE_NAME=linketry-alice-db
 LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.28.2
+LINKETRY_APPROVED_RELEASE=0.28.3
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true
@@ -316,7 +316,7 @@ Leave these unset for the basic deployment; enable them later from the Admin Adv
 
 ```txt
 LINKETRY_KV_PREVIEW_ID=<your-kv-preview-id>
-LINKETRY_VERSION=0.28.2
+LINKETRY_VERSION=0.28.3
 LINKETRY_COMPATIBILITY_DATE=2026-07-08
 LINKETRY_WORKER_DOMAINS=go.example.com,s.example.com
 LINKETRY_R2_BUCKET=linketry-backups
@@ -473,3 +473,5 @@ For a Shlink migration:
 | Pages deploys to the wrong project        | Confirm `LINKETRY_PAGES_PROJECT` repository variable                  |
 | Short links use the wrong copied domain   | Update Admin Settings -> Default Domain                               |
 | Local Worker starts without bindings      | Confirm `apps/worker/wrangler.toml` was copied from the example       |
+
+For reproducible bugs and documentation problems, follow [Support and compatibility](../SUPPORT.md). Report an unpatched vulnerability through the private channel in [Security policy](../SECURITY.md), never in a public issue or with live credentials attached.

@@ -105,12 +105,14 @@ linketry/
 - [Roadmap](docs/ROADMAP.md) — completed scope and future product direction
 - [Product gap audit](docs/PRODUCT_GAP_AUDIT.md) — pre-1.0 priorities and deliberate non-goals
 - [Fresh-account rehearsal](docs/FRESH_ACCOUNT_REHEARSAL.md) — owner checklist for credentials, resources, DNS, first login, and upgrades
+- [Security policy](SECURITY.md) — private vulnerability reporting and credential-safety expectations
+- [Support and compatibility](SUPPORT.md) — supported versions, toolchain, backups, upgrades, rollback, and help requests
 
 ## Local Development
 
 ### Prerequisites
 
-- Node.js 24 recommended
+- Node.js 24.x
 - npm 10+
 - Wrangler 4, installed locally by `npm install`
 - Cloudflare account
