@@ -48,7 +48,9 @@ export const updateMessages = {
     upgradeSucceeded: 'Upgrade complete. Reloading the Admin...',
     upgradeFailed: 'Deployment ended with status: {conclusion}.',
     upgradeFailedGeneric: 'Online upgrade failed.',
-    upgradeTimeout: 'Deployment did not publish the expected version in time.',
+    upgradeTimeout: 'Deployment did not finish in time.',
+    upgradeVerificationFailed:
+      'Deployment succeeded, but this page could not verify the running version. Reload to confirm the update.',
     dismissUpdate: 'Dismiss update notice',
   },
   'zh-CN': {
@@ -98,7 +100,8 @@ export const updateMessages = {
     upgradeSucceeded: '升级完成，正在重新加载后台...',
     upgradeFailed: '部署结束状态：{conclusion}。',
     upgradeFailedGeneric: '在线升级失败。',
-    upgradeTimeout: '未能在限定时间内发布预期版本。',
+    upgradeTimeout: '部署未能在限定时间内结束。',
+    upgradeVerificationFailed: '部署已成功，但当前页面无法核对运行版本，请刷新确认更新结果。',
     dismissUpdate: '关闭更新提示',
   },
 } as const;

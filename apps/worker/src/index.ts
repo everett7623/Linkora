@@ -16,6 +16,7 @@ import { jsonError, jsonOk, notFound } from './utils/response';
 import { resolvePublicLocale } from './utils/publicPages';
 import { getPublicPageMessage } from './utils/pageTemplates';
 import { DEFAULT_DAILY_CRON, scheduledWorkForCron } from './health/schedulePolicy';
+import { healthCors } from './health/cors';
 import { getDailyCron, getHealthCron, getRuntimeVersion } from './config/runtime';
 import { registerAdminApiRoutes } from './routes/api';
 import { isLegacyApiPath } from './routes/apiVersion';
@@ -35,6 +36,9 @@ const RESERVED_PATHS = new Set([
 ]);
 
 const app = new Hono<{ Bindings: Env }>();
+
+// Public runtime-version checks are read-only and may come from a separately hosted Admin.
+app.use('/health', healthCors);
 
 // CORS for admin frontend
 app.use(

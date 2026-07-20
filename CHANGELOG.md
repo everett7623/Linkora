@@ -13,6 +13,29 @@ _(none)_
 
 ---
 
+## [0.27.5] - 2026-07-20
+
+### Fixed
+
+- Added read-only CORS handling for the public `/health` endpoint so a separately hosted Admin can verify the newly deployed Worker version.
+- Separated a successful deployment with failed runtime-version verification from workflow failure and workflow timeout messaging.
+- Kept the bounded finalizing reload fallback while restoring the normal exact-version fast reload path for cross-origin production deployments.
+
+### Security
+
+- `/health` exposes only the existing public status, product name, and runtime version; it allows GET/OPTIONS without credentials and does not expose Admin headers or secrets.
+- Redirect handlers, asynchronous analytics, D1/KV ownership, migrations, deployment gates, credentials, and production data are unchanged.
+
+### Tests
+
+- Added Worker regressions for cross-origin `/health` GET and OPTIONS responses without credential exposure.
+- Added Admin unit coverage for stale and failed runtime-version checks after a successful workflow.
+- Added a real-browser regression that verifies a new runtime across separate Admin and Worker origins.
+- Passed 50 Admin unit tests, 22 Admin browser tests, and the Admin production build.
+- Passed Worker type-check and 84 tests, 64 deployment safety tests, 6 Demo API tests, and 4 project-site tests plus its production build.
+
+---
+
 ## [0.27.4] - 2026-07-20
 
 ### Changed

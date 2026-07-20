@@ -45,7 +45,7 @@ test('upgrade polling reports a failed workflow without claiming a new version',
   assert.equal(runtimeChecks, 0);
 });
 
-test('upgrade polling fails when the workflow succeeds but runtime version stays stale', async () => {
+test('upgrade polling separates successful deployment from runtime verification failure', async () => {
   const result = await waitForOnlineUpgrade({
     targetVersion: '0.25.10',
     runId: 42,
@@ -53,6 +53,32 @@ test('upgrade polling fails when the workflow succeeds but runtime version stays
     readRuntimeVersion: async () => '0.25.4',
     sleep,
     maxVersionPolls: 2,
+  });
+  assert.deepEqual(result, { outcome: 'verification_failed' });
+});
+
+test('upgrade polling reports runtime check errors as verification failures', async () => {
+  const result = await waitForOnlineUpgrade({
+    targetVersion: '0.25.10',
+    runId: 42,
+    readRun: async () => run('completed', 'success'),
+    readRuntimeVersion: async () => {
+      throw new TypeError('Failed to fetch');
+    },
+    sleep,
+    maxVersionPolls: 2,
+  });
+  assert.deepEqual(result, { outcome: 'verification_failed' });
+});
+
+test('upgrade polling without a run ID does not claim the deployment succeeded', async () => {
+  const result = await waitForOnlineUpgrade({
+    targetVersion: '0.25.10',
+    runId: null,
+    readRun: async () => run('queued'),
+    readRuntimeVersion: async () => '0.25.4',
+    sleep,
+    maxRunPolls: 2,
   });
   assert.deepEqual(result, { outcome: 'timeout' });
 });

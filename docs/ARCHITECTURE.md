@@ -33,7 +33,7 @@ The Worker and Admin are separate deployments. The Admin is a static client and 
 
 | Request           | Behavior                                                              |
 | ----------------- | --------------------------------------------------------------------- |
-| GET /health       | Returns the current Linketry health and version envelope              |
+| GET /health       | Returns the public health/version envelope with credential-free CORS  |
 | GET /:slug        | Resolves and redirects a public short link                            |
 | POST /:slug       | Continues a password-protected link after form submission             |
 | GET /stats/:token | Renders an explicitly enabled, privacy-limited public statistics page |
@@ -99,7 +99,7 @@ The React Admin uses:
 
 Authenticated Admin startup performs a cached GitHub version check. It reads the deployment repository package version without sending the Admin token and shows a dismissible update notice only when a newer semantic version is available. A failed version check does not block Admin startup.
 
-Optional in-app upgrades use an Admin-authenticated Worker endpoint. The Worker holds a fine-grained GitHub token as a secret and can dispatch only the deployment-time repository's `deploy.yml` on its fixed branch. GitHub Actions remains the asynchronous source of truth and retains every production gate. The Admin polls the sanitized run status, then verifies `/health` reports the target version before reloading. There is no local binary replacement or process restart in the Workers and Pages runtime.
+Optional in-app upgrades use an Admin-authenticated Worker endpoint. The Worker holds a fine-grained GitHub token as a secret and can dispatch only the deployment-time repository's `deploy.yml` on its fixed branch. GitHub Actions remains the asynchronous source of truth and retains every production gate. The Admin polls the sanitized run status, then reads the public cross-origin `/health` version before reloading. A runtime-verification failure is reported separately from workflow failure or timeout, and the bounded finalizing reload remains a recovery path. There is no local binary replacement or process restart in the Workers and Pages runtime.
 
 ## Asynchronous Work
 

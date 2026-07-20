@@ -183,7 +183,7 @@ curl https://go.example.com/health
 Expected shape:
 
 ```json
-{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.27.4" } }
+{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.27.5" } }
 ```
 
 ## 7. Build and Deploy Admin
@@ -247,7 +247,7 @@ LINKETRY_D1_DATABASE_NAME=linketry-alice-db
 LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.27.4
+LINKETRY_APPROVED_RELEASE=0.27.5
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true
@@ -257,7 +257,7 @@ Use `git rev-parse HEAD` for the exact commit and `npm run deploy:migration-dige
 
 Push the approved commit to `main` and the workflow will type-check, build, enforce the deployment gate, migrate D1, set the `LINKETRY_ADMIN_TOKEN` secret, deploy the Worker, and deploy the Admin.
 
-After the first deployment, the Admin update banner provides **Online upgrade**. When `LINKETRY_GITHUB_UPDATE_TOKEN` is configured, the primary instance Admin token can trigger this repository's fixed `deploy.yml` and branch directly. The banner follows the GitHub run, waits for a successful conclusion, verifies that `/health` reports the expected version, and then reloads the Admin. It cannot accept a repository, branch, commit, workflow, or target from the browser.
+After the first deployment, the Admin update banner provides **Online upgrade**. When `LINKETRY_GITHUB_UPDATE_TOKEN` is configured, the primary instance Admin token can trigger this repository's fixed `deploy.yml` and branch directly. The banner follows the GitHub run, waits for a successful conclusion, verifies that the Worker's public cross-origin `/health` endpoint reports the expected version, and then reloads the Admin. Keep credential-free GET/OPTIONS CORS enabled on `/health` when Admin Pages and the Worker use separate origins. It cannot accept a repository, branch, commit, workflow, or target from the browser.
 
 The confirmation approves only the configured branch's exact package version and commit; the migration digest, verified backup reference, migration review, target confirmation, and remote-resource checks still have to pass. Scoped Linketry API tokens cannot trigger an upgrade. When the GitHub secret is absent, invalid, or expired, use the banner's manual Actions fallback, rotate the repository secret if needed, and rerun deployment once to update the Worker secret.
 
@@ -273,7 +273,7 @@ Leave these unset for the basic deployment; enable them later from the Admin Adv
 
 ```txt
 LINKETRY_KV_PREVIEW_ID=<your-kv-preview-id>
-LINKETRY_VERSION=0.27.4
+LINKETRY_VERSION=0.27.5
 LINKETRY_COMPATIBILITY_DATE=2026-07-08
 LINKETRY_WORKER_DOMAINS=go.example.com,s.example.com
 LINKETRY_R2_BUCKET=linketry-backups

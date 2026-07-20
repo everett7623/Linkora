@@ -40,11 +40,13 @@ or:
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/health` | Health check |
+| `GET` | `/health` | Public health and runtime version; supports credential-free cross-origin Admin checks |
 | `GET` | `/:slug` | Short-link redirect |
 | `POST` | `/:slug` | Password-protected short-link continuation |
 
 Redirect analytics are recorded asynchronously. Stats failures must not block redirects.
+
+`/health` allows cross-origin GET and OPTIONS requests because the static Admin and Worker are normally hosted on different origins. The response contains only public health and version metadata, never Admin credentials or private instance data.
 
 ## Auth
 

@@ -18,6 +18,18 @@ _(none)_
 
 ---
 
+## ✅ Completed - Online Upgrade Health CORS (v0.27.5)
+
+- [x] Add credential-free GET/OPTIONS CORS support to the public `/health` runtime-version endpoint
+- [x] Separate runtime-version verification failure from deployment failure and workflow-timeout messaging
+- [x] Add Worker, Admin unit, and browser regressions for successful deployment plus cross-origin verification
+- [x] Record workflow run `29723961805`, production deployment `5518104020`, and live v0.27.4 evidence
+- [x] Synchronize v0.27.5 package, runtime, workflow, example, changelog, progress, task, and deployment documentation
+- [x] Pass 50 Admin unit, 22 Admin browser, 84 Worker, 64 deployment, 6 Demo API, and 4 project-site tests plus affected builds
+- [x] Publish v0.27.5 to `main` with `[skip ci]` while production remains on v0.27.4 for the owner-controlled upgrade test
+
+---
+
 ## ✅ Completed - Online Upgrade Auto Reload (v0.27.4)
 
 - [x] Confirm workflow run `29718967204`, deployment `5517191479`, and production Worker/Admin v0.27.3 state

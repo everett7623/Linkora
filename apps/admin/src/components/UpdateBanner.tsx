@@ -117,7 +117,9 @@ export function UpdateBanner({
       setError(
         result.outcome === 'timeout'
           ? t('upgradeTimeout')
-          : t('upgradeFailed', { conclusion: result.conclusion ?? 'unknown' })
+          : result.outcome === 'verification_failed'
+            ? t('upgradeVerificationFailed')
+            : t('upgradeFailed', { conclusion: result.conclusion ?? 'unknown' })
       );
     } catch (upgradeError) {
       if (!activeRef.current) return;

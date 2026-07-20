@@ -1,7 +1,8 @@
 import type { OnlineUpgradeRun } from '../api/onlineUpgrade.ts';
 
 export type OnlineUpgradePhase = 'queued' | 'running' | 'finalizing';
-export type OnlineUpgradeOutcome = 'success' | 'failed' | 'timeout' | 'cancelled';
+export type OnlineUpgradeOutcome =
+  'success' | 'failed' | 'timeout' | 'verification_failed' | 'cancelled';
 
 export interface OnlineUpgradeWaitResult {
   outcome: OnlineUpgradeOutcome;
@@ -32,7 +33,7 @@ export async function waitForOnlineUpgrade(options: WaitOptions): Promise<Online
 
   if (options.runId === null) {
     options.onPhase?.('running');
-    return pollRuntimeVersion(options, maxRunPolls, interval, sleep, shouldContinue);
+    return pollRuntimeVersion(options, maxRunPolls, interval, sleep, shouldContinue, 'timeout');
   }
 
   let consecutiveErrors = 0;
@@ -46,7 +47,14 @@ export async function waitForOnlineUpgrade(options: WaitOptions): Promise<Online
           return { outcome: 'failed', conclusion: run.conclusion };
         }
         options.onPhase?.('finalizing');
-        return pollRuntimeVersion(options, maxVersionPolls, interval, sleep, shouldContinue);
+        return pollRuntimeVersion(
+          options,
+          maxVersionPolls,
+          interval,
+          sleep,
+          shouldContinue,
+          'verification_failed'
+        );
       }
       options.onPhase?.(ACTIVE_QUEUED_STATUSES.has(run.status) ? 'queued' : 'running');
     } catch {
@@ -63,7 +71,8 @@ async function pollRuntimeVersion(
   attempts: number,
   interval: number,
   sleep: (milliseconds: number) => Promise<void>,
-  shouldContinue: () => boolean
+  shouldContinue: () => boolean,
+  exhaustedOutcome: Extract<OnlineUpgradeOutcome, 'timeout' | 'verification_failed'>
 ): Promise<OnlineUpgradeWaitResult> {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     if (!shouldContinue()) return { outcome: 'cancelled' };
@@ -76,7 +85,7 @@ async function pollRuntimeVersion(
     }
     await sleep(interval);
   }
-  return { outcome: 'timeout' };
+  return { outcome: exhaustedOutcome };
 }
 
 function delay(milliseconds: number): Promise<void> {
