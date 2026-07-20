@@ -7,7 +7,7 @@ const origin = 'https://admin.example.com';
 const app = new Hono();
 app.use('/health', healthCors);
 app.get('/health', (context) =>
-  context.json({ success: true, data: { status: 'ok', version: '0.27.5' } })
+  context.json({ success: true, data: { status: 'ok', version: '0.27.6' } })
 );
 
 test('health exposes its public runtime version to a cross-origin Admin', async () => {
@@ -17,7 +17,7 @@ test('health exposes its public runtime version to a cross-origin Admin', async 
   assert.equal(response.headers.get('Access-Control-Allow-Origin'), '*');
   assert.deepEqual(await response.json(), {
     success: true,
-    data: { status: 'ok', version: '0.27.5' },
+    data: { status: 'ok', version: '0.27.6' },
   });
 });
 

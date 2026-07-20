@@ -115,7 +115,15 @@ test('successful deployment reloads a stale finalizing page within a bounded del
   await expect(page.getByText(messages.en.upgradeFinalizing)).toBeVisible();
   await reloaded;
 
-  await expect(page.getByRole('button', { name: messages.en.upgradeOnline })).toBeEnabled();
+  await expect(
+    page.getByText(messages.en.upgradePropagationTitle.replace('{version}', targetVersion))
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      messages.en.upgradePropagationRefreshing.replace('{currentVersion}', LINKETRY_VERSION)
+    )
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: messages.en.upgradeOnline })).toHaveCount(0);
   await expect(page.getByText(messages.en.upgradeFinalizing)).toHaveCount(0);
 });
 
@@ -219,5 +227,8 @@ test('successful deployment verifies the new runtime across the Admin and Worker
   await reloaded;
 
   expect(runtimeChecks).toBeGreaterThan(0);
-  await expect(page.getByRole('button', { name: messages.en.upgradeOnline })).toBeEnabled();
+  await expect(
+    page.getByText(messages.en.upgradePropagationTitle.replace('{version}', targetVersion))
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: messages.en.upgradeOnline })).toHaveCount(0);
 });

@@ -360,6 +360,7 @@ test('automatic upgrade confirms deployment, verifies runtime, and reloads the A
 
   expect(dispatchRequests).toBe(1);
   await expect(
-    page.getByText(messages.en.updateAvailableTitle.replace('{version}', latestVersion))
+    page.getByText(messages.en.upgradePropagationTitle.replace('{version}', latestVersion))
   ).toBeVisible();
+  await expect(page.getByRole('button', { name: messages.en.upgradeOnline })).toHaveCount(0);
 });

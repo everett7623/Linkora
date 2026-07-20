@@ -9,13 +9,11 @@ import {
   type OnlineUpgradeCapability,
 } from '../api/onlineUpgrade';
 import { useLocale } from '../contexts/LocaleContext';
-import {
-  FINALIZING_RELOAD_DELAY_MS,
-  SUCCESS_RELOAD_DELAY_MS,
-  useUpgradeReload,
-} from '../hooks/useUpgradeReload';
+import { useUpgradeFeedback } from '../hooks/useUpgradeFeedback.ts';
+import { FINALIZING_RELOAD_DELAY_MS, SUCCESS_RELOAD_DELAY_MS } from '../hooks/useUpgradeReload';
 import { waitForOnlineUpgrade, type OnlineUpgradePhase } from '../utils/onlineUpgrade';
 import { UpgradeConfirmDialog } from './UpgradeConfirmDialog';
+import { UpgradeRefreshNotice } from './UpgradeRefreshNotice.tsx';
 import { UpdateBannerActions } from './UpdateBannerActions';
 
 type BannerPhase = 'idle' | 'starting' | OnlineUpgradePhase | 'success' | 'failed';
@@ -34,7 +32,7 @@ export function UpdateBanner({
   const [error, setError] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const activeRef = useRef(true);
-  const scheduleReload = useUpgradeReload();
+  const upgradeFeedback = useUpgradeFeedback();
 
   useEffect(() => {
     setPhase('idle');
@@ -65,6 +63,18 @@ export function UpdateBanner({
       activeRef.current = false;
     };
   }, []);
+
+  if (upgradeFeedback.feedback) {
+    return (
+      <UpgradeRefreshNotice
+        targetVersion={upgradeFeedback.feedback.targetVersion}
+        completed={upgradeFeedback.completed}
+        autoRefreshing={upgradeFeedback.autoRefreshing}
+        onDismiss={upgradeFeedback.dismiss}
+        onReload={upgradeFeedback.reloadNow}
+      />
+    );
+  }
 
   if (!update) return null;
 
@@ -102,7 +112,8 @@ export function UpdateBanner({
           if (!activeRef.current) return;
           setPhase(nextPhase);
           if (nextPhase === 'finalizing') {
-            scheduleReload(FINALIZING_RELOAD_DELAY_MS);
+            upgradeFeedback.rememberSuccessfulDeployment(update.latestVersion);
+            upgradeFeedback.scheduleReload(FINALIZING_RELOAD_DELAY_MS);
           }
         },
         shouldContinue: () => activeRef.current,
@@ -110,7 +121,7 @@ export function UpdateBanner({
       if (!activeRef.current || result.outcome === 'cancelled') return;
       if (result.outcome === 'success') {
         setPhase('success');
-        scheduleReload(SUCCESS_RELOAD_DELAY_MS);
+        upgradeFeedback.scheduleReload(SUCCESS_RELOAD_DELAY_MS);
         return;
       }
       setPhase('failed');

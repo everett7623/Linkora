@@ -13,6 +13,32 @@ _(none)_
 
 ---
 
+## [0.27.6] - 2026-07-20
+
+### Changed
+
+- Added explicit post-refresh feedback for online upgrades: waiting for Pages propagation, one bounded follow-up refresh, and a dismissible completion confirmation after the target build loads.
+- Added an immediate refresh action when an old Admin build remains visible after deployment.
+
+### Fixed
+
+- Preserved the successful deployment target across same-tab refreshes so a stale Pages response no longer returns to the normal online-upgrade action or invites a duplicate deployment.
+- Replaced the lost in-memory success state with a short-lived, validated `sessionStorage` record that expires after 30 minutes.
+
+### Security
+
+- Upgrade feedback stores only the normalized target version, timestamp, and bounded-refresh flag; repository tokens, Admin tokens, workflow credentials, and deployment inputs remain server-side.
+- Redirect handlers, asynchronous analytics, D1/KV ownership, migrations, deployment gates, and production data are unchanged.
+
+### Tests
+
+- Added unit coverage for tab-scoped feedback normalization, expiration, refresh bounds, and cleanup.
+- Added real-browser regressions for stale post-deployment Pages assets, duplicate-action suppression, manual refresh guidance, target-build completion feedback, and dismissal cleanup.
+- Passed 54 Admin unit tests, 24 Admin browser tests, and the Admin production build.
+- Passed Worker type-check and 84 tests, 64 deployment safety tests, 6 Demo API tests, and 4 project-site tests plus its production build.
+
+---
+
 ## [0.27.5] - 2026-07-20
 
 ### Fixed

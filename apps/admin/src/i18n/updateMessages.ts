@@ -51,6 +51,15 @@ export const updateMessages = {
     upgradeTimeout: 'Deployment did not finish in time.',
     upgradeVerificationFailed:
       'Deployment succeeded, but this page could not verify the running version. Reload to confirm the update.',
+    upgradeCompletedTitle: 'Linketry {version} upgrade complete',
+    upgradeCompletedDescription: 'The Admin refreshed successfully and is now running the new version.',
+    upgradePropagationTitle: 'Deployment complete. Waiting for Linketry {version}',
+    upgradePropagationRefreshing:
+      'This page is still running {currentVersion}. It will refresh once more in a few seconds.',
+    upgradePropagationManual:
+      'This page is still running {currentVersion}. Refresh the page to load the deployed version.',
+    refreshNow: 'Refresh now',
+    dismissUpgradeResult: 'Dismiss upgrade result',
     dismissUpdate: 'Dismiss update notice',
   },
   'zh-CN': {
@@ -102,6 +111,13 @@ export const updateMessages = {
     upgradeFailedGeneric: '在线升级失败。',
     upgradeTimeout: '部署未能在限定时间内结束。',
     upgradeVerificationFailed: '部署已成功，但当前页面无法核对运行版本，请刷新确认更新结果。',
+    upgradeCompletedTitle: 'Linketry {version} 升级完成',
+    upgradeCompletedDescription: '后台已刷新并正在运行新版本。',
+    upgradePropagationTitle: '部署完成，正在等待 Linketry {version} 生效',
+    upgradePropagationRefreshing: '当前页面仍为 {currentVersion}，几秒后将再自动刷新一次。',
+    upgradePropagationManual: '当前页面仍为 {currentVersion}，请刷新页面加载已部署的新版本。',
+    refreshNow: '立即刷新',
+    dismissUpgradeResult: '关闭升级结果',
     dismissUpdate: '关闭更新提示',
   },
 } as const;

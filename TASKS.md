@@ -18,6 +18,19 @@ _(none)_
 
 ---
 
+## ✅ Completed - Online Upgrade Refresh Feedback (v0.27.6)
+
+- [x] Preserve the successful deployment target across same-tab Admin refreshes
+- [x] Show waiting-for-propagation, one bounded follow-up refresh, and upgrade-complete feedback
+- [x] Prevent stale Pages assets from offering a duplicate online-upgrade action
+- [x] Add an explicit manual refresh action after the bounded retry
+- [x] Add unit and real-browser regressions for stale and current post-refresh builds
+- [x] Record production run `29725992523`, deployment `5518487300`, and the refresh-state root cause
+- [x] Synchronize v0.27.6 package, runtime, workflow, example, changelog, progress, task, deployment, and comprehensive development documentation
+- [x] Pass 54 Admin unit, 24 Admin browser, 84 Worker, 64 deployment, 6 Demo API, and 4 project-site tests plus affected builds
+
+---
+
 ## ✅ Completed - Online Upgrade Health CORS (v0.27.5)
 
 - [x] Add credential-free GET/OPTIONS CORS support to the public `/health` runtime-version endpoint
