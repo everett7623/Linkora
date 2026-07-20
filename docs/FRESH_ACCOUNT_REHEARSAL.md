@@ -1,6 +1,6 @@
 # Fresh Cloudflare Account Rehearsal
 
-Updated: 2026-07-19
+Updated: 2026-07-20
 
 Use this checklist after reading [Self-hosting](SELF_HOSTING.md). It captures the complete owner workflow that should pass before a Linketry release is considered beginner-deployable.
 
@@ -49,9 +49,10 @@ Set the repository once. Each mutation below includes `--repo`, so it works even
 $repo = 'OWNER/REPOSITORY'
 gh secret set CLOUDFLARE_API_TOKEN --repo $repo
 gh secret set CLOUDFLARE_ACCOUNT_ID --repo $repo
+gh api --method PUT "repos/$repo/environments/production"
 ```
 
-`gh secret set` prompts for the value without placing it in shell history. Configure the exact release approval values:
+`gh secret set` prompts for the value without placing it in shell history. The environment command creates the deployment-history target used by the production workflow; review its branch and approval protection in the repository settings before deployment. Configure the exact release approval values:
 
 ```powershell
 $repo = 'OWNER/REPOSITORY'
@@ -82,6 +83,7 @@ The preflight must identify the intended account, D1 database, and KV namespace 
 
 Push the approved commit or manually run **Deploy Linketry**. Verify all of the following:
 
+- The workflow run and deployment history both identify the `production` environment.
 - `GET /health` reports the package version.
 - The Admin Pages URL loads and accepts the one-time generated `LINKETRY_ADMIN_TOKEN`.
 - Setup reports a reachable API and the expected default domain.

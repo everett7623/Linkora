@@ -216,7 +216,7 @@ Planned:
 - Done: instance-level feature visibility settings for optional modules, while keeping core and recovery routes reachable
 - Done: per-browser sidebar and table density preferences with Simple/Advanced mode compatibility
 - Done: accessible per-browser light, dark, and system-following theme preferences
-- Done in v0.21.0: one compact Sidebar group for language, light/dark theme, and a reserved owner support link
+- Done in v0.21.0 and restored to the Sidebar footer in v0.27.3: one compact group for language, light/dark theme, and the owner support link
 - Done: required first-run setup wizard verifies API readiness, one default short domain, and the first link from real instance state
 - Done: language switcher with English as the default and Simplified Chinese as an option
 - Done: i18n foundation covers core and advanced link management, deployment, operations, audit, backup/restore, and analytics workflows

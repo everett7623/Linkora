@@ -7,8 +7,6 @@ import { UpdateBanner } from './UpdateBanner';
 import { DemoModeBanner } from './DemoModeBanner';
 import { useLocale } from '../contexts/LocaleContext';
 import { NAV_GROUPS } from './sidebar/sidebarNavigation';
-import { SidebarUtilityActions } from './sidebar/SidebarUtilityActions';
-import { AdminModeControl, DemoReadOnlyStatus } from './AdminShellControls';
 import { UpdateCheckProvider, useUpdateCheckContext } from '../contexts/UpdateCheckContext';
 import { PageLoading } from './ui/PageLoading';
 import { focusFirst, trapTabKey } from '../utils/focusTrap';
@@ -108,11 +106,6 @@ function LayoutContent() {
             <span className="truncate text-sm font-semibold text-slate-200">
               {pageLabel ? t(pageLabel) : 'Linketry'}
             </span>
-          </div>
-          <div className="ml-auto flex shrink-0 items-center gap-2">
-            <AdminModeControl />
-            <SidebarUtilityActions placement="toolbar" />
-            <DemoReadOnlyStatus compact />
           </div>
         </div>
         <div className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-slate-800 bg-slate-900/95 px-4 backdrop-blur lg:hidden">

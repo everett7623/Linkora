@@ -19,6 +19,7 @@ export function SidebarFooter({
 }) {
   const { logout } = useAuth();
   const { t } = useLocale();
+  const footerCollapsed = collapsed && !mobile;
 
   return (
     <div
@@ -28,30 +29,28 @@ export function SidebarFooter({
         compact ? 'py-2.5' : 'py-4'
       )}
     >
-      <SidebarVersionStatus collapsed={collapsed && !mobile} />
-      {mobile ? (
-        <div className="mt-2 space-y-2">
-          <SidebarUtilityActions />
-          <div className="grid grid-cols-[1fr_auto] gap-2">
-            <AdminModeControl />
-            <DemoReadOnlyStatus compact />
-          </div>
-        </div>
-      ) : !IS_PUBLIC_DEMO ? (
+      <div className={clsx('mb-2', !footerCollapsed && 'px-3')}>
+        <SidebarUtilityActions collapsed={footerCollapsed} />
+      </div>
+      <AdminModeControl compact={footerCollapsed} />
+      <SidebarVersionStatus collapsed={footerCollapsed} />
+      {IS_PUBLIC_DEMO ? (
+        <DemoReadOnlyStatus compact={footerCollapsed} />
+      ) : (
         <button
           type="button"
           onClick={logout}
           className={clsx(
             'mt-1 flex w-full items-center rounded-lg py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-red-400',
-            collapsed ? 'justify-center px-2' : 'gap-3 px-3'
+            footerCollapsed ? 'justify-center px-2' : 'gap-3 px-3'
           )}
           aria-label={t('logout')}
-          title={collapsed ? t('logout') : undefined}
+          title={footerCollapsed ? t('logout') : undefined}
         >
           <LogOut size={18} aria-hidden="true" />
-          {!collapsed && t('logout')}
+          {!footerCollapsed && t('logout')}
         </button>
-      ) : null}
+      )}
     </div>
   );
 }

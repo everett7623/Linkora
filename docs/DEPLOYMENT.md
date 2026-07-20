@@ -61,6 +61,8 @@ The repository includes `.github/workflows/deploy.yml`. On every push to `main`,
 3. build Admin with `VITE_LINKETRY_API_URL` from the `LINKETRY_API_URL` repository variable
 4. deploy the Worker, only when Cloudflare repository secrets are configured
 5. deploy Admin to the Pages project named by `LINKETRY_PAGES_PROJECT`, only when Cloudflare repository secrets and variables are configured
+
+The `deploy` job is bound to the GitHub environment named `production`. Create and review that environment before the first production run so GitHub records production deployment history separately from the protected `linketry-demo` environment. Repository-level variables and secrets remain available to the job; they do not need to be copied merely to enable deployment tracking.
 6. optionally deploy the official project site when `LINKETRY_SITE_PROJECT` is configured
 
 Add these GitHub repository secrets before relying on automatic deployment:
@@ -84,7 +86,7 @@ LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_KV_PREVIEW_ID=<your-kv-preview-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.27.2
+LINKETRY_APPROVED_RELEASE=0.27.3
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<output-of-npm-run-deploy:migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true

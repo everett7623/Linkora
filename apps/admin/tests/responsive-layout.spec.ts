@@ -78,6 +78,15 @@ test('Mobile Admin uses a drawer without shrinking the page content', async ({ p
   await expect(versionStatus).toBeVisible();
   await expect(versionStatus).toHaveAccessibleName(messages.en.checkForUpdates);
   await expect(versionStatus.getByText(`v${LINKETRY_VERSION}`, { exact: true })).toBeVisible();
+  const mobileSidebar = page.locator('aside:visible');
+  await expect(
+    mobileSidebar.getByRole('group', { name: messages.en.quickActions }).locator('button, a')
+  ).toHaveCount(3);
+  await expect(
+    mobileSidebar.getByRole('button', {
+      name: `${messages.en.interfaceMode}: ${messages.en.advanced}`,
+    })
+  ).toBeVisible();
   await expect(page.getByRole('button', { name: messages.en.closeNavigation })).toHaveCount(1);
   const closeNavigation = page.getByRole('button', { name: messages.en.closeNavigation });
   await expect(closeNavigation).toBeFocused();
@@ -170,6 +179,15 @@ test('Desktop Admin can collapse navigation and use the wider workspace', async 
   await expect(page.getByTestId('sidebar-version')).toHaveAccessibleName(
     messages.en.checkForUpdates
   );
+  const collapsedSidebar = page.locator('aside:visible');
+  await expect(
+    collapsedSidebar.getByRole('group', { name: messages.en.quickActions }).locator('button, a')
+  ).toHaveCount(3);
+  await expect(
+    collapsedSidebar.getByRole('button', {
+      name: `${messages.en.interfaceMode}: ${messages.en.advanced}`,
+    })
+  ).toBeVisible();
   await expect
     .poll(() => page.locator('aside').evaluate((element) => element.getBoundingClientRect().width))
     .toBe(80);

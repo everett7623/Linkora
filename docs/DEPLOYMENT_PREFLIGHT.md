@@ -106,6 +106,8 @@ LINKETRY_APPROVED_COMMIT=<exact 40-character GitHub commit SHA>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<reviewed migration digest>
 ```
 
+The workflow binds its `deploy` job to the GitHub environment named `production`. This keeps production deployment history distinct from `linketry-demo` and makes an online upgrade visible as a production deployment after the workflow starts. The binding does not relax any release, backup, migration, account, or resource gate.
+
 Generate the migration value from the reviewed checkout:
 
 ```bash

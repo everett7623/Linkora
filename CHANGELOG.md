@@ -13,6 +13,31 @@ _(none)_
 
 ---
 
+## [0.27.3] - 2026-07-20
+
+### Changed
+
+- Restored the interface-mode control and the grouped language, light/dark theme, and owner-support actions to the bottom-left Sidebar footer.
+- The desktop content toolbar now stays focused on navigation collapse/expand and current-page context.
+
+### Fixed
+
+- Desktop, collapsed, and mobile navigation now use one consistent Sidebar location for display preferences and support instead of splitting them between the toolbar and footer.
+- Restored the clearer footer presentation with three utility icons together and a separate full-width interface-mode status row.
+- Bound the production deployment job to the GitHub `production` environment so successful online upgrades create production deployment records instead of appearing to have no production target.
+
+### Security
+
+- Locale, theme, Admin mode, support URL, update discovery, authentication, and logout behavior are unchanged.
+- Redirect handlers, asynchronous analytics, D1/KV ownership, migrations, release gates, production data, and Demo isolation are unchanged; only GitHub deployment tracking is added.
+
+### Tests
+
+- Passed 48 Admin unit tests, 20 Admin browser tests, and the Admin production build.
+- Passed Worker type-check and 82 tests, 64 deployment safety tests, 6 Demo API tests, and 4 project-site tests plus its production build.
+
+---
+
 ## [0.27.2] - 2026-07-20
 
 ### Changed

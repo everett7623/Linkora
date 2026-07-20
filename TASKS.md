@@ -18,6 +18,20 @@ _(none)_
 
 ---
 
+## ✅ Completed - Sidebar Footer And Production Deployment Tracking (v0.27.3)
+
+- [x] Move interface mode, language, theme, and owner-support controls from the desktop content toolbar to the Sidebar footer
+- [x] Restore the three-icon utility row and separate interface-mode status presentation
+- [x] Preserve expanded, collapsed, mobile, version/update, logout, and Demo read-only behavior
+- [x] Diagnose online-upgrade run `29717446925` as a successful production deployment whose workflow lacked a GitHub environment binding
+- [x] Bind the production deploy job to `production` without changing repository secrets, Cloudflare resources, or release gates
+- [x] Add workflow-contract and operator-documentation coverage for the production environment
+- [x] Pass 48 Admin unit, 20 Admin browser, 82 Worker, 64 deployment, 6 Demo API, and 4 project-site tests plus affected builds
+- [x] Synchronize v0.27.3 package, runtime, workflow fallback, example, changelog, progress, roadmap, and task metadata
+- [x] Publish v0.27.3 to `main` with `[skip ci]` so production remains on v0.27.2 for the owner-controlled online-upgrade test
+
+---
+
 ## ✅ Completed - Online Upgrade Credential And Discovery Validation (v0.27.2)
 
 - [x] Configure the repository-scoped `LINKETRY_GITHUB_UPDATE_TOKEN` with Actions read and write only

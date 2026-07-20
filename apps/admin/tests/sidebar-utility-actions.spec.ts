@@ -44,7 +44,7 @@ async function mockDashboardApi(page: Page) {
   });
 }
 
-test('Desktop toolbar keeps utilities while version and update status stay in the sidebar footer', async ({
+test('Desktop sidebar footer groups preferences, support, version, and update status', async ({
   page,
 }) => {
   await page.addInitScript((version) => {
@@ -61,14 +61,21 @@ test('Desktop toolbar keeps utilities while version and update status stay in th
   await page.goto('/overview');
 
   const toolbar = page.getByTestId('desktop-toolbar');
-  const actions = toolbar.getByRole('group', { name: messages.en.quickActions });
+  const sidebar = page.locator('aside:visible');
+  const actions = sidebar.getByRole('group', { name: messages.en.quickActions });
   await expect(actions.locator('button, a')).toHaveCount(3);
   await expect(toolbar.getByRole('button', { name: messages.en.checkForUpdates })).toHaveCount(0);
+  await expect(toolbar.getByRole('group', { name: messages.en.quickActions })).toHaveCount(0);
   await expect(
-    page.locator('aside').getByRole('group', { name: messages.en.quickActions })
+    toolbar.getByRole('button', { name: `${messages.en.interfaceMode}: ${messages.en.simple}` })
   ).toHaveCount(0);
+  await expect(
+    sidebar.getByRole('button', {
+      name: `${messages.en.interfaceMode}: ${messages.en.simple}`,
+    })
+  ).toBeVisible();
 
-  const versionStatus = page.getByTestId('sidebar-version');
+  const versionStatus = sidebar.getByTestId('sidebar-version');
   await expect(versionStatus).toBeVisible();
   await expect(versionStatus).toHaveAccessibleName(messages.en.checkForUpdates);
   await expect(versionStatus.getByText(`v${LINKETRY_VERSION}`, { exact: true })).toBeVisible();
@@ -123,7 +130,10 @@ test('Update notice exposes a safe repository upgrade workflow without mobile ov
 
   await page.goto('/overview');
 
-  const notice = page.getByRole('status');
+  const notice = page
+    .locator('main')
+    .getByRole('status')
+    .filter({ hasText: messages.en.updateAvailableTitle.replace('{version}', '99.0.0') });
   await expect(notice).toBeVisible();
   await expect(notice.getByRole('link', { name: messages.en.viewChanges })).toHaveAttribute(
     'href',
