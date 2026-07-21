@@ -13,6 +13,24 @@ _(none)_
 
 ---
 
+## [0.28.8] - 2026-07-21
+
+### Fixed
+
+- Fixed an online-upgrade page remaining on "upgrading" after the target Worker and Admin had already become available.
+- The real `204` workflow-dispatch path now requires both the target Worker runtime and a target Admin document with executable initial JavaScript and CSS before reloading.
+- Every successful path now persists upgrade feedback before reload, including deployments without a workflow run ID.
+- A suspended upgrade poll resumes immediately when the page becomes visible, focused, or online again.
+
+### Tests
+
+- Reproduced production workflow `29811494912`: Worker and Admin deployment writes completed, while the Admin entry asset returned `text/html` during Pages propagation and the readiness job eventually failed.
+- Added no-run-ID, delayed Admin asset, MIME validation, focus-resume, dual-runtime readiness, and success-feedback browser coverage.
+- Passed 110 Worker, 78 deployment, 60 Admin unit, 25 Admin browser, 6 Demo API, and 4 project-site tests; Worker type-check, Admin/Site builds, and the official npm registry audit pass.
+- Redirect handlers, deployment permissions, D1/KV ownership, migrations, analytics, and production data are unchanged.
+
+---
+
 ## [0.28.7] - 2026-07-21
 
 ### Added

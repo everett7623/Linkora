@@ -20,6 +20,7 @@ test('upgrade polling waits for a successful workflow and matching runtime versi
     runId: 42,
     readRun: async () => runs.shift()!,
     readRuntimeVersion: async () => versions.shift()!,
+    readAdminReady: async () => true,
     onPhase: (phase) => phases.push(phase),
     sleep,
   });
@@ -38,6 +39,7 @@ test('upgrade polling reports a failed workflow without claiming a new version',
       runtimeChecks += 1;
       return '0.25.10';
     },
+    readAdminReady: async () => true,
     sleep,
   });
 
@@ -51,6 +53,7 @@ test('upgrade polling separates successful deployment from runtime verification 
     runId: 42,
     readRun: async () => run('completed', 'success'),
     readRuntimeVersion: async () => '0.25.4',
+    readAdminReady: async () => true,
     sleep,
     maxVersionPolls: 2,
   });
@@ -65,6 +68,7 @@ test('upgrade polling reports runtime check errors as verification failures', as
     readRuntimeVersion: async () => {
       throw new TypeError('Failed to fetch');
     },
+    readAdminReady: async () => true,
     sleep,
     maxVersionPolls: 2,
   });
@@ -77,6 +81,7 @@ test('upgrade polling without a run ID does not claim the deployment succeeded',
     runId: null,
     readRun: async () => run('queued'),
     readRuntimeVersion: async () => '0.25.4',
+    readAdminReady: async () => true,
     sleep,
     maxRunPolls: 2,
   });
@@ -89,8 +94,42 @@ test('upgrade polling can be cancelled without leaving a background timer', asyn
     runId: null,
     readRun: async () => run('queued'),
     readRuntimeVersion: async () => '0.25.4',
+    readAdminReady: async () => false,
     shouldContinue: () => false,
     sleep,
   });
   assert.deepEqual(result, { outcome: 'cancelled' });
+});
+
+test('upgrade polling without a run ID waits for both Worker and Admin readiness', async () => {
+  const phases: string[] = [];
+  const adminReadiness = [false, true];
+  const result = await waitForOnlineUpgrade({
+    targetVersion: '0.25.10',
+    runId: null,
+    readRun: async () => run('queued'),
+    readRuntimeVersion: async () => '0.25.10',
+    readAdminReady: async () => adminReadiness.shift() ?? true,
+    onPhase: (phase) => phases.push(phase),
+    sleep,
+    maxRunPolls: 2,
+  });
+
+  assert.deepEqual(result, { outcome: 'success' });
+  assert.deepEqual(phases, ['running', 'finalizing']);
+});
+
+test('upgrade polling does not complete when only the Admin release is ready', async () => {
+  const runtimeVersions = ['0.25.9', '0.25.10'];
+  const result = await waitForOnlineUpgrade({
+    targetVersion: '0.25.10',
+    runId: null,
+    readRun: async () => run('queued'),
+    readRuntimeVersion: async () => runtimeVersions.shift() ?? '0.25.10',
+    readAdminReady: async () => true,
+    sleep,
+    maxRunPolls: 2,
+  });
+
+  assert.deepEqual(result, { outcome: 'success' });
 });

@@ -14,6 +14,7 @@ interface WaitOptions {
   runId: number | null;
   readRun: (runId: number) => Promise<OnlineUpgradeRun>;
   readRuntimeVersion: () => Promise<string>;
+  readAdminReady: () => Promise<boolean>;
   onPhase?: (phase: OnlineUpgradePhase) => void;
   shouldContinue?: () => boolean;
   sleep?: (milliseconds: number) => Promise<void>;
@@ -33,7 +34,15 @@ export async function waitForOnlineUpgrade(options: WaitOptions): Promise<Online
 
   if (options.runId === null) {
     options.onPhase?.('running');
-    return pollRuntimeVersion(options, maxRunPolls, interval, sleep, shouldContinue, 'timeout');
+    return pollReleaseReadiness(
+      options,
+      maxRunPolls,
+      interval,
+      sleep,
+      shouldContinue,
+      'timeout',
+      false
+    );
   }
 
   let consecutiveErrors = 0;
@@ -47,13 +56,14 @@ export async function waitForOnlineUpgrade(options: WaitOptions): Promise<Online
           return { outcome: 'failed', conclusion: run.conclusion };
         }
         options.onPhase?.('finalizing');
-        return pollRuntimeVersion(
+        return pollReleaseReadiness(
           options,
           maxVersionPolls,
           interval,
           sleep,
           shouldContinue,
-          'verification_failed'
+          'verification_failed',
+          true
         );
       }
       options.onPhase?.(ACTIVE_QUEUED_STATUSES.has(run.status) ? 'queued' : 'running');
@@ -66,22 +76,28 @@ export async function waitForOnlineUpgrade(options: WaitOptions): Promise<Online
   return { outcome: 'timeout' };
 }
 
-async function pollRuntimeVersion(
+async function pollReleaseReadiness(
   options: WaitOptions,
   attempts: number,
   interval: number,
   sleep: (milliseconds: number) => Promise<void>,
   shouldContinue: () => boolean,
-  exhaustedOutcome: Extract<OnlineUpgradeOutcome, 'timeout' | 'verification_failed'>
+  exhaustedOutcome: Extract<OnlineUpgradeOutcome, 'timeout' | 'verification_failed'>,
+  finalizing: boolean
 ): Promise<OnlineUpgradeWaitResult> {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     if (!shouldContinue()) return { outcome: 'cancelled' };
-    try {
-      if ((await options.readRuntimeVersion()) === options.targetVersion) {
-        return { outcome: 'success' };
-      }
-    } catch {
-      // Brief Worker or network interruptions are expected during deployment.
+    const [runtimeResult, adminResult] = await Promise.allSettled([
+      options.readRuntimeVersion(),
+      options.readAdminReady(),
+    ]);
+    const runtimeReady =
+      runtimeResult.status === 'fulfilled' && runtimeResult.value === options.targetVersion;
+    const adminReady = adminResult.status === 'fulfilled' && adminResult.value;
+    if (runtimeReady && adminReady) return { outcome: 'success' };
+    if (!finalizing && (runtimeReady || adminReady)) {
+      finalizing = true;
+      options.onPhase?.('finalizing');
     }
     await sleep(interval);
   }
@@ -89,5 +105,24 @@ async function pollRuntimeVersion(
 }
 
 function delay(milliseconds: number): Promise<void> {
-  return new Promise((resolve) => globalThis.setTimeout(resolve, milliseconds));
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return new Promise((resolve) => globalThis.setTimeout(resolve, milliseconds));
+  }
+
+  return new Promise((resolve) => {
+    const finish = () => {
+      globalThis.clearTimeout(timeoutId);
+      window.removeEventListener('focus', finish);
+      window.removeEventListener('online', finish);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      resolve();
+    };
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') finish();
+    };
+    const timeoutId = globalThis.setTimeout(finish, milliseconds);
+    window.addEventListener('focus', finish);
+    window.addEventListener('online', finish);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+  });
 }

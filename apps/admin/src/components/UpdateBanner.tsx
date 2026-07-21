@@ -8,9 +8,10 @@ import {
   startOnlineUpgrade,
   type OnlineUpgradeCapability,
 } from '../api/onlineUpgrade';
+import { isAdminReleaseReady } from '../api/adminRelease.ts';
 import { useLocale } from '../contexts/LocaleContext';
 import { useUpgradeFeedback } from '../hooks/useUpgradeFeedback.ts';
-import { FINALIZING_RELOAD_DELAY_MS, SUCCESS_RELOAD_DELAY_MS } from '../hooks/useUpgradeReload';
+import { SUCCESS_RELOAD_DELAY_MS } from '../hooks/useUpgradeReload';
 import { waitForOnlineUpgrade, type OnlineUpgradePhase } from '../utils/onlineUpgrade';
 import { UpgradeConfirmDialog } from './UpgradeConfirmDialog';
 import { UpgradeRefreshNotice } from './UpgradeRefreshNotice.tsx';
@@ -108,18 +109,16 @@ export function UpdateBanner({
         runId: dispatch.runId,
         readRun: getOnlineUpgradeRun,
         readRuntimeVersion: fetchRuntimeVersion,
+        readAdminReady: () => isAdminReleaseReady(update.latestVersion),
         onPhase: (nextPhase) => {
           if (!activeRef.current) return;
           setPhase(nextPhase);
-          if (nextPhase === 'finalizing') {
-            upgradeFeedback.rememberSuccessfulDeployment(update.latestVersion);
-            upgradeFeedback.scheduleReload(FINALIZING_RELOAD_DELAY_MS);
-          }
         },
         shouldContinue: () => activeRef.current,
       });
       if (!activeRef.current || result.outcome === 'cancelled') return;
       if (result.outcome === 'success') {
+        upgradeFeedback.rememberSuccessfulDeployment(update.latestVersion);
         setPhase('success');
         upgradeFeedback.scheduleReload(SUCCESS_RELOAD_DELAY_MS);
         return;

@@ -4,7 +4,7 @@ Linketry 的核心定位是**自托管短链接管理、访问分析与健康监
 
 > 来源：Shlink 官方功能、API key roles 与 advanced redirect 文档。
 > 最近复核：2026-07-19
-> 对应 Linketry 版本：0.28.7
+> 对应 Linketry 版本：0.28.8
 
 ---
 

@@ -259,6 +259,17 @@ Status: complete in the repository; production rollout remains owner-controlled.
 - Three fixed aggregate queries keep comparison and heatmap cost independent of visit volume and populated buckets
 - Redirect handlers, asynchronous visit recording, D1/KV ownership, migrations, production data, and Demo isolation are unchanged
 
+## 0.28.8: Online Upgrade Readiness State
+
+Status: complete in the repository; rollout remains owner-controlled.
+
+- The real workflow-dispatch `204` response is treated as a no-run-ID deployment instead of assuming a pollable GitHub run
+- Automatic reload requires the target Worker version, target Admin HTML version, and executable initial JavaScript/CSS assets
+- Successful feedback is persisted before every reload path so the replacement Admin can confirm completion
+- Background or offline tabs resume readiness checks immediately after visibility, focus, or connectivity returns
+- Admin readiness requests are uncached, bounded by an eight-second timeout, and never include Admin or GitHub credentials
+- Redirect handlers, deployment permissions, D1/KV ownership, migrations, analytics, production data, and Demo isolation are unchanged
+
 ## Long-Term Product Principles
 
 Linketry is intended to remain useful for long-term self-hosted operation, not just a one-time migration tool.

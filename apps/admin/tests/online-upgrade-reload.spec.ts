@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { LINKETRY_VERSION } from '../../../packages/shared/src/version';
 import { messages } from '../src/i18n/messages';
+import { routeAdminRelease } from './helpers/adminReleaseRoute.ts';
 
 const targetVersion = '99.0.0';
 
@@ -19,9 +20,10 @@ function corsApiResponse(data: unknown) {
   };
 }
 
-test('successful deployment reloads a stale finalizing page within a bounded delay', async ({
+test('no-run-ID deployment waits through stale Admin assets and resumes on focus', async ({
   page,
 }) => {
+  const scriptRequests = await routeAdminRelease(page, targetVersion, 1);
   await page.addInitScript(() => {
     localStorage.setItem('linketry_token', 'test-token');
     localStorage.setItem('linketry.locale', 'en');
@@ -35,7 +37,7 @@ test('successful deployment reloads a stale finalizing page within a bounded del
     });
   });
   await page.route('**/health', async (route) => {
-    await route.fulfill(apiResponse({ status: 'ok', name: 'Linketry', version: LINKETRY_VERSION }));
+    await route.fulfill(apiResponse({ status: 'ok', name: 'Linketry', version: targetVersion }));
   });
   await page.route('**/api/v1/**', async (route) => {
     const request = route.request();
@@ -82,21 +84,9 @@ test('successful deployment reloads a stale finalizing page within a bounded del
       await route.fulfill(
         apiResponse({
           accepted: true,
-          runId: 123,
-          runUrl: 'https://github.com/everett7623/Linketry/actions/runs/123',
+          runId: null,
+          runUrl: 'https://github.com/everett7623/Linketry/actions/workflows/deploy.yml',
           status: 'requested',
-        })
-      );
-      return;
-    }
-    if (path === '/api/v1/system/upgrade/123') {
-      await route.fulfill(
-        apiResponse({
-          runId: 123,
-          runUrl: 'https://github.com/everett7623/Linketry/actions/runs/123',
-          status: 'completed',
-          conclusion: 'success',
-          headSha: '1234567890abcdef',
         })
       );
       return;
@@ -113,7 +103,10 @@ test('successful deployment reloads a stale finalizing page within a bounded del
   const reloaded = page.waitForEvent('load');
   await page.getByRole('button', { name: messages.en.confirmUpgrade }).click();
   await expect(page.getByText(messages.en.upgradeFinalizing)).toBeVisible();
+  expect(scriptRequests()).toBe(1);
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
   await reloaded;
+  expect(scriptRequests()).toBeGreaterThanOrEqual(2);
 
   await expect(
     page.getByText(messages.en.upgradePropagationTitle.replace('{version}', targetVersion))
@@ -130,6 +123,7 @@ test('successful deployment reloads a stale finalizing page within a bounded del
 test('successful deployment verifies the new runtime across the Admin and Worker origins', async ({
   page,
 }) => {
+  await routeAdminRelease(page, targetVersion);
   const apiOrigin = 'https://go.example.test';
   let runtimeChecks = 0;
   await page.addInitScript((origin) => {

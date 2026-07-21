@@ -5,6 +5,18 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
+## 🚧 In Progress - Online Upgrade Readiness State (v0.28.8)
+
+- [x] Capture the production workflow, Worker, Admin HTML, and asset MIME evidence
+- [x] Require Worker and Admin asset readiness before automatic reload
+- [x] Recover polling immediately after tab focus, visibility, or network restoration
+- [x] Cover the real no-run-ID dispatch path and delayed Pages propagation
+- [ ] Synchronize v0.28.8 metadata, complete regression, and deploy the isolated Demo
+
+Task record: `.codex/tasks/online-upgrade-readiness-state-2026-07-21.md`
+
+---
+
 ## ✅ Completed - Analytics Comparison And Heatmap (v0.28.7)
 
 - [x] Add an immediately preceding equal-length comparison period

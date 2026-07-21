@@ -10,18 +10,33 @@ Last updated: 2026-07-21
 
 | Layer                      | Status                 | Notes                                                                                                                                                                                                   |
 | -------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Worker backend             | ✅ 0.28.7 verified     | Equal-period and weekday/hour aggregation pass real SQLite and 100k-visit coverage; the isolated Demo health contract reports v0.28.7                                                                  |
-| Admin frontend             | ✅ 0.28.7 verified     | Period comparison, trend overlay, and activity heatmap pass responsive, accessibility, and old-response compatibility coverage                                                                          |
+| Worker backend             | ✅ 0.28.8 unchanged    | Release metadata is synchronized; redirect, API, D1/KV, and analytics runtime behavior are unchanged                                                                                                    |
+| Admin frontend             | ✅ 0.28.8 verified     | Online upgrade waits for Worker plus Admin document/asset readiness and recovers polling after browser suspension                                                                                       |
 | Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
-| Documentation              | ✅ 0.28.7 updated      | Comparison/heatmap contract, CSV additions, query bounds, release notes, progress, roadmap, and task records are synchronized                                                                             |
-| Deployment                 | ✅ Demo 0.28.7 live    | Isolated Demo workflow `29806272912` passed deployment and production-parity checks; production remains intentionally on v0.28.5                                                                         |
-| End-to-end test            | ✅ Full regression     | 78 deployment, 110 Worker, 58 Admin unit, 25 Admin browser scenarios, 6 Demo API, and 4 site tests pass; Worker/Admin/Site builds pass                                                                   |
+| Documentation              | ✅ 0.28.8 updated      | Production failure evidence, combined readiness contract, release notes, progress, roadmap, and task records are synchronized                                                                            |
+| Deployment                 | 🟡 0.28.8 rollout next | Production and isolated Demo currently run v0.28.7; v0.28.8 remains behind the existing owner-controlled release gates                                                                                   |
+| End-to-end test            | ✅ Full regression     | 110 Worker, 78 deployment, 60 Admin unit, 25 Admin browser, 6 Demo API, and 4 site tests pass; Worker type-check and Admin/Site builds pass                                                             |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | ✅ Demo 0.28.7 live    | Repository and isolated Demo surfaces are synchronized on v0.28.7; production remains intentionally on v0.28.5                                                                                          |
-| Repository update target   | ✅ 0.28.7 verified    | v0.28.7 adds equal-period comparison and a local weekday/hour heatmap while keeping rollout owner-controlled                                                                                             |
+| Current version            | 🟡 Repository 0.28.8   | Repository metadata targets v0.28.8; production and isolated Demo currently run v0.28.7                                                                                                                  |
+| Repository update target   | ✅ 0.28.8 verified     | v0.28.8 fixes stale online-upgrade state without changing redirect or data behavior                                                                                                                       |
 | Next planned work          | 🟡 Pre-1.0 validation | Cloudflare Access needs a complete cross-origin auth design; independent fresh-account, large-data, and assistive-technology validation remain                                                          |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.28.8 Online Upgrade Readiness State
+
+| Area                     | Status      | Notes                                                                                                                       |
+| ------------------------ | ----------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Production evidence      | ✅ Captured | Workflow `29811494912` deployed Worker/Admin, then failed while the Admin entry asset returned HTML during Pages propagation |
+| Combined readiness       | ✅ Complete | Reload requires target Worker health, target Admin metadata, and executable initial JavaScript/CSS                          |
+| Real dispatch contract   | ✅ Complete | The normal GitHub `204` response and `runId: null` path use the same bounded readiness state machine                         |
+| Browser recovery         | ✅ Complete | Visibility, focus, and online events wake one existing poll without creating a second polling loop                          |
+| Feedback continuity      | ✅ Complete | Every successful path records the target release before reload                                                              |
+| Verification             | ✅ Complete | Full Worker, deployment, Admin, Demo API, and site regression passes; builds and official npm audit pass                    |
+| Redirect/data impact     | ✅ None     | Redirect handlers, deployment permissions, D1/KV, migrations, analytics, and production data are unchanged                 |
+| Live rollout             | 🟡 Pending  | Production and isolated Demo remain on v0.28.7 until the existing protected release gates are approved                      |
 
 ---
 

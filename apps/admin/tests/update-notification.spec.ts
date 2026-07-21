@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { LINKETRY_VERSION } from '../../../packages/shared/src/version';
 import { messages } from '../src/i18n/messages';
+import { routeAdminRelease } from './helpers/adminReleaseRoute.ts';
 
 const latestVersion = '99.0.0';
 
@@ -260,6 +261,7 @@ test('automatic upgrade confirms deployment, verifies runtime, and reloads the A
   page,
 }) => {
   let dispatchRequests = 0;
+  await routeAdminRelease(page, latestVersion);
   await page.addInitScript(() => {
     localStorage.setItem('linketry_token', 'test-token');
     localStorage.setItem('linketry.locale', 'en');
