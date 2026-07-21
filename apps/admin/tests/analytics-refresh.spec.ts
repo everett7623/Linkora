@@ -69,6 +69,26 @@ test('Analytics supports manual refresh and persistent near-real-time controls',
             { date: '2026-07-20', clicks: 21, humanClicks: 19, botClicks: 2, uniqueVisitors: 15 },
             { date: '2026-07-21', clicks: 24, humanClicks: 22, botClicks: 2, uniqueVisitors: 17 },
           ],
+          previousPeriod: {
+            rangeStart: '2026-05-22T16:00:00.000Z',
+            rangeEnd: '2026-06-21T16:00:00.000Z',
+            totalClicks: 70,
+            humanClicks: 65,
+            botClicks: 5,
+            uniqueVisitors: 41,
+            daily: [
+              { date: '2026-06-17', clicks: 10, humanClicks: 9, botClicks: 1, uniqueVisitors: 8 },
+              { date: '2026-06-18', clicks: 14, humanClicks: 13, botClicks: 1, uniqueVisitors: 11 },
+              { date: '2026-06-19', clicks: 8, humanClicks: 8, botClicks: 0, uniqueVisitors: 7 },
+              { date: '2026-06-20', clicks: 20, humanClicks: 18, botClicks: 2, uniqueVisitors: 14 },
+              { date: '2026-06-21', clicks: 18, humanClicks: 17, botClicks: 1, uniqueVisitors: 13 },
+            ],
+          },
+          hourlyHeatmap: [
+            { weekday: 1, hour: 9, clicks: 18, humanClicks: 17, botClicks: 1 },
+            { weekday: 2, hour: 14, clicks: 12, humanClicks: 11, botClicks: 1 },
+            { weekday: 5, hour: 20, clicks: 8, humanClicks: 7, botClicks: 1 },
+          ],
           topLinks: [],
           topCountries: [
             { country: 'US', clicks: 32 },
@@ -135,16 +155,18 @@ test('Analytics supports manual refresh and persistent near-real-time controls',
       return;
     }
     if (path === '/api/v1/analytics-alerts') {
-      await route.fulfill(apiResponse({
-        config: {
-          enabled: false,
-          minimumVisits: 50,
-          volumeMultiplier: 2,
-          botRateDeltaPercentagePoints: 25,
-          suppressionMinutes: 1440,
-        },
-        state: { active: [] },
-      }));
+      await route.fulfill(
+        apiResponse({
+          config: {
+            enabled: false,
+            minimumVisits: 50,
+            volumeMultiplier: 2,
+            botRateDeltaPercentagePoints: 25,
+            suppressionMinutes: 1440,
+          },
+          state: { active: [] },
+        })
+      );
       return;
     }
     await route.fulfill({ status: 404, contentType: 'application/json', body: '{"error":"mock"}' });
@@ -157,6 +179,9 @@ test('Analytics supports manual refresh and persistent near-real-time controls',
   await expect.poll(() => analyticsRequests).toBeGreaterThan(0);
   await expect.poll(() => analyticsTimezoneOffset).not.toBeNull();
   await expect(page.getByTestId('traffic-trend-panel')).toBeVisible();
+  await expect(page.getByTestId('period-comparison')).toBeVisible();
+  await expect(page.getByTestId('activity-heatmap')).toBeVisible();
+  await expect(page.getByText(messages.en.previousSeries, { exact: true })).toBeVisible();
   await expect(page.getByTestId('world-traffic-map')).toBeVisible();
   await expect(page.getByTestId('audience-composition')).toBeVisible();
   const areaChart = page.getByRole('button', { name: messages.en.areaChart });

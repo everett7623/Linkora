@@ -248,6 +248,17 @@ Status: complete in the repository; production and Demo rollout remain owner-con
 - CSV reports include the explicit range, complete country distribution, and all daily series
 - Redirect handlers, asynchronous visit recording, D1/KV ownership, migrations, production data, and Demo isolation are unchanged
 
+## 0.28.7: Analytics Comparison And Heatmap
+
+Status: complete in the repository; production rollout remains owner-controlled.
+
+- The selected Analytics range is compared with the immediately preceding equal-length period under the same filters
+- Previous-period totals and zero-filled daily rows are additive API fields and are included in CSV reports
+- The current trend overlays the previous total without removing total, human, bot, or approximate unique-visitor series
+- A fixed 7 x 24 local-time heatmap exposes total, human, and bot traffic by weekday and hour
+- Three fixed aggregate queries keep comparison and heatmap cost independent of visit volume and populated buckets
+- Redirect handlers, asynchronous visit recording, D1/KV ownership, migrations, production data, and Demo isolation are unchanged
+
 ## Long-Term Product Principles
 
 Linketry is intended to remain useful for long-term self-hosted operation, not just a one-time migration tool.

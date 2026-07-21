@@ -453,7 +453,7 @@ Audit pagination uses the same bounded `page` and `pageSize` contract as Links, 
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/api/v1/analytics` | Click totals, daily trend, top dimensions, UTM breakdowns, target breakdowns, conversions, and recent visits |
+| `GET` | `/api/v1/analytics` | Click totals, current/previous trends, weekday/hour heatmap, top dimensions, targets, conversions, and recent visits |
 | `GET` | `/api/v1/analytics/links/:id` | Single-link analytics detail with the same summary shape |
 | `POST` | `/api/v1/conversions` | Record a conversion or goal event for a link |
 
@@ -495,6 +495,8 @@ Response data includes:
 - `conversionRate` — conversion events per eligible human click, as a percentage
 - `conversionAttributionAvailable`
 - `daily` — zero-filled local dates with `clicks`, `humanClicks`, `botClicks`, and `uniqueVisitors`
+- `previousPeriod` — the immediately preceding equal-length range with explicit boundaries, totals, and a zero-filled daily series
+- `hourlyHeatmap` — exactly 168 fixed-offset local buckets with `weekday` (`0` Sunday through `6` Saturday), `hour` (`0`-`23`), total, human, and bot visits
 - `topLinks`
 - `topCountries`
 - `geography` — up to 250 ISO country rows plus mapped and unknown click totals

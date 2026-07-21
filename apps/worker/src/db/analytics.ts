@@ -7,12 +7,18 @@ import {
 } from '../analytics/conversionPolicy';
 import {
   createAnalyticsRange,
+  createPreviousAnalyticsRange,
   fillDailyAnalytics,
   localDateSql,
   parseTimezoneOffset,
   type AnalyticsRange,
   type DailyAnalyticsPoint,
 } from '../analytics/timeRange';
+import {
+  getAnalyticsTrafficInsights,
+  type AnalyticsPeriodSnapshot,
+  type HourlyHeatmapPoint,
+} from './analyticsTrafficInsights';
 import {
   legacyTopCountries,
   normalizeGeography,
@@ -54,6 +60,8 @@ export interface AnalyticsSummary {
   conversionRate: number | null;
   conversionAttributionAvailable: boolean;
   daily: DailyAnalyticsPoint[];
+  previousPeriod: AnalyticsPeriodSnapshot;
+  hourlyHeatmap: HourlyHeatmapPoint[];
   topLinks: Array<{
     id?: string | null;
     slug: string;
@@ -128,13 +136,13 @@ export async function getAnalyticsSummary(
   env: Env,
   options: AnalyticsFilters = {}
 ): Promise<AnalyticsSummary> {
-  const range = createAnalyticsRange(
-    options.days ?? 30,
-    options.timezoneOffsetMinutes ?? 0
-  );
+  const range = createAnalyticsRange(options.days ?? 30, options.timezoneOffsetMinutes ?? 0);
   const days = range.days;
   const filter = buildVisitFilter(options, range);
   const fromVisits = `FROM visits v ${LINK_JOIN} WHERE ${filter.where}`;
+  const previousRange = createPreviousAnalyticsRange(range);
+  const previousFilter = buildVisitFilter(options, previousRange);
+  const previousFromVisits = `FROM visits v ${LINK_JOIN} WHERE ${previousFilter.where}`;
   const dailyDate = localDateSql('v.created_at', range.timezoneOffsetMinutes);
 
   const [
@@ -153,6 +161,7 @@ export async function getAnalyticsSummary(
     utmRows,
     topTargets,
     conversionStats,
+    trafficInsights,
   ] = await Promise.all([
     firstCount(env, `SELECT COUNT(*) as count ${fromVisits}`, filter.params),
     firstCount(env, `SELECT COUNT(*) as count ${fromVisits} AND v.is_bot = 1`, filter.params),
@@ -217,6 +226,14 @@ export async function getAnalyticsSummary(
     ),
     getTopTargets(env, filter),
     getConversionStats(env, options, range),
+    getAnalyticsTrafficInsights(env, {
+      currentFrom: fromVisits,
+      currentParams: filter.params,
+      previousFrom: previousFromVisits,
+      previousParams: previousFilter.params,
+      currentRange: range,
+      previousRange,
+    }),
   ]);
   const eligibleClicks = Math.max(0, totalClicks - botClicks);
   const hasConversionAttribution = conversionAttributionAvailable(options);
@@ -241,6 +258,8 @@ export async function getAnalyticsSummary(
     ),
     conversionAttributionAvailable: hasConversionAttribution,
     daily: fillDailyAnalytics(daily, range),
+    previousPeriod: trafficInsights.previousPeriod,
+    hourlyHeatmap: trafficInsights.hourlyHeatmap,
     topLinks,
     topCountries: legacyTopCountries(geography),
     geography,

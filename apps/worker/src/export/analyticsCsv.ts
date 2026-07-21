@@ -16,6 +16,12 @@ export function analyticsCsv(summary: AnalyticsSummary): string {
     ['summary', 'unmapped_country_clicks', summary.geography.unknownClicks, ''],
     ['summary', 'conversions_total', summary.conversionsTotal, ''],
     ['summary', 'conversion_rate_percent', summary.conversionRate, ''],
+    ['previous_period', 'range_start', summary.previousPeriod.rangeStart, ''],
+    ['previous_period', 'range_end', summary.previousPeriod.rangeEnd, ''],
+    ['previous_period', 'total_clicks', summary.previousPeriod.totalClicks, ''],
+    ['previous_period', 'human_clicks', summary.previousPeriod.humanClicks, ''],
+    ['previous_period', 'bot_clicks', summary.previousPeriod.botClicks, ''],
+    ['previous_period', 'unique_visitors', summary.previousPeriod.uniqueVisitors, ''],
     [
       'summary',
       'conversion_attribution_available',
@@ -29,6 +35,17 @@ export function analyticsCsv(summary: AnalyticsSummary): string {
     rows.push(['daily_human', item.date, item.humanClicks, 'clicks']);
     rows.push(['daily_bot', item.date, item.botClicks, 'clicks']);
     rows.push(['daily_unique', item.date, item.uniqueVisitors, 'visitors']);
+  }
+  for (const item of summary.previousPeriod.daily) {
+    rows.push(['previous_daily_total', item.date, item.clicks, 'clicks']);
+  }
+  for (const item of summary.hourlyHeatmap) {
+    rows.push([
+      'activity_heatmap',
+      `${item.weekday}:${String(item.hour).padStart(2, '0')}`,
+      item.clicks,
+      `human=${item.humanClicks};bot=${item.botClicks}`,
+    ]);
   }
   for (const item of summary.topLinks)
     rows.push(['top_links', item.slug, item.clicks, item.title ?? item.domain ?? '']);

@@ -13,6 +13,29 @@ _(none)_
 
 ---
 
+## [0.28.7] - 2026-07-21
+
+### Added
+
+- Added an immediately preceding equal-length period to every Analytics summary, including totals, human/bot counts, approximate unique visitors, and a zero-filled daily series.
+- Added period comparison metrics, a dashed previous-period trend overlay, and a browser-local 7 x 24 activity heatmap with human/bot detail.
+- Added previous-period and weekday/hour rows to Analytics CSV reports.
+
+### Changed
+
+- Analytics uses the same active filters and fixed browser UTC offset for current, previous, trend, and heatmap values.
+- A zero previous-period baseline is presented explicitly as new traffic instead of an infinite percentage.
+- The new insight contract uses three fixed aggregate queries and returns at most 168 heatmap cells, independent of visit volume.
+
+### Tests
+
+- Added equal-period boundary, local weekday/hour SQL, real SQLite aggregation, CSV contract, 100k-visit query-budget, responsive browser, horizontal-overflow, and accessibility coverage.
+- Verified the dashboard at 1440 x 900 and 390 x 844 against an isolated local Worker/D1 fixture; no page-level overflow or application console errors were found.
+- Passed 110 Worker, 78 deployment, 58 Admin unit, 25 Admin browser, 6 Demo API, and 4 project-site tests; Worker/Admin/Site builds and the official npm registry audit pass.
+- Redirect handlers, asynchronous visit recording, D1/KV ownership, migrations, production data, and Demo isolation are unchanged.
+
+---
+
 ## [0.28.6] - 2026-07-21
 
 ### Added

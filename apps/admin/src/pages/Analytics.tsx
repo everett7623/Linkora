@@ -34,6 +34,8 @@ import { BarList, Metric, RecentVisits } from '../components/analytics/Analytics
 import { TrafficTrendPanel } from '../components/analytics/TrafficTrendPanel';
 import { WorldTrafficMap } from '../components/analytics/WorldTrafficMap';
 import { AudienceComposition } from '../components/analytics/AudienceComposition';
+import { ActivityHeatmap } from '../components/analytics/ActivityHeatmap';
+import { PeriodComparisonPanel } from '../components/analytics/PeriodComparisonPanel';
 import { TrafficAnomalyPanel } from '../components/analytics/TrafficAnomalyPanel';
 import { Button } from '../components/ui/Button';
 import { Input, Select } from '../components/ui/Input';
@@ -410,7 +412,11 @@ export function Analytics() {
 
       <ConversionInsights summary={data} />
 
+      <PeriodComparisonPanel summary={data} />
+
       <TrafficTrendPanel summary={data} />
+
+      <ActivityHeatmap summary={data} />
 
       <WorldTrafficMap summary={data} />
 

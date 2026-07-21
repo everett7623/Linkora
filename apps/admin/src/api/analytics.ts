@@ -40,6 +40,28 @@ export interface AnalyticsSummary {
     botClicks: number;
     uniqueVisitors: number;
   }>;
+  previousPeriod: {
+    rangeStart: string;
+    rangeEnd: string;
+    totalClicks: number;
+    humanClicks: number;
+    botClicks: number;
+    uniqueVisitors: number;
+    daily: Array<{
+      date: string;
+      clicks: number;
+      humanClicks: number;
+      botClicks: number;
+      uniqueVisitors: number;
+    }>;
+  };
+  hourlyHeatmap: Array<{
+    weekday: number;
+    hour: number;
+    clicks: number;
+    humanClicks: number;
+    botClicks: number;
+  }>;
   topLinks: Array<{
     id?: string | null;
     slug: string;

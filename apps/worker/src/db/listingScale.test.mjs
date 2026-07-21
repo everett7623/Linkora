@@ -30,7 +30,9 @@ const BUDGET_MS = {
 
 const database = new DatabaseSync(':memory:');
 const migrationsUrl = new URL('../../../../migrations/', import.meta.url);
-for (const migration of readdirSync(migrationsUrl).filter((name) => name.endsWith('.sql')).sort()) {
+for (const migration of readdirSync(migrationsUrl)
+  .filter((name) => name.endsWith('.sql'))
+  .sort()) {
   database.exec(readFileSync(new URL(migration, migrationsUrl), 'utf8'));
 }
 
@@ -67,7 +69,10 @@ test('20k Links and Audit rows remain bounded, deterministic, and within budget'
   assert.equal(secondLinks.items.length, 100);
   assert.equal(firstLinks.items[0].id, 'link-19999');
   assert.equal(secondLinks.items[0].id, 'link-19899');
-  assert.equal(new Set([...firstLinks.items, ...secondLinks.items].map((item) => item.id)).size, 200);
+  assert.equal(
+    new Set([...firstLinks.items, ...secondLinks.items].map((item) => item.id)).size,
+    200
+  );
 
   const audit = await withinBudget('Audit first page', BUDGET_MS.auditPage, () =>
     listAuditPage(database, { page: 1, pageSize: 100 })
@@ -88,6 +93,8 @@ test('100k Visits analytics and oversized health history remain bounded and with
   assert.ok(analytics.topLinks.length <= 10);
   assert.ok(analytics.topCountries.length <= 10);
   assert.ok(analytics.countryDistribution.length <= 250);
+  assert.ok(analytics.previousDaily.length <= 30);
+  assert.ok(analytics.hourlyHeatmap.length <= 168);
 
   const rawHistory = Array.from({ length: PROFILE.rawHealthHistory }, (_, index) => ({
     link_id: `link-${String(index % PROFILE.links).padStart(5, '0')}`,
@@ -184,8 +191,29 @@ function analyticsSummaryQueries(db) {
        ORDER BY clicks DESC LIMIT 250`
     )
     .all();
-  const recentVisits = db
-    .prepare('SELECT * FROM visits ORDER BY created_at DESC LIMIT 20')
+  const recentVisits = db.prepare('SELECT * FROM visits ORDER BY created_at DESC LIMIT 20').all();
+  const previousTotals = db
+    .prepare(
+      `SELECT COUNT(*) AS total_clicks,
+         SUM(CASE WHEN COALESCE(is_bot, 0) = 0 THEN 1 ELSE 0 END) AS human_clicks,
+         SUM(CASE WHEN is_bot = 1 THEN 1 ELSE 0 END) AS bot_clicks,
+         COUNT(DISTINCT CASE WHEN ip_hash IS NOT NULL AND ip_hash != '' THEN ip_hash END) AS unique_visitors
+       FROM visits WHERE created_at < datetime('now', '-30 days')`
+    )
+    .get();
+  const previousDaily = db
+    .prepare(
+      `SELECT substr(created_at, 1, 10) AS date, COUNT(*) AS clicks
+       FROM visits WHERE created_at < datetime('now', '-30 days')
+       GROUP BY substr(created_at, 1, 10) ORDER BY date ASC LIMIT 30`
+    )
+    .all();
+  const hourlyHeatmap = db
+    .prepare(
+      `SELECT CAST(strftime('%w', created_at) AS INTEGER) AS weekday,
+         CAST(strftime('%H', created_at) AS INTEGER) AS hour, COUNT(*) AS clicks
+       FROM visits GROUP BY weekday, hour ORDER BY weekday, hour`
+    )
     .all();
   return {
     totalClicks,
@@ -196,6 +224,9 @@ function analyticsSummaryQueries(db) {
     topCountries,
     countryDistribution,
     recentVisits,
+    previousTotals,
+    previousDaily,
+    hourlyHeatmap,
   };
 }
 

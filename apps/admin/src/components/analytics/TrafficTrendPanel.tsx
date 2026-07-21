@@ -9,6 +9,7 @@ export function TrafficTrendPanel({ summary }: { summary: AnalyticsSummary | nul
   const [mode, setMode] = useState<TrendMode>('line');
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const items = summary?.daily ?? [];
+  const previousItems = summary?.previousPeriod?.daily ?? [];
   const selected =
     items[Math.min(selectedIndex < 0 ? items.length - 1 : selectedIndex, items.length - 1)];
   const dateFormatter = useMemo(
@@ -28,6 +29,10 @@ export function TrafficTrendPanel({ summary }: { summary: AnalyticsSummary | nul
             {t('trafficTrendTimezone', {
               offset: formatOffset(summary?.timezoneOffsetMinutes ?? 0),
             })}
+          </p>
+          <p className="mt-1 flex items-center gap-2 text-[11px] text-slate-500">
+            <span className="inline-block w-5 border-t border-dashed border-slate-400" />
+            {t('previousSeries')}
           </p>
         </div>
         <div
@@ -94,6 +99,7 @@ export function TrafficTrendPanel({ summary }: { summary: AnalyticsSummary | nul
 
       <TrafficTrendChart
         items={items}
+        previousItems={previousItems}
         mode={mode}
         selectedIndex={selectedIndex}
         locale={locale}

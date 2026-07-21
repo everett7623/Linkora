@@ -10,18 +10,33 @@ Last updated: 2026-07-21
 
 | Layer                      | Status                 | Notes                                                                                                                                                                                                   |
 | -------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Worker backend             | ✅ Demo 0.28.6 live    | The isolated Demo reports v0.28.6; production remains on v0.28.5 and redirect, D1, and KV behavior remain unchanged                                                                                     |
-| Admin frontend             | ✅ Demo 0.28.6 live    | Demo Admin initial assets report v0.28.6; production remains on v0.28.5 pending an owner-controlled upgrade                                                                                             |
+| Worker backend             | ✅ 0.28.7 verified     | Equal-period and weekday/hour aggregation pass real SQLite and 100k-visit coverage; Demo remains on v0.28.6 until the isolated rollout                                                                  |
+| Admin frontend             | ✅ 0.28.7 verified     | Period comparison, trend overlay, and activity heatmap pass responsive, accessibility, and old-response compatibility coverage                                                                          |
 | Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
-| Documentation              | ✅ 0.28.6 updated      | Analytics range semantics, visual coverage, local map provenance, release notes, progress, and task records are synchronized                                                                             |
-| Deployment                 | ✅ Demo updated        | Isolated Demo workflow `29803326084` deployed v0.28.6 and passed live parity/read-only gates; production remains intentionally on v0.28.5                                                              |
-| End-to-end test            | ✅ Full regression     | 78 deployment, 109 Worker, 58 Admin unit, 25 Admin browser scenarios, 6 Demo API, and 4 site tests pass; Worker/Admin/Site builds pass                                                                   |
+| Documentation              | ✅ 0.28.7 updated      | Comparison/heatmap contract, CSV additions, query bounds, release notes, progress, roadmap, and task records are synchronized                                                                             |
+| Deployment                 | 🟡 Demo rollout next   | Repository verification is complete; isolated Demo remains on v0.28.6 pending the v0.28.7 workflow; production remains intentionally on v0.28.5                                                        |
+| End-to-end test            | ✅ Full regression     | 78 deployment, 110 Worker, 58 Admin unit, 25 Admin browser scenarios, 6 Demo API, and 4 site tests pass; Worker/Admin/Site builds pass                                                                   |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | ✅ Demo 0.28.6 live    | Repository and Demo Worker/Admin surfaces are on v0.28.6; production remains on v0.28.5                                                                                                                  |
-| Repository update target   | ✅ 0.28.6 published   | v0.28.6 fixes local-day analytics and adds multi-series trends, world geography, and audience composition; production rollout remains owner-controlled                                                   |
+| Current version            | 🟡 Repository 0.28.7  | Repository surfaces are synchronized on v0.28.7; Demo remains on v0.28.6 until rollout and production remains on v0.28.5                                                                                |
+| Repository update target   | ✅ 0.28.7 verified    | v0.28.7 adds equal-period comparison and a local weekday/hour heatmap while keeping rollout owner-controlled                                                                                             |
 | Next planned work          | 🟡 Pre-1.0 validation | Cloudflare Access needs a complete cross-origin auth design; independent fresh-account, large-data, and assistive-technology validation remain                                                          |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.28.7 Analytics Comparison And Heatmap
+
+| Area                    | Status      | Notes                                                                                                                        |
+| ----------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Period comparison       | ✅ Complete | The selected range and immediately preceding equal-length range reuse every active filter                                   |
+| Trend context           | ✅ Complete | A dashed previous total is aligned by day position without removing current total, human, bot, or unique series             |
+| Activity heatmap        | ✅ Complete | Exactly 168 local weekday/hour buckets include total, human, and bot visits                                                  |
+| Query envelope          | ✅ Complete | Three fixed aggregate queries keep cost independent of visit volume and populated buckets                                   |
+| Compatibility           | ✅ Complete | Existing fields remain additive; older responses degrade to lightweight empty comparison views instead of a blank page      |
+| Verification            | ✅ Complete | 110 Worker, 58 Admin unit, 25 browser, 78 deployment, 6 Demo API, and 4 site tests pass; builds and npm audit pass           |
+| Redirect/data impact    | ✅ None     | Redirect handlers, asynchronous visit recording, D1/KV ownership, migrations, production data, and Demo isolation unchanged |
+| Live Demo               | 🟡 Pending  | Isolated v0.28.7 deployment starts after the verified repository commit is pushed                                            |
 
 ---
 

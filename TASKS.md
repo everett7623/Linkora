@@ -5,6 +5,18 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
+## 🚧 In Progress - Analytics Comparison And Heatmap (v0.28.7)
+
+- [x] Add an immediately preceding equal-length comparison period
+- [x] Add a browser-local 7 x 24 activity heatmap
+- [x] Add comparison metrics and a previous-period trend overlay
+- [x] Add fixed-query scale, export, responsive, and accessibility coverage
+- [ ] Complete isolated Demo deployment and verification
+
+Task record: `.codex/tasks/analytics-comparison-heatmap-2026-07-21.md`
+
+---
+
 ## ✅ Completed - Analytics Visual Depth (v0.28.6)
 
 - [x] Correct Overview and Analytics local-day boundaries

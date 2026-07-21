@@ -12,16 +12,28 @@ export type TrendMode = 'line' | 'area' | 'bar';
 export function TrafficTrendSeries({
   mode,
   points,
+  previousPoints,
   selectedIndex,
 }: {
   mode: TrendMode;
   points: ChartPoint[];
+  previousPoints: ChartPoint[];
   selectedIndex: number;
 }) {
   const barWidth = Math.max(1, Math.min(18, plotWidth() / Math.max(points.length, 1) - 2));
   const selected = points[Math.min(selectedIndex, points.length - 1)];
   return (
     <g>
+      {previousPoints.length > 0 && (
+        <path
+          d={smoothPath(previousPoints, 'clicksY')}
+          fill="none"
+          stroke="rgb(148 163 184)"
+          strokeWidth="2"
+          strokeDasharray="7 6"
+          opacity="0.7"
+        />
+      )}
       {mode === 'area' && <path d={areaPath(points)} fill="rgb(59 130 246)" fillOpacity="0.16" />}
       {mode === 'bar' &&
         points.map((point) => (

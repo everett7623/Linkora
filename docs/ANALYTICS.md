@@ -65,6 +65,9 @@ The Analytics page currently shows:
 - Conversion Overview with eligible human clicks, conversion event count, Event Rate, goal breakdown, and currency-separated recorded values
 - Browser-local daily trend with total, human, bot, and approximate unique-visitor series
 - Line, area, and stacked-bar trend views
+- Selected-range metrics compared with the immediately preceding equal-length period
+- Dashed previous-period total overlaid on the current daily trend
+- Browser-local weekday/hour activity heatmap with human and bot detail
 - Local interactive world traffic map with the complete bounded country distribution
 - Device donut and browser composition charts
 - Top links
@@ -84,7 +87,13 @@ The Analytics and Link Analytics pages refresh every 10 seconds by default. Oper
 
 Overview and Analytics define "today" using the browser's current fixed UTC offset. The Admin sends `timezone_offset` in minutes east of UTC (for example, `480` for UTC+08:00). The Worker returns `timezoneOffsetMinutes`, `rangeStart`, and `rangeEnd`, fills every local date in the selected 1-365 day range, and keeps UTC as the storage format. API clients that omit the parameter receive the UTC boundary. A fixed offset is used for the selected range; it does not model a daylight-saving transition inside a historical range.
 
-The `geography` response contains at most 250 grouped ISO 3166-1 alpha-2 country rows plus explicit `mappedClicks` and `unknownClicks` totals. The map geometry ships with the Admin bundle and never calls a third-party map service. `topCountries` remains available for compatible clients and CSV exports now include the full country distribution and all daily series.
+`previousPeriod` covers the immediately preceding equal-length range and reuses every active filter. It contains explicit UTC boundaries, total/human/bot counts, approximate unique visitors, and a zero-filled daily series aligned by position with the current range. When both periods are zero the comparison is steady; when only the previous period is zero the Admin displays new traffic instead of an infinite percentage.
+
+`hourlyHeatmap` always contains 168 local-time cells. `weekday` uses SQLite's stable `0` (Sunday) through `6` (Saturday) numbering, and `hour` uses `0` through `23`. Each cell contains total, human, and bot visits. Aggregation uses the same fixed UTC offset as the daily range and therefore has the same documented daylight-saving limitation.
+
+The `geography` response contains at most 250 grouped ISO 3166-1 alpha-2 country rows plus explicit `mappedClicks` and `unknownClicks` totals. The map geometry ships with the Admin bundle and never calls a third-party map service. `topCountries` remains available for compatible clients. CSV exports include the full country distribution, current and previous daily series, previous-period totals, and weekday/hour activity cells.
+
+Period comparison and heatmap enrichment use three fixed aggregate queries: one previous summary, one previous daily grouping, and one current weekday/hour grouping. The query count does not grow with visits, days, or populated heatmap buckets.
 
 Event Rate is calculated as conversion events divided by eligible human clicks. Classified bot clicks are excluded from the denominator. It is an event-performance metric, not a session/user conversion rate, and it can exceed 100% when one click creates multiple events. Conversion events do not currently store visit-level country, device, browser, or referrer attribution, so applying any of those filters makes conversion events, Event Rate, goal breakdowns, and recorded values unavailable rather than combining filtered clicks with unfiltered events.
 

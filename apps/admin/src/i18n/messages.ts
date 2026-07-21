@@ -9,6 +9,7 @@ import { linkViewMessages } from './linkViewMessages.ts';
 import { demoAccessLayoutMessages } from './demoAccessLayoutMessages.ts';
 import { setupStatusMessages } from './setupStatusMessages.ts';
 import { analyticsVisualMessages } from './analyticsVisualMessages.ts';
+import { analyticsComparisonMessages } from './analyticsComparisonMessages.ts';
 
 export const messages = {
   en: {
@@ -17,6 +18,7 @@ export const messages = {
     ...operationsMessages.en,
     ...observabilityMessages.en,
     ...analyticsVisualMessages.en,
+    ...analyticsComparisonMessages.en,
     ...settingsPageMessages.en,
     ...bulkUtmMessages.en,
     ...updateMessages.en,
@@ -155,6 +157,7 @@ export const messages = {
     ...operationsMessages['zh-CN'],
     ...observabilityMessages['zh-CN'],
     ...analyticsVisualMessages['zh-CN'],
+    ...analyticsComparisonMessages['zh-CN'],
     ...settingsPageMessages['zh-CN'],
     ...bulkUtmMessages['zh-CN'],
     ...updateMessages['zh-CN'],

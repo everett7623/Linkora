@@ -15,6 +15,7 @@ export type { TrendMode } from './TrafficTrendSeries';
 
 interface TrafficTrendChartProps {
   items: TrendPoint[];
+  previousItems: TrendPoint[];
   mode: TrendMode;
   selectedIndex: number;
   locale: string;
@@ -25,6 +26,7 @@ interface TrafficTrendChartProps {
 
 export function TrafficTrendChart({
   items,
+  previousItems,
   mode,
   selectedIndex,
   locale,
@@ -32,8 +34,13 @@ export function TrafficTrendChart({
   formatter,
   onSelectIndex,
 }: TrafficTrendChartProps) {
-  const max = Math.max(...items.map((item) => item.clicks), 1);
+  const max = Math.max(
+    ...items.map((item) => item.clicks),
+    ...previousItems.map((item) => item.clicks),
+    1
+  );
   const points = useMemo(() => chartPoints(items, max), [items, max]);
+  const previousPoints = useMemo(() => chartPoints(previousItems, max), [previousItems, max]);
 
   const selectAtPointer = (event: PointerEvent<SVGSVGElement>) => {
     if (items.length === 0) return;
@@ -58,6 +65,7 @@ export function TrafficTrendChart({
           <TrafficTrendSeries
             mode={mode}
             points={points}
+            previousPoints={previousPoints}
             selectedIndex={selectedIndex < 0 ? items.length - 1 : selectedIndex}
           />
         )}

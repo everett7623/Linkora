@@ -54,11 +54,31 @@ export function createAnalyticsRange(
   };
 }
 
+export function createPreviousAnalyticsRange(range: AnalyticsRange): AnalyticsRange {
+  const periodMs = range.days * DAY_MS;
+  return {
+    ...range,
+    start: new Date(Date.parse(range.start) - periodMs).toISOString(),
+    end: range.start,
+    dates: range.dates.map((date) =>
+      new Date(Date.parse(`${date}T00:00:00.000Z`) - periodMs).toISOString().slice(0, 10)
+    ),
+  };
+}
+
 export function localDateSql(column: string, offsetMinutes: number): string {
   const offset = normalizeTimezoneOffset(offsetMinutes);
   if (offset === 0) return `substr(${column}, 1, 10)`;
   const modifier = `${offset > 0 ? '+' : ''}${offset} minutes`;
   return `date(${column}, '${modifier}')`;
+}
+
+export function localHourSql(column: string, offsetMinutes: number): string {
+  return localPartSql(column, '%H', offsetMinutes);
+}
+
+export function localWeekdaySql(column: string, offsetMinutes: number): string {
+  return localPartSql(column, '%w', offsetMinutes);
 }
 
 export function fillDailyAnalytics(
@@ -87,4 +107,11 @@ function normalizeTimezoneOffset(value: number): number {
     return 0;
   }
   return value;
+}
+
+function localPartSql(column: string, format: '%H' | '%w', offsetMinutes: number): string {
+  const offset = normalizeTimezoneOffset(offsetMinutes);
+  if (offset === 0) return `CAST(strftime('${format}', ${column}) AS INTEGER)`;
+  const modifier = `${offset > 0 ? '+' : ''}${offset} minutes`;
+  return `CAST(strftime('${format}', ${column}, '${modifier}') AS INTEGER)`;
 }
