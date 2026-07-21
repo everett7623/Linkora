@@ -107,7 +107,7 @@ LINKETRY_D1_DATABASE_NAME=linketry
 LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.28.8
+LINKETRY_APPROVED_RELEASE=0.29.0
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<output-of-npm-run-deploy:migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true
@@ -129,7 +129,7 @@ If a Worker variable is missing, the workflow skips Worker deploy rather than re
 
 ## Official Demo Deployment
 
-The official Demo never uses the production `Deploy Linketry` workflow. Its manual-only `Deploy Isolated Linketry Demo` workflow reads credentials and variables from the protected `linketry-demo` GitHub environment, requires an exact release/commit/migration approval, and rejects every protected production account, resource, and hostname before a Cloudflare write.
+The official Demo never uses the production `Deploy Linketry` workflow. Its separate `Deploy Isolated Linketry Demo` workflow follows pushes to `main` and also supports a confirmation-gated manual run. It reads credentials and variables only from the protected `linketry-demo` GitHub environment and rejects every protected production account, resource, and hostname before a Cloudflare write. Automatic `main` synchronization binds the release, commit, and non-destructive migration digest to the pushed commit; manual runs retain exact release/commit/migration approvals.
 
 The workflow expects isolated D1, KV, Worker, Admin Pages, token, and domain targets to exist already. After its fail-closed safety gate passes, it can create the explicitly named `linketry-demo-*` API Pages gateway, optional R2 buckets, and optional Queue. The API gateway is a Pages Function in the Demo account with a Service Binding to the isolated Worker; it does not bind D1, KV, R2, or Queue directly. The workflow supports the account's automatic `workers.dev` origin without treating it as a custom Worker domain, builds the same production Admin route tree with a public preview-code entry and read-only mode, rejects every mutating Admin API request, suppresses real-visitor analytics writes, applies a native per-client Worker rate limit, and idempotently refreshes synthetic D1/R2 samples plus disabled advanced-feature settings after migrations. After Pages deployment it verifies both the API gateway and the complete Admin/Worker parity contract. It can register the reviewed Pages custom domain but never edits DNS, so the `demoapi` CNAME remains an explicit owner action. See [Deployment Preflight](DEPLOYMENT_PREFLIGHT.md#official-demo) for the complete environment contract.
 

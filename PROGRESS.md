@@ -10,18 +10,31 @@ Last updated: 2026-07-21
 
 | Layer                      | Status                 | Notes                                                                                                                                                                                                   |
 | -------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Worker backend             | ✅ 0.28.8 unchanged    | Release metadata is synchronized; redirect, API, D1/KV, and analytics runtime behavior are unchanged                                                                                                    |
-| Admin frontend             | ✅ 0.28.8 verified     | Online upgrade waits for Worker plus Admin document/asset readiness and recovers polling after browser suspension                                                                                       |
+| Worker backend             | ✅ Runtime unchanged   | Demo runs v0.28.8 and production remains v0.28.7; redirect, API, analytics, D1, and KV behavior are unchanged                                                                                             |
+| Admin frontend             | ✅ 0.29.0 verified     | Worker plus Admin asset readiness is retained with faster polling, immediate feedback, and persistent completion notice                                                                                  |
 | Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
-| Documentation              | ✅ 0.28.8 updated      | Production failure evidence, combined readiness contract, release notes, progress, roadmap, and task records are synchronized                                                                            |
-| Deployment                 | 🟡 Production pending  | Isolated Demo runs v0.28.8 through workflow `29817579157`; production remains v0.28.7 behind its owner-controlled release gate                                                                           |
-| End-to-end test            | ✅ Full regression     | 110 Worker, 78 deployment, 60 Admin unit, 25 Admin browser, 6 Demo API, and 4 site tests pass; Worker type-check and Admin/Site builds pass                                                             |
+| Documentation              | ✅ 0.29.0 updated      | Demo synchronization, online-upgrade feedback, Analytics palette, release notes, progress, and task records are synchronized                                                                             |
+| Deployment                 | 🟡 Demo sync pending   | Demo runs v0.28.8 and will follow the v0.29.0 `main` push; production remains v0.28.7 behind its owner-controlled release gate                                                                            |
+| End-to-end test            | ✅ Full regression     | 79 deployment, 110 Worker, 64 Admin unit, 25 Admin browser, 6 Demo API, and 4 site tests pass; Worker type-check, Admin/Site builds, and npm audit pass                                                    |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | 🟡 0.28.8 staged       | Repository and isolated Demo run v0.28.8; production remains v0.28.7 pending owner approval                                                                                                              |
-| Repository update target   | ✅ 0.28.8 verified     | v0.28.8 fixes stale online-upgrade state without changing redirect or data behavior                                                                                                                       |
+| Current version            | 🟡 0.29.0 staged       | Repository targets v0.29.0; isolated Demo is v0.28.8 and production is v0.28.7 pending their separate deployment paths                                                                                   |
+| Repository update target   | ✅ 0.29.0 ready        | v0.29.0 keeps Demo on reviewed `main`, accelerates owner-controlled upgrades, and expands global distribution colors; production remains owner-controlled                                                |
 | Next planned work          | 🟡 Pre-1.0 validation | Cloudflare Access needs a complete cross-origin auth design; independent fresh-account, large-data, and assistive-technology validation remain                                                          |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.29.0 Demo Sync, Upgrade Feedback, And Global Distribution
+
+| Area                       | Status         | Notes                                                                                                                          |
+| -------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Official Demo              | ✅ Implemented | Pushes to `main` enter only the isolated Demo workflow; manual confirmation and production-overlap rejection remain             |
+| Self-hosted upgrades       | ✅ Implemented | Each instance dispatches its configured repository/branch; workflow polling is 2s and combined release-readiness polling is 1s  |
+| Completion feedback        | ✅ Implemented | Worker/Admin dual readiness, accessible result notifications, earliest reload, and persistent post-refresh confirmation coexist |
+| Global access distribution | ✅ Implemented | World traffic uses ten intensity colors; per-link countries use ten categorical colors; Demo seed covers ten countries          |
+| Full verification          | ✅ Complete    | 79 deployment, 110 Worker, 64 Admin unit, 25 browser, 6 Demo API, and 4 site tests plus builds, type-check, overflow, and npm audit pass |
+| Redirect/data impact       | ✅ None        | Redirect logic, analytics ingestion, D1/KV ownership, migrations, production data, and isolation boundaries are unchanged        |
 
 ---
 

@@ -136,13 +136,14 @@ export function rememberSuccessfulDeployment(
   now = Date.now()
 ): UpgradeFeedback | null {
   const normalized = normalizeVersion(targetVersion);
-  if (!storage || !normalized) return null;
+  if (!normalized) return null;
   const feedback = {
     targetVersion: normalized,
     createdAt: now,
     followUpRefreshScheduled: false,
   };
-  return storeFeedback(storage, feedback) ? feedback : null;
+  if (storage) storeFeedback(storage, feedback);
+  return feedback;
 }
 
 export function markFollowUpRefreshScheduled(

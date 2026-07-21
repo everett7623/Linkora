@@ -28,7 +28,7 @@ export const updateMessages = {
     upgradeConfigurationInvalid: 'Invalid upgrade configuration',
     upgradeCapabilityUnavailable: 'Upgrade status unavailable',
     oneClickUpgradeReadyDescription:
-      'The protected Worker upgrade capability is configured and ready.',
+      'This instance can deploy its own configured repository and branch to its protected production environment.',
     oneClickUpgradeSecretRequired:
       'Automatic upgrade is disabled. Add the LINKETRY_GITHUB_UPDATE_TOKEN repository secret to enable it; the protected GitHub Actions workflow remains available.',
     oneClickUpgradeInvalidDescription:
@@ -39,7 +39,7 @@ export const updateMessages = {
     checkingUpgrade: 'Checking upgrade',
     confirmUpgradeTitle: 'Confirm online upgrade',
     confirmUpgradeMessage:
-      'Deploy Linketry {version} now? The protected backup, migration, target, and release gates must all pass.',
+      'Deploy Linketry {version} from this instance\'s configured repository and branch? The protected backup, migration, target, and release gates must all pass.',
     confirmUpgrade: 'Confirm upgrade',
     upgradeStarting: 'Starting the protected deployment...',
     upgradeQueued: 'Deployment is queued in GitHub Actions...',
@@ -90,7 +90,7 @@ export const updateMessages = {
     manualDeploymentRequired: '手动部署',
     upgradeConfigurationInvalid: '升级配置无效',
     upgradeCapabilityUnavailable: '无法读取升级状态',
-    oneClickUpgradeReadyDescription: '受保护的 Worker 在线升级能力已配置并可用。',
+    oneClickUpgradeReadyDescription: '此实例可将自己配置的仓库和分支部署到受保护的生产环境。',
     oneClickUpgradeSecretRequired:
       '自动升级尚未启用。添加 LINKETRY_GITHUB_UPDATE_TOKEN 仓库 Secret 后即可启用；受保护的 GitHub Actions 工作流仍可使用。',
     oneClickUpgradeInvalidDescription: '更新仓库或分支配置无效，请先检查部署变量再执行升级。',
@@ -100,7 +100,7 @@ export const updateMessages = {
     checkingUpgrade: '检查升级能力',
     confirmUpgradeTitle: '确认在线升级',
     confirmUpgradeMessage:
-      '现在部署 Linketry {version}？备份、迁移、目标和发布安全门禁必须全部通过。',
+      '现在从此实例配置的仓库和分支部署 Linketry {version}？备份、迁移、目标和发布安全门禁必须全部通过。',
     confirmUpgrade: '确认升级',
     upgradeStarting: '正在启动受保护的部署...',
     upgradeQueued: '部署已进入 GitHub Actions 队列...',

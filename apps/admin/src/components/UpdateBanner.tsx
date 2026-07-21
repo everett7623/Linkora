@@ -16,6 +16,7 @@ import { waitForOnlineUpgrade, type OnlineUpgradePhase } from '../utils/onlineUp
 import { UpgradeConfirmDialog } from './UpgradeConfirmDialog';
 import { UpgradeRefreshNotice } from './UpgradeRefreshNotice.tsx';
 import { UpdateBannerActions } from './UpdateBannerActions';
+import { useToast } from './ui/Toast';
 
 type BannerPhase = 'idle' | 'starting' | OnlineUpgradePhase | 'success' | 'failed';
 
@@ -27,6 +28,7 @@ export function UpdateBanner({
   onDismiss: () => void;
 }) {
   const { t } = useLocale();
+  const toast = useToast();
   const [capability, setCapability] = useState<OnlineUpgradeCapability | null | undefined>();
   const [phase, setPhase] = useState<BannerPhase>('idle');
   const [runUrl, setRunUrl] = useState<string | null>(null);
@@ -120,21 +122,27 @@ export function UpdateBanner({
       if (result.outcome === 'success') {
         upgradeFeedback.rememberSuccessfulDeployment(update.latestVersion);
         setPhase('success');
+        toast.success(t('upgradeSucceeded'));
         upgradeFeedback.scheduleReload(SUCCESS_RELOAD_DELAY_MS);
         return;
       }
       setPhase('failed');
-      setError(
+      const failureMessage =
         result.outcome === 'timeout'
           ? t('upgradeTimeout')
           : result.outcome === 'verification_failed'
             ? t('upgradeVerificationFailed')
-            : t('upgradeFailed', { conclusion: result.conclusion ?? 'unknown' })
-      );
+            : t('upgradeFailed', { conclusion: result.conclusion ?? 'unknown' });
+      setError(failureMessage);
+      if (result.outcome === 'verification_failed') toast.warning(failureMessage);
+      else toast.error(failureMessage);
     } catch (upgradeError) {
       if (!activeRef.current) return;
       setPhase('failed');
-      setError(upgradeError instanceof Error ? upgradeError.message : t('upgradeFailedGeneric'));
+      const failureMessage =
+        upgradeError instanceof Error ? upgradeError.message : t('upgradeFailedGeneric');
+      setError(failureMessage);
+      toast.error(failureMessage);
     }
   };
 

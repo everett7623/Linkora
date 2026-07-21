@@ -18,9 +18,11 @@ interface WaitOptions {
   onPhase?: (phase: OnlineUpgradePhase) => void;
   shouldContinue?: () => boolean;
   sleep?: (milliseconds: number) => Promise<void>;
-  pollIntervalMs?: number;
+  runPollIntervalMs?: number;
+  versionPollIntervalMs?: number;
   maxRunPolls?: number;
   maxVersionPolls?: number;
+  maxRuntimeOnlyPolls?: number;
 }
 
 const ACTIVE_QUEUED_STATUSES = new Set(['queued', 'requested', 'waiting', 'pending']);
@@ -28,16 +30,18 @@ const ACTIVE_QUEUED_STATUSES = new Set(['queued', 'requested', 'waiting', 'pendi
 export async function waitForOnlineUpgrade(options: WaitOptions): Promise<OnlineUpgradeWaitResult> {
   const shouldContinue = options.shouldContinue ?? (() => true);
   const sleep = options.sleep ?? delay;
-  const interval = options.pollIntervalMs ?? 5_000;
-  const maxRunPolls = options.maxRunPolls ?? 180;
-  const maxVersionPolls = options.maxVersionPolls ?? 24;
+  const runInterval = options.runPollIntervalMs ?? 2_000;
+  const versionInterval = options.versionPollIntervalMs ?? 1_000;
+  const maxRunPolls = options.maxRunPolls ?? 300;
+  const maxVersionPolls = options.maxVersionPolls ?? 90;
+  const maxRuntimeOnlyPolls = options.maxRuntimeOnlyPolls ?? 600;
 
   if (options.runId === null) {
     options.onPhase?.('running');
     return pollReleaseReadiness(
       options,
-      maxRunPolls,
-      interval,
+      maxRuntimeOnlyPolls,
+      versionInterval,
       sleep,
       shouldContinue,
       'timeout',
@@ -59,7 +63,7 @@ export async function waitForOnlineUpgrade(options: WaitOptions): Promise<Online
         return pollReleaseReadiness(
           options,
           maxVersionPolls,
-          interval,
+          versionInterval,
           sleep,
           shouldContinue,
           'verification_failed',
@@ -71,7 +75,7 @@ export async function waitForOnlineUpgrade(options: WaitOptions): Promise<Online
       consecutiveErrors += 1;
       if (consecutiveErrors >= 5) return { outcome: 'failed' };
     }
-    await sleep(interval);
+    await sleep(runInterval);
   }
   return { outcome: 'timeout' };
 }

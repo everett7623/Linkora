@@ -21,6 +21,9 @@ test('Demo seed is deterministic, synthetic, and uses the isolated origin', () =
   assert.match(sql, /linketry-demo-backup-latest/);
   assert.match(sql, /health_check_history/);
   assert.match(sql, /analytics_report_records/);
+  for (const country of ['US', 'DE', 'SG', 'GB', 'CA', 'JP', 'AU', 'FR', 'BR', 'IN']) {
+    assert.match(sql, new RegExp(`'${country}'`));
+  }
   assert.match(sql, /ON CONFLICT\(id\) DO UPDATE/);
   assert.match(sql, /ON CONFLICT\(key\) DO UPDATE/);
   assert.doesNotMatch(sql, /go\.uukk\.de|admin\.uukk\.de/);

@@ -90,18 +90,14 @@ test('Analytics supports manual refresh and persistent near-real-time controls',
             { weekday: 5, hour: 20, clicks: 8, humanClicks: 7, botClicks: 1 },
           ],
           topLinks: [],
-          topCountries: [
-            { country: 'US', clicks: 32 },
-            { country: 'DE', clicks: 18 },
-            { country: 'SG', clicks: 12 },
-          ],
+          topCountries: ['US', 'DE', 'SG', 'GB', 'CA', 'JP', 'AU', 'FR', 'BR', 'IN'].map(
+            (country, index) => ({ country, clicks: 20 - index })
+          ),
           geography: {
-            countries: [
-              { country: 'US', clicks: 32 },
-              { country: 'DE', clicks: 18 },
-              { country: 'SG', clicks: 12 },
-            ],
-            mappedClicks: 62,
+            countries: ['US', 'DE', 'SG', 'GB', 'CA', 'JP', 'AU', 'FR', 'BR', 'IN'].map(
+              (country, index) => ({ country, clicks: 20 - index })
+            ),
+            mappedClicks: 155,
             unknownClicks: 2,
           },
           topReferrers: [],
@@ -211,6 +207,12 @@ test('Analytics supports manual refresh and persistent near-real-time controls',
     conversionInsights.getByTestId('conversion-values').getByText('$54.00', { exact: true })
   ).toBeVisible();
   await expect(conversionInsights.getByText('signup', { exact: true })).toBeVisible();
+  const distributionColors = await page
+    .getByTestId('world-traffic-map')
+    .getByTestId('traffic-intensity-swatch')
+    .evaluateAll((swatches) => swatches.map((swatch) => getComputedStyle(swatch).backgroundColor));
+  expect(distributionColors).toHaveLength(10);
+  expect(new Set(distributionColors).size).toBe(10);
   await expectNoSeriousAccessibilityViolations(page);
   const requestsBeforeManualRefresh = analyticsRequests;
 

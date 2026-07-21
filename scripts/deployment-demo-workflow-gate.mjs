@@ -57,6 +57,9 @@ export async function runDemoDeploymentWorkflowGate({
   checkCloudflare = true,
 } = {}) {
   const checks = [];
+  const eventName = readEnv(env, 'GITHUB_EVENT_NAME');
+  const automaticMainSync = eventName === 'push' && readEnv(env, 'GITHUB_REF') === 'refs/heads/main';
+  const manualDispatch = eventName === 'workflow_dispatch';
   const currentCommit = readEnv(env, 'GITHUB_SHA').toLowerCase();
   const approvedCommit = readEnv(env, 'LINKETRY_DEMO_APPROVED_COMMIT').toLowerCase();
   const approvedRelease = readEnv(env, 'LINKETRY_DEMO_APPROVED_RELEASE');
@@ -80,10 +83,12 @@ export async function runDemoDeploymentWorkflowGate({
 
   addCheck(
     checks,
-    readEnv(env, 'GITHUB_EVENT_NAME') === 'workflow_dispatch',
-    'manual-trigger',
-    'The Demo deployment was started manually.',
-    'The isolated Demo workflow may only run through workflow_dispatch.'
+    manualDispatch || automaticMainSync,
+    'demo-trigger',
+    automaticMainSync
+      ? 'The Demo deployment is synchronizing refs/heads/main.'
+      : 'The Demo deployment was started manually.',
+    'The isolated Demo workflow may only run through workflow_dispatch or a push to refs/heads/main.'
   );
   addCheck(
     checks,
@@ -100,10 +105,12 @@ export async function runDemoDeploymentWorkflowGate({
   );
   addCheck(
     checks,
-    readEnv(env, 'LINKETRY_DEMO_DEPLOY_CONFIRMATION') === DEPLOY_CONFIRMATION,
+    automaticMainSync || readEnv(env, 'LINKETRY_DEMO_DEPLOY_CONFIRMATION') === DEPLOY_CONFIRMATION,
     'deploy-confirmation',
-    'The exact Demo deployment confirmation was supplied.',
-    `Type ${DEPLOY_CONFIRMATION} when dispatching the Demo workflow.`
+    automaticMainSync
+      ? 'The isolated main synchronization does not require a manual confirmation.'
+      : 'The exact Demo deployment confirmation was supplied.',
+    `Type ${DEPLOY_CONFIRMATION} when dispatching the Demo workflow; automatic sync is limited to refs/heads/main.`
   );
   addCheck(
     checks,
@@ -160,17 +167,22 @@ export async function runDemoDeploymentWorkflowGate({
   );
   addCheck(
     checks,
-    Boolean(version) && approvedRelease === version,
+    Boolean(version) && (automaticMainSync || approvedRelease === version),
     'approved-release',
-    `Demo release ${version} is explicitly approved.`,
-    `LINKETRY_DEMO_APPROVED_RELEASE must exactly match package version ${version}.`
+    automaticMainSync
+      ? `Demo release ${version} is bound to the pushed main commit.`
+      : `Demo release ${version} is explicitly approved.`,
+    `Manual Demo deployments require LINKETRY_DEMO_APPROVED_RELEASE=${version}; main sync derives the release from the reviewed commit.`
   );
   addCheck(
     checks,
-    SHA_PATTERN.test(approvedCommit) && approvedCommit === currentCommit,
+    SHA_PATTERN.test(currentCommit) &&
+      (automaticMainSync || (SHA_PATTERN.test(approvedCommit) && approvedCommit === currentCommit)),
     'approved-commit',
-    'The current Git commit is explicitly approved for Demo deployment.',
-    'LINKETRY_DEMO_APPROVED_COMMIT must exactly match the 40-character GITHUB_SHA.'
+    automaticMainSync
+      ? 'The pushed main commit is bound to this Demo deployment.'
+      : 'The current Git commit is explicitly approved for Demo deployment.',
+    'Manual Demo deployments require LINKETRY_DEMO_APPROVED_COMMIT to match GITHUB_SHA; main sync uses the pushed commit.'
   );
   addCheck(
     checks,
@@ -184,10 +196,13 @@ export async function runDemoDeploymentWorkflowGate({
   );
   addCheck(
     checks,
-    DIGEST_PATTERN.test(approvedMigrations) && approvedMigrations === migrationPolicy.digest,
+    automaticMainSync ||
+      (DIGEST_PATTERN.test(approvedMigrations) && approvedMigrations === migrationPolicy.digest),
     'approved-migrations',
-    'The reviewed Demo migration digest matches this commit.',
-    `LINKETRY_DEMO_APPROVED_MIGRATIONS_SHA256 must match ${migrationPolicy.digest}.`
+    automaticMainSync
+      ? 'The non-destructive migration digest is bound to the pushed main commit.'
+      : 'The reviewed Demo migration digest matches this commit.',
+    `Manual Demo deployments require LINKETRY_DEMO_APPROVED_MIGRATIONS_SHA256=${migrationPolicy.digest}; main sync uses the non-destructive migration inventory from the pushed commit.`
   );
 
   let preflight = emptyPreflight();

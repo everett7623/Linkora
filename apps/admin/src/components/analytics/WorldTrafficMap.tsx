@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import type { AnalyticsSummary } from '../../api/analytics';
 import { WORLD_MAP_REGIONS, WORLD_MAP_VIEW_BOX } from '../../assets/worldMapRegions';
 import { useLocale } from '../../contexts/LocaleContext';
+import { worldTrafficColor } from '../../utils/analyticsPalette';
 
 export function WorldTrafficMap({ summary }: { summary: AnalyticsSummary | null }) {
   const { locale, t } = useLocale();
@@ -75,7 +76,7 @@ export function WorldTrafficMap({ summary }: { summary: AnalyticsSummary | null 
                   <path
                     key={region.code}
                     d={region.path}
-                    fill={mapColor(clicks, max)}
+                    fill={worldTrafficColor(clicks, max)}
                     stroke={active ? 'rgb(226 232 240)' : 'rgb(51 65 85)'}
                     strokeWidth={active ? 1.5 : 0.7}
                     vectorEffect="non-scaling-stroke"
@@ -105,11 +106,12 @@ export function WorldTrafficMap({ summary }: { summary: AnalyticsSummary | null 
           </div>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 pt-3 text-xs text-slate-500">
             <div className="flex items-center gap-3" role="img" aria-label={t('trafficIntensity')}>
-              {[0.2, 0.45, 0.7, 1].map((ratio) => (
+              {Array.from({ length: 10 }, (_, index) => (index + 1) / 10).map((ratio) => (
                 <span
                   key={ratio}
+                  data-testid="traffic-intensity-swatch"
                   className="h-2.5 w-6 rounded-sm"
-                  style={{ backgroundColor: mapColor(max * ratio, max) }}
+                  style={{ backgroundColor: worldTrafficColor(max * ratio, max) }}
                 />
               ))}
             </div>
@@ -150,7 +152,7 @@ export function WorldTrafficMap({ summary }: { summary: AnalyticsSummary | null 
                         className="block h-full rounded-full"
                         style={{
                           width: `${Math.max(4, (item.clicks / max) * 100)}%`,
-                          backgroundColor: mapColor(item.clicks, max),
+                          backgroundColor: worldTrafficColor(item.clicks, max),
                         }}
                       />
                     </span>
@@ -163,13 +165,4 @@ export function WorldTrafficMap({ summary }: { summary: AnalyticsSummary | null 
       </div>
     </section>
   );
-}
-
-function mapColor(value: number, max: number): string {
-  if (value <= 0) return 'rgb(30 41 59)';
-  const ratio = value / Math.max(max, 1);
-  if (ratio < 0.25) return 'rgb(15 118 110)';
-  if (ratio < 0.5) return 'rgb(8 145 178)';
-  if (ratio < 0.75) return 'rgb(37 99 235)';
-  return 'rgb(245 158 11)';
 }

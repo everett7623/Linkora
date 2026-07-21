@@ -13,6 +13,7 @@ const run = (status: string, conclusion: string | null = null) => ({
 
 test('upgrade polling waits for a successful workflow and matching runtime version', async () => {
   const phases: string[] = [];
+  const delays: number[] = [];
   const runs = [run('queued'), run('in_progress'), run('completed', 'success')];
   const versions = ['0.25.9', '0.25.10'];
   const result = await waitForOnlineUpgrade({
@@ -22,11 +23,14 @@ test('upgrade polling waits for a successful workflow and matching runtime versi
     readRuntimeVersion: async () => versions.shift()!,
     readAdminReady: async () => true,
     onPhase: (phase) => phases.push(phase),
-    sleep,
+    sleep: async (milliseconds) => {
+      delays.push(milliseconds);
+    },
   });
 
   assert.deepEqual(result, { outcome: 'success' });
   assert.deepEqual(phases, ['queued', 'running', 'finalizing']);
+  assert.deepEqual(delays, [2_000, 2_000, 1_000]);
 });
 
 test('upgrade polling reports a failed workflow without claiming a new version', async () => {
@@ -83,7 +87,7 @@ test('upgrade polling without a run ID does not claim the deployment succeeded',
     readRuntimeVersion: async () => '0.25.4',
     readAdminReady: async () => true,
     sleep,
-    maxRunPolls: 2,
+    maxRuntimeOnlyPolls: 2,
   });
   assert.deepEqual(result, { outcome: 'timeout' });
 });
@@ -112,7 +116,7 @@ test('upgrade polling without a run ID waits for both Worker and Admin readiness
     readAdminReady: async () => adminReadiness.shift() ?? true,
     onPhase: (phase) => phases.push(phase),
     sleep,
-    maxRunPolls: 2,
+    maxRuntimeOnlyPolls: 2,
   });
 
   assert.deepEqual(result, { outcome: 'success' });
@@ -128,7 +132,7 @@ test('upgrade polling does not complete when only the Admin release is ready', a
     readRuntimeVersion: async () => runtimeVersions.shift() ?? '0.25.10',
     readAdminReady: async () => true,
     sleep,
-    maxRunPolls: 2,
+    maxRuntimeOnlyPolls: 2,
   });
 
   assert.deepEqual(result, { outcome: 'success' });

@@ -166,7 +166,7 @@ The dry-run prints the exact confirmation phrase required by `--apply`. After pr
 npm run deploy:preflight -- --track fresh --check-cloudflare
 ```
 
-See [docs/DEPLOYMENT_PREFLIGHT.md](docs/DEPLOYMENT_PREFLIGHT.md) for required gates, safe output behavior, and the isolated manual Demo workflow contract.
+See [docs/DEPLOYMENT_PREFLIGHT.md](docs/DEPLOYMENT_PREFLIGHT.md) for required gates, safe output behavior, and the isolated Demo synchronization contract.
 
 GitHub Actions production runs are additionally bound to an approved release version, exact commit, migration digest, and fresh-or-upgrade safety state before any Cloudflare write. Generate the reviewed digest with `npm run deploy:migration-digest`.
 

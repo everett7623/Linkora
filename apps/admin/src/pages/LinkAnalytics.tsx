@@ -285,7 +285,8 @@ export function LinkAnalytics() {
           }))}
         />
         <BarList
-          title={t('countries')}
+          title={t('globalAccessDistribution')}
+          palette="global"
           items={(summary?.topCountries ?? []).map((item) => ({
             label: item.country,
             value: item.clicks,

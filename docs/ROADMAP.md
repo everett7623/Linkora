@@ -270,6 +270,18 @@ Status: complete in the repository; rollout remains owner-controlled.
 - Admin readiness requests are uncached, bounded by an eight-second timeout, and never include Admin or GitHub credentials
 - Redirect handlers, deployment permissions, D1/KV ownership, migrations, analytics, production data, and Demo isolation are unchanged
 
+## 0.29.0: Demo Sync, Upgrade Feedback, And Global Distribution
+
+Status: complete in the repository; the isolated Demo synchronizes after the `main` push while production remains owner-controlled.
+
+- The official isolated Demo follows reviewed pushes to `main` through its own workflow and credentials
+- Manual Demo runs retain exact release, commit, migration-digest, and confirmation approvals
+- Self-hosted production instances dispatch only their configured repository, branch, and protected deployment workflow
+- GitHub workflow polling runs every two seconds and Worker/Admin release-readiness polling every second
+- Dual Worker/Admin readiness remains mandatory; upgrade state appears immediately and completion remains visible after refresh
+- The world traffic map uses ten intensity colors, per-link country distribution uses ten categorical colors, and Demo data covers ten countries
+- Redirect handlers, asynchronous analytics ingestion, D1/KV ownership, migrations, and production resources are unchanged
+
 ## Long-Term Product Principles
 
 Linketry is intended to remain useful for long-term self-hosted operation, not just a one-time migration tool.

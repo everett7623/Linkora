@@ -223,7 +223,7 @@ Run the read-only preflight before deployment:
 npm run deploy:preflight -- --track <fresh|upgrade|demo> --check-cloudflare
 ```
 
-Fresh provisioning starts with `deploy:bootstrap` dry-run and continues with `deploy:configure` dry-run/apply once the exact fork commit is on `main`. Production and Demo workflows must pass their safety gate before any Cloudflare write. The manual-only **Sync Online Upgrade Secret** workflow changes only the protected Worker's update capability; it never deploys code or runs migrations.
+Fresh provisioning starts with `deploy:bootstrap` dry-run and continues with `deploy:configure` dry-run/apply once the exact fork commit is on `main`. Production and Demo workflows must pass their safety gate before any Cloudflare write. The official Demo follows reviewed `main` pushes through its isolated workflow; any other automatic ref fails before Cloudflare access, while manual runs retain exact approvals. The manual-only **Sync Online Upgrade Secret** workflow changes only the protected Worker's update capability; it never deploys code or runs migrations.
 
 ## Release Hygiene
 

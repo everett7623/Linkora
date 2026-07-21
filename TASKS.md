@@ -65,6 +65,19 @@ Task record: `.codex/tasks/asynchronous-click-webhook-2026-07-21.md`
 
 ---
 
+## ✅ Completed - Demo Sync, Upgrade Feedback, And Global Distribution (v0.29.0)
+
+- [x] Restrict automatic Demo synchronization to isolated pushes from `main`
+- [x] Keep Demo-only release pushes out of the production deployment job
+- [x] Accelerate online-upgrade polling and make completion feedback immediate and persistent
+- [x] Keep self-hosted production upgrades bound to each instance owner's repository and branch
+- [x] Expand the world traffic map to ten intensity colors, per-link countries to ten categorical colors, and Demo data to ten countries
+- [x] Complete full regression, responsive visual QA, release metadata, and security audit
+
+Task record: `.codex/tasks/demo-sync-upgrade-feedback-global-distribution-2026-07-21.md`
+
+---
+
 ## ✅ Completed - Support And Compatibility Policy (v0.28.3)
 
 - [x] Add private vulnerability-reporting guidance

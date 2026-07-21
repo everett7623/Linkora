@@ -17,6 +17,14 @@ The review covered:
 
 The complete dependency audit reports no known vulnerabilities. Vite is updated to the supported 6.4 line; React, Tailwind, and React Router major releases remain separate work because they need dedicated migration testing.
 
+## Completed In 0.29.0
+
+| Area                       | Result                                                                                                                                                        |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Official Demo parity       | Reviewed pushes to `main` synchronize through the isolated Demo workflow while production credentials, resources, DNS, and deployment workflow stay separate. |
+| Owner-controlled upgrades  | Faster polling, immediate status, bounded reload, and persistent completion feedback improve the upgrade path without weakening backup or migration gates.     |
+| Global access distribution | The world map uses ten traffic-intensity colors, per-link Analytics uses ten categorical colors, and Demo traffic covers ten countries.                       |
+
 ## Completed In 0.28.4
 
 | Area                         | Result                                                                                                                                                                  |

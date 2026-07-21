@@ -224,7 +224,7 @@ curl https://go.example.com/health
 Expected shape:
 
 ```json
-{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.28.8" } }
+{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.29.0" } }
 ```
 
 ### Build and Deploy Admin
@@ -268,7 +268,7 @@ Enter `CLOUDFLARE_API_TOKEN` through the hidden `gh secret set` prompt. `deploy:
 
 `LINKETRY_ADMIN_TOKEN` does not need to be created manually. On the first deployment, the workflow generates it as a Worker secret and prints it once in the deployment log. A repository secret with the same name is only an optional recovery override if the generated value is lost.
 
-For in-app one-click upgrades, add the optional repository secret `LINKETRY_GITHUB_UPDATE_TOKEN`. Use a fine-grained GitHub token restricted to this Linketry repository with only **Actions: write** repository permission. The deployment workflow copies it into the Worker secret store; it is never included in the Admin build. If omitted, the Admin keeps the manual GitHub Actions fallback.
+For in-app one-click upgrades, add the optional repository secret `LINKETRY_GITHUB_UPDATE_TOKEN`. Use a fine-grained GitHub token restricted to this Linketry repository with only **Actions: write** repository permission. The deployment workflow copies it into the Worker secret store; it is never included in the Admin build. The Worker records this deployment's own repository and branch, so an installation created from your fork upgrades your production instance from that fork rather than from the official Demo or another owner's deployment. If omitted, the Admin keeps the manual GitHub Actions fallback.
 
 1. In GitHub account settings, create a fine-grained personal access token for only this Linketry repository.
 2. Grant repository permission **Actions: Read and write**; do not grant organization or unrelated repository access.
@@ -290,7 +290,7 @@ LINKETRY_D1_DATABASE_NAME=linketry-alice-db
 LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.28.8
+LINKETRY_APPROVED_RELEASE=0.29.0
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true
@@ -316,7 +316,7 @@ Leave these unset for the basic deployment; enable them later from the Admin Adv
 
 ```txt
 LINKETRY_KV_PREVIEW_ID=<your-kv-preview-id>
-LINKETRY_VERSION=0.28.8
+LINKETRY_VERSION=0.29.0
 LINKETRY_COMPATIBILITY_DATE=2026-07-08
 LINKETRY_WORKER_DOMAINS=go.example.com,s.example.com
 LINKETRY_R2_BUCKET=linketry-backups

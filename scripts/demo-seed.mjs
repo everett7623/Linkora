@@ -96,7 +96,7 @@ export function buildDemoSeedSql({ origin: originValue, now: nowValue = new Date
   ];
 
   const linkPattern = [0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 4];
-  const countries = ['US', 'DE', 'SG', 'GB', 'CA', 'JP', 'AU', 'FR'];
+  const countries = ['US', 'DE', 'SG', 'GB', 'CA', 'JP', 'AU', 'FR', 'BR', 'IN'];
   const referrers = [
     null,
     'https://www.google.com/',

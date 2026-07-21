@@ -4,7 +4,7 @@ import {
   clearUpgradeFeedback,
   markFollowUpRefreshScheduled,
   readOrInferUpgradeFeedback,
-  rememberSuccessfulDeployment,
+  rememberSuccessfulDeployment as persistSuccessfulDeployment,
 } from '../utils/upgradeFeedback.ts';
 import {
   FINALIZING_RELOAD_DELAY_MS,
@@ -36,6 +36,12 @@ export function useUpgradeFeedback() {
     if (feedback) markFollowUpRefreshScheduled(feedback);
     window.location.reload();
   }, [feedback]);
+
+  const rememberSuccessfulDeployment = useCallback((targetVersion: string) => {
+    const nextFeedback = persistSuccessfulDeployment(targetVersion);
+    if (nextFeedback) setFeedback(nextFeedback);
+    return nextFeedback;
+  }, []);
 
   return {
     feedback,

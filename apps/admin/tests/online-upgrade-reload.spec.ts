@@ -113,7 +113,7 @@ test('no-run-ID deployment waits through stale Admin assets and resumes on focus
   ).toBeVisible();
   await expect(
     page.getByText(
-      messages.en.upgradePropagationRefreshing.replace('{currentVersion}', LINKETRY_VERSION)
+      messages.en.upgradePropagationManual.replace('{currentVersion}', LINKETRY_VERSION)
     )
   ).toBeVisible();
   await expect(page.getByRole('button', { name: messages.en.upgradeOnline })).toHaveCount(0);

@@ -13,6 +13,28 @@ _(none)_
 
 ---
 
+## [0.29.0] - 2026-07-21
+
+### Added
+
+- Added isolated automatic Demo synchronization for reviewed pushes to `main`, while retaining the confirmation-gated manual workflow and every account, resource, migration, synthetic-data, read-only, and live-parity boundary.
+- Expanded the world traffic intensity legend from four to ten colors, added ten-color per-link country distribution, and seeded ten synthetic Demo countries.
+
+### Changed
+
+- Online upgrades retain Worker plus Admin asset readiness while polling GitHub workflow state every two seconds and release readiness every second.
+- Upgrade progress is reflected immediately in the current Admin session, reports success/failure through accessible notifications, and persists a dismissible completion result across the new Admin load.
+- Upgrade copy now states that a self-hosted instance deploys only its own configured repository and branch to its protected production environment.
+- Push-triggered production jobs honor `[skip production]` for official Demo-only synchronization; manual and in-app production upgrades are unaffected.
+
+### Tests
+
+- Added automatic-main/foreign-branch Demo gate coverage, immediate feedback fallback coverage, polling cadence assertions, ten-color palette unit coverage, and browser world-map legend checks.
+- Passed 79 deployment, 110 Worker, 64 Admin unit, 25 Admin browser, 6 Demo API, and 4 project-site tests; Worker type-check, Admin/Site builds, responsive overflow checks, and the official npm audit also pass.
+- Redirect handlers, asynchronous analytics ingestion, D1/KV ownership, migrations, production resources, and Demo/production isolation remain unchanged.
+
+---
+
 ## [0.28.8] - 2026-07-21
 
 ### Fixed

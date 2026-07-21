@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import type { Visit } from '@linketry/shared';
 import { useLocale } from '../../contexts/LocaleContext';
+import { globalDistributionColor } from '../../utils/analyticsPalette';
 
 export function Metric({
   label,
@@ -30,10 +31,12 @@ export function BarList({
   title,
   items,
   valueLabel,
+  palette = 'brand',
 }: {
   title: string;
   items: Array<{ label: string; value: number; to?: string }>;
   valueLabel?: string;
+  palette?: 'brand' | 'global';
 }) {
   const { locale, t } = useLocale();
   const displayValueLabel = valueLabel ?? t('clicksValue');
@@ -45,7 +48,7 @@ export function BarList({
         {items.length === 0 ? (
           <p className="text-sm text-slate-500">{t('noData')}</p>
         ) : (
-          items.map((item) => (
+          items.map((item, index) => (
             <div key={`${item.label}-${item.value}`} className="space-y-1">
               <div className="flex min-w-0 justify-between gap-3 text-xs">
                 {item.to ? (
@@ -64,7 +67,10 @@ export function BarList({
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-slate-800">
                 <div
-                  className="h-full rounded-full bg-brand-500"
+                  data-testid="analytics-bar-fill"
+                  className={`h-full rounded-full ${
+                    palette === 'global' ? globalDistributionColor(index) : 'bg-brand-500'
+                  }`}
                   style={{ width: `${Math.max(4, (item.value / max) * 100)}%` }}
                 />
               </div>

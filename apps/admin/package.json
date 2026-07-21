@@ -1,6 +1,6 @@
 {
   "name": "@linketry/admin",
-  "version": "0.28.8",
+  "version": "0.29.0",
   "author": "everettlabs",
   "license": "GPL-3.0-only",
   "private": true,
@@ -9,7 +9,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "test": "npm run test:unit && npm run test:smoke",
-    "test:unit": "node --experimental-strip-types --test src/i18n/locales.test.ts src/utils/adminMode.test.ts src/utils/analyticsRefresh.test.ts src/utils/browserStorage.test.ts src/utils/demoMode.test.ts src/utils/displayPreferences.test.ts src/utils/linkPassword.test.ts src/utils/linkPresentation.test.ts src/utils/linkView.test.ts src/utils/onlineUpgrade.test.ts src/utils/theme.test.ts src/utils/upgradeFeedback.test.ts src/utils/versionCheck.test.ts",
+    "test:unit": "node --experimental-strip-types --test src/i18n/locales.test.ts src/utils/adminMode.test.ts src/utils/analyticsPalette.test.ts src/utils/analyticsRefresh.test.ts src/utils/browserStorage.test.ts src/utils/demoMode.test.ts src/utils/displayPreferences.test.ts src/utils/linkPassword.test.ts src/utils/linkPresentation.test.ts src/utils/linkView.test.ts src/utils/onlineUpgrade.test.ts src/utils/theme.test.ts src/utils/upgradeFeedback.test.ts src/utils/versionCheck.test.ts",
     "test:i18n": "node --experimental-strip-types --test src/i18n/locales.test.ts",
     "test:smoke": "playwright test",
     "preview": "vite preview"

@@ -12,6 +12,7 @@ const migrations = [
 ];
 const baseEnv = {
   GITHUB_EVENT_NAME: 'workflow_dispatch',
+  GITHUB_REF: 'refs/heads/main',
   GITHUB_SHA: commit,
   CLOUDFLARE_ACCOUNT_ID: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
   CLOUDFLARE_API_TOKEN: 'demo-token-must-never-appear',
@@ -136,13 +137,36 @@ test('Demo gate rejects an invalid protected-account inventory before Cloudflare
   );
 });
 
-test('Demo gate rejects automatic triggers and an incorrect confirmation', async () => {
+test('Demo gate accepts an isolated automatic sync from main without stale manual approvals', async () => {
   const { runner, calls } = createRunner();
   const report = await runDemoDeploymentWorkflowGate({
     env: {
       ...baseEnv,
       GITHUB_EVENT_NAME: 'push',
-      LINKETRY_DEMO_DEPLOY_CONFIRMATION: 'deploy',
+      LINKETRY_DEMO_DEPLOY_CONFIRMATION: '',
+      LINKETRY_DEMO_APPROVED_RELEASE: '0.1.0',
+      LINKETRY_DEMO_APPROVED_COMMIT: 'b'.repeat(40),
+      LINKETRY_DEMO_APPROVED_MIGRATIONS_SHA256: 'c'.repeat(64),
+    },
+    version,
+    migrations,
+    runner,
+  });
+
+  assert.equal(report.ok, true);
+  assert.ok(calls.length > 0);
+  assert.equal(report.checks.find((check) => check.code === 'demo-trigger')?.status, 'pass');
+  assert.equal(report.checks.find((check) => check.code === 'deploy-confirmation')?.status, 'pass');
+});
+
+test('Demo gate rejects automatic sync from any branch other than main', async () => {
+  const { runner, calls } = createRunner();
+  const report = await runDemoDeploymentWorkflowGate({
+    env: {
+      ...baseEnv,
+      GITHUB_EVENT_NAME: 'push',
+      GITHUB_REF: 'refs/heads/feature/demo',
+      LINKETRY_DEMO_DEPLOY_CONFIRMATION: '',
     },
     version,
     migrations,
@@ -151,8 +175,7 @@ test('Demo gate rejects automatic triggers and an incorrect confirmation', async
 
   assert.equal(report.ok, false);
   assert.equal(calls.length, 0);
-  assert.equal(report.checks.find((check) => check.code === 'manual-trigger')?.status, 'fail');
-  assert.equal(report.checks.find((check) => check.code === 'deploy-confirmation')?.status, 'fail');
+  assert.equal(report.checks.find((check) => check.code === 'demo-trigger')?.status, 'fail');
 });
 
 test('Demo gate requires reserved resource names and exact release approval', async () => {
@@ -319,7 +342,7 @@ test('Demo workflow keeps its gate before all Cloudflare writes and uses Demo-on
   assert.ok(apiGatewayParity < parity);
   assert.ok(parity < summary);
   assert.match(workflow, /workflow_dispatch:/);
-  assert.doesNotMatch(workflow, /\n  push:/);
+  assert.match(workflow, /\n  push:\n    branches:\n      - main/);
   assert.match(workflow, /uses: actions\/checkout@v6/);
   assert.match(workflow, /uses: actions\/setup-node@v6/);
   assert.doesNotMatch(workflow, /uses: actions\/(?:checkout|setup-node)@v4/);

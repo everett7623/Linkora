@@ -32,7 +32,7 @@ The Demo Admin asks for `VITE_LINKETRY_DEMO_ACCESS_CODE` before showing the synt
 
 Production and normal self-hosted configurations must not set `LINKETRY_DEMO_MODE`. The Demo workflow also requires a separate Cloudflare account, resource inventory, scoped credentials, and protected production account/resource/domain lists. Its Cloudflare credential should be an account-owned API token restricted to the Demo account with only the bindings the workflow uses: Workers Scripts Edit, Workers KV Storage Edit, D1 Edit, Cloudflare Pages Edit, plus Workers R2 Storage Edit and Queues Edit when those optional resources are enabled. DNS or Workers Routes permissions are only needed when the selected routing mode manages those resources. Never reuse the production deployment token.
 
-Demo advanced-feature fixtures use synthetic values and keep notification channels and webhooks disabled. The post-deployment parity check reads public assets and safe API endpoints only; its mutation probe targets a nonexistent route and must be rejected by Demo middleware before routing. The Demo workflow remains manual and fails when its public Admin version, brand assets, read surface, or write boundary does not match the reviewed release.
+Demo advanced-feature fixtures use synthetic values and keep notification channels and webhooks disabled. The post-deployment parity check reads public assets and safe API endpoints only; its mutation probe targets a nonexistent route and must be rejected by Demo middleware before routing. The Demo workflow accepts only an isolated push from `main` or an explicitly confirmed manual run, and fails when its public Admin version, brand assets, read surface, or write boundary does not match the reviewed release.
 
 ## URL Safety
 

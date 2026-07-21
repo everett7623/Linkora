@@ -39,6 +39,14 @@ test('stores a normalized deployment target for the current tab', () => {
   assert.deepEqual(readUpgradeFeedback(storage, 1500), feedback);
 });
 
+test('returns immediate feedback when session storage is unavailable', () => {
+  assert.deepEqual(rememberSuccessfulDeployment('v1.2.3', null, 1000), {
+    targetVersion: '1.2.3',
+    createdAt: 1000,
+    followUpRefreshScheduled: false,
+  });
+});
+
 test('marks the single bounded follow-up refresh', () => {
   const storage = memoryStorage();
   const feedback = rememberSuccessfulDeployment('1.2.3', storage, 1000);
