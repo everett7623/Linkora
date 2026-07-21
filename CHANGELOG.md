@@ -32,6 +32,7 @@ _(none)_
 - Added equal-period boundary, local weekday/hour SQL, real SQLite aggregation, CSV contract, 100k-visit query-budget, responsive browser, horizontal-overflow, and accessibility coverage.
 - Verified the dashboard at 1440 x 900 and 390 x 844 against an isolated local Worker/D1 fixture; no page-level overflow or application console errors were found.
 - Passed 110 Worker, 78 deployment, 58 Admin unit, 25 Admin browser, 6 Demo API, and 4 project-site tests; Worker/Admin/Site builds and the official npm registry audit pass.
+- Deployed v0.28.7 to the isolated read-only Demo through workflow `29806272912`; the live health contract, today count, period comparison, all three trend modes, activity heatmap, world map, localization, and responsive overflow checks pass.
 - Redirect handlers, asynchronous visit recording, D1/KV ownership, migrations, production data, and Demo isolation are unchanged.
 
 ---

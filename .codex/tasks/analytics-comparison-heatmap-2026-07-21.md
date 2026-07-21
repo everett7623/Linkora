@@ -21,7 +21,7 @@ Make Analytics useful for period-over-period diagnosis and time-of-week traffic 
 - [x] Implement comparison metrics, trend overlay, and activity heatmap.
 - [x] Add focused Worker, scale, export, Admin, responsive, and accessibility coverage.
 - [x] Synchronize v0.28.7 release metadata and project status.
-- [ ] Run full tests, builds, and Demo verification.
+- [x] Run full tests, builds, and Demo verification.
 
 ## Verification
 
@@ -31,6 +31,8 @@ Make Analytics useful for period-over-period diagnosis and time-of-week traffic 
 - Worker type-check plus Admin and project-site production builds.
 - Desktop and mobile screenshot review, Axe scan, and horizontal-overflow checks.
 - Official npm registry audit: zero known vulnerabilities.
+- Isolated Demo workflow `29806272912` completed successfully for commit `7abd23a191590c3ae6c4e1c6cb6a785eea4b0cc6`.
+- Live Demo health reports v0.28.7; today traffic, comparison, three trend modes, 168-cell heatmap, world map, English/Chinese localization, and 1440 x 900 / 390 x 844 overflow states were verified.
 
 ## Query And Contract Boundaries
 

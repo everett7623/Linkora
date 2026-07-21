@@ -10,14 +10,14 @@ Last updated: 2026-07-21
 
 | Layer                      | Status                 | Notes                                                                                                                                                                                                   |
 | -------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Worker backend             | ✅ 0.28.7 verified     | Equal-period and weekday/hour aggregation pass real SQLite and 100k-visit coverage; Demo remains on v0.28.6 until the isolated rollout                                                                  |
+| Worker backend             | ✅ 0.28.7 verified     | Equal-period and weekday/hour aggregation pass real SQLite and 100k-visit coverage; the isolated Demo health contract reports v0.28.7                                                                  |
 | Admin frontend             | ✅ 0.28.7 verified     | Period comparison, trend overlay, and activity heatmap pass responsive, accessibility, and old-response compatibility coverage                                                                          |
 | Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
 | Documentation              | ✅ 0.28.7 updated      | Comparison/heatmap contract, CSV additions, query bounds, release notes, progress, roadmap, and task records are synchronized                                                                             |
-| Deployment                 | 🟡 Demo rollout next   | Repository verification is complete; isolated Demo remains on v0.28.6 pending the v0.28.7 workflow; production remains intentionally on v0.28.5                                                        |
+| Deployment                 | ✅ Demo 0.28.7 live    | Isolated Demo workflow `29806272912` passed deployment and production-parity checks; production remains intentionally on v0.28.5                                                                         |
 | End-to-end test            | ✅ Full regression     | 78 deployment, 110 Worker, 58 Admin unit, 25 Admin browser scenarios, 6 Demo API, and 4 site tests pass; Worker/Admin/Site builds pass                                                                   |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | 🟡 Repository 0.28.7  | Repository surfaces are synchronized on v0.28.7; Demo remains on v0.28.6 until rollout and production remains on v0.28.5                                                                                |
+| Current version            | ✅ Demo 0.28.7 live    | Repository and isolated Demo surfaces are synchronized on v0.28.7; production remains intentionally on v0.28.5                                                                                          |
 | Repository update target   | ✅ 0.28.7 verified    | v0.28.7 adds equal-period comparison and a local weekday/hour heatmap while keeping rollout owner-controlled                                                                                             |
 | Next planned work          | 🟡 Pre-1.0 validation | Cloudflare Access needs a complete cross-origin auth design; independent fresh-account, large-data, and assistive-technology validation remain                                                          |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
@@ -36,7 +36,7 @@ Last updated: 2026-07-21
 | Compatibility           | ✅ Complete | Existing fields remain additive; older responses degrade to lightweight empty comparison views instead of a blank page      |
 | Verification            | ✅ Complete | 110 Worker, 58 Admin unit, 25 browser, 78 deployment, 6 Demo API, and 4 site tests pass; builds and npm audit pass           |
 | Redirect/data impact    | ✅ None     | Redirect handlers, asynchronous visit recording, D1/KV ownership, migrations, production data, and Demo isolation unchanged |
-| Live Demo               | 🟡 Pending  | Isolated v0.28.7 deployment starts after the verified repository commit is pushed                                            |
+| Live Demo               | ✅ 0.28.7   | Workflow `29806272912` passed; live today, comparison, three trend modes, heatmap, map, localization, and responsive states were verified |
 
 ---
 
