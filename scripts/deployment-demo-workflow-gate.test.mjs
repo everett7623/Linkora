@@ -288,7 +288,7 @@ test('Demo workflow keeps its gate before all Cloudflare writes and uses Demo-on
   const workflow = readFileSync(
     new URL('../.github/workflows/deploy-demo.yml', import.meta.url),
     'utf8'
-  );
+  ).replace(/\r\n/g, '\n');
   const gate = workflow.indexOf('- name: Enforce isolated Demo safety gate');
   const apiProject = workflow.indexOf('- name: Ensure isolated Demo API Pages project');
   const resources = workflow.indexOf('- name: Ensure isolated Demo advanced resources');

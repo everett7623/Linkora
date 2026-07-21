@@ -2,24 +2,19 @@ import type { Env } from '../types';
 import { getRuntimeVersion } from '../config/runtime';
 import { getSettings, setSetting } from '../db/index';
 import { generateId, now } from '../utils/id';
+import {
+  buildWebhookRequest,
+  DEFAULT_WEBHOOK_EVENTS,
+  deliverWebhookWithRetry,
+  WEBHOOK_EVENTS,
+  webhookFailureLog,
+  type WebhookDeliveryResult,
+  type WebhookEvent,
+  type WebhookRequest,
+} from './policy';
 
-export const WEBHOOK_EVENTS = [
-  'link.created',
-  'link.updated',
-  'link.deleted',
-  'link.disabled',
-  'link.enabled',
-  'link.archived',
-  'link.restored',
-  'link.bulk',
-  'import.completed',
-  'backup.completed',
-  'backup.failed',
-  'health_check.failed',
-  'health_check.recovered',
-] as const;
-
-export type WebhookEvent = (typeof WEBHOOK_EVENTS)[number] | 'webhook.test';
+export { DEFAULT_WEBHOOK_EVENTS, WEBHOOK_EVENTS } from './policy';
+export type { WebhookEvent } from './policy';
 
 export interface WebhookConfig {
   enabled: boolean;
@@ -32,13 +27,10 @@ interface InternalWebhookConfig extends WebhookConfig {
   secret: string;
 }
 
-interface WebhookDeliveryResult {
-  ok: boolean;
-  status?: number;
-  error?: string;
-}
-
 const EVENT_SET = new Set<string>(WEBHOOK_EVENTS);
+const NOOP_WEBHOOK_EMITTER = async (): Promise<void> => {};
+
+export type WebhookEmitter = (data: unknown) => Promise<void>;
 
 export async function getWebhookConfig(env: Env): Promise<WebhookConfig> {
   const config = await getInternalWebhookConfig(env);
@@ -75,16 +67,32 @@ export async function updateWebhookConfig(
 }
 
 export async function emitWebhook(env: Env, event: WebhookEvent, data: unknown): Promise<void> {
+  const emitter = await createWebhookEmitter(env, event);
+  await emitter(data);
+}
+
+export async function createWebhookEmitter(env: Env, event: WebhookEvent): Promise<WebhookEmitter> {
   try {
     const config = await getInternalWebhookConfig(env);
-    if (!shouldDeliver(config, event)) return;
+    if (!shouldDeliver(config, event)) return NOOP_WEBHOOK_EMITTER;
 
-    const result = await deliverWebhook(env, config, event, data);
-    if (!result.ok) {
-      console.warn('Linketry webhook delivery failed', event, result.status ?? result.error);
-    }
+    return async (data: unknown) => {
+      try {
+        const result = await deliverWebhook(env, config, event, data);
+        if (!result.ok) logWebhookFailure(event, result);
+      } catch (error) {
+        logWebhookFailure(event, {
+          ok: false,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    };
   } catch (error) {
-    console.warn('Linketry webhook delivery failed', event, error);
+    logWebhookFailure(event, {
+      ok: false,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return NOOP_WEBHOOK_EMITTER;
   }
 }
 
@@ -152,15 +160,15 @@ function parseEvents(value: unknown): Array<(typeof WEBHOOK_EVENTS)[number]> {
   if (invalid.length > 0) throw new Error('Webhook events contain unsupported values');
 
   const events = value as Array<(typeof WEBHOOK_EVENTS)[number]>;
-  return events.length > 0 ? [...new Set(events)] : [...WEBHOOK_EVENTS];
+  return events.length > 0 ? [...new Set(events)] : [...DEFAULT_WEBHOOK_EVENTS];
 }
 
 function parseStoredEvents(value?: string | null): Array<(typeof WEBHOOK_EVENTS)[number]> {
-  if (!value) return [...WEBHOOK_EVENTS];
+  if (!value) return [...DEFAULT_WEBHOOK_EVENTS];
   try {
     return parseEvents(JSON.parse(value));
   } catch {
-    return [...WEBHOOK_EVENTS];
+    return [...DEFAULT_WEBHOOK_EVENTS];
   }
 }
 
@@ -171,52 +179,42 @@ async function deliverWebhook(
   data: unknown
 ): Promise<WebhookDeliveryResult> {
   const createdAt = now();
-  const body = JSON.stringify({
-    id: generateId(),
+  const request = await buildWebhookRequest(
     event,
-    created_at: createdAt,
-    version: getRuntimeVersion(env),
     data,
-  });
+    getRuntimeVersion(env),
+    config.secret,
+    createdAt,
+    generateId()
+  );
 
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'User-Agent': 'Linketry-Webhook/1.0',
-    'X-Linketry-Event': event,
-    'X-Linketry-Timestamp': createdAt,
-  };
+  return deliverWebhookWithRetry(() => sendWebhookRequest(config.url, request));
+}
 
-  if (config.secret) {
-    const signature = `sha256=${await signWebhook(config.secret, `${createdAt}.${body}`)}`;
-    headers['X-Linketry-Signature'] = signature;
-  }
-
+async function sendWebhookRequest(
+  url: string,
+  request: WebhookRequest
+): Promise<WebhookDeliveryResult> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000);
   try {
-    const response = await fetch(config.url, {
+    const response = await fetch(url, {
       method: 'POST',
-      headers,
-      body,
+      headers: request.headers,
+      body: request.body,
       signal: controller.signal,
     });
     return { ok: response.ok, status: response.status };
   } catch (error) {
-    return { ok: false, error: error instanceof Error ? error.message : String(error) };
+    return {
+      ok: false,
+      error: error instanceof DOMException && error.name === 'AbortError' ? 'timeout' : 'network_error',
+    };
   } finally {
     clearTimeout(timeout);
   }
 }
 
-async function signWebhook(secret: string, value: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
-  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(value));
-  return [...new Uint8Array(signature)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+function logWebhookFailure(event: WebhookEvent, result: WebhookDeliveryResult): void {
+  console.warn(webhookFailureLog(event, result));
 }

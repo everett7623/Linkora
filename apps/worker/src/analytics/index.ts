@@ -12,6 +12,8 @@ import { insertVisitTarget } from '../db/analytics';
 import { setCachedLink } from '../cache/index';
 import { isLikelyBot } from './botDetection';
 import { isPublicReadOnlyDemo } from '../demo/policy';
+import { createWebhookEmitter, emitWebhook, type WebhookEmitter } from '../webhooks/index';
+import { buildClickWebhookData } from './clickWebhook';
 
 function detectBrowser(ua: string): string {
   if (/Edg\//i.test(ua)) return 'Edge';
@@ -78,10 +80,17 @@ export async function processVisitQueueBatch(
   batch: MessageBatch<VisitQueueMessage>
 ): Promise<void> {
   if (isPublicReadOnlyDemo(env)) return;
-  await Promise.all(batch.messages.map((message) => recordVisitMessage(env, message.body)));
+  const emitClickWebhook = await createWebhookEmitter(env, 'link.clicked');
+  await Promise.all(
+    batch.messages.map((message) => recordVisitMessage(env, message.body, emitClickWebhook))
+  );
 }
 
-export async function recordVisitMessage(env: Env, message: VisitQueueMessage): Promise<void> {
+export async function recordVisitMessage(
+  env: Env,
+  message: VisitQueueMessage,
+  batchClickWebhook?: WebhookEmitter
+): Promise<void> {
   if (isPublicReadOnlyDemo(env)) return;
   try {
     const { link, request, domain } = message;
@@ -133,21 +142,25 @@ export async function recordVisitMessage(env: Env, message: VisitQueueMessage): 
       }
     }
 
-    if (link.password_protected) return;
+    if (!link.password_protected) {
+      // Update KV before optional outbound delivery; D1 remains authoritative.
+      const cacheEntry: KVCacheEntry = {
+        id: link.id,
+        slug: link.slug,
+        domain: link.domain ?? undefined,
+        longUrl: link.long_url,
+        redirectType: link.redirect_type as 301 | 302,
+        status: link.status,
+        expiresAt: link.expires_at ?? undefined,
+        maxClicks: link.max_clicks ?? undefined,
+        warningEnabled: link.warning_enabled === 1,
+      };
+      await setCachedLink(env, domain, cacheEntry);
+    }
 
-    // Update KV cache with fresh click count
-    const cacheEntry: KVCacheEntry = {
-      id: link.id,
-      slug: link.slug,
-      domain: link.domain ?? undefined,
-      longUrl: link.long_url,
-      redirectType: link.redirect_type as 301 | 302,
-      status: link.status,
-      expiresAt: link.expires_at ?? undefined,
-      maxClicks: link.max_clicks ?? undefined,
-      warningEnabled: link.warning_enabled === 1,
-    };
-    await setCachedLink(env, domain, cacheEntry);
+    const clickData = buildClickWebhookData(message, visitId, createdAt, isBot === 1);
+    if (batchClickWebhook) await batchClickWebhook(clickData);
+    else await emitWebhook(env, 'link.clicked', clickData);
   } catch {
     // Statistics must never affect redirect
   }

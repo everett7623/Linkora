@@ -1,6 +1,6 @@
 # Linketry And Sink Feature Comparison
 
-Updated: 2026-07-19
+Updated: 2026-07-21
 
 This comparison uses Sink's official repository and website as the baseline. It is a product-priority document, not a claim that every similarly named feature has identical behavior.
 
@@ -10,7 +10,7 @@ Linketry already covers the core self-hosted short-link workflow and goes furthe
 
 The recommended product direction remains: make the basic edition deployable with one Worker domain and the default Pages domain, then expose optional infrastructure and operator tooling through Advanced mode.
 
-The comparison was refreshed after Sink v0.2.11. Linketry now has the required first-run wizard, English/Simplified Chinese Admin coverage, OpenAPI/Swagger, duplicate-destination warnings, OpenGraph destination previews, table/card link views, public statistics sharing, saved analytics views, scheduled reports, and an isolated public Demo. The table below contains remaining gaps only; the wider prioritization is in `docs/PRODUCT_GAP_AUDIT.md`.
+The comparison was refreshed after Sink v0.2.11. Linketry now has the required first-run wizard, English/Simplified Chinese Admin coverage, OpenAPI/Swagger, duplicate-destination warnings, OpenGraph destination previews, table/card link views, public statistics sharing, saved analytics views, scheduled reports, an opt-in asynchronous signed click Webhook, and an isolated public Demo. The table below contains remaining gaps only; the wider prioritization is in `docs/PRODUCT_GAP_AUDIT.md`.
 
 ## Gaps Compared With Sink
 
@@ -19,7 +19,6 @@ The comparison was refreshed after Sink v0.2.11. Linketry now has the required f
 | P0       | Beginner resource provisioning                                  | Extend the existing first-run Admin wizard with idempotent D1/KV provisioning guidance or automation, permission preflight, clearer manual/Actions paths, and a fresh-account rehearsal.                                                        |
 | P0       | Accessibility and large-data release baselines                  | Add automated accessibility checks plus repeatable D1/import/Analytics scale fixtures and response-time budgets before 1.0.                                                                                                                     |
 | P1       | Optional Cloudflare Access authentication                       | Add Access only as an optional authenticated path with JWT, CSRF, logout, and recovery behavior defined; keep bearer-token access available.                                                                                                    |
-| P1       | Asynchronous click webhook                                      | Add an opt-in signed `link.clicked` event through the current webhook conventions, always outside the redirect response path.                                                                                                                  |
 | P1       | Per-link social preview customization and image storage         | The destination preview exists; add explicit title, description, and image controls with optional R2 storage without placing metadata work in redirects.                                                                                       |
 | P1       | Privacy-safe click-to-conversion attribution                    | Add opaque click IDs, bounded attribution windows, first/last-click rules, and safe public ingestion without exposing Admin/write tokens.                                                                                                      |
 | P1       | Domain/ownership-scoped API tokens                              | Extend existing read/write/admin scopes with domain-specific and authored-link restrictions for least-privilege automation.                                                                                                                    |

@@ -17,6 +17,15 @@ The review covered:
 
 The complete dependency audit reports no known vulnerabilities. Vite is updated to the supported 6.4 line; React, Tailwind, and React Router major releases remain separate work because they need dedicated migration testing.
 
+## Completed In 0.28.4
+
+| Area                         | Result                                                                                                                                                                  |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Asynchronous click Webhook   | `link.clicked` is opt-in and delivered only after core visit accounting from Queue/`ctx.waitUntil()` post-processing.                                                  |
+| Privacy and signing          | Stable HMAC-SHA256 envelopes exclude visitor identifiers, Referer, country, User-Agent, and destination URLs.                                                          |
+| Retry and observability      | Transient failures receive at most three attempts; structured failure logs omit URL, secret, payload, and visitor data.                                                |
+| Redirect/data boundary       | Redirect handlers/decisions, D1/KV ownership, migrations, production data, and Demo isolation are unchanged.                                                           |
+
 ## Completed In 0.28.3
 
 | Area                     | Result                                                                                                                                                              |
@@ -105,7 +114,7 @@ Current conversions are trusted server-side events associated with a link and ti
 
 ### Asynchronous signed click webhook
 
-Add optional `link.clicked` delivery through Queue/post-processing only. Signing, retries, suppression, and payload minimization must reuse existing webhook conventions, and failures must never delay a redirect.
+Completed in v0.28.4. Optional `link.clicked` delivery uses Queue/`ctx.waitUntil()` post-processing only, reuses the existing HMAC convention, excludes visitor identifiers and destination URLs, retries only transient failures, and never delays a redirect.
 
 ### Optional identity-provider authentication
 

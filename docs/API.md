@@ -175,12 +175,19 @@ link.enabled
 link.archived
 link.restored
 link.bulk
+link.clicked
 import.completed
 backup.completed
 backup.failed
+health_check.failed
+health_check.recovered
 ```
 
 Delivery headers include `X-Linketry-Event`, `X-Linketry-Timestamp`, and, when a secret is configured, `X-Linketry-Signature: sha256=<hex-hmac>`.
+
+`link.clicked` is a high-volume opt-in event and is excluded from the default event set. It is emitted only after core visit accounting from Queue or `ctx.waitUntil()` post-processing. Its payload contains only an opaque click ID, `occurred_at`, `is_bot`, and the link ID/slug/domain; it excludes IP/IP hash, User-Agent, Referer, country, signing credentials, and destination URLs.
+
+Webhook deliveries retry transient network, `408`, `425`, `429`, and `5xx` failures up to three total attempts. All attempts reuse the same event ID, timestamp, body, and signature so receivers can deduplicate by the envelope `id`. Other `4xx` responses are not retried.
 
 ## Notification Channels
 

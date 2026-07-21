@@ -226,6 +226,17 @@ Status: complete in the repository; production remains owner-controlled.
 - Automated deployment tests prevent security links, toolchain metadata, compatibility language, and rollback requirements from drifting
 - Redirect handlers, Worker runtime behavior, D1/KV ownership, migrations, production data, and Demo isolation are unchanged
 
+## 0.28.4: Asynchronous Signed Click Webhook
+
+Status: complete in the repository; production remains owner-controlled.
+
+- `link.clicked` is an explicit opt-in event and is not added to existing/default subscriptions automatically
+- Delivery begins only after core visit accounting and KV work in Queue or `ctx.waitUntil()` post-processing
+- Payloads contain an opaque click ID, timestamp, bot classification, and link ID/slug/domain; visitor identifiers and destination URLs are excluded
+- Transient failures receive at most three attempts with one stable event identity and HMAC-SHA256 signature
+- Structured failure logs omit URL, secret, body, and visitor data
+- Redirect handlers, redirect decisions, D1/KV ownership, migrations, production data, and Demo isolation are unchanged
+
 ## Long-Term Product Principles
 
 Linketry is intended to remain useful for long-term self-hosted operation, not just a one-time migration tool.
@@ -320,7 +331,7 @@ Ordered delivery:
 2. Done: warn about duplicate normalized destination URLs during create/edit while allowing intentional duplicates.
 3. In progress: fresh self-hosting now has dry-run-first, confirmation-gated, idempotent D1/KV provisioning with unique names and binding output. Fresh, upgrade, and Demo tracks share redacted preflight checks, D1/KV account verification, and fail-closed isolation checks. The production workflow enforces approved release/commit/migration state plus backup-backed upgrade gates before any Cloudflare write; the separate Demo workflow adds protected-account enforcement and exact release approvals. Fresh-account rehearsal remains.
 4. Done in v0.25.0: the independent official project site is live at `linketry.com`, and the isolated read-only Demo is live at `demo.linketry.com` with separate-account Worker, Pages, D1, KV, R2, Queue, scoped credentials, a responsive complete Admin surface, advanced synthetic data, suppressed real-visitor analytics writes, and a native Worker rate limit.
-5. Add optional Cloudflare Access authentication and asynchronous signed `link.clicked` webhooks without weakening bearer-token recovery or redirect stability.
+5. The asynchronous signed `link.clicked` webhook is complete in v0.28.4; add optional Cloudflare Access authentication only after JWT, CORS, CSRF, logout, and bearer-token recovery behavior share one reviewed contract.
 6. Done in v0.16.0: Admin density and optional-module visibility preferences.
 7. Theme preferences completed in v0.17.0, the optional Links card view in v0.19.0, and the community locale workflow in v0.20.0; follow with reviewed locale contributions, per-link social preview controls, and later ecosystem clients built against OpenAPI.
 

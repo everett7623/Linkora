@@ -13,6 +13,29 @@ _(none)_
 
 ---
 
+## [0.28.4] - 2026-07-21
+
+### Added
+
+- Added an opt-in signed `link.clicked` webhook emitted only from Queue or `ctx.waitUntil()` visit post-processing after core visit accounting succeeds.
+- Added a privacy-minimized click envelope containing only an opaque click ID, occurrence time, bot classification, and link ID/slug/domain.
+
+### Changed
+
+- Webhook delivery now retries transient network, `408`, `425`, `429`, and `5xx` failures up to three total attempts while preserving one event ID, timestamp, body, and HMAC signature.
+- High-volume click delivery is excluded from the default webhook event set and Queue batches reuse one loaded webhook configuration.
+- Webhook failure logs now use a structured envelope that excludes destination URLs, payloads, signing secrets, and visitor details.
+
+### Tests
+
+- Added focused coverage for click-event opt-in defaults, payload minimization, stable HMAC signing, bounded retry classification/scheduling, and masked failure observability.
+- Normalized Demo workflow line endings in its deployment contract test so the same safety assertions pass on Windows CRLF and CI LF checkouts.
+- Passed 75 deployment, 104 Worker, 58 Admin unit, 25 Admin browser scenarios, 6 Demo API, and 4 project-site tests; the three browser scenarios affected by local eight-worker contention passed on isolated rerun.
+- Passed Worker type-check, Admin/Site production builds, and the official npm registry audit with zero known vulnerabilities after updating transitive dev dependency `brace-expansion` to 1.1.16.
+- Redirect handlers, redirect decisions, D1/KV ownership, migrations, production data, and Demo isolation are unchanged.
+
+---
+
 ## [0.28.3] - 2026-07-21
 
 ### Added

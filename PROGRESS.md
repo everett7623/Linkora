@@ -11,17 +11,31 @@ Last updated: 2026-07-21
 | Layer                      | Status                 | Notes                                                                                                                                                                                                   |
 | -------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Worker backend             | ✅ 0.27.7 live         | Production health reports v0.27.7; redirect, analytics, D1, and KV behavior remain unchanged                                                                                                            |
-| Admin frontend             | ✅ 0.27.7 live         | Cache-bypassed production Admin HTML reports v0.27.7; v0.28.3 is the next owner-controlled update target                                                                                                |
+| Admin frontend             | ✅ 0.27.7 live         | Cache-bypassed production Admin HTML reports v0.27.7; v0.28.4 is the next owner-controlled update target                                                                                                |
 | Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
-| Documentation              | ✅ 0.28.3 updated      | Security reporting, compatibility, backup/rollback, release notes, progress, and task records are synchronized                                                                                           |
+| Documentation              | ✅ 0.28.4 updated      | Click Webhook, retry, privacy, release notes, progress, and task records are synchronized                                                                                                                |
 | Deployment                 | ✅ Production + Demo   | Production, `linketry.com`, and the isolated read-only Demo at `demo.linketry.com` are live                                                                                                             |
-| End-to-end test            | ✅ Full regression     | 75 deployment, 98 Worker, 58 Admin unit, 25 Admin browser, 6 Demo API, and 4 site tests pass; Worker/Admin/Site builds pass                                                                              |
+| End-to-end test            | ✅ Full regression     | 75 deployment, 104 Worker, 58 Admin unit, 25 Admin browser scenarios, 6 Demo API, and 4 site tests pass; Worker/Admin/Site builds pass                                                                   |
 | Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
 | Current version            | ✅ 0.27.7 live         | Production Worker/Admin remain synchronized on v0.27.7; repository changes do not claim a production rollout                                                                                           |
-| Repository update target   | ✅ 0.28.3 ready        | v0.28.3 publishes a tested security, compatibility, support, backup, and rollback contract; production remains owner-controlled                                                                          |
-| Next planned work          | 🟡 Pre-1.0 validation | Rebrandly remains fixture-gated; independent fresh-account, real-export, large-data, and assistive-technology validation remain                                                                         |
+| Repository update target   | ✅ 0.28.4 ready        | v0.28.4 adds an opt-in privacy-minimized signed click Webhook outside the redirect path; production remains owner-controlled                                                                             |
+| Next planned work          | 🟡 Pre-1.0 validation | Cloudflare Access needs a complete cross-origin auth design; independent fresh-account, large-data, and assistive-technology validation remain                                                          |
 | Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.28.4 Asynchronous Signed Click Webhook
+
+| Area                   | Status      | Notes                                                                                                                               |
+| ---------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Click event            | ✅ Complete | `link.clicked` is available as an explicit opt-in event and is excluded from default subscriptions                                 |
+| Async boundary         | ✅ Complete | Delivery runs only from Queue/`ctx.waitUntil()` visit post-processing after core D1 accounting and KV work                         |
+| Privacy                | ✅ Complete | Payload excludes IP/IP hash, User-Agent, Referer, country, target URLs, credentials, and raw visitor identity                      |
+| Signing and retry      | ✅ Complete | Transient failures receive at most three attempts with one stable event ID, timestamp, body, and HMAC-SHA256 signature             |
+| Failure observability  | ✅ Complete | Structured warnings contain event/status/error/attempt count without URL, payload, or secret                                       |
+| Dependency audit       | ✅ Complete | Official npm registry reports zero known vulnerabilities; transitive dev-only `brace-expansion` is updated to 1.1.16               |
+| Redirect/data impact   | ✅ None     | Redirect handlers/decisions, D1/KV ownership, migrations, production data, and Demo isolation are unchanged                        |
 
 ---
 

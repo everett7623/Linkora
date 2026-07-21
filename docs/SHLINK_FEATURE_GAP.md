@@ -4,7 +4,7 @@ Linketry 的核心定位是**自托管短链接管理、访问分析与健康监
 
 > 来源：Shlink 官方功能、API key roles 与 advanced redirect 文档。
 > 最近复核：2026-07-19
-> 对应 Linketry 版本：0.27.8
+> 对应 Linketry 版本：0.28.4
 
 ---
 
@@ -23,7 +23,7 @@ Linketry 的核心定位是**自托管短链接管理、访问分析与健康监
 | QR 码              | ✅            | Admin 列表支持生成并下载 PNG                                 |
 | 导入/导出          | ✅            | Shlink、Generic CSV/JSON/JSONL、Linketry backup              |
 | 重定向规则         | ✅            | country/device/browser/language/referer/weighted             |
-| Webhook            | ✅            | 导入、健康和运维事件已支持；`link.clicked` 仍列为异步增强项  |
+| Webhook            | ✅            | 导入、健康、运维及显式启用的异步签名 `link.clicked` 事件已支持 |
 | API Token          | ✅            | 已支持 read/write/admin scopes、哈希存储、撤销与最后使用时间 |
 | 密码保护           | ✅            | `links.password_hash`                                        |
 | 过期/点击上限      | ✅            | Create/Edit/List/redirect 状态均已支持；自动清理仍未实现     |

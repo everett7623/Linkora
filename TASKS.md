@@ -11,6 +11,18 @@ _(none)_
 
 ---
 
+## ✅ Completed - Asynchronous Signed Click Webhook (v0.28.4)
+
+- [x] Add an opt-in `link.clicked` event without enabling it by default
+- [x] Deliver only after core visit accounting in Queue/`waitUntil()` post-processing
+- [x] Minimize the payload and exclude visitor identifiers and destination URLs
+- [x] Add bounded transient retries with stable event identity and signing
+- [x] Add focused coverage and synchronize release metadata
+
+Task record: `.codex/tasks/asynchronous-click-webhook-2026-07-21.md`
+
+---
+
 ## ✅ Completed - Support And Compatibility Policy (v0.28.3)
 
 - [x] Add private vulnerability-reporting guidance
@@ -805,9 +817,9 @@ Task record: `.codex/tasks/mainstream-import-adapters-2026-07-20.md`
 
 - [ ] Add optional Cloudflare Access authentication without weakening the existing bearer-token path
 - [ ] Define logout, CSRF, JWT verification, and recovery behavior before enabling Access sessions
-- [ ] Add an opt-in `link.clicked` webhook using the existing signed webhook conventions
-- [ ] Deliver click events asynchronously so webhook or analytics failures can never delay or break redirects
-- [ ] Add retry, signature, masking, and failure-observability coverage
+- [x] Add an opt-in `link.clicked` webhook using the existing signed webhook conventions
+- [x] Deliver click events asynchronously so webhook or analytics failures can never delay or break redirects
+- [x] Add retry, signature, masking, and failure-observability coverage
 
 ### Priority 7 — Admin Display Preferences
 

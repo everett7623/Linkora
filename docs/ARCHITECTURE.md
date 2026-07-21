@@ -109,7 +109,7 @@ Optional in-app upgrades use an Admin-authenticated Worker endpoint. The Worker 
 | Demo visit storage        | Skipped in explicit public read-only Demo mode         | Redirect continues; synthetic analytics remain unchanged |
 | Daily aggregation         | Part of asynchronous analytics storage               | Redirect continues                                        |
 | Redirect target analytics | Separate visit_targets write                         | Core visit and redirect continue                          |
-| Webhook delivery          | Background task                                      | Primary mutation continues                                |
+| Webhook delivery          | Background task; clicks reuse Queue-batch config     | Primary mutation and redirects continue                  |
 | Notification delivery     | Scheduled monitoring task                            | Monitoring state remains available                        |
 | R2 backup                 | Manual or daily Cron                                 | Failure is recorded and can emit a Webhook                |
 | Analytics cleanup         | Daily Cron                                           | Backup and redirects continue                             |
