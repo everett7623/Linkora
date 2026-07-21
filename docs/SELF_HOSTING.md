@@ -224,7 +224,7 @@ curl https://go.example.com/health
 Expected shape:
 
 ```json
-{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.28.4" } }
+{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.28.5" } }
 ```
 
 ### Build and Deploy Admin
@@ -290,7 +290,7 @@ LINKETRY_D1_DATABASE_NAME=linketry-alice-db
 LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.28.4
+LINKETRY_APPROVED_RELEASE=0.28.5
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true
@@ -298,9 +298,9 @@ LINKETRY_FRESH_INSTALL_CONFIRMED=true
 
 The configuration command reads the exact commit and `npm run deploy:migration-digest` result for you, and refuses to approve a dirty worktree. The workflow checks these approvals before its first Cloudflare write. After the first successful deployment, switch `LINKETRY_DEPLOYMENT_TRACK` to `upgrade` and set the verified-backup and migration-review variables in [Deployment Preflight](DEPLOYMENT_PREFLIGHT.md) before later releases.
 
-Push the approved commit to `main` or start the confirmed manual run. The workflow will type-check, build, enforce the deployment gate, create the Pages project when missing, migrate D1, deploy the Worker with its secrets, and deploy Admin.
+Push the approved commit to `main` or start the confirmed manual run. The workflow will type-check, build, enforce the deployment gate, create the Pages project when missing, migrate D1, deploy the Worker with its secrets, deploy Admin, and wait until the configured Admin origin serves the target HTML plus executable initial JavaScript and CSS assets.
 
-After the first deployment, the Admin update banner provides **Online upgrade**. When `LINKETRY_GITHUB_UPDATE_TOKEN` is configured, the primary instance Admin token can trigger this repository's fixed `deploy.yml` and branch directly. The banner follows the GitHub run, waits for a successful conclusion, verifies that the Worker's public cross-origin `/health` endpoint reports the expected version, and then reloads the Admin. Keep credential-free GET/OPTIONS CORS enabled on `/health` when Admin Pages and the Worker use separate origins. It cannot accept a repository, branch, commit, workflow, or target from the browser.
+After the first deployment, the Admin update banner provides **Online upgrade**. When `LINKETRY_GITHUB_UPDATE_TOKEN` is configured, the primary instance Admin token can trigger this repository's fixed `deploy.yml` and branch directly. The banner follows the GitHub run, whose successful conclusion now includes Admin asset readiness, verifies that the Worker's public cross-origin `/health` endpoint reports the expected version, and then reloads the Admin. Keep credential-free GET/OPTIONS CORS enabled on `/health` when Admin Pages and the Worker use separate origins. It cannot accept a repository, branch, commit, workflow, or target from the browser.
 
 The confirmation approves only the configured branch's exact package version and commit; the migration digest, verified backup reference, migration review, target confirmation, and remote-resource checks still have to pass. Scoped Linketry API tokens cannot trigger an upgrade. When the GitHub secret is absent, invalid, or expired, use the banner's manual Actions fallback, rotate the repository secret if needed, and rerun deployment once to update the Worker secret.
 
@@ -316,7 +316,7 @@ Leave these unset for the basic deployment; enable them later from the Admin Adv
 
 ```txt
 LINKETRY_KV_PREVIEW_ID=<your-kv-preview-id>
-LINKETRY_VERSION=0.28.4
+LINKETRY_VERSION=0.28.5
 LINKETRY_COMPATIBILITY_DATE=2026-07-08
 LINKETRY_WORKER_DOMAINS=go.example.com,s.example.com
 LINKETRY_R2_BUCKET=linketry-backups

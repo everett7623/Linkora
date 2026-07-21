@@ -13,6 +13,22 @@ _(none)_
 
 ---
 
+## [0.28.5] - 2026-07-21
+
+### Fixed
+
+- Prevented protected online upgrades from completing while the configured Admin origin still serves the SPA HTML fallback for newly deployed JavaScript or CSS assets.
+- Added a read-only Admin readiness gate that waits for the exact release marker and executable initial-asset MIME types before the deployment run can succeed and trigger the Admin refresh.
+
+### Tests
+
+- Reproduced the v0.28.4 production blank page on `admin.uukk.de`: the document advertised the new release while its entry module returned `text/html` and left `#root` empty.
+- Added deterministic coverage for valid Admin assets, invalid HTML asset fallbacks, retry recovery, and deployment-workflow ordering.
+- Passed 78 deployment tests, 104 Worker tests, 58 Admin unit tests, 25 Admin browser scenarios, Worker type-check, Admin/Site production builds, and a live readiness check against the recovered production Admin origin.
+- Redirect handlers, Worker runtime behavior, D1/KV ownership, migrations, production data, and Demo isolation are unchanged.
+
+---
+
 ## [0.28.4] - 2026-07-21
 
 ### Added

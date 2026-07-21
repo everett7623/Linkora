@@ -358,6 +358,17 @@ jobs:
           echo "Admin DNS automation skipped because the optional CLOUDFLARE_DNS_API_TOKEN secret is not configured."
           echo "Point the Admin hostname to ${LINKETRY_PAGES_PROJECT}.pages.dev in Cloudflare DNS."
 
+      - name: Verify Admin deployment readiness
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' && env.LINKETRY_API_URL != '' && env.LINKETRY_PAGES_PROJECT != ''
+        run: |
+          ADMIN_ORIGIN="$LINKETRY_ADMIN_URL"
+          if [ -z "$ADMIN_ORIGIN" ]; then
+            ADMIN_ORIGIN="https://${LINKETRY_PAGES_PROJECT}.pages.dev"
+          fi
+          node scripts/admin-live-smoke.mjs \
+            --admin-url "$ADMIN_ORIGIN" \
+            --version "$RESOLVED_LINKETRY_VERSION"
+
       - name: Write deployment access summary
         if: always()
         run: |

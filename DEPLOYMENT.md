@@ -154,7 +154,7 @@ routes = [
 ]
 
 [vars]
-LINKETRY_VERSION = "0.28.4"
+LINKETRY_VERSION = "0.28.5"
 
 [[d1_databases]]
 binding = "DB"
@@ -195,7 +195,7 @@ curl https://go.example.com/health
 Expected response:
 
 ```json
-{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.28.4" } }
+{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.28.5" } }
 ```
 
 ---
@@ -309,7 +309,7 @@ Defined in `apps/worker/wrangler.toml`:
 
 | Name                   | Example      |
 | ---------------------- | ------------ |
-| `LINKETRY_VERSION`     | `0.28.4`     |
+| `LINKETRY_VERSION`     | `0.28.5`     |
 | `LINKETRY_DAILY_CRON`  | `0 18 * * *` |
 | `LINKETRY_HEALTH_CRON` | `0 * * * *`  |
 
@@ -367,11 +367,13 @@ Every Cloudflare-enabled workflow run also requires exact deployment approvals:
 | Name                                  | Example              | Purpose                                                                   |
 | ------------------------------------- | -------------------- | ------------------------------------------------------------------------- |
 | `LINKETRY_DEPLOYMENT_TRACK`           | `upgrade`            | Allows only the reviewed `fresh` or `upgrade` path; Demo is rejected here |
-| `LINKETRY_APPROVED_RELEASE`           | `0.28.4`             | Must match the root package version                                       |
+| `LINKETRY_APPROVED_RELEASE`           | `0.28.5`             | Must match the root package version                                       |
 | `LINKETRY_APPROVED_COMMIT`            | `<40-character SHA>` | Must match the commit being deployed                                      |
 | `LINKETRY_APPROVED_MIGRATIONS_SHA256` | `<digest>`           | Must match `npm run deploy:migration-digest`                              |
 
 Fresh installs additionally set `LINKETRY_FRESH_INSTALL_CONFIRMED=true`. Existing installs set the backup, migration-review, and target-confirmation variables documented in [Deployment Preflight](docs/DEPLOYMENT_PREFLIGHT.md). The gate runs before Worker-secret, D1 migration, Worker deploy, or Pages deploy writes.
+
+After Pages deployment, the workflow keeps the run active until the configured Admin origin advertises the exact release and its initial JavaScript and CSS assets return executable MIME types. This readiness check covers custom-domain propagation before an older Admin tab can treat an online upgrade as complete and refresh.
 
 If either Cloudflare secret is missing, the workflow skips all Cloudflare migration/deploy steps and leaves manual Wrangler deployment as the source of production updates.
 If either Admin variable is missing, the workflow still builds Admin but skips the Pages deploy so it does not publish a build with the wrong API URL.

@@ -83,6 +83,7 @@ The repository includes `.github/workflows/deploy.yml`. On every push to `main`,
 5. deploy the Worker with first-deploy or preserved secrets, only when Cloudflare repository secrets are configured
 6. deploy Admin to the Pages project named by `LINKETRY_PAGES_PROJECT`, only when Cloudflare repository secrets and variables are configured
 7. optionally deploy the official project site when `LINKETRY_SITE_PROJECT` is configured
+8. wait until the configured Admin origin advertises the release and serves its initial JavaScript and CSS with executable MIME types
 
 The `deploy` job is bound to the GitHub environment named `production`. Create and review that environment before the first production run so GitHub records production deployment history separately from the protected `linketry-demo` environment. Repository-level variables and secrets remain available to the job; they do not need to be copied merely to enable deployment tracking.
 
@@ -106,13 +107,15 @@ LINKETRY_D1_DATABASE_NAME=linketry
 LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.28.4
+LINKETRY_APPROVED_RELEASE=0.28.5
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<output-of-npm-run-deploy:migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true
 ```
 
 The workflow validates these exact approvals and the selected account/resources before any Cloudflare write. For later releases, switch the track to `upgrade` and configure the verified-backup gates in [DEPLOYMENT_PREFLIGHT.md](DEPLOYMENT_PREFLIGHT.md).
+
+The post-deploy Admin readiness check is anonymous and read-only. It keeps the GitHub run active during Pages or custom-domain propagation, so the online-upgrade UI cannot refresh into HTML fallback responses for not-yet-ready JavaScript or CSS assets.
 
 Optional advanced variables: `LINKETRY_KV_PREVIEW_ID`, `LINKETRY_WORKER_DOMAINS`, `LINKETRY_R2_BUCKET`, `LINKETRY_R2_PREVIEW_BUCKET`, and `LINKETRY_VISITS_QUEUE`. `LINKETRY_SITE_PROJECT` and `LINKETRY_SITE_URL` are official-project maintainer settings, not self-hosting requirements.
 

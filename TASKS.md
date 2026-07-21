@@ -11,6 +11,18 @@ _(none)_
 
 ---
 
+## ✅ Completed - Admin Deployment Readiness (v0.28.5)
+
+- [x] Capture the production blank-page DOM, HTML, asset MIME, and deployment evidence
+- [x] Verify the configured Admin origin advertises the target release
+- [x] Verify initial JavaScript and CSS assets before completing the deployment run
+- [x] Retry transient Pages propagation mismatches without exposing credentials
+- [x] Add regression coverage and synchronize release metadata
+
+Task record: `.codex/tasks/admin-deployment-readiness-2026-07-21.md`
+
+---
+
 ## ✅ Completed - Asynchronous Signed Click Webhook (v0.28.4)
 
 - [x] Add an opt-in `link.clicked` event without enabling it by default

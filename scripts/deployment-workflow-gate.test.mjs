@@ -192,6 +192,8 @@ test('production workflow runs the safety gate before every Cloudflare write', (
   const secrets = workflow.indexOf('- name: Prepare Worker secrets');
   const migrations = workflow.indexOf('- name: Apply D1 migrations');
   const deploy = workflow.indexOf('- name: Deploy Worker');
+  const adminDeploy = workflow.indexOf('- name: Deploy Admin');
+  const adminReady = workflow.indexOf('- name: Verify Admin deployment readiness');
   const siteDeploy = workflow.indexOf('- name: Deploy project site');
 
   assert.ok(gate > -1);
@@ -199,6 +201,8 @@ test('production workflow runs the safety gate before every Cloudflare write', (
   assert.ok(pagesProject < secrets);
   assert.ok(secrets < migrations);
   assert.ok(migrations < deploy);
+  assert.ok(deploy < adminDeploy);
+  assert.ok(adminDeploy < adminReady);
   assert.ok(deploy < siteDeploy);
   for (const name of [
     'LINKETRY_DEPLOYMENT_TRACK',
@@ -212,7 +216,10 @@ test('production workflow runs the safety gate before every Cloudflare write', (
   assert.match(workflow, /uses: actions\/checkout@v6/);
   assert.match(workflow, /uses: actions\/setup-node@v6/);
   assert.doesNotMatch(workflow, /uses: actions\/(?:checkout|setup-node)@v4/);
-  assert.match(workflow, /deploy:\s*\r?\n\s+runs-on: ubuntu-latest\s*\r?\n\s+environment: production/);
+  assert.match(
+    workflow,
+    /deploy:\s*\r?\n\s+runs-on: ubuntu-latest\s*\r?\n\s+environment: production/
+  );
   assert.match(workflow, /LINKETRY_MANUAL_RELEASE_APPROVED: \$\{\{ inputs\.confirm_release \}\}/);
   assert.match(workflow, /node scripts\/deployment-release-approval\.mjs/);
   assert.match(
@@ -231,6 +238,7 @@ test('production workflow runs the safety gate before every Cloudflare write', (
   assert.match(workflow, /inventory_status" -ne 1/);
   assert.match(workflow, /wrangler pages project create/);
   assert.match(workflow, /wrangler deploy --secrets-file/);
+  assert.match(workflow, /node scripts\/admin-live-smoke\.mjs/);
   assert.match(workflow, /secrets\.LINKETRY_ADMIN_TOKEN/);
   assert.match(workflow, /secrets\.LINKETRY_GITHUB_UPDATE_TOKEN/);
   assert.doesNotMatch(workflow, /wrangler secret put LINKETRY_ADMIN_TOKEN/);
