@@ -292,6 +292,15 @@ Status: complete in the repository; deployment remains separated between the aut
 - Public 1.0 still requires independent fresh-account, remote-D1 scale, assistive-technology, and private vulnerability-reporting evidence; the synthetic Demo keeps its isolated `workers.dev` redirect origin
 - Redirect handlers, asynchronous analytics ingestion, D1/KV ownership, migrations, production resources, and stored data are unchanged
 
+## 0.29.2: Admin Cache-Key And DNS Convergence Hardening
+
+Status: in progress; implementation is complete and the reviewed production rollout remains.
+
+- Versioned Admin JavaScript and CSS entry URLs prevent stale custom-domain cache entries from being reused across releases
+- Production deployment can use the dedicated DNS token or the configured Cloudflare API token to enforce the Admin CNAME as DNS-only
+- Canonical readiness continues to reject HTML fallbacks, wrong MIME types, and unsafe cache headers
+- Redirect logic, analytics, D1/KV ownership, migrations, and stored data remain unchanged
+
 ## Long-Term Product Principles
 
 Linketry is intended to remain useful for long-term self-hosted operation, not just a one-time migration tool.

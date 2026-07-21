@@ -4,7 +4,7 @@ import test from 'node:test';
 import { collectInitialAssets, verifyAdminLive, waitForAdminLive } from './admin-live-smoke.mjs';
 
 const adminUrl = 'https://admin.example.com';
-const version = '0.29.1';
+const version = '0.29.2';
 const html = `
   <meta name="linketry-version" content="${version}">
   <script type="module" crossorigin src="/assets/index-release.js"></script>

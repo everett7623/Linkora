@@ -16,7 +16,8 @@ The custom `admin.uukk.de` path was proxied through the zone cache. During Pages
 - [x] Add Admin-owned security headers, require asset revalidation, and move theme initialization to a CSP-compatible external script.
 - [x] Replace the project-site one-year asset cache override with deployment-safe revalidation.
 - [x] Record the owner decision that a branded redirect hostname is unnecessary for the isolated test-only Demo.
-- [ ] Pass the full release regression, push v0.29.1, and verify production HTML, canonical assets, DOM rendering, API health, and DNS state.
+- [x] Pass the full release regression and push v0.29.1; production deployment completed but canonical readiness exposed the remaining proxied edge-cache behavior.
+- [x] Continue the final production recovery in `.codex/tasks/production-admin-cache-hardening-2026-07-22.md`.
 
 Local verification currently passes 81 deployment, 110 Worker, 64 Admin unit, 25 Admin browser, 6 Demo API, and 4 project-site tests; Worker type-check, Admin/Site builds, and the official npm audit also pass.
 

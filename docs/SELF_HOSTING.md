@@ -224,7 +224,7 @@ curl https://go.example.com/health
 Expected shape:
 
 ```json
-{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.29.1" } }
+{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.29.2" } }
 ```
 
 ### Build and Deploy Admin
@@ -277,7 +277,7 @@ For in-app one-click upgrades, add the optional repository secret `LINKETRY_GITH
 4. For a fresh install, run **Deploy Linketry** once; it copies the token into the Worker secret store without printing it. For an existing installation that must stay on its current version, manually run **Sync Online Upgrade Secret**, entering the exact protected Worker name.
 5. Confirm the next update from the Admin banner. Rotate the repository secret and rerun deployment before the token expires.
 
-To let GitHub Actions maintain a custom Admin-domain CNAME automatically, add an optional `CLOUDFLARE_DNS_API_TOKEN` secret restricted to Zone Read and DNS Write for your zone. The workflow keeps this Pages CNAME **DNS only** so zone-level cache rules cannot serve stale SPA fallbacks as JavaScript. Without the token, deployment still succeeds and reports the DNS-only CNAME target for manual setup.
+To let GitHub Actions maintain a custom Admin-domain CNAME automatically, add an optional `CLOUDFLARE_DNS_API_TOKEN` secret restricted to Zone Read and DNS Write for your zone. When that optional secret is absent, the workflow can reuse `CLOUDFLARE_API_TOKEN` if it also has the required zone permissions. The workflow keeps this Pages CNAME **DNS only** so zone-level cache rules cannot serve stale SPA fallbacks as JavaScript. If neither token has DNS permission, deployment reports the DNS-only CNAME target for manual setup.
 
 `deploy:configure --apply` creates and verifies these basic repository variables:
 
@@ -290,7 +290,7 @@ LINKETRY_D1_DATABASE_NAME=linketry-alice-db
 LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.29.1
+LINKETRY_APPROVED_RELEASE=0.29.2
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true
@@ -316,7 +316,7 @@ Leave these unset for the basic deployment; enable them later from the Admin Adv
 
 ```txt
 LINKETRY_KV_PREVIEW_ID=<your-kv-preview-id>
-LINKETRY_VERSION=0.29.1
+LINKETRY_VERSION=0.29.2
 LINKETRY_COMPATIBILITY_DATE=2026-07-08
 LINKETRY_WORKER_DOMAINS=go.example.com,s.example.com
 LINKETRY_R2_BUCKET=linketry-backups

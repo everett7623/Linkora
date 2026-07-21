@@ -241,6 +241,7 @@ test('production workflow runs the safety gate before every Cloudflare write', (
   assert.match(workflow, /node scripts\/admin-live-smoke\.mjs/);
   assert.match(workflow, /proxied: false/);
   assert.doesNotMatch(workflow, /proxied: true/);
+  assert.match(workflow, /CLOUDFLARE_DNS_API_TOKEN: \$\{\{ secrets\.CLOUDFLARE_DNS_API_TOKEN \|\| secrets\.CLOUDFLARE_API_TOKEN \}\}/);
   assert.match(workflow, /DNS-only CNAME/);
   assert.match(workflow, /secrets\.LINKETRY_ADMIN_TOKEN/);
   assert.match(workflow, /secrets\.LINKETRY_GITHUB_UPDATE_TOKEN/);

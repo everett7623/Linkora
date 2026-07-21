@@ -23,7 +23,7 @@ jobs:
     environment: production
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_DNS_API_TOKEN: ${{ secrets.CLOUDFLARE_DNS_API_TOKEN }}
+      CLOUDFLARE_DNS_API_TOKEN: ${{ secrets.CLOUDFLARE_DNS_API_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       LINKETRY_ADMIN_TOKEN_OVERRIDE: ${{ secrets.LINKETRY_ADMIN_TOKEN }}
       LINKETRY_GITHUB_UPDATE_TOKEN_OVERRIDE: ${{ secrets.LINKETRY_GITHUB_UPDATE_TOKEN }}
@@ -178,7 +178,7 @@ jobs:
             ']',
             '',
             '[vars]',
-            `LINKETRY_VERSION = "${env.RESOLVED_LINKETRY_VERSION || '0.29.1'}"`,
+            `LINKETRY_VERSION = "${env.RESOLVED_LINKETRY_VERSION || '0.29.2'}"`,
             `LINKETRY_DAILY_CRON = ${JSON.stringify(dailyCron)}`,
             `LINKETRY_HEALTH_CRON = ${JSON.stringify(healthCron)}`,
             `LINKETRY_UPDATE_REPOSITORY = ${JSON.stringify(env.LINKETRY_UPDATE_REPOSITORY)}`,
@@ -356,7 +356,7 @@ jobs:
       - name: Report manual Linketry Admin DNS requirement
         if: env.CLOUDFLARE_DNS_API_TOKEN == '' && env.LINKETRY_ADMIN_URL != '' && env.LINKETRY_ADMIN_ZONE != '' && env.LINKETRY_PAGES_PROJECT != ''
         run: |
-          echo "Admin DNS automation skipped because the optional CLOUDFLARE_DNS_API_TOKEN secret is not configured."
+          echo "Admin DNS automation skipped because neither the optional CLOUDFLARE_DNS_API_TOKEN nor CLOUDFLARE_API_TOKEN secret is configured."
           echo "Point the Admin hostname to ${LINKETRY_PAGES_PROJECT}.pages.dev as a DNS-only CNAME."
 
       - name: Verify Admin deployment readiness

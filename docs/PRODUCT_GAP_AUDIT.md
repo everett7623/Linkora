@@ -1,6 +1,6 @@
 # Product Gap Audit
 
-Updated: 2026-07-21
+Updated: 2026-07-22
 
 This document tracks what Linketry still needs as a practical open-source, self-hosted short-link platform. It complements `ROADMAP.md`, `SHLINK_FEATURE_GAP.md`, and `SINK_COMPARISON.md` without weakening redirect stability.
 
@@ -16,6 +16,14 @@ The review covered:
 - Current official Shlink, Dub, and Kutt documentation for product comparison
 
 The complete dependency audit reports no known vulnerabilities. Vite is updated to the supported 6.4 line; React, Tailwind, and React Router major releases remain separate work because they need dedicated migration testing.
+
+## Reconciled In 0.29.2
+
+| Area | Status | Notes |
+| --- | --- | --- |
+| Admin cache resilience | Complete | Release-version query keys are added to built entry assets, while readiness still validates canonical MIME and cache behavior. |
+| Production DNS convergence | Complete | The deployment workflow prefers a dedicated DNS token and can reuse the configured Cloudflare API token when that optional secret is absent. |
+| Demo branded redirect | Intentionally omitted | The isolated Demo uses `workers.dev` for redirects; branded Admin/API Pages domains remain sufficient for testing. |
 
 ## Reconciled In 0.29.1
 

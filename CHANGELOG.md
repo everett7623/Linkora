@@ -13,6 +13,19 @@ _(none)_
 
 ---
 
+## [0.29.2] - 2026-07-22
+
+### Fixed
+
+- Added release-version cache keys to Admin JavaScript and CSS entry assets so stale custom-domain edge entries are not reused across releases.
+- Let the production workflow reuse the configured Cloudflare API token for Admin DNS convergence when a dedicated DNS token is absent, while keeping the Admin CNAME DNS-only.
+
+### Tests
+
+- Added build and deployment regression coverage for the Admin asset cache key and DNS token fallback.
+
+---
+
 ## [0.29.1] - 2026-07-21
 
 ### Fixed
