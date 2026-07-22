@@ -6,7 +6,8 @@
     <meta name="theme-color" content="#07111f" />
     <meta
       name="description"
-      content="Linketry is a self-hosted link management, analytics and monitoring platform built for Cloudflare."
+      content="Self-hosted link management, analytics and monitoring on your Cloudflare account."
+      data-i18n-content="meta.homeDescription"
     />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Linketry — Own every link" />
@@ -34,11 +35,11 @@
     />
     <title>Linketry — Own every link</title>
   </head>
-  <body>
-    <a class="skip-link" href="#main">Skip to content</a>
+  <body data-page-title="meta.homeTitle">
+    <a class="skip-link" href="#main" data-i18n="home.skip">Skip to content</a>
     <header class="site-header">
       <div class="shell header-inner">
-        <a class="brand" href="#top" aria-label="Linketry home"
+        <a class="brand" href="#top" aria-label="Linketry home" data-i18n-aria-label="home.brand"
           ><img src="/favicon.svg" width="34" height="34" alt="" /><span>Linketry</span></a
         >
         <button
@@ -48,36 +49,36 @@
           aria-controls="site-navigation"
           data-menu-button
         >
-          <span>Menu</span><i aria-hidden="true"></i>
+          <span data-i18n="nav.menu">Menu</span><i aria-hidden="true"></i>
         </button>
-        <nav id="site-navigation" class="site-nav" aria-label="Primary" data-navigation>
-          <a href="#features">Features</a><a href="#architecture">Architecture</a
-          ><a href="#deploy">Deploy</a><a href="#docs">Docs</a
-          ><a class="nav-demo" href="https://demo.linketry.com">Live Demo</a
+        <nav id="site-navigation" class="site-nav" aria-label="Primary" data-i18n-aria-label="nav.primary" data-navigation>
+          <a href="#features" data-i18n="nav.features">Features</a><a href="#architecture" data-i18n="nav.architecture">Architecture</a
+          ><a href="/deploy/" data-i18n="nav.deploy">Deploy</a><a href="#docs" data-i18n="nav.docs">Docs</a
+          ><a class="nav-demo" href="https://demo.linketry.com" data-i18n="nav.demo">Live Demo</a
           ><a href="https://everettlabs.dev/coffee/" target="_blank" rel="noopener noreferrer"
-            >Coffee</a
+            data-i18n="nav.coffee">Coffee</a
           ><a
-            class="nav-github"
+            class="nav-source"
             href="https://github.com/everett7623/Linketry"
-            aria-label="GitHub"
-            title="GitHub"
+            aria-label="GitHub repository"
+            title="GitHub repository"
             ><svg
               viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              width="18"
+              height="18"
+              fill="currentColor"
               aria-hidden="true"
             >
               <path
-                d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"
+                d="M12 2C6.48 2 2 6.59 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.89-2.78.62-3.37-1.21-3.37-1.21-.45-1.2-1.11-1.52-1.11-1.52-.91-.64.07-.63.07-.63 1 .08 1.53 1.06 1.53 1.06.9 1.57 2.35 1.12 2.92.86.09-.67.35-1.12.64-1.38-2.22-.26-4.56-1.15-4.56-5.1 0-1.13.39-2.05 1.04-2.77-.1-.27-.45-1.31.1-2.73 0 0 .85-.28 2.75 1.06A9.22 9.22 0 0 1 12 6.12c.85 0 1.7.12 2.5.35 1.9-1.34 2.74-1.06 2.74-1.06.55 1.42.2 2.46.1 2.73.65.72 1.04 1.64 1.04 2.77 0 3.96-2.35 4.84-4.58 5.09.36.32.68.93.68 1.88 0 1.36-.01 2.45-.01 2.79 0 .27.18.59.69.49A10.25 10.25 0 0 0 22 12.25C22 6.59 17.52 2 12 2Z"
               />
-              <path d="M9 18c-4.51 2-5-2-7-2" />
-            </svg>
+            </svg><span data-i18n="nav.github">GitHub</span>
           </a>
+          <label class="language-control">
+            <span class="sr-only" data-i18n="nav.language">Language</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 6h-3.1a15.7 15.7 0 0 0-1.16-3.14A8.1 8.1 0 0 1 18.9 8ZM12 4c.83 1.1 1.5 2.47 1.88 4h-3.76C10.5 6.47 11.17 5.1 12 4ZM4.26 14A8.62 8.62 0 0 1 4 12c0-.69.09-1.36.26-2h3.5a17.56 17.56 0 0 0 0 4h-3.5Zm.84 2h3.1a15.7 15.7 0 0 0 1.16 3.14A8.1 8.1 0 0 1 5.1 16Zm3.1-8H5.1a8.1 8.1 0 0 1 4.26-3.14A15.7 15.7 0 0 0 8.2 8Zm3.8 12c-.83-1.1-1.5-2.47-1.88-4h3.76c-.38 1.53-1.05 2.9-1.88 4Zm2.34-6h-4.68a15.62 15.62 0 0 1 0-4h4.68a15.62 15.62 0 0 1 0 4Zm.3 5.14A15.7 15.7 0 0 0 15.8 16h3.1a8.1 8.1 0 0 1-4.26 3.14ZM16.24 14a17.56 17.56 0 0 0 0-4h3.5c.17.64.26 1.31.26 2s-.09 1.36-.26 2h-3.5Z" fill="currentColor" /></svg>
+            <select data-site-locale aria-label="Language" data-i18n-aria-label="nav.language"></select>
+          </label>
         </nav>
       </div>
     </header>
@@ -87,64 +88,59 @@
         <div class="hero-glow" aria-hidden="true"></div>
         <div class="shell hero-grid">
           <div class="hero-copy">
-            <p class="eyebrow"><span></span> Open source · Self-hosted</p>
-            <h1>Own every link.<br /><em>Understand every click.</em></h1>
-            <p class="hero-lede">
-              Short links, analytics, health monitoring, imports, backups and automation—deployed
-              inside your own Cloudflare account.
-            </p>
+            <p class="eyebrow"><span></span> <span data-i18n="home.openSource">Open source · Self-hosted</span></p>
+            <h1><span data-i18n="home.heroLineOne">Own every link.</span><br /><em data-i18n="home.heroLineTwo">Understand every click.</em></h1>
+            <p class="hero-lede" data-i18n="home.heroLede">Short links, analytics, health monitoring, imports, backups and automation—deployed inside your own Cloudflare account.</p>
             <div class="actions">
               <a class="button demo" href="https://demo.linketry.com"
-                >Open live demo <span aria-hidden="true">↗</span></a
+                ><span data-i18n="home.liveDemo">Open live demo</span> <span aria-hidden="true">↗</span></a
               >
-              <a class="button primary" href="#deploy"
-                >Deploy with an AI assistant <span aria-hidden="true">↓</span></a
+              <a class="button primary" href="/deploy/"
+                ><span data-i18n="home.deploy">Explore deployment options</span> <span aria-hidden="true">↓</span></a
               >
               <a class="button secondary" href="https://github.com/everett7623/Linketry"
-                >View on GitHub <span aria-hidden="true">↗</span></a
+                ><span data-i18n="home.github">View on GitHub</span> <span aria-hidden="true">↗</span></a
               >
             </div>
-            <p class="demo-status">
-              Read only <span>·</span> Synthetic data <span>·</span> No token required
-            </p>
+            <p class="demo-status" data-i18n="home.demoStatus">Read only · Synthetic data · No token required</p>
             <ul class="proof">
-              <li>✓ Your data</li>
-              <li>✓ Your domains</li>
-              <li>✓ No per-click fee</li>
+              <li>✓ <span data-i18n="home.proofData">Your data</span></li>
+              <li>✓ <span data-i18n="home.proofDomains">Your domains</span></li>
+              <li>✓ <span data-i18n="home.proofPricing">No per-click fee</span></li>
             </ul>
           </div>
 
-          <div class="link-console" aria-label="Example Linketry redirect">
+          <div class="link-console" aria-label="Example Linketry redirect" data-i18n-aria-label="home.consoleAria">
             <div class="console-bar">
               <span></span><span></span><span></span>
-              <p>Redirect inspector</p>
+              <p data-i18n="home.consoleTitle">Redirect inspector</p>
             </div>
             <div class="console-body">
               <div class="route">
                 <b>L</b>
                 <div>
-                  <small>SHORT LINK</small><code>go.your-domain.com/<strong>launch</strong></code>
+                  <small data-i18n="home.consoleShort">SHORT LINK</small><code>go.your-domain.com/<strong>launch</strong></code>
                 </div>
                 <i>302</i>
               </div>
               <div class="route-path" aria-hidden="true">↓</div>
               <div class="route">
                 <b class="destination">↗</b>
-                <div><small>DESTINATION</small><code>example.com/product/launch</code></div>
+                <div><small data-i18n="home.consoleDestination">DESTINATION</small><code>example.com/product/launch</code></div>
                 <i class="latency">24 ms</i>
               </div>
               <div class="console-stats">
-                <div><strong>12.8k</strong><small>VISITS</small></div>
-                <div><strong>34</strong><small>COUNTRIES</small></div>
-                <div><strong>99.99%</strong><small>UPTIME</small></div>
+                <div><strong>12.8k</strong><small data-i18n="home.consoleVisits">VISITS</small></div>
+                <div><strong>34</strong><small data-i18n="home.consoleCountries">COUNTRIES</small></div>
+                <div><strong>99.99%</strong><small data-i18n="home.consoleUptime">UPTIME</small></div>
               </div>
             </div>
           </div>
         </div>
         <div class="shell platform-strip" aria-label="Cloudflare platform components">
-          <span>RUNS ON</span><strong>Workers</strong><strong>D1</strong><strong>KV</strong
-          ><strong>Pages</strong><strong>R2 <small>optional</small></strong
-          ><strong>Queues <small>optional</small></strong>
+          <span data-i18n="home.platform">RUNS ON</span><strong>Workers</strong><strong>D1</strong><strong>KV</strong
+          ><strong>Pages</strong><strong>R2 <small data-i18n="home.platformOptional">optional</small></strong
+          ><strong>Queues <small data-i18n="home.platformOptional">optional</small></strong>
         </div>
       </section>
 
@@ -152,23 +148,17 @@
         <div class="shell">
           <div class="section-heading">
             <div>
-              <p class="eyebrow"><span></span> A complete link stack</p>
-              <h2>More than a URL shortener.</h2>
+              <p class="eyebrow"><span></span> <span data-i18n="home.featureEyebrow">A complete link stack</span></p>
+              <h2 data-i18n="home.featureTitle">More than a URL shortener.</h2>
             </div>
-            <p>
-              Run the daily link workflow from one calm interface, while keeping D1 as your source
-              of truth and KV as a fast redirect cache.
-            </p>
+            <p data-i18n="home.featureLede">Run the daily link workflow from one calm interface, while keeping D1 as your source of truth and KV as a fast redirect cache.</p>
           </div>
           <div class="feature-grid">
             <article class="feature-card wide">
               <span>01</span>
               <div>
-                <h3>Manage and migrate</h3>
-                <p>
-                  Create, tag, group, archive and bulk-manage links. Import Shlink, JSON or CSV
-                  safely with previews, conflict checks and migration records.
-                </p>
+                <h3 data-i18n="home.featureOneTitle">Manage and migrate</h3>
+                <p data-i18n="home.featureOneText">Create, tag, group, archive and bulk-manage links. Import Shlink, JSON or CSV safely with previews, conflict checks and migration records.</p>
               </div>
               <div class="tag-cloud">
                 <i>/launch</i><i>/docs</i><i>/newsletter</i><i>/campaign</i>
@@ -176,11 +166,8 @@
             </article>
             <article class="feature-card">
               <span>02</span>
-              <h3>Measure what matters</h3>
-              <p>
-                Explore clicks, visitors, countries, devices, referers, campaigns and conversions
-                with saved views and scheduled reports.
-              </p>
+              <h3 data-i18n="home.featureTwoTitle">Measure what matters</h3>
+              <p data-i18n="home.featureTwoText">Explore clicks, visitors, countries, devices, referers, campaigns and conversions with saved views and scheduled reports.</p>
               <div class="mini-bars" aria-hidden="true">
                 <i style="--bar: 46%"></i><i style="--bar: 68%"></i><i style="--bar: 55%"></i
                 ><i style="--bar: 88%"></i><i style="--bar: 72%"></i><i style="--bar: 96%"></i>
@@ -188,21 +175,15 @@
             </article>
             <article class="feature-card">
               <span>03</span>
-              <h3>Monitor and recover</h3>
-              <p>
-                Detect broken destinations, send recovery-aware alerts, keep audit history and
-                protect operations with backups and restore previews.
-              </p>
-              <div class="health"><i></i> All monitored destinations healthy</div>
+              <h3 data-i18n="home.featureThreeTitle">Monitor and recover</h3>
+              <p data-i18n="home.featureThreeText">Detect broken destinations, send recovery-aware alerts, keep audit history and protect operations with backups and restore previews.</p>
+              <div class="health"><i></i> <span data-i18n="home.health">All monitored destinations healthy</span></div>
             </article>
             <article class="feature-card wide">
               <span>04</span>
               <div>
-                <h3>Integrate on a stable API</h3>
-                <p>
-                  Build browser extensions, Shortcuts or internal tools against a versioned OpenAPI
-                  contract, scoped tokens and signed webhooks.
-                </p>
+                <h3 data-i18n="home.featureFourTitle">Integrate on a stable API</h3>
+                <p data-i18n="home.featureFourText">Build browser extensions, Shortcuts or internal tools against a versioned OpenAPI contract, scoped tokens and signed webhooks.</p>
               </div>
               <pre><code><b>GET</b> /api/v1/links
 Authorization: Bearer ••••••••
@@ -216,51 +197,48 @@ Authorization: Bearer ••••••••
       <section class="section product-section">
         <div class="shell product-grid">
           <div class="product-copy">
-            <p class="eyebrow"><span></span> One focused workspace</p>
-            <h2>Clear operations as your link library grows.</h2>
-            <p>
-              Simple mode keeps everyday actions close. Advanced mode reveals analytics, monitoring,
-              automation, backups and API tools when you need them.
-            </p>
+            <p class="eyebrow"><span></span> <span data-i18n="home.productEyebrow">One focused workspace</span></p>
+            <h2 data-i18n="home.productTitle">Clear operations as your link library grows.</h2>
+            <p data-i18n="home.productText">Simple mode keeps everyday actions close. Advanced mode reveals analytics, monitoring, automation, backups and API tools when you need them.</p>
             <ul>
-              <li>✓ English and Simplified Chinese</li>
-              <li>✓ Duplicate destination warnings</li>
-              <li>✓ Password protection starts disabled</li>
-              <li>✓ Exportable data and change records</li>
+              <li>✓ <span data-i18n="home.productOne">English and Simplified Chinese</span></li>
+              <li>✓ <span data-i18n="home.productTwo">Duplicate destination warnings</span></li>
+              <li>✓ <span data-i18n="home.productThree">Password protection starts disabled</span></li>
+              <li>✓ <span data-i18n="home.productFour">Exportable data and change records</span></li>
             </ul>
           </div>
-          <div class="admin-preview" role="img" aria-label="Preview of the Linketry Admin overview">
+          <div class="admin-preview" role="img" aria-label="Preview of the Linketry Admin overview" data-i18n-aria-label="home.previewAria">
             <aside>
               <div><img src="/favicon.svg" alt="" />Linketry</div>
-              <small>DAILY</small><b>⌂ Overview</b><span>⌁ Links</span><span>＋ Create link</span
-              ><span>◇ Tags</span><small>INSIGHTS</small><span>▥ Analytics</span
-              ><span>◉ Health checks</span><small>SYSTEM</small><span>⚙ Settings</span>
+              <small data-i18n="home.previewDaily">DAILY</small><b>⌂ <span data-i18n="home.previewOverview">Overview</span></b><span>⌁ <span data-i18n="home.previewLinks">Links</span></span><span>＋ <span data-i18n="home.previewCreate">Create link</span></span
+              ><span>◇ <span data-i18n="home.previewTags">Tags</span></span><small data-i18n="home.previewInsights">INSIGHTS</small><span>▥ <span data-i18n="home.previewAnalytics">Analytics</span></span
+              ><span>◉ <span data-i18n="home.previewHealth">Health checks</span></span><small data-i18n="home.previewSystem">SYSTEM</small><span>⚙ <span data-i18n="home.previewSettings">Settings</span></span>
             </aside>
             <div class="preview-main">
               <header>
                 <div>
-                  <h3>Overview</h3>
-                  <p>Your link workspace</p>
+                  <h3 data-i18n="home.previewOverview">Overview</h3>
+                  <p data-i18n="home.previewWorkspace">Your link workspace</p>
                 </div>
-                <button>＋ Create link</button>
+                <button>＋ <span data-i18n="home.previewCreate">Create link</span></button>
               </header>
               <div class="metrics">
-                <div><small>TOTAL LINKS</small><strong>1,248</strong><i>⌁</i></div>
-                <div><small>TOTAL CLICKS</small><strong>82,491</strong><i>↗</i></div>
-                <div><small>TODAY</small><strong>734</strong><i>↗</i></div>
+                <div><small data-i18n="home.previewTotalLinks">TOTAL LINKS</small><strong>1,248</strong><i>⌁</i></div>
+                <div><small data-i18n="home.previewTotalClicks">TOTAL CLICKS</small><strong>82,491</strong><i>↗</i></div>
+                <div><small data-i18n="home.previewToday">TODAY</small><strong>734</strong><i>↗</i></div>
               </div>
               <div class="preview-panels">
                 <div>
-                  <b>Recently created</b>
-                  <p><span>/launch</span><small>42 clicks</small></p>
-                  <p><span>/docs</span><small>18 clicks</small></p>
-                  <p><span>/news</span><small>7 clicks</small></p>
+                  <b data-i18n="home.previewRecent">Recently created</b>
+                  <p><span>/launch</span><small>42 <span data-i18n="home.previewClickUnit">clicks</span></small></p>
+                  <p><span>/docs</span><small>18 <span data-i18n="home.previewClickUnit">clicks</span></small></p>
+                  <p><span>/news</span><small>7 <span data-i18n="home.previewClickUnit">clicks</span></small></p>
                 </div>
                 <div>
-                  <b>Top links</b>
-                  <p><span>/product</span><small>12.8k</small></p>
-                  <p><span>/github</span><small>9.4k</small></p>
-                  <p><span>/start</span><small>7.1k</small></p>
+                  <b data-i18n="home.previewTop">Top links</b>
+                  <p><span>/product</span><small>12.8k <span data-i18n="home.previewClickUnit">clicks</span></small></p>
+                  <p><span>/github</span><small>9.4k <span data-i18n="home.previewClickUnit">clicks</span></small></p>
+                  <p><span>/start</span><small>7.1k <span data-i18n="home.previewClickUnit">clicks</span></small></p>
                 </div>
               </div>
             </div>
@@ -272,179 +250,43 @@ Authorization: Bearer ••••••••
         <div class="shell">
           <div class="section-heading">
             <div>
-              <p class="eyebrow"><span></span> Built for the edge</p>
-              <h2>Fast redirects. Durable truth.</h2>
+              <p class="eyebrow"><span></span> <span data-i18n="home.architectureEyebrow">Built for the edge</span></p>
+              <h2 data-i18n="home.architectureTitle">Fast redirects. Durable truth.</h2>
             </div>
-            <p>
-              The redirect path stays small. Analytics and monitoring run outside the critical
-              response, so observability cannot hold up a visitor.
-            </p>
+            <p data-i18n="home.architectureText">The redirect path stays small. Analytics and monitoring run outside the critical response, so observability cannot hold up a visitor.</p>
           </div>
-          <div class="architecture-map" role="img" aria-label="Linketry redirect architecture">
+          <div class="architecture-map" role="img" aria-label="Linketry redirect architecture" data-i18n-aria-label="home.architectureAria">
             <div class="arch-node">
-              <small>REQUEST</small><strong>Visitor</strong><span>go.example.com/docs</span>
+              <small data-i18n="home.architectureRequest">REQUEST</small><strong data-i18n="home.architectureVisitor">Visitor</strong><span>go.example.com/docs</span>
             </div>
             <div class="arch-arrow"><small>HTTPS</small>→</div>
             <div class="arch-node worker">
-              <small>EDGE</small><strong>Cloudflare Worker</strong><span>Redirect + Admin API</span>
+              <small data-i18n="home.architectureEdge">EDGE</small><strong data-i18n="home.architectureWorker">Cloudflare Worker</strong><span data-i18n="home.architectureAdminApi">Redirect + Admin API</span>
             </div>
-            <div class="branches"><i>cache →</i><i>truth →</i><i>async →</i></div>
+            <div class="branches"><i><span data-i18n="home.architectureCacheFlow">cache</span> →</i><i><span data-i18n="home.architectureTruthFlow">truth</span> →</i><i><span data-i18n="home.architectureAsyncFlow">async</span> →</i></div>
             <div class="stores">
-              <div><small>FAST PATH</small><strong>KV</strong><span>Redirect cache</span></div>
+              <div><small data-i18n="home.architectureFastPath">FAST PATH</small><strong>KV</strong><span data-i18n="home.architectureCache">Redirect cache</span></div>
               <div class="primary-store">
-                <small>PRIMARY</small><strong>D1</strong><span>Links + analytics</span>
+                <small data-i18n="home.architecturePrimary">PRIMARY</small><strong>D1</strong><span data-i18n="home.architectureLinksAnalytics">Links + analytics</span>
               </div>
               <div>
-                <small>OPTIONAL</small><strong>R2 / Queue</strong><span>Backup + events</span>
+                <small data-i18n="home.architectureOptional">OPTIONAL</small><strong>R2 / Queue</strong><span data-i18n="home.architectureBackupEvents">Backup + events</span>
               </div>
             </div>
           </div>
-          <p class="architecture-note">
-            <span>Principle</span> D1 is always the source of truth. KV accelerates redirects but
-            never owns primary link state.
-          </p>
+          <p class="architecture-note" data-i18n-html="home.architectureNote"><span>Principle</span> D1 is always the source of truth. KV accelerates redirects but never owns primary link state.</p>
         </div>
       </section>
 
-      <section id="deploy" class="section deploy-section">
-        <div class="shell">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow"><span></span> Beginner-friendly self-hosting</p>
-              <h2>Two safe ways to deploy.</h2>
-            </div>
-            <p>
-              Choose guided help or run the commands yourself. Both paths use the same reviewed
-              scripts, dry runs and confirmation gates.
-            </p>
+      <section class="section deployment-bridge">
+        <div class="shell deployment-bridge-inner">
+          <div>
+            <p class="eyebrow"><span></span> <span data-i18n="home.deployEyebrow">Self-hosted on Cloudflare</span></p>
+            <h2 data-i18n="home.deployTitle">A deployment path that stays understandable.</h2>
           </div>
-          <ul class="deploy-proof" aria-label="Beginner deployment benefits">
-            <li><strong>No VPS or Docker</strong><span>Runs on Cloudflare</span></li>
-            <li><strong>Free-tier friendly</strong><span>Pay only if usage grows</span></li>
-            <li>
-              <strong>Your account, your data</strong><span>D1 stays under your control</span>
-            </li>
-            <li><strong>Preview before writes</strong><span>Exact confirmation required</span></li>
-          </ul>
-          <div class="deploy-prerequisite">
-            <span>Before you start</span>
-            <p>
-              You need a GitHub account, a Cloudflare account and one hostname such as
-              <code>go.example.com</code>. Cloudflare Pages supplies the Admin URL automatically.
-            </p>
-          </div>
-          <div class="deploy-routes">
-            <article class="deploy-route recommended">
-              <p class="route-label">A · Recommended for beginners</p>
-              <h3>Deploy with an AI assistant</h3>
-              <p class="route-summary">
-                Open your fork in Codex, Claude Code or Cursor, then give it the guarded prompt
-                below. It will explain each choice and pause before any Cloudflare or GitHub write.
-              </p>
-              <ol class="route-steps">
-                <li>
-                  <span>1</span>
-                  <p>
-                    <a href="https://github.com/everett7623/Linketry/fork">Fork Linketry</a> into
-                    your own GitHub account.
-                  </p>
-                </li>
-                <li>
-                  <span>2</span>
-                  <p>Clone your fork and open the project in your AI assistant.</p>
-                </li>
-                <li>
-                  <span>3</span>
-                  <p>Copy this prompt and follow the assistant's checkpoints.</p>
-                </li>
-              </ol>
-              <div class="prompt-shell">
-                <div class="prompt-header">
-                  <span>Safe deployment prompt</span>
-                  <button
-                    type="button"
-                    class="copy-button"
-                    data-copy-deploy-prompt="ai-deploy-prompt"
-                    aria-describedby="deploy-copy-status"
-                  >
-                    Copy prompt
-                  </button>
-                </div>
-                <pre
-                  id="ai-deploy-prompt"
-                  tabindex="0"
-                ><code data-deploy-prompt>Help me deploy Linketry from my fork to my own Cloudflare account.
-
-1. Read AGENTS.md and docs/SELF_HOSTING.md before acting.
-2. Use the basic fresh-install profile: one Worker hostname, D1, KV and the automatic Pages Admin URL. Do not enable optional R2, Queue or branded Admin DNS.
-3. Run deploy:bootstrap and deploy:configure in dry-run mode first. Show me the resource plan and exact confirmation phrase before every apply or deployment.
-4. Keep Cloudflare and GitHub tokens out of source files, logs and command arguments. Ask me to enter them only through supported hidden prompts or secret stores.
-5. Stop on any safety-gate failure. Do not bypass migration, account or domain checks.
-6. After deployment, verify /health, the Admin login page and one test short link.</code></pre>
-              </div>
-              <p id="deploy-copy-status" class="copy-status" aria-live="polite">
-                The prompt never asks you to paste a token into chat or commit it to the repository.
-              </p>
-            </article>
-
-            <article class="deploy-route">
-              <p class="route-label">B · Guided command line</p>
-              <h3>Run the maintained workflow yourself</h3>
-              <p class="route-summary">
-                Best when you already use GitHub CLI and Wrangler. Every resource is previewed
-                before it is created or connected.
-              </p>
-              <ol class="route-steps compact">
-                <li>
-                  <span>1</span>
-                  <p>Install dependencies and sign in to Cloudflare.</p>
-                </li>
-                <li>
-                  <span>2</span>
-                  <p>Preview, review and create only the required D1 and KV.</p>
-                </li>
-                <li>
-                  <span>3</span>
-                  <p>Preview repository settings, then start the protected workflow.</p>
-                </li>
-              </ol>
-              <pre
-                class="deploy-command"
-                tabindex="0"
-                aria-label="PowerShell deployment quick path"
-              ><code>npm ci
-npx wrangler login
-npm run deploy:bootstrap -- --prefix linketry-you --domain go.example.com --account-id &lt;account-id&gt;
-
-# Review the dry-run, then repeat it with the printed
-# --apply --confirm phrase.
-
-$repo = 'OWNER/REPOSITORY'
-gh secret set CLOUDFLARE_API_TOKEN --repo $repo
-gh api --method PUT "repos/$repo/environments/production"
-npm run deploy:configure -- --repo $repo --prefix linketry-you --domain go.example.com --account-id &lt;account-id&gt;
-
-# Review this dry-run, then repeat it with the printed
-# --apply --confirm phrase before starting deployment.
-gh workflow run deploy.yml --repo $repo --ref main --field confirm_release=true</code></pre>
-              <a
-                class="route-link"
-                href="https://github.com/everett7623/Linketry/blob/main/docs/SELF_HOSTING.md"
-                >Open the complete command guide ↗</a
-              >
-            </article>
-          </div>
-          <div class="deploy-callout">
-            <div>
-              <strong>Both routes keep the same safety boundaries.</strong>
-              <p>
-                Fresh installs create only reviewed resources. Existing installations keep their
-                bindings and require a verified backup before upgrades.
-              </p>
-            </div>
-            <a href="https://github.com/everett7623/Linketry/blob/main/docs/DEPLOYMENT_PREFLIGHT.md"
-              >Read the safety model ↗</a
-            >
+          <div>
+            <p data-i18n="home.deployText">Start from Cloudflare or follow the reviewed repository workflow. Both paths keep resource ownership, secrets, dry runs and confirmation gates explicit.</p>
+            <a class="button primary" href="/deploy/"><span data-i18n="home.deployAction">View deployment paths</span> <span aria-hidden="true">↗</span></a>
           </div>
         </div>
       </section>
@@ -453,35 +295,35 @@ gh workflow run deploy.yml --repo $repo --ref main --field confirm_release=true<
         <div class="shell">
           <div class="section-heading">
             <div>
-              <p class="eyebrow"><span></span> Open by default</p>
-              <h2>Docs for operators and builders.</h2>
+              <p class="eyebrow"><span></span> <span data-i18n="home.docsEyebrow">Open by default</span></p>
+              <h2 data-i18n="home.docsTitle">Docs for operators and builders.</h2>
             </div>
-            <p>Every feature, deployment track and recovery path lives with the source.</p>
+            <p data-i18n="home.docsText">Every feature, deployment track and recovery path lives with the source.</p>
           </div>
           <div class="docs-grid">
             <a href="https://github.com/everett7623/Linketry/blob/main/docs/SELF_HOSTING.md"
               ><span>01</span>
-              <h3>Self-hosting</h3>
-              <p>Provision D1 and KV, deploy, log in and run smoke checks.</p>
-              <b>Open guide ↗</b></a
+              <h3 data-i18n="home.docsSelfTitle">Self-hosting</h3>
+              <p data-i18n="home.docsSelfText">Provision D1 and KV, deploy, log in and run smoke checks.</p>
+              <b><span data-i18n="home.docsSelfAction">Open guide</span> ↗</b></a
             >
             <a href="https://github.com/everett7623/Linketry/blob/main/docs/API.md"
               ><span>02</span>
-              <h3>API contract</h3>
-              <p>Use the authenticated versioned API and OpenAPI document.</p>
-              <b>Read API docs ↗</b></a
+              <h3 data-i18n="home.docsApiTitle">API contract</h3>
+              <p data-i18n="home.docsApiText">Use the authenticated versioned API and OpenAPI document.</p>
+              <b><span data-i18n="home.docsApiAction">Read API docs</span> ↗</b></a
             >
             <a href="https://github.com/everett7623/Linketry/blob/main/docs/BACKUP_AND_RESTORE.md"
               ><span>03</span>
-              <h3>Backup & recovery</h3>
-              <p>Export portable data and preview restores before writing.</p>
-              <b>Plan recovery ↗</b></a
+              <h3 data-i18n="home.docsBackupTitle">Backup & recovery</h3>
+              <p data-i18n="home.docsBackupText">Export portable data and preview restores before writing.</p>
+              <b><span data-i18n="home.docsBackupAction">Plan recovery</span> ↗</b></a
             >
             <a href="https://github.com/everett7623/Linketry/blob/main/docs/ROADMAP.md"
               ><span>04</span>
-              <h3>Roadmap</h3>
-              <p>See what is complete and which ideas remain deferred.</p>
-              <b>View roadmap ↗</b></a
+              <h3 data-i18n="home.docsRoadmapTitle">Roadmap</h3>
+              <p data-i18n="home.docsRoadmapText">See what is complete and which ideas remain deferred.</p>
+              <b><span data-i18n="home.docsRoadmapAction">View roadmap</span> ↗</b></a
             >
           </div>
         </div>
@@ -490,26 +332,24 @@ gh workflow run deploy.yml --repo $repo --ref main --field confirm_release=true<
       <section class="section roadmap-section">
         <div class="shell roadmap-grid">
           <div>
-            <p class="eyebrow"><span></span> Road to 1.0</p>
-            <h2>Built in public, one stable layer at a time.</h2>
+            <p class="eyebrow"><span></span> <span data-i18n="home.roadmapEyebrow">Road to 1.0</span></p>
+            <h2 data-i18n="home.roadmapTitle">Built in public, one stable layer at a time.</h2>
           </div>
           <div class="roadmap-list">
             <article class="complete">
-              <span>COMPLETE</span>
-              <h3>Core link platform</h3>
-              <p>Redirects, Admin, analytics, monitoring, migration, backups and OpenAPI.</p>
+              <span data-i18n="home.roadmapComplete">Complete</span>
+              <h3 data-i18n="home.roadmapCoreTitle">Core link platform</h3>
+              <p data-i18n="home.roadmapCoreText">Redirects, Admin, analytics, monitoring, migration, backups and OpenAPI.</p>
             </article>
             <article class="active">
-              <span>IN PROGRESS</span>
-              <h3>Public launch foundation</h3>
-              <p>Beginner deployment, project site, isolated Demo and operational hardening.</p>
+              <span data-i18n="home.roadmapActive">In progress</span>
+              <h3 data-i18n="home.roadmapActiveTitle">Public launch foundation</h3>
+              <p data-i18n="home.roadmapActiveText">Beginner deployment, project site, isolated Demo and operational hardening.</p>
             </article>
             <article>
-              <span>PLANNED</span>
-              <h3>Access and integrations</h3>
-              <p>
-                Optional Cloudflare Access, async events, card views and richer link presentation.
-              </p>
+              <span data-i18n="home.roadmapPlanned">Planned</span>
+              <h3 data-i18n="home.roadmapPlannedTitle">Access and integrations</h3>
+              <p data-i18n="home.roadmapPlannedText">Optional Cloudflare Access, async events, card views and richer link presentation.</p>
             </article>
           </div>
         </div>
@@ -518,16 +358,16 @@ gh workflow run deploy.yml --repo $repo --ref main --field confirm_release=true<
       <section class="final-cta">
         <div class="shell">
           <div>
-            <p class="eyebrow"><span></span> Your links, your infrastructure</p>
-            <h2>Start with one link.<br />Keep control as you grow.</h2>
+            <p class="eyebrow"><span></span> <span data-i18n="home.ctaEyebrow">Your links, your infrastructure</span></p>
+            <h2 data-i18n-html="home.ctaTitle">Start with one link.<br />Keep control as you grow.</h2>
           </div>
           <div class="actions">
             <a class="button primary" href="https://github.com/everett7623/Linketry"
-              >Get Linketry on GitHub ↗</a
+              ><span data-i18n="home.ctaGithub">Get Linketry on GitHub</span> ↗</a
             ><a
               class="button secondary"
               href="https://github.com/everett7623/Linketry/blob/main/docs/SELF_HOSTING.md"
-              >Read the guide</a
+              data-i18n="home.ctaGuide">Read the guide</a
             >
           </div>
         </div>
@@ -539,19 +379,19 @@ gh workflow run deploy.yml --repo $repo --ref main --field confirm_release=true<
         <a class="brand" href="#top"
           ><img src="/favicon.svg" width="30" height="30" alt="" /><span>Linketry</span></a
         >
-        <p>Self-hosted link management, analytics and monitoring.</p>
+        <p data-i18n="footer.description">Self-hosted link management, analytics and monitoring.</p>
         <nav aria-label="Footer">
-          <a href="https://demo.linketry.com">Live Demo</a
+          <a href="https://demo.linketry.com" data-i18n="nav.demo">Live Demo</a
           ><a href="https://everettlabs.dev/coffee/" target="_blank" rel="noopener noreferrer"
-            >Coffee</a
+            data-i18n="nav.coffee">Coffee</a
           ><a href="https://github.com/everett7623/Linketry">GitHub</a
-          ><a href="https://github.com/everett7623/Linketry/blob/main/LICENSE">GPL-3.0</a
-          ><a href="https://github.com/everett7623/Linketry/blob/main/docs/ROADMAP.md">Roadmap</a>
+          ><a href="https://github.com/everett7623/Linketry/blob/main/LICENSE" data-i18n="footer.license">GPL-3.0</a
+          ><a href="https://github.com/everett7623/Linketry/blob/main/docs/ROADMAP.md" data-i18n="footer.roadmap">Roadmap</a>
         </nav>
       </div>
       <div class="shell footer-bottom">
         <span>© <span data-year></span> Linketry</span
-        ><span>Built for Cloudflare. Owned by you.</span>
+        ><span data-i18n="footer.ownership">Built for Cloudflare. Owned by you.</span>
       </div>
     </footer>
     <script type="module" src="/src/main.ts"></script>

@@ -3,8 +3,14 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const page = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+const deployPage = await readFile(new URL('../deploy/index.html', import.meta.url), 'utf8');
 const headers = await readFile(new URL('../public/_headers', import.meta.url), 'utf8');
+const sitemap = await readFile(new URL('../public/sitemap.xml', import.meta.url), 'utf8');
 const script = await readFile(new URL('../src/main.ts', import.meta.url), 'utf8');
+const localeScript = await readFile(new URL('../src/siteI18n.ts', import.meta.url), 'utf8');
+const messages = await readFile(new URL('../src/siteMessages.ts', import.meta.url), 'utf8');
+const visualMessages = await readFile(new URL('../src/siteVisualMessages.ts', import.meta.url), 'utf8');
+const viteConfig = await readFile(new URL('../vite.config.ts', import.meta.url), 'utf8');
 
 test('project site publishes the complete public-launch content contract', () => {
   for (const content of [
@@ -12,7 +18,7 @@ test('project site publishes the complete public-launch content contract', () =>
     'A complete link stack',
     'Preview of the Linketry Admin overview',
     'Built for the edge',
-    'Two safe ways to deploy',
+    'A deployment path that stays understandable',
     'Docs for operators and builders',
     'Road to 1.0',
     'GPL-3.0',
@@ -21,24 +27,31 @@ test('project site publishes the complete public-launch content contract', () =>
   }
 });
 
-test('project site presents guarded beginner deployment choices', () => {
+test('project site exposes a dedicated deployment route from primary actions', () => {
+  assert.match(page, /href="\/deploy\/"/);
+  assert.doesNotMatch(page, /id="deploy"/);
+  assert.match(viteConfig, /deploy:\s*new URL\('\.\/deploy\/index\.html'/);
+  assert.match(sitemap, /https:\/\/linketry\.com\/deploy\//);
+});
+
+test('deployment page presents a Cloudflare launch and guarded repository workflow', () => {
   for (const content of [
-    'A · Recommended for beginners',
-    'Deploy with an AI assistant',
-    'B · Guided command line',
-    'Preview before writes',
-    'No VPS or Docker',
+    'A · Cloudflare Quick Deploy',
+    'Start from the Cloudflare dashboard',
+    'B · Reviewed repository workflow',
+    'Provision exactly what you approve',
+    'A secure first install cannot be configuration-free',
     'docs/SELF_HOSTING.md',
-    'environments/production',
-    'Stop on any safety-gate failure',
+    'UPGRADING_PRE_0_10.md',
   ]) {
-    assert.match(page, new RegExp(content.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    assert.match(deployPage, new RegExp(content.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
 
-  assert.match(page, /data-copy-deploy-prompt="ai-deploy-prompt"/);
-  assert.match(page, /id="deploy-copy-status"[^>]*aria-live="polite"/);
+  assert.match(deployPage, /https:\/\/deploy\.workers\.cloudflare\.com\/\?url=https:\/\/github\.com\/everett7623\/Linketry/);
+  assert.match(deployPage, /data-copy-deploy-prompt="ai-deploy-prompt"/);
+  assert.match(deployPage, /id="deploy-copy-status"[^>]*aria-live="polite"/);
   assert.match(script, /navigator\.clipboard\.writeText\(promptText\)/);
-  assert.doesNotMatch(page, /100% free|free forever/i);
+  assert.doesNotMatch(deployPage, /100% free|free forever|zero configuration/i);
 });
 
 test('project site uses canonical Linketry identity and public links', () => {
@@ -54,10 +67,31 @@ test('project site uses canonical Linketry identity and public links', () => {
   assert.doesNotMatch(page, /Linkora/i);
 });
 
-test('primary navigation presents GitHub as an accessible icon', () => {
-  assert.match(page, /class="nav-github"[^>]*aria-label="GitHub"[^>]*title="GitHub"/);
-  assert.match(page, /class="nav-github"[\s\S]*?<svg[\s\S]*?aria-hidden="true"/);
-  assert.doesNotMatch(page, /class="nav-github"[^>]*>\s*GitHub\s*<\/a>/);
+test('primary navigation presents GitHub with a recognizable mark and label', () => {
+  assert.match(page, /class="nav-source"[^>]*aria-label="GitHub repository"[^>]*title="GitHub repository"/);
+  assert.match(page, /class="nav-source"[\s\S]*?<svg[\s\S]*?fill="currentColor"/);
+  assert.match(page, /class="nav-source"[\s\S]*?<span data-i18n="nav\.github">GitHub<\/span>/);
+});
+
+test('site localization defaults to English and registers complete English and Simplified Chinese catalogs', () => {
+  assert.match(messages, /DEFAULT_SITE_LOCALE: SiteLocale = 'en'/);
+  assert.match(messages, /code: 'zh-CN', label: '简体中文'/);
+  assert.match(localeScript, /SITE_LOCALE_STORAGE_KEY/);
+  assert.match(localeScript, /new URLSearchParams\(window\.location\.search\)\.get\('lang'\)/);
+  assert.match(localeScript, /window\.localStorage\.getItem/);
+  assert.match(localeScript, /data-site-locale/);
+  assert.match(page, /data-site-locale/);
+  assert.match(deployPage, /data-site-locale/);
+
+  const localizedKeys = [...`${page}\n${deployPage}`.matchAll(/data-i18n(?:-[a-z-]+)?="([^"]+)"/g)].map(
+    ([, key]) => key
+  );
+  for (const key of localizedKeys) {
+    assert.match(
+      `${messages}\n${visualMessages}`,
+      new RegExp(`['"]${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}['"]`)
+    );
+  }
 });
 
 test('external coffee links do not retain opener access', () => {

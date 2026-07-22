@@ -13,6 +13,27 @@ _(none)_
 
 ---
 
+## [0.29.7] - 2026-07-22
+
+### Added
+
+- Added the dedicated public deployment route at `/deploy/`, separating the Cloudflare Quick Deploy launch from Linketry's reviewed repository workflow.
+- Added an extensible public-site locale registry with English as the initial default, complete Simplified Chinese content, URL `?lang=` support, and browser-local preference persistence.
+
+### Changed
+
+- Replaced the long homepage deployment walkthrough with a focused entry to the new deployment page.
+- Made the Cloudflare launcher explicit about first-install D1, KV, Pages/Admin, account, and private-secret choices instead of presenting a misleading zero-configuration claim.
+- Replaced the ambiguous outline GitHub glyph with a filled GitHub mark and a visible GitHub label in desktop and mobile navigation.
+
+### Tests
+
+- Added multi-page site coverage for the `/deploy/` build entry, sitemap, Cloudflare launch URL, reviewed workflow, localization registry, and GitHub identifier.
+- Verified the deployment page at desktop and 390px mobile widths, including the mobile language menu, full Simplified Chinese switching, locale persistence, and zero browser warnings.
+- Worker, redirects, Admin, API, D1, KV, migrations, deployment credentials, and production resources are unchanged.
+
+---
+
 ## [0.29.6] - 2026-07-22
 
 ### Added

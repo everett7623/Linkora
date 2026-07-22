@@ -5,6 +5,18 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
+## ✅ Completed - Public Deployment Page And Localization (v0.29.7)
+
+- [x] Read the live site, deployment documentation, bootstrap behavior, and Cloudflare launch boundary
+- [x] Add a dedicated `/deploy/` route with Cloudflare Quick Deploy and reviewed repository workflow paths
+- [x] Add English-default and Simplified-Chinese public-site localization with future locale registration
+- [x] Replace the ambiguous GitHub icon with a recognizable labeled identifier
+- [x] Complete release metadata, full site regression, and desktop/mobile verification record
+
+Task record: `.codex/tasks/site-deploy-localization-2026-07-22.md`
+
+---
+
 ## Completed - Beginner-Friendly Site Deployment (v0.29.6)
 
 - [x] Review the current Linketry project site and the EdgeEver reference structure

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07111f" />
+    <meta
+      name="description"
+      content="Choose an honest Cloudflare Quick Deploy launch or a reviewed Linketry repository workflow."
+      data-i18n-content="meta.deployDescription"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Deploy Linketry on Cloudflare" />
+    <meta property="og:url" content="https://linketry.com/deploy/" />
+    <meta property="og:image" content="https://linketry.com/favicon.svg" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="canonical" href="https://linketry.com/deploy/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-light.svg" type="image/svg+xml" media="(prefers-color-scheme: light)" />
+    <title>Deploy Linketry on Cloudflare</title>
+  </head>
+  <body data-page-title="meta.deployTitle">
+    <a class="skip-link" href="#deploy-options" data-i18n="deploy.skip">Skip to deployment options</a>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="brand" href="/" aria-label="Linketry home" data-i18n-aria-label="home.brand"
+          ><img src="/favicon.svg" width="34" height="34" alt="" /><span>Linketry</span></a
+        >
+        <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-navigation" data-menu-button>
+          <span data-i18n="nav.menu">Menu</span><i aria-hidden="true"></i>
+        </button>
+        <nav id="site-navigation" class="site-nav" aria-label="Primary" data-i18n-aria-label="nav.primary" data-navigation>
+          <a href="/#features" data-i18n="nav.features">Features</a><a href="/#architecture" data-i18n="nav.architecture">Architecture</a
+          ><a class="nav-current" href="#deploy-options" data-i18n="nav.deploy">Deploy</a><a href="/#docs" data-i18n="nav.docs">Docs</a
+          ><a class="nav-demo" href="https://demo.linketry.com" data-i18n="nav.demo">Live Demo</a
+          ><a href="https://everettlabs.dev/coffee/" target="_blank" rel="noopener noreferrer" data-i18n="nav.coffee">Coffee</a
+          ><a class="nav-source" href="https://github.com/everett7623/Linketry" aria-label="GitHub repository" title="GitHub repository"
+            ><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.59 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.89-2.78.62-3.37-1.21-3.37-1.21-.45-1.2-1.11-1.52-1.11-1.52-.91-.64.07-.63.07-.63 1 .08 1.53 1.06 1.53 1.06.9 1.57 2.35 1.12 2.92.86.09-.67.35-1.12.64-1.38-2.22-.26-4.56-1.15-4.56-5.1 0-1.13.39-2.05 1.04-2.77-.1-.27-.45-1.31.1-2.73 0 0 .85-.28 2.75 1.06A9.22 9.22 0 0 1 12 6.12c.85 0 1.7.12 2.5.35 1.9-1.34 2.74-1.06 2.74-1.06.55 1.42.2 2.46.1 2.73.65.72 1.04 1.64 1.04 2.77 0 3.96-2.35 4.84-4.58 5.09.36.32.68.93.68 1.88 0 1.36-.01 2.45-.01 2.79 0 .27.18.59.69.49A10.25 10.25 0 0 0 22 12.25C22 6.59 17.52 2 12 2Z" /></svg><span data-i18n="nav.github">GitHub</span>
+          </a>
+          <label class="language-control">
+            <span class="sr-only" data-i18n="nav.language">Language</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 6h-3.1a15.7 15.7 0 0 0-1.16-3.14A8.1 8.1 0 0 1 18.9 8ZM12 4c.83 1.1 1.5 2.47 1.88 4h-3.76C10.5 6.47 11.17 5.1 12 4ZM4.26 14A8.62 8.62 0 0 1 4 12c0-.69.09-1.36.26-2h3.5a17.56 17.56 0 0 0 0 4h-3.5Zm.84 2h3.1a15.7 15.7 0 0 0 1.16 3.14A8.1 8.1 0 0 1 5.1 16Zm3.1-8H5.1a8.1 8.1 0 0 1 4.26-3.14A15.7 15.7 0 0 0 8.2 8Zm3.8 12c-.83-1.1-1.5-2.47-1.88-4h3.76c-.38 1.53-1.05 2.9-1.88 4Zm2.34-6h-4.68a15.62 15.62 0 0 1 0-4h4.68a15.62 15.62 0 0 1 0 4Zm.3 5.14A15.7 15.7 0 0 0 15.8 16h3.1a8.1 8.1 0 0 1-4.26 3.14ZM16.24 14a17.56 17.56 0 0 0 0-4h3.5c.17.64.26 1.31.26 2s-.09 1.36-.26 2h-3.5Z" fill="currentColor" /></svg>
+            <select data-site-locale aria-label="Language" data-i18n-aria-label="nav.language"></select>
+          </label>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="deploy-page">
+      <section class="deploy-hero">
+        <div class="shell deploy-hero-inner">
+          <p class="eyebrow"><span></span> <span data-i18n="deploy.eyebrow">Cloudflare deployment</span></p>
+          <h1 data-i18n="deploy.title">Deploy Linketry with the right amount of control.</h1>
+          <p class="deploy-hero-lede" data-i18n="deploy.lede">Start in Cloudflare when you want a fast dashboard launch, or use the reviewed repository workflow when you need an auditable resource plan. Both paths keep your account and data in your hands.</p>
+          <div class="actions">
+            <a class="button cloudflare-launch" href="https://deploy.workers.cloudflare.com/?url=https://github.com/everett7623/Linketry" target="_blank" rel="noopener noreferrer"><span data-i18n="deploy.quickAction">Launch on Cloudflare</span> <span aria-hidden="true">↗</span></a>
+            <a class="button secondary" href="https://github.com/everett7623/Linketry/blob/main/docs/SELF_HOSTING.md"><span data-i18n="deploy.guideAction">Read self-hosting guide</span> <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section id="deploy-options" class="section deploy-options-section">
+        <div class="shell">
+          <div class="deploy-track-grid">
+            <article class="deploy-track quick-track">
+              <p class="route-label" data-i18n="deploy.quickLabel">A · Cloudflare Quick Deploy</p>
+              <h2 data-i18n="deploy.quickTitle">Start from the Cloudflare dashboard.</h2>
+              <p class="route-summary" data-i18n="deploy.quickText">The official launcher opens Cloudflare's authenticated repository-deployment flow. It is the fastest way to begin a new installation from your own account.</p>
+              <ol class="route-steps">
+                <li><span>1</span><p data-i18n="deploy.quickStepOne">Sign in to the Cloudflare account that will own the application.</p></li>
+                <li><span>2</span><p data-i18n="deploy.quickStepTwo">Review the repository and choose the deployment target before creating it.</p></li>
+                <li><span>3</span><p data-i18n="deploy.quickStepThree">Complete the required D1, KV, Pages/Admin and private Admin-token choices in the guided setup.</p></li>
+              </ol>
+              <a class="button cloudflare-launch track-action" href="https://deploy.workers.cloudflare.com/?url=https://github.com/everett7623/Linketry" target="_blank" rel="noopener noreferrer"><span data-i18n="deploy.quickActionLabel">Open Cloudflare deploy</span> <span aria-hidden="true">↗</span></a>
+              <div class="deploy-track-note">
+                <strong data-i18n="deploy.quickNoteTitle">A secure first install cannot be configuration-free.</strong>
+                <p data-i18n="deploy.quickNote">A launcher cannot safely choose your account, custom hostname, D1/KV bindings, or private Admin secret. Linketry never invents those values or sends them through a public page.</p>
+              </div>
+            </article>
+
+            <article class="deploy-track reviewed-track">
+              <p class="route-label" data-i18n="deploy.reviewedLabel">B · Reviewed repository workflow</p>
+              <h2 data-i18n="deploy.reviewedTitle">Provision exactly what you approve.</h2>
+              <p class="route-summary" data-i18n="deploy.reviewedText">Fork the repository and use Linketry's maintained dry runs. The scripts show the D1/KV plan and require an exact confirmation phrase before any Cloudflare or GitHub write.</p>
+              <ol class="route-steps">
+                <li><span>1</span><p data-i18n="deploy.reviewedStepOne">Fork Linketry into the GitHub account that will own future upgrades.</p></li>
+                <li><span>2</span><p data-i18n="deploy.reviewedStepTwo">Run the bootstrap and repository configuration dry runs.</p></li>
+                <li><span>3</span><p data-i18n="deploy.reviewedStepThree">Review the plan, confirm the exact phrase, then start the protected workflow.</p></li>
+              </ol>
+              <div class="prompt-shell">
+                <div class="prompt-header">
+                  <span data-i18n="deploy.copyTitle">Guarded assistant prompt</span>
+                  <button type="button" class="copy-button" data-i18n="deploy.copyAction" data-copy-deploy-prompt="ai-deploy-prompt" aria-describedby="deploy-copy-status">Copy prompt</button>
+                </div>
+                <pre id="ai-deploy-prompt" tabindex="0"><code data-deploy-prompt data-i18n="deploy.prompt">Help me deploy Linketry from my fork to my own Cloudflare account.</code></pre>
+              </div>
+              <p id="deploy-copy-status" class="copy-status" aria-live="polite" data-i18n="deploy.copyStatus">The prompt does not ask you to paste a token into chat, source files, logs, or command arguments.</p>
+              <a class="route-link" href="https://github.com/everett7623/Linketry/blob/main/docs/SELF_HOSTING.md"><span data-i18n="deploy.reviewedAction">Open full repository guide</span> ↗</a>
+            </article>
+          </div>
+
+          <aside class="upgrade-boundary" aria-label="Deployment boundary">
+            <div>
+              <strong data-i18n="deploy.boundaryTitle">Choose a path for a fresh installation only.</strong>
+              <p data-i18n="deploy.boundaryText">Existing Linketry instances must use the non-destructive upgrade path, preserve their current bindings, and verify a backup before migrations.</p>
+            </div>
+            <a class="route-link" href="https://github.com/everett7623/Linketry/blob/main/docs/UPGRADING_PRE_0_10.md"><span data-i18n="deploy.boundaryAction">Read upgrade guidance</span> ↗</a>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section deploy-docs-section">
+        <div class="shell">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span></span> <span data-i18n="deploy.docsEyebrow">Before any write</span></p>
+              <h2 data-i18n="deploy.docsTitle">Read the contract, then deploy.</h2>
+            </div>
+          </div>
+          <div class="deploy-doc-grid">
+            <a href="https://github.com/everett7623/Linketry/blob/main/docs/DEPLOYMENT_PREFLIGHT.md"><span>01</span><h3 data-i18n="deploy.docsPreflightTitle">Deployment safety model</h3><p data-i18n="deploy.docsPreflightText">Review target validation, redaction and failure boundaries.</p><b><span data-i18n="deploy.docsAction">Open guide</span> ↗</b></a>
+            <a href="https://github.com/everett7623/Linketry/blob/main/docs/SELF_HOSTING.md"><span>02</span><h3 data-i18n="deploy.docsSelfTitle">Fresh self-hosting</h3><p data-i18n="deploy.docsSelfText">Use the exact account, domain, D1, KV and GitHub setup sequence.</p><b><span data-i18n="deploy.docsAction">Open guide</span> ↗</b></a>
+            <a href="https://github.com/everett7623/Linketry/blob/main/docs/BACKUP_AND_RESTORE.md"><span>03</span><h3 data-i18n="deploy.docsRecoveryTitle">Backup and recovery</h3><p data-i18n="deploy.docsRecoveryText">Understand export, preview and restore boundaries before an upgrade.</p><b><span data-i18n="deploy.docsAction">Open guide</span> ↗</b></a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-inner">
+        <a class="brand" href="/"><img src="/favicon.svg" width="30" height="30" alt="" /><span>Linketry</span></a>
+        <p data-i18n="footer.description">Self-hosted link management, analytics and monitoring.</p>
+        <nav aria-label="Footer">
+          <a href="https://demo.linketry.com" data-i18n="nav.demo">Live Demo</a><a href="https://everettlabs.dev/coffee/" target="_blank" rel="noopener noreferrer" data-i18n="nav.coffee">Coffee</a><a href="https://github.com/everett7623/Linketry">GitHub</a><a href="https://github.com/everett7623/Linketry/blob/main/LICENSE" data-i18n="footer.license">GPL-3.0</a><a href="https://github.com/everett7623/Linketry/blob/main/docs/ROADMAP.md" data-i18n="footer.roadmap">Roadmap</a>
+        </nav>
+      </div>
+      <div class="shell footer-bottom"><span>© <span data-year></span> Linketry</span><span data-i18n="footer.ownership">Built for Cloudflare. Owned by you.</span></div>
+    </footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

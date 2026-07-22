@@ -10,18 +10,32 @@ Last updated: 2026-07-22
 
 | Layer                      | Status                | Notes                                                                                                                                                                                                   |
 | -------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Worker backend             | ✅ Runtime unchanged  | v0.29.6 changes the public project site and release metadata only; redirect, API, analytics, D1, and KV behavior are unchanged                                                                          |
-| Admin frontend             | ✅ 0.29.6 verified    | Normal and Demo production builds render the authenticated Overview with canonical content-hashed assets                                                                                                |
+| Worker backend             | ✅ Runtime unchanged  | v0.29.7 changes the public project site and release metadata only; redirect, API, analytics, D1, and KV behavior are unchanged                                                                          |
+| Admin frontend             | ✅ 0.29.7 verified    | Normal and Demo production builds render the authenticated Overview with canonical content-hashed assets                                                                                                |
 | Database schema            | ✅ Complete           | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
-| Documentation              | ✅ 0.29.6 updated     | The project site, release notes, deployment examples, progress, roadmap, and task records describe the two beginner deployment paths                                                                    |
-| Deployment                 | ✅ v0.29.5 live       | Production run `29886864268` and isolated Demo run `29886793473` passed; the v0.29.6 project-site release awaits the normal reviewed publication flow                                                   |
-| End-to-end test            | ✅ Full regression    | 84 deployment, 110 Worker, 64 Admin unit, 25 Admin browser, 2 production-build browser, and 6 site tests pass; Worker type-check and normal/Demo Admin plus Site builds pass                            |
+| Documentation              | ✅ 0.29.7 updated     | The project site, release notes, deployment examples, progress, roadmap, and task records describe the dedicated deployment route and bilingual public site                                             |
+| Deployment                 | ✅ v0.29.5 live       | Production run `29886864268` and isolated Demo run `29886793473` passed; the v0.29.7 project-site release awaits the normal reviewed publication flow                                                   |
+| End-to-end test            | ✅ Full regression    | 84 deployment, 110 Worker, 64 Admin unit, 25 Admin browser, 2 production-build browser, and 8 site tests pass; Worker type-check and normal/Demo Admin plus Site builds pass                            |
 | Known issues               | ✅ Tracked            | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | 🟡 0.29.6 prepared    | Repository targets the beginner-friendly project-site deployment guide while production and Demo continue running the verified v0.29.5 runtime                                                          |
-| Repository update target   | ✅ 0.29.6 ready       | GitHub `main` package metadata remains the update-discovery source; older production versions can detect the newer repository version without a GitHub Release or tag                                   |
+| Current version            | 🟡 0.29.7 prepared    | Repository targets the dedicated bilingual deployment guide while production and Demo continue running the verified v0.29.5 runtime                                                                     |
+| Repository update target   | ✅ 0.29.7 ready       | GitHub `main` package metadata remains the update-discovery source; older production versions can detect the newer repository version without a GitHub Release or tag                                   |
 | Next planned work          | 🟡 Pre-1.0 validation | Fresh-account rehearsal, remote-D1 scale evidence, assistive-technology review, and private vulnerability reporting remain; a branded Demo redirect is intentionally unnecessary                        |
 | Shlink migration readiness | ✅ Complete           | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete           | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.29.7 Public Deployment Page And Localization
+
+| Area                    | Status      | Notes                                                                                                                        |
+| ----------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Dedicated deployment UI | ✅ Complete | `/deploy/` separates the Cloudflare Quick Deploy launcher from the reviewed repository workflow                            |
+| Cloudflare boundary     | ✅ Explicit | The quick launcher starts the authenticated Cloudflare flow but never claims to choose account, D1/KV, Pages/Admin, or secrets |
+| Public localization     | ✅ Complete | English is the default; Simplified Chinese is complete, persists locally, accepts `?lang=`, and has a single locale registry |
+| GitHub identifier       | ✅ Complete | Navigation uses a filled GitHub mark with a visible label and accessible repository name                                    |
+| Discoverability         | ✅ Complete | Homepage, primary navigation, sitemap, self-hosting docs, and deployment docs link to the dedicated route                  |
+| Runtime impact          | ✅ None     | Worker, redirects, Admin, APIs, D1/KV ownership, migrations, credentials, and production resources are unchanged           |
+| Verification            | ✅ Complete | Site contract/build and live local desktop/mobile locale checks pass without console warnings                               |
 
 ---
 

@@ -1,4 +1,7 @@
 import './styles.css';
+import { installSiteLocale, translate } from './siteI18n';
+
+installSiteLocale();
 
 const menuButton = document.querySelector<HTMLButtonElement>('[data-menu-button]');
 const navigation = document.querySelector<HTMLElement>('[data-navigation]');
@@ -37,7 +40,7 @@ document.querySelectorAll<HTMLButtonElement>('[data-copy-deploy-prompt]').forEac
   const promptId = button.dataset.copyDeployPrompt;
   const prompt = promptId ? document.getElementById(promptId) : null;
   const status = document.getElementById('deploy-copy-status');
-  const defaultLabel = button.textContent?.trim() || 'Copy prompt';
+  const defaultLabelKey = button.dataset.i18n;
   let resetTimer: number | undefined;
   const updateStatus = (message: string) => {
     if (status) status.textContent = message;
@@ -46,20 +49,20 @@ document.querySelectorAll<HTMLButtonElement>('[data-copy-deploy-prompt]').forEac
   button.addEventListener('click', async () => {
     const promptText = prompt?.textContent?.trim();
     if (!promptText) {
-      updateStatus('The deployment prompt is unavailable. Open the full guide.');
+      updateStatus(translate('deploy.copyUnavailable'));
       return;
     }
 
     try {
       await navigator.clipboard.writeText(promptText);
-      button.textContent = 'Prompt copied';
-      updateStatus('Prompt copied. Paste it into your AI coding assistant.');
+      button.textContent = translate('deploy.copySuccess');
+      updateStatus(translate('deploy.copySuccessStatus'));
       window.clearTimeout(resetTimer);
       resetTimer = window.setTimeout(() => {
-        button.textContent = defaultLabel;
+        button.textContent = defaultLabelKey ? translate(defaultLabelKey) : translate('deploy.copyAction');
       }, 2400);
     } catch {
-      updateStatus('Copy failed. Select the prompt and copy it manually.');
+      updateStatus(translate('deploy.copyFailure'));
       prompt?.focus();
     }
   });

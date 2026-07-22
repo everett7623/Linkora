@@ -2,7 +2,7 @@
 
 This document is the short deployment checklist.
 
-For a fresh self-hosted install, use [SELF_HOSTING.md](SELF_HOSTING.md). Installations older than 0.10 must use [UPGRADING_PRE_0_10.md](UPGRADING_PRE_0_10.md) and retain their current binding IDs until migration is verified.
+For a fresh self-hosted install, begin with the public [deployment options page](https://linketry.com/deploy/) and then use [SELF_HOSTING.md](SELF_HOSTING.md). The Cloudflare Quick Deploy launcher starts an authenticated dashboard flow; the reviewed repository workflow remains the supported path for explicit D1/KV planning and protected release configuration. Installations older than 0.10 must use [UPGRADING_PRE_0_10.md](UPGRADING_PRE_0_10.md) and retain their current binding IDs until migration is verified.
 
 The longer maintainer production runbook is in [../DEPLOYMENT.md](../DEPLOYMENT.md).
 
@@ -107,7 +107,7 @@ LINKETRY_D1_DATABASE_NAME=linketry
 LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.29.6
+LINKETRY_APPROVED_RELEASE=0.29.7
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<output-of-npm-run-deploy:migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true

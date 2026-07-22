@@ -302,6 +302,17 @@ Status: complete in the repository; publication follows the normal reviewed proj
 - Copy feedback is accessible, mobile layouts keep commands readable, and permanent-free or one-click claims are intentionally avoided
 - Worker, redirect, Admin, API, D1/KV, migration, and production deployment behavior remain unchanged
 
+## 0.29.7: Public Deployment Page And Localization
+
+Status: complete in the repository; publication follows the normal reviewed project-site workflow.
+
+- The public site has a dedicated `/deploy/` page rather than embedding the full deployment guide on the homepage
+- New self-hosters can start Cloudflare's authenticated repository launcher or follow the guarded repository workflow with dry runs and exact confirmation
+- The quick launcher is explicit that account selection, D1/KV bindings, Pages/Admin settings, hostnames, and private Admin secrets remain owner choices
+- Public-site English is the default; Simplified Chinese is complete, persists locally, accepts a `lang` query parameter, and uses a central locale registry for future translations
+- Navigation uses a recognizable labeled GitHub mark and the deployment route is indexed in the sitemap
+- Worker, redirect, Admin, API, D1/KV, migration, and production deployment behavior remain unchanged
+
 ## 0.29.5: Admin Hashed Cache Readiness
 
 Status: complete; production run `29886864268` and isolated Demo run `29886793473` both passed readiness.
