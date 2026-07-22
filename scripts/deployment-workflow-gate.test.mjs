@@ -239,9 +239,14 @@ test('production workflow runs the safety gate before every Cloudflare write', (
   assert.match(workflow, /wrangler pages project create/);
   assert.match(workflow, /wrangler deploy --secrets-file/);
   assert.match(workflow, /node scripts\/admin-live-smoke\.mjs/);
+  assert.match(workflow, /npx playwright install --with-deps chromium/);
+  assert.match(workflow, /npm run test:production --workspace=apps\/admin/);
   assert.match(workflow, /proxied: false/);
   assert.doesNotMatch(workflow, /proxied: true/);
-  assert.match(workflow, /CLOUDFLARE_DNS_API_TOKEN: \$\{\{ secrets\.CLOUDFLARE_DNS_API_TOKEN \|\| secrets\.CLOUDFLARE_API_TOKEN \}\}/);
+  assert.match(
+    workflow,
+    /CLOUDFLARE_DNS_API_TOKEN: \$\{\{ secrets\.CLOUDFLARE_DNS_API_TOKEN \|\| secrets\.CLOUDFLARE_API_TOKEN \}\}/
+  );
   assert.match(workflow, /LINKETRY_DNS_TOKEN_SOURCE:/);
   assert.match(workflow, /Admin DNS was not changed with CLOUDFLARE_API_TOKEN/);
   assert.match(workflow, /DNS-only CNAME/);

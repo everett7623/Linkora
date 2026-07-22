@@ -292,6 +292,16 @@ Status: complete in the repository; deployment remains separated between the aut
 - Public 1.0 still requires independent fresh-account, remote-D1 scale, assistive-technology, and private vulnerability-reporting evidence; the synthetic Demo keeps its isolated `workers.dev` redirect origin
 - Redirect handlers, asynchronous analytics ingestion, D1/KV ownership, migrations, production resources, and stored data are unchanged
 
+## 0.29.4: Admin Module Identity Recovery
+
+Status: in progress; the code fix and regression coverage are complete, while live recovery remains.
+
+- Initial Admin JavaScript and CSS use canonical Vite content-hashed paths without query or fragment identities
+- Build integrity and live readiness reject identity-changing URL suffixes, HTML fallbacks, wrong MIME types, and unsafe long-lived caching
+- Production and Demo deployment tracks render the built lazy Overview route in Chromium before Cloudflare writes
+- A localized root fallback replaces silent blank pages after unexpected rendering exceptions
+- Redirect logic, analytics, D1/KV ownership, migrations, and stored data remain unchanged
+
 ## 0.29.2: Admin Cache-Key And DNS Convergence Hardening
 
 Status: in progress; implementation is complete and the reviewed production rollout remains.
@@ -303,11 +313,12 @@ Status: in progress; implementation is complete and the reviewed production roll
 
 ## 0.29.3: Production Readiness Completion
 
-Status: in progress; production v0.29.2 renders and the final workflow behavior is being verified.
+Status: superseded by v0.29.4 after the live lazy-route module-identity regression was captured.
 
 - Readiness requires the exact release query key on initial Admin JavaScript and CSS and continues to reject HTML or incorrect MIME responses
 - Long-lived edge caching is accepted only for the release-versioned asset key
 - A dedicated DNS token remains strict; a main-token fallback without Zone DNS permission emits an actionable warning and allows live readiness to decide the deployment result
+- Live production and Demo verification showed that query-keyed document imports and canonical lazy-chunk imports evaluated two React module identities
 - Redirect logic, analytics, D1/KV ownership, migrations, and stored data remain unchanged
 
 ## Long-Term Product Principles

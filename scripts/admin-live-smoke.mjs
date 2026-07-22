@@ -48,16 +48,15 @@ function expectedContentType(kind) {
   return kind === 'script' ? /^(?:application|text)\/javascript\b/i : /^text\/css\b/i;
 }
 
-function hasUnsafeLongTermCache(value, versioned) {
-  if (versioned) return false;
+function hasUnsafeLongTermCache(value) {
   if (/\bimmutable\b/i.test(value)) return true;
   const maxAge = value.match(/(?:^|,)\s*(?:s-maxage|max-age)\s*=\s*(\d+)/i);
   return maxAge ? Number(maxAge[1]) > 0 : false;
 }
 
-function hasReleaseCacheKey(assetPath, version) {
+function hasCanonicalAssetPath(assetPath) {
   const url = new URL(assetPath, 'https://admin.invalid');
-  return url.searchParams.size === 1 && url.searchParams.get('v') === version;
+  return !url.search && !url.hash;
 }
 
 export async function verifyAdminLive({ adminUrl, version, fetchImpl = fetch }) {
@@ -86,9 +85,10 @@ export async function verifyAdminLive({ adminUrl, version, fetchImpl = fetch }) 
 
   await Promise.all(
     assets.map(async (asset) => {
-      const versioned = hasReleaseCacheKey(asset.path, version);
-      if (!versioned) {
-        throw new Error(`Admin asset ${asset.path} is missing the Linketry ${version} cache key.`);
+      if (!hasCanonicalAssetPath(asset.path)) {
+        throw new Error(
+          `Admin asset ${asset.path} must use its canonical hashed path without a query or fragment.`
+        );
       }
       const response = await fetchRequired(fetchImpl, new URL(asset.path, adminOrigin).href);
       const contentType = response.headers.get('content-type') ?? '';
@@ -98,7 +98,7 @@ export async function verifyAdminLive({ adminUrl, version, fetchImpl = fetch }) 
         );
       }
       const cacheControl = response.headers.get('cache-control') ?? '';
-      if (hasUnsafeLongTermCache(cacheControl, versioned)) {
+      if (hasUnsafeLongTermCache(cacheControl)) {
         throw new Error(
           `Admin asset ${asset.path} uses unsafe long-term caching: ${cacheControl}.`
         );

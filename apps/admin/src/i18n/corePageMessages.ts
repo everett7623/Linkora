@@ -1,6 +1,9 @@
 export const corePageMessages = {
   en: {
     loadingPage: 'Loading page',
+    renderErrorTitle: 'The Admin could not finish loading',
+    renderErrorDescription: 'Reload the page to request a fresh copy of the Admin application.',
+    reloadPage: 'Reload page',
     closeDialog: 'Close dialog',
     back: 'Go back',
     confirm: 'Confirm',
@@ -111,6 +114,9 @@ export const corePageMessages = {
   },
   'zh-CN': {
     loadingPage: '正在加载页面',
+    renderErrorTitle: '管理后台未能完成加载',
+    renderErrorDescription: '请重新加载页面，以获取最新的管理后台资源。',
+    reloadPage: '重新加载',
     closeDialog: '关闭对话框',
     back: '返回',
     confirm: '确认',

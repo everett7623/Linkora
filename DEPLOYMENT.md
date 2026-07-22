@@ -154,7 +154,7 @@ routes = [
 ]
 
 [vars]
-LINKETRY_VERSION = "0.29.3"
+LINKETRY_VERSION = "0.29.4"
 
 [[d1_databases]]
 binding = "DB"
@@ -195,7 +195,7 @@ curl https://go.example.com/health
 Expected response:
 
 ```json
-{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.29.3" } }
+{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.29.4" } }
 ```
 
 ---
@@ -309,7 +309,7 @@ Defined in `apps/worker/wrangler.toml`:
 
 | Name                   | Example      |
 | ---------------------- | ------------ |
-| `LINKETRY_VERSION`     | `0.29.3`     |
+| `LINKETRY_VERSION`     | `0.29.4`     |
 | `LINKETRY_DAILY_CRON`  | `0 18 * * *` |
 | `LINKETRY_HEALTH_CRON` | `0 * * * *`  |
 
@@ -336,11 +336,11 @@ The `.github/workflows/deploy.yml` workflow always installs dependencies, type-c
 
 It applies D1 migrations and deploys the Worker only when these repository secrets are configured:
 
-| Name                       | Purpose                                                                       |
-| -------------------------- | ----------------------------------------------------------------------------- |
-| `CLOUDFLARE_API_TOKEN`     | Authenticates Wrangler in GitHub Actions                                      |
+| Name                       | Purpose                                                                                                                                                |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `CLOUDFLARE_API_TOKEN`     | Authenticates Wrangler in GitHub Actions                                                                                                               |
 | `CLOUDFLARE_DNS_API_TOKEN` | Optional; Zone Read and DNS Write token for automatic Admin CNAME maintenance; if absent, `CLOUDFLARE_API_TOKEN` is used when it has those permissions |
-| `CLOUDFLARE_ACCOUNT_ID`    | Selects the Cloudflare account for Worker and Pages deploys                   |
+| `CLOUDFLARE_ACCOUNT_ID`    | Selects the Cloudflare account for Worker and Pages deploys                                                                                            |
 
 It deploys Admin only when the Cloudflare secrets and these repository variables are configured:
 
@@ -367,7 +367,7 @@ Every Cloudflare-enabled workflow run also requires exact deployment approvals:
 | Name                                  | Example              | Purpose                                                                   |
 | ------------------------------------- | -------------------- | ------------------------------------------------------------------------- |
 | `LINKETRY_DEPLOYMENT_TRACK`           | `upgrade`            | Allows only the reviewed `fresh` or `upgrade` path; Demo is rejected here |
-| `LINKETRY_APPROVED_RELEASE`           | `0.29.3`             | Must match the root package version                                       |
+| `LINKETRY_APPROVED_RELEASE`           | `0.29.4`             | Must match the root package version                                       |
 | `LINKETRY_APPROVED_COMMIT`            | `<40-character SHA>` | Must match the commit being deployed                                      |
 | `LINKETRY_APPROVED_MIGRATIONS_SHA256` | `<digest>`           | Must match `npm run deploy:migration-digest`                              |
 

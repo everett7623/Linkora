@@ -4,11 +4,11 @@ import test from 'node:test';
 import { collectInitialAssets, verifyAdminLive, waitForAdminLive } from './admin-live-smoke.mjs';
 
 const adminUrl = 'https://admin.example.com';
-const version = '0.29.3';
+const version = '0.29.4';
 const html = `
   <meta name="linketry-version" content="${version}">
-  <script type="module" crossorigin src="/assets/index-release.js?v=${version}"></script>
-  <link rel="stylesheet" href="/assets/index-release.css?v=${version}">
+  <script type="module" crossorigin src="/assets/index-release.js"></script>
+  <link rel="stylesheet" href="/assets/index-release.css">
 `;
 
 function response(body, contentType, cacheControl = 'public, max-age=0, must-revalidate') {
@@ -29,18 +29,15 @@ function healthyFetch(input) {
 
 test('collects only initial Vite module and stylesheet assets', () => {
   assert.deepEqual(collectInitialAssets(html), [
-    { path: '/assets/index-release.js?v=0.29.3', kind: 'script' },
-    { path: '/assets/index-release.css?v=0.29.3', kind: 'style' },
+    { path: '/assets/index-release.js', kind: 'script' },
+    { path: '/assets/index-release.css', kind: 'style' },
   ]);
 });
 
 test('accepts the current Admin HTML only when initial assets have executable MIME types', async () => {
   const report = await verifyAdminLive({ adminUrl, version, fetchImpl: healthyFetch });
   assert.equal(report.adminOrigin, adminUrl);
-  assert.deepEqual(report.assets, [
-    '/assets/index-release.js?v=0.29.3',
-    '/assets/index-release.css?v=0.29.3',
-  ]);
+  assert.deepEqual(report.assets, ['/assets/index-release.js', '/assets/index-release.css']);
 
   await assert.rejects(
     verifyAdminLive({
@@ -56,7 +53,7 @@ test('accepts the current Admin HTML only when initial assets have executable MI
   );
 });
 
-test('checks exact release asset cache keys and accepts long caching only for versioned assets', async () => {
+test('checks canonical asset paths and rejects unsafe long-term caching', async () => {
   const requests = [];
   await verifyAdminLive({
     adminUrl,
@@ -71,20 +68,8 @@ test('checks exact release asset cache keys and accepts long caching only for ve
   const assetRequests = requests.filter((request) => request.url.pathname.startsWith('/assets/'));
   assert.equal(htmlRequest?.headers.get('Cache-Control'), 'no-cache');
   assert.equal(assetRequests.length, 2);
-  assert.ok(assetRequests.every((request) => request.url.search === '?v=0.29.3'));
+  assert.ok(assetRequests.every((request) => !request.url.search));
   assert.ok(assetRequests.every((request) => !request.headers.has('Cache-Control')));
-
-  await verifyAdminLive({
-    adminUrl,
-    version,
-    fetchImpl: async (input) => {
-      const url = new URL(String(input));
-      if (url.pathname.endsWith('.js')) {
-        return response('export {};', 'application/javascript', 'public, max-age=31536000');
-      }
-      return healthyFetch(input);
-    },
-  });
 
   await assert.rejects(
     verifyAdminLive({
@@ -92,19 +77,36 @@ test('checks exact release asset cache keys and accepts long caching only for ve
       version,
       fetchImpl: async (input) => {
         const url = new URL(String(input));
-        if (url.pathname === '/') return response(html.replaceAll(`?v=${version}`, ''), 'text/html');
+        if (url.pathname.endsWith('.js')) {
+          return response('export {};', 'application/javascript', 'public, max-age=31536000');
+        }
         return healthyFetch(input);
       },
     }),
-    /missing the Linketry 0\.29\.3 cache key/
+    /unsafe long-term caching/
+  );
+
+  await assert.rejects(
+    verifyAdminLive({
+      adminUrl,
+      version,
+      fetchImpl: async (input) => {
+        const url = new URL(String(input));
+        if (url.pathname === '/') {
+          return response(
+            html.replace('/assets/index-release.js', '/assets/index-release.js?v=0.29.4'),
+            'text/html'
+          );
+        }
+        return healthyFetch(input);
+      },
+    }),
+    /canonical hashed path/
   );
 });
 
 test('Admin Pages security headers require revalidation without immutable caching', () => {
-  const headers = readFileSync(
-    new URL('../apps/admin/public/_headers', import.meta.url),
-    'utf8'
-  );
+  const headers = readFileSync(new URL('../apps/admin/public/_headers', import.meta.url), 'utf8');
   assert.match(headers, /Content-Security-Policy:.*script-src 'self'/);
   assert.match(headers, /\/assets\/\*[\s\S]*Cache-Control: public, max-age=0, must-revalidate/);
   assert.doesNotMatch(headers, /immutable/i);

@@ -70,6 +70,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Admin browser
+        run: npx playwright install --with-deps chromium
+
       - name: Resolve Linketry version
         run: |
           PACKAGE_VERSION="$(node -p "require('./package.json').version")"
@@ -97,6 +100,9 @@ jobs:
           VITE_LINKETRY_API_URL: ${{ env.LINKETRY_API_URL }}
           VITE_LINKETRY_DEMO_MODE: 'true'
           VITE_LINKETRY_DEMO_ACCESS_CODE: ${{ env.LINKETRY_DEMO_ACCESS_CODE || 'LinketryDemo' }}
+
+      - name: Test isolated Demo Admin build
+        run: npm run test:production --workspace=apps/admin
 
       - name: Generate isolated Demo Worker config
         run: |
@@ -160,7 +166,7 @@ jobs:
             ...routing,
             '',
             '[vars]',
-            `LINKETRY_VERSION = "${env.RESOLVED_LINKETRY_VERSION || '0.29.3'}"`,
+            `LINKETRY_VERSION = "${env.RESOLVED_LINKETRY_VERSION || '0.29.4'}"`,
             'LINKETRY_DEMO_MODE = "read-only"',
             'LINKETRY_DAILY_CRON = "15 3 * * *"',
             'LINKETRY_HEALTH_CRON = "15 * * * *"',

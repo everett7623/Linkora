@@ -77,6 +77,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Admin browser
+        run: npx playwright install --with-deps chromium
+
       - name: Resolve Linketry version
         run: |
           PACKAGE_VERSION="$(node -p "require('./package.json').version")"
@@ -119,6 +122,9 @@ jobs:
           VITE_LINKETRY_API_URL: ${{ env.LINKETRY_API_URL }}
           VITE_LINKETRY_REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}
           VITE_LINKETRY_UPDATE_BRANCH: ${{ env.LINKETRY_UPDATE_BRANCH }}
+
+      - name: Test production Admin build
+        run: npm run test:production --workspace=apps/admin
 
       - name: Build project site
         run: npm run build:site
@@ -179,7 +185,7 @@ jobs:
             ']',
             '',
             '[vars]',
-            `LINKETRY_VERSION = "${env.RESOLVED_LINKETRY_VERSION || '0.29.3'}"`,
+            `LINKETRY_VERSION = "${env.RESOLVED_LINKETRY_VERSION || '0.29.4'}"`,
             `LINKETRY_DAILY_CRON = ${JSON.stringify(dailyCron)}`,
             `LINKETRY_HEALTH_CRON = ${JSON.stringify(healthCron)}`,
             `LINKETRY_UPDATE_REPOSITORY = ${JSON.stringify(env.LINKETRY_UPDATE_REPOSITORY)}`,
