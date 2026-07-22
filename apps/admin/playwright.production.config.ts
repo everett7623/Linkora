@@ -1,30 +1,24 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
-const port = process.env.PLAYWRIGHT_PORT ?? '5173';
+const port = process.env.PLAYWRIGHT_PRODUCTION_PORT ?? '4173';
 const baseURL = `http://127.0.0.1:${port}`;
 
 export default defineConfig({
   testDir: './tests',
-  testIgnore: 'production-build.spec.ts',
+  testMatch: 'production-build.spec.ts',
   timeout: 30_000,
-  expect: {
-    timeout: 5_000,
-  },
   reporter: 'list',
-  use: {
-    baseURL,
-    trace: 'retain-on-failure',
-  },
+  use: { baseURL },
   webServer: {
-    command: `npm run dev -- --host 127.0.0.1 --port ${port} --strictPort`,
+    command: `npm run preview -- --host 127.0.0.1 --port ${port} --strictPort`,
     url: baseURL,
     reuseExistingServer: false,
     timeout: 60_000,
   },
   projects: [
     {
-      name: 'chromium',
+      name: 'chromium-production',
       use: {
         ...devices['Desktop Chrome'],
         ...(chromiumExecutablePath

@@ -13,6 +13,22 @@ _(none)_
 
 ---
 
+## [0.29.4] - 2026-07-22
+
+### Fixed
+
+- Removed release query strings from Vite entry JavaScript and CSS URLs so lazy route chunks and the document resolve one canonical ES module identity instead of loading two React runtimes.
+- Restored fail-closed rejection of long-lived Admin asset caching and retained executable MIME checks for browser-facing canonical assets.
+- Added a localized root render fallback so an unexpected Admin rendering exception no longer leaves an empty application root.
+
+### Tests
+
+- Added build-integrity regression coverage that rejects query or fragment suffixes on initial Vite assets.
+- Added a production-build browser smoke test that authenticates and renders the lazy-loaded Overview route without page or console errors.
+- Required both production and isolated Demo deployment workflows to execute the production-build browser smoke before Cloudflare deployment.
+
+---
+
 ## [0.29.3] - 2026-07-22
 
 ### Fixed

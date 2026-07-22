@@ -1,6 +1,6 @@
 {
   "name": "linketry",
-  "version": "0.29.3",
+  "version": "0.29.4",
   "description": "Linketry is a self-hosted link management, analytics and monitoring platform.",
   "author": "everettlabs",
   "homepage": "https://linketry.com",
@@ -26,7 +26,7 @@
     "test:admin": "npm run test --workspace=apps/admin",
     "test:site": "npm run test --workspace=apps/site",
     "test:worker": "npm run test --workspace=apps/worker",
-    "test:deployment": "node --test scripts/admin-live-smoke.test.mjs scripts/admin-asset-cache-bust.test.mjs scripts/cloudflare-pages-domain.test.mjs scripts/pages-project-inventory.test.mjs scripts/deployment-preflight.test.mjs scripts/deployment-bootstrap.test.mjs scripts/deployment-github-config.test.mjs scripts/deployment-release-approval.test.mjs scripts/deployment-workflow-gate.test.mjs scripts/deployment-demo-workflow-gate.test.mjs scripts/demo-admin-parity.test.mjs scripts/demo-feature-seed.test.mjs scripts/demo-seed.test.mjs scripts/fresh-account-guide.test.mjs scripts/support-policy.test.mjs",
+    "test:deployment": "node --test scripts/admin-live-smoke.test.mjs scripts/admin-asset-integrity.test.mjs scripts/cloudflare-pages-domain.test.mjs scripts/pages-project-inventory.test.mjs scripts/deployment-preflight.test.mjs scripts/deployment-bootstrap.test.mjs scripts/deployment-github-config.test.mjs scripts/deployment-release-approval.test.mjs scripts/deployment-workflow-gate.test.mjs scripts/deployment-demo-workflow-gate.test.mjs scripts/demo-admin-parity.test.mjs scripts/demo-feature-seed.test.mjs scripts/demo-seed.test.mjs scripts/fresh-account-guide.test.mjs scripts/support-policy.test.mjs",
     "deploy:preflight": "node scripts/deployment-preflight.mjs",
     "deploy:bootstrap": "node scripts/deployment-bootstrap.mjs",
     "deploy:configure": "node scripts/deployment-github-config.mjs",

@@ -5,7 +5,22 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
-## In Progress - Production Admin Cache Recovery (v0.29.3)
+## In Progress - Admin Module Identity Recovery (v0.29.4)
+
+- [x] Reproduce the production and Demo blank page after authentication
+- [x] Capture React error 321 and the versioned/unversioned entry module pair
+- [x] Remove post-build query cache keys from initial Admin assets
+- [x] Reject non-canonical initial assets and unsafe long-lived caching in build/live checks
+- [x] Add production-build browser smoke coverage to both deployment tracks
+- [x] Add a localized root render fallback
+- [x] Complete full regression and synchronize v0.29.4 release metadata
+- [ ] Deploy v0.29.4 and verify production and Demo Overview rendering
+
+Task record: `.codex/tasks/admin-module-identity-recovery-2026-07-22.md`
+
+---
+
+## Completed - Production Admin Cache Recovery (v0.29.3, superseded)
 
 - [x] Reproduce the empty production Admin and isolate HTML, canonical asset, MIME, cache, and Pages-origin behavior
 - [x] Stop bypassing the user-facing asset cache key during deployment readiness checks
@@ -16,7 +31,7 @@ One item in "In Progress" at a time whenever possible.
 - [x] Allow the production workflow to reuse the configured Cloudflare API token for DNS convergence when the dedicated DNS token is absent
 - [x] Verify production v0.29.2 renders through `admin.uukk.de` with versioned JS/CSS assets
 - [x] Treat a missing Zone DNS scope on the main-token fallback as an actionable warning while retaining strict dedicated-token behavior
-- [ ] Complete deployment regression, deploy v0.29.3, and verify the production workflow and Admin canonical URL
+- [x] Deploy v0.29.3 and transfer the discovered module-identity regression to the v0.29.4 recovery task
 
 Task record: `.codex/tasks/production-admin-cache-recovery-2026-07-21.md`
 

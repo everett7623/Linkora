@@ -15,75 +15,83 @@ The review covered:
 - Production dependency advisories through the official npm registry
 - Current official Shlink, Dub, and Kutt documentation for product comparison
 
-The complete dependency audit reports no known vulnerabilities. Vite is updated to the supported 6.4 line; React, Tailwind, and React Router major releases remain separate work because they need dedicated migration testing.
+The official full-tree dependency audit currently reports three high-severity findings on the development-tool path `wrangler → miniflare → sharp`; the advisory affects Sharp versions below 0.35.0, while npm's available automatic fix proposes an incompatible Wrangler downgrade. This is tracked separately from the v0.29.4 Admin recovery and does not change the deployed Admin or Worker runtime bundle. Vite remains on the supported 6.4 line; React, Tailwind, and React Router major releases remain separate work because they need dedicated migration testing.
+
+## Reconciled In 0.29.4
+
+| Area                    | Status   | Notes                                                                                                                   |
+| ----------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Module identity         | Complete | Canonical Vite entry paths prevent the document and lazy route chunks from evaluating separate React module identities. |
+| Deployment browser gate | Complete | Production and Demo workflows render an authenticated lazy Overview from the built Admin before deployment.             |
+| Render recovery         | Complete | A localized root fallback replaces silent blank pages after unexpected render failures.                                 |
 
 ## Reconciled In 0.29.3
 
-| Area | Status | Notes |
-| --- | --- | --- |
-| Release readiness | Complete | Initial Admin assets require the exact release cache key and executable MIME types; versioned long-lived cache responses remain safe. |
-| DNS permission fallback | Complete | Missing Zone DNS scope on the main Cloudflare token is warning-only, while a dedicated DNS token remains strict. |
-| Production rendering | Verified | Production v0.29.2 renders its login page through `admin.uukk.de` with versioned entry JS/CSS. |
+| Area                    | Status     | Notes                                                                                                                                                              |
+| ----------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Release readiness       | Superseded | Exact release query keys passed transport checks but created a second ES module identity when lazy chunks imported the canonical entry path; v0.29.4 removes them. |
+| DNS permission fallback | Complete   | Missing Zone DNS scope on the main Cloudflare token is warning-only, while a dedicated DNS token remains strict.                                                   |
+| Production rendering    | Verified   | Production v0.29.2 renders its login page through `admin.uukk.de` with versioned entry JS/CSS.                                                                     |
 
 ## Reconciled In 0.29.2
 
-| Area | Status | Notes |
-| --- | --- | --- |
-| Admin cache resilience | Complete | Release-version query keys are added to built entry assets, while readiness still validates canonical MIME and cache behavior. |
-| Production DNS convergence | Complete | The deployment workflow prefers a dedicated DNS token and can reuse the configured Cloudflare API token when that optional secret is absent. |
-| Demo branded redirect | Intentionally omitted | The isolated Demo uses `workers.dev` for redirects; branded Admin/API Pages domains remain sufficient for testing. |
+| Area                       | Status                | Notes                                                                                                                                        |
+| -------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Admin cache resilience     | Complete              | Release-version query keys are added to built entry assets, while readiness still validates canonical MIME and cache behavior.               |
+| Production DNS convergence | Complete              | The deployment workflow prefers a dedicated DNS token and can reuse the configured Cloudflare API token when that optional secret is absent. |
+| Demo branded redirect      | Intentionally omitted | The isolated Demo uses `workers.dev` for redirects; branded Admin/API Pages domains remain sufficient for testing.                           |
 
 ## Reconciled In 0.29.1
 
-| Area                    | Result                                                                                                                                                 |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Live release state      | Demo v0.29.0 parity is verified; production intentionally remains v0.28.8 for the owner-controlled update and upgrade path.                             |
-| Update discovery        | The Admin compares its installed version with the configured repository branch's `package.json`; a GitHub Release or tag is not required.              |
-| Optional Demo resources | Queue is configured, while R2 remains unavailable until its isolated Cloudflare account capability and two environment variables are restored.         |
-| Pre-1.0 boundary        | The four external P0 evidence gates remain explicit and are not counted as completed by local automation or the successful core Demo deployment.          |
+| Area                    | Result                                                                                                                                           |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Live release state      | Demo v0.29.0 parity is verified; production intentionally remains v0.28.8 for the owner-controlled update and upgrade path.                      |
+| Update discovery        | The Admin compares its installed version with the configured repository branch's `package.json`; a GitHub Release or tag is not required.        |
+| Optional Demo resources | Queue is configured, while R2 remains unavailable until its isolated Cloudflare account capability and two environment variables are restored.   |
+| Pre-1.0 boundary        | The four external P0 evidence gates remain explicit and are not counted as completed by local automation or the successful core Demo deployment. |
 
 ## Completed In 0.29.0
 
 | Area                       | Result                                                                                                                                                        |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Official Demo parity       | Reviewed pushes to `main` synchronize through the isolated Demo workflow while production credentials, resources, DNS, and deployment workflow stay separate. |
-| Owner-controlled upgrades  | Faster polling, immediate status, bounded reload, and persistent completion feedback improve the upgrade path without weakening backup or migration gates.     |
+| Owner-controlled upgrades  | Faster polling, immediate status, bounded reload, and persistent completion feedback improve the upgrade path without weakening backup or migration gates.    |
 | Global access distribution | The world map uses ten traffic-intensity colors, per-link Analytics uses ten categorical colors, and Demo traffic covers ten countries.                       |
 
 ## Completed In 0.28.4
 
-| Area                         | Result                                                                                                                                                                  |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Asynchronous click Webhook   | `link.clicked` is opt-in and delivered only after core visit accounting from Queue/`ctx.waitUntil()` post-processing.                                                  |
-| Privacy and signing          | Stable HMAC-SHA256 envelopes exclude visitor identifiers, Referer, country, User-Agent, and destination URLs.                                                          |
-| Retry and observability      | Transient failures receive at most three attempts; structured failure logs omit URL, secret, payload, and visitor data.                                                |
-| Redirect/data boundary       | Redirect handlers/decisions, D1/KV ownership, migrations, production data, and Demo isolation are unchanged.                                                           |
+| Area                       | Result                                                                                                                  |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Asynchronous click Webhook | `link.clicked` is opt-in and delivered only after core visit accounting from Queue/`ctx.waitUntil()` post-processing.   |
+| Privacy and signing        | Stable HMAC-SHA256 envelopes exclude visitor identifiers, Referer, country, User-Agent, and destination URLs.           |
+| Retry and observability    | Transient failures receive at most three attempts; structured failure logs omit URL, secret, payload, and visitor data. |
+| Redirect/data boundary     | Redirect handlers/decisions, D1/KV ownership, migrations, production data, and Demo isolation are unchanged.            |
 
 ## Completed In 0.28.3
 
-| Area                     | Result                                                                                                                                                              |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Security reporting       | Policy designates GitHub private vulnerability reporting as canonical and prohibits public disclosure; repository activation remains a separate P0 external gate.  |
-| Compatibility policy     | Patch/minor pre-1.0 behavior, `/api/v1`, forward-only migrations, supported Node/npm/Wrangler ranges, and third-party boundaries are documented and tested.          |
-| Backup and rollback      | Operator backup ownership, protected upgrade verification, migration-aware rollback, credential rotation, and D1/KV recovery boundaries form one maintained contract. |
-| Community support        | Reproducible public issues are separated from private security reports and documented as best effort without an implied uptime or recovery SLA.                     |
+| Area                 | Result                                                                                                                                                                |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Security reporting   | Policy designates GitHub private vulnerability reporting as canonical and prohibits public disclosure; repository activation remains a separate P0 external gate.     |
+| Compatibility policy | Patch/minor pre-1.0 behavior, `/api/v1`, forward-only migrations, supported Node/npm/Wrangler ranges, and third-party boundaries are documented and tested.           |
+| Backup and rollback  | Operator backup ownership, protected upgrade verification, migration-aware rollback, credential rotation, and D1/KV recovery boundaries form one maintained contract. |
+| Community support    | Reproducible public issues are separated from private security reports and documented as best effort without an implied uptime or recovery SLA.                       |
 
 ## Completed In 0.28.2
 
-| Area                     | Result                                                                                                                                                                            |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Stable pagination        | Links and Audit add deterministic ID tie-breakers, preventing equal timestamps or click counts from drifting between pages.                                                      |
-| Input boundaries         | Shared strict normalization bounds page numbers at 100,000 and page sizes at 100 while preserving route-specific defaults.                                                       |
+| Area                     | Result                                                                                                                                                                                |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stable pagination        | Links and Audit add deterministic ID tie-breakers, preventing equal timestamps or click counts from drifting between pages.                                                           |
+| Input boundaries         | Shared strict normalization bounds page numbers at 100,000 and page sizes at 100 while preserving route-specific defaults.                                                            |
 | Repeatable scale profile | Node 24 in-memory SQLite applies the maintained migrations and tests 20,000 Links, 100,000 Visits, 20,000 Audit rows, and 10,000 raw Health History entries against response budgets. |
 
 ## Completed In 0.28.0
 
-| Area                    | Result                                                                                                                                                                      |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Bitly migration         | CSV detection and normalization preserve custom domains, case-sensitive slugs, destinations, titles, engagement totals, creation dates, source IDs, and verified status. |
-| Short.io migration      | CSV detection and normalization preserve source IDs, short domains, paths, destinations, titles, tags, click totals, timestamps, and expiry.                              |
-| Import safety           | Named detection is conservative; preview counts and `skip`/`rename`/explicit `overwrite` behavior share tested policy while confirmation remains bounded and asynchronous. |
-| CSV compatibility       | Generic and named imports now tolerate quoted commas, escaped quotes, CRLF input, and multiline quoted fields.                                                              |
+| Area               | Result                                                                                                                                                                     |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bitly migration    | CSV detection and normalization preserve custom domains, case-sensitive slugs, destinations, titles, engagement totals, creation dates, source IDs, and verified status.   |
+| Short.io migration | CSV detection and normalization preserve source IDs, short domains, paths, destinations, titles, tags, click totals, timestamps, and expiry.                               |
+| Import safety      | Named detection is conservative; preview counts and `skip`/`rename`/explicit `overwrite` behavior share tested policy while confirmation remains bounded and asynchronous. |
+| CSV compatibility  | Generic and named imports now tolerate quoted commas, escaped quotes, CRLF input, and multiline quoted fields.                                                             |
 
 ## Completed In 0.27.8
 

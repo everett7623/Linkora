@@ -350,6 +350,8 @@ test('Demo workflow keeps its gate before all Cloudflare writes and uses Demo-on
   assert.match(workflow, /secrets\.LINKETRY_DEMO_CLOUDFLARE_ACCOUNT_ID/);
   assert.match(workflow, /VITE_LINKETRY_DEMO_MODE: 'true'/);
   assert.match(workflow, /VITE_LINKETRY_DEMO_ACCESS_CODE/);
+  assert.match(workflow, /npx playwright install --with-deps chromium/);
+  assert.match(workflow, /npm run test:production --workspace=apps\/admin/);
   assert.match(workflow, /LINKETRY_DEMO_ACCESS_CODE/);
   assert.match(workflow, /LINKETRY_DEMO_USE_WORKERS_DEV/);
   assert.match(workflow, /LINKETRY_DEMO_API_ORIGIN_URL/);

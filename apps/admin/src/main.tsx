@@ -8,6 +8,7 @@ import { LocaleProvider } from './contexts/LocaleContext';
 import { DisplayPreferencesProvider } from './contexts/DisplayPreferencesContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastProvider } from './components/ui/Toast';
+import { AppErrorBoundary } from './components/AppErrorBoundary';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -15,15 +16,17 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <ThemeProvider>
         <LocaleProvider>
-          <ToastProvider>
-            <AdminModeProvider>
-              <AuthProvider>
-                <DisplayPreferencesProvider>
-                  <App />
-                </DisplayPreferencesProvider>
-              </AuthProvider>
-            </AdminModeProvider>
-          </ToastProvider>
+          <AppErrorBoundary>
+            <ToastProvider>
+              <AdminModeProvider>
+                <AuthProvider>
+                  <DisplayPreferencesProvider>
+                    <App />
+                  </DisplayPreferencesProvider>
+                </AuthProvider>
+              </AdminModeProvider>
+            </ToastProvider>
+          </AppErrorBoundary>
         </LocaleProvider>
       </ThemeProvider>
     </BrowserRouter>

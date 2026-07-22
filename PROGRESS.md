@@ -8,196 +8,210 @@ Last updated: 2026-07-22
 
 ## Overall Status
 
-| Layer                      | Status                 | Notes                                                                                                                                                                                                   |
-| -------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Worker backend             | ✅ Runtime unchanged   | v0.29.3 changes deployment handling only; redirect, API, analytics, D1, and KV behavior are unchanged                                                                                                    |
-| Admin frontend             | ✅ 0.29.3 hardened     | Versioned entry assets prevent stale custom-domain cache reuse; readiness verifies the exact release cache key and executable MIME types                                                                |
-| Database schema            | ✅ Complete            | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
-| Documentation              | ✅ 0.29.3 updated      | Release notes, deployment guidance, progress, roadmap, and task records are synchronized                                                                                                                 |
-| Deployment                 | 🟡 v0.29.3 rollout     | DNS convergence is strict with a dedicated token and warning-only with a main-token fallback; final live verification remains                                                                           |
-| End-to-end test            | ✅ Full regression     | 81 deployment, 110 Worker, 64 Admin unit, 25 Admin browser, 6 Demo API, and 4 site tests pass; Worker type-check, Admin/Site builds, and npm audit pass                                                    |
-| Known issues               | ✅ Tracked             | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | 🟡 0.29.3 prepared     | Repository targets v0.29.3; production v0.29.2 already renders while the final workflow behavior is being verified                                                                                      |
-| Repository update target   | ✅ 0.29.3 ready        | GitHub `main` package metadata remains the update-discovery source; older production versions can detect the newer repository version without a GitHub Release or tag                                   |
-| Next planned work          | 🟡 Pre-1.0 validation | Fresh-account rehearsal, remote-D1 scale evidence, assistive-technology review, and private vulnerability reporting remain; a branded Demo redirect is intentionally unnecessary                         |
-| Shlink migration readiness | ✅ Complete            | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
-| Shlink feature gap audit   | ✅ Complete            | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+| Layer                      | Status                | Notes                                                                                                                                                                                                   |
+| -------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Worker backend             | ✅ Runtime unchanged  | v0.29.4 changes Admin delivery and recovery only; redirect, API, analytics, D1, and KV behavior are unchanged                                                                                           |
+| Admin frontend             | ✅ 0.29.4 fixed       | Canonical hashed entry assets preserve one ES module/React identity; a root render fallback prevents silent blank pages                                                                                 |
+| Database schema            | ✅ Complete           | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
+| Documentation              | ✅ 0.29.4 updated     | Release notes, deployment guidance, progress, roadmap, and task records describe the module-identity regression and canonical-asset recovery                                                            |
+| Deployment                 | 🟡 v0.29.4 rollout    | Production and Demo currently expose the v0.29.3 invalid-hook-call failure; owner-approved recovery deployment and live verification remain                                                             |
+| End-to-end test            | ✅ Full regression    | 84 deployment, 110 Worker, 64 Admin unit, 25 Admin browser, 1 production-build browser, 6 Demo API, and 4 site tests pass; Worker type-check and Admin/Site builds pass                                 |
+| Known issues               | ✅ Tracked            | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
+| Current version            | 🟡 0.29.4 prepared    | Repository targets the Admin module-identity recovery; production and Demo remain on affected v0.29.3 until deployment                                                                                  |
+| Repository update target   | ✅ 0.29.4 ready       | GitHub `main` package metadata remains the update-discovery source; older production versions can detect the newer repository version without a GitHub Release or tag                                   |
+| Next planned work          | 🟡 Pre-1.0 validation | Fresh-account rehearsal, remote-D1 scale evidence, assistive-technology review, and private vulnerability reporting remain; a branded Demo redirect is intentionally unnecessary                        |
+| Shlink migration readiness | ✅ Complete           | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
+| Shlink feature gap audit   | ✅ Complete           | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.29.4 Admin Module Identity Recovery
+
+| Area                 | Status      | Notes                                                                                                                         |
+| -------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Root cause           | ✅ Captured | Versioned document imports and canonical lazy-chunk imports evaluated the same Vite entry twice and triggered React error 321 |
+| Canonical assets     | ✅ Fixed    | Initial JavaScript and CSS use only Vite content-hashed paths; build and live readiness reject query/fragment identities      |
+| Cache safety         | ✅ Fixed    | Browser-facing assets must revalidate and still pass executable MIME checks                                                   |
+| Browser regression   | ✅ Added    | Both deployment tracks render an authenticated lazy Overview from the built Admin before Cloudflare writes                    |
+| Render recovery      | ✅ Added    | Localized root fallback exposes a reload action instead of leaving an empty root after unexpected render failures             |
+| Live recovery        | 🟡 Pending  | Production and Demo require owner-approved v0.29.4 deployments and browser verification                                       |
+| Redirect/data impact | ✅ None     | Redirect handlers, D1/KV ownership, migrations, analytics, and stored production/Demo data are unchanged                      |
 
 ---
 
 ## Linketry 0.29.3 Production Readiness Completion
 
-| Area                    | Status      | Notes                                                                                                                                        |
-| ----------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Release asset readiness | ✅ Complete | Initial JS/CSS must carry the exact release cache key and return executable MIME types; long cache lifetime is safe for that versioned key |
-| DNS permission handling | ✅ Complete | A dedicated DNS token remains strict; a main-token fallback without zone permission emits an actionable warning instead of hiding a valid deployment |
-| Live production         | ✅ Rendered | `admin.uukk.de` renders the v0.29.2 login page with versioned JS/CSS after the cache-key rollout                                            |
-| Final verification      | 🟡 Pending  | Push and owner-approved v0.29.3 workflow verification remain                                                                                |
-| Redirect/data impact    | ✅ None     | Redirect handlers, D1/KV ownership, migrations, analytics, and stored production data are unchanged                                       |
+| Area                    | Status       | Notes                                                                                                                                                |
+| ----------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Release asset readiness | ✅ Complete  | Initial JS/CSS must carry the exact release cache key and return executable MIME types; long cache lifetime is safe for that versioned key           |
+| DNS permission handling | ✅ Complete  | A dedicated DNS token remains strict; a main-token fallback without zone permission emits an actionable warning instead of hiding a valid deployment |
+| Live production         | ✅ Rendered  | `admin.uukk.de` renders the v0.29.2 login page with versioned JS/CSS after the cache-key rollout                                                     |
+| Final verification      | 🔴 Regressed | Production and Demo deployed v0.29.3, then lazy Overview rendering exposed duplicate React module identities; v0.29.4 supersedes this approach       |
+| Redirect/data impact    | ✅ None      | Redirect handlers, D1/KV ownership, migrations, analytics, and stored production data are unchanged                                                  |
 
 ---
 
 ## Linketry 0.29.2 Admin Cache-Key And DNS Convergence Hardening
 
-| Area                 | Status      | Notes                                                                                                                                |
-| -------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Asset cache keys     | ✅ Complete | Built Admin entry JavaScript and CSS URLs include the release version, preventing reuse of stale custom-domain edge entries        |
-| DNS automation       | ✅ Complete | Production can use the dedicated DNS token or the configured Cloudflare API token to enforce an Admin DNS-only CNAME               |
-| Readiness gate       | ✅ Complete | Canonical asset checks still reject HTML fallbacks, incorrect MIME types, and unsafe cache headers                                |
-| Verification         | 🟡 Pending  | Full regression and owner-approved production rollout are required after the `v0.29.2` push                                      |
-| Redirect/data impact | ✅ None     | Redirect handlers, D1/KV ownership, migrations, analytics, and stored production data are unchanged                               |
+| Area                 | Status      | Notes                                                                                                                       |
+| -------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Asset cache keys     | ✅ Complete | Built Admin entry JavaScript and CSS URLs include the release version, preventing reuse of stale custom-domain edge entries |
+| DNS automation       | ✅ Complete | Production can use the dedicated DNS token or the configured Cloudflare API token to enforce an Admin DNS-only CNAME        |
+| Readiness gate       | ✅ Complete | Canonical asset checks still reject HTML fallbacks, incorrect MIME types, and unsafe cache headers                          |
+| Verification         | 🟡 Pending  | Full regression and owner-approved production rollout are required after the `v0.29.2` push                                 |
+| Redirect/data impact | ✅ None     | Redirect handlers, D1/KV ownership, migrations, analytics, and stored production data are unchanged                         |
 
 ---
 
 ## Linketry 0.29.1 Post-Deployment Status Reconciliation
 
-| Area                    | Status      | Notes                                                                                                                                            |
-| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Repository and Demo     | ✅ Verified | `main` and every workspace were v0.29.0; Demo Worker/Admin live parity passed on v0.29.0 after workflow `29843142149`                              |
-| Production baseline     | ✅ Verified | `go.uukk.de` and `admin.uukk.de` serve v0.28.8, preserving the intended owner-controlled update-notification and upgrade test                     |
-| Update discovery        | ✅ Verified | Admin reads the configured repository branch's `package.json`; GitHub Release/tag creation is not required for a newer-version notification       |
-| Optional Demo resources | 🟡 Pending  | Queue is configured, but R2 bucket variables remain unset until the isolated Cloudflare account enables the optional R2 capability                |
-| Production Admin cache  | ✅ Fixed    | Canonical assets are checked without cache bypass, long-lived custom caching is rejected, and the Admin CNAME is maintained as DNS-only           |
-| Public 1.0 gates        | 🟡 Pending  | Independent fresh-account, remote-D1 scale, assistive-technology, and private vulnerability-reporting evidence remains                           |
-| Redirect/data impact    | ✅ None     | Admin delivery and DNS proxy mode change; redirect logic, migrations, D1/KV ownership, production records, and stored data remain unchanged       |
+| Area                    | Status      | Notes                                                                                                                                       |
+| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repository and Demo     | ✅ Verified | `main` and every workspace were v0.29.0; Demo Worker/Admin live parity passed on v0.29.0 after workflow `29843142149`                       |
+| Production baseline     | ✅ Verified | `go.uukk.de` and `admin.uukk.de` serve v0.28.8, preserving the intended owner-controlled update-notification and upgrade test               |
+| Update discovery        | ✅ Verified | Admin reads the configured repository branch's `package.json`; GitHub Release/tag creation is not required for a newer-version notification |
+| Optional Demo resources | 🟡 Pending  | Queue is configured, but R2 bucket variables remain unset until the isolated Cloudflare account enables the optional R2 capability          |
+| Production Admin cache  | ✅ Fixed    | Canonical assets are checked without cache bypass, long-lived custom caching is rejected, and the Admin CNAME is maintained as DNS-only     |
+| Public 1.0 gates        | 🟡 Pending  | Independent fresh-account, remote-D1 scale, assistive-technology, and private vulnerability-reporting evidence remains                      |
+| Redirect/data impact    | ✅ None     | Admin delivery and DNS proxy mode change; redirect logic, migrations, D1/KV ownership, production records, and stored data remain unchanged |
 
 ---
 
 ## Linketry 0.29.0 Demo Sync, Upgrade Feedback, And Global Distribution
 
-| Area                       | Status         | Notes                                                                                                                          |
-| -------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| Official Demo              | ✅ Live        | Workflow `29843142149` synchronized v0.29.0 from `main`; live Admin/Worker parity and the read-only boundary pass                 |
-| Self-hosted upgrades       | ✅ Implemented | Each instance dispatches its configured repository/branch; workflow polling is 2s and combined release-readiness polling is 1s  |
-| Completion feedback        | ✅ Implemented | Worker/Admin dual readiness, accessible result notifications, earliest reload, and persistent post-refresh confirmation coexist |
-| Global access distribution | ✅ Implemented | World traffic uses ten intensity colors; per-link countries use ten categorical colors; Demo seed covers ten countries          |
+| Area                       | Status         | Notes                                                                                                                                    |
+| -------------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Official Demo              | ✅ Live        | Workflow `29843142149` synchronized v0.29.0 from `main`; live Admin/Worker parity and the read-only boundary pass                        |
+| Self-hosted upgrades       | ✅ Implemented | Each instance dispatches its configured repository/branch; workflow polling is 2s and combined release-readiness polling is 1s           |
+| Completion feedback        | ✅ Implemented | Worker/Admin dual readiness, accessible result notifications, earliest reload, and persistent post-refresh confirmation coexist          |
+| Global access distribution | ✅ Implemented | World traffic uses ten intensity colors; per-link countries use ten categorical colors; Demo seed covers ten countries                   |
 | Full verification          | ✅ Complete    | 79 deployment, 110 Worker, 64 Admin unit, 25 browser, 6 Demo API, and 4 site tests plus builds, type-check, overflow, and npm audit pass |
-| Redirect/data impact       | ✅ None        | Redirect logic, analytics ingestion, D1/KV ownership, migrations, production data, and isolation boundaries are unchanged        |
+| Redirect/data impact       | ✅ None        | Redirect logic, analytics ingestion, D1/KV ownership, migrations, production data, and isolation boundaries are unchanged                |
 
 ---
 
 ## Linketry 0.28.8 Online Upgrade Readiness State
 
-| Area                     | Status      | Notes                                                                                                                       |
-| ------------------------ | ----------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Production evidence      | ✅ Captured | Workflow `29811494912` deployed Worker/Admin, then failed while the Admin entry asset returned HTML during Pages propagation |
-| Combined readiness       | ✅ Complete | Reload requires target Worker health, target Admin metadata, and executable initial JavaScript/CSS                          |
-| Real dispatch contract   | ✅ Complete | The normal GitHub `204` response and `runId: null` path use the same bounded readiness state machine                         |
-| Browser recovery         | ✅ Complete | Visibility, focus, and online events wake one existing poll without creating a second polling loop                          |
-| Feedback continuity      | ✅ Complete | Every successful path records the target release before reload                                                              |
-| Verification             | ✅ Complete | Full Worker, deployment, Admin, Demo API, and site regression passes; builds and official npm audit pass                    |
-| Redirect/data impact     | ✅ None     | Redirect handlers, deployment permissions, D1/KV, migrations, analytics, and production data are unchanged                 |
-| Live rollout             | ✅ Complete | Production Worker/Admin now serve v0.28.8; the isolated Demo subsequently advanced to v0.29.0 through its separate workflow |
+| Area                   | Status      | Notes                                                                                                                        |
+| ---------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Production evidence    | ✅ Captured | Workflow `29811494912` deployed Worker/Admin, then failed while the Admin entry asset returned HTML during Pages propagation |
+| Combined readiness     | ✅ Complete | Reload requires target Worker health, target Admin metadata, and executable initial JavaScript/CSS                           |
+| Real dispatch contract | ✅ Complete | The normal GitHub `204` response and `runId: null` path use the same bounded readiness state machine                         |
+| Browser recovery       | ✅ Complete | Visibility, focus, and online events wake one existing poll without creating a second polling loop                           |
+| Feedback continuity    | ✅ Complete | Every successful path records the target release before reload                                                               |
+| Verification           | ✅ Complete | Full Worker, deployment, Admin, Demo API, and site regression passes; builds and official npm audit pass                     |
+| Redirect/data impact   | ✅ None     | Redirect handlers, deployment permissions, D1/KV, migrations, analytics, and production data are unchanged                   |
+| Live rollout           | ✅ Complete | Production Worker/Admin now serve v0.28.8; the isolated Demo subsequently advanced to v0.29.0 through its separate workflow  |
 
 ---
 
 ## Linketry 0.28.7 Analytics Comparison And Heatmap
 
-| Area                    | Status      | Notes                                                                                                                        |
-| ----------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Period comparison       | ✅ Complete | The selected range and immediately preceding equal-length range reuse every active filter                                   |
-| Trend context           | ✅ Complete | A dashed previous total is aligned by day position without removing current total, human, bot, or unique series             |
-| Activity heatmap        | ✅ Complete | Exactly 168 local weekday/hour buckets include total, human, and bot visits                                                  |
-| Query envelope          | ✅ Complete | Three fixed aggregate queries keep cost independent of visit volume and populated buckets                                   |
-| Compatibility           | ✅ Complete | Existing fields remain additive; older responses degrade to lightweight empty comparison views instead of a blank page      |
-| Verification            | ✅ Complete | 110 Worker, 58 Admin unit, 25 browser, 78 deployment, 6 Demo API, and 4 site tests pass; builds and npm audit pass           |
-| Redirect/data impact    | ✅ None     | Redirect handlers, asynchronous visit recording, D1/KV ownership, migrations, production data, and Demo isolation unchanged |
-| Live Demo               | ✅ 0.28.7   | Workflow `29806272912` passed; live today, comparison, three trend modes, heatmap, map, localization, and responsive states were verified |
+| Area                 | Status      | Notes                                                                                                                                     |
+| -------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Period comparison    | ✅ Complete | The selected range and immediately preceding equal-length range reuse every active filter                                                 |
+| Trend context        | ✅ Complete | A dashed previous total is aligned by day position without removing current total, human, bot, or unique series                           |
+| Activity heatmap     | ✅ Complete | Exactly 168 local weekday/hour buckets include total, human, and bot visits                                                               |
+| Query envelope       | ✅ Complete | Three fixed aggregate queries keep cost independent of visit volume and populated buckets                                                 |
+| Compatibility        | ✅ Complete | Existing fields remain additive; older responses degrade to lightweight empty comparison views instead of a blank page                    |
+| Verification         | ✅ Complete | 110 Worker, 58 Admin unit, 25 browser, 78 deployment, 6 Demo API, and 4 site tests pass; builds and npm audit pass                        |
+| Redirect/data impact | ✅ None     | Redirect handlers, asynchronous visit recording, D1/KV ownership, migrations, production data, and Demo isolation unchanged               |
+| Live Demo            | ✅ 0.28.7   | Workflow `29806272912` passed; live today, comparison, three trend modes, heatmap, map, localization, and responsive states were verified |
 
 ---
 
 ## Linketry 0.28.6 Analytics Visual Depth
 
-| Area                    | Status      | Notes                                                                                                                       |
-| ----------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Today boundary          | ✅ Complete | Overview and Analytics use the browser's explicit UTC offset and keep UTC storage                                            |
-| Trend analysis          | ✅ Complete | Zero-filled daily rows expose total, human, bot, and approximate unique visitors through three chart modes                   |
-| Geography               | ✅ Complete | A locally bundled interactive world map uses a bounded 250-country aggregation and preserves unknown traffic                |
-| Audience composition    | ✅ Complete | Device donut and browser bars complement existing detailed attribution lists                                                 |
-| Contract compatibility  | ✅ Complete | Existing Analytics fields remain; explicit range, daily metrics, and geography fields are additive                          |
-| Redirect/data impact    | ✅ None     | Redirect handlers, asynchronous visit recording, D1/KV ownership, migrations, production data, and Demo isolation unchanged |
-| Verification            | ✅ Complete | 109 Worker, 58 Admin unit, 25 browser, 78 deployment, 6 Demo API, and 4 site tests pass; production builds and the official npm audit pass |
-| Live Demo               | ✅ 0.28.6   | Workflow `29803326084` passed parity and read-only checks; live Analytics shows non-empty local today traffic, trend, map, and audience panels |
+| Area                   | Status      | Notes                                                                                                                                          |
+| ---------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Today boundary         | ✅ Complete | Overview and Analytics use the browser's explicit UTC offset and keep UTC storage                                                              |
+| Trend analysis         | ✅ Complete | Zero-filled daily rows expose total, human, bot, and approximate unique visitors through three chart modes                                     |
+| Geography              | ✅ Complete | A locally bundled interactive world map uses a bounded 250-country aggregation and preserves unknown traffic                                   |
+| Audience composition   | ✅ Complete | Device donut and browser bars complement existing detailed attribution lists                                                                   |
+| Contract compatibility | ✅ Complete | Existing Analytics fields remain; explicit range, daily metrics, and geography fields are additive                                             |
+| Redirect/data impact   | ✅ None     | Redirect handlers, asynchronous visit recording, D1/KV ownership, migrations, production data, and Demo isolation unchanged                    |
+| Verification           | ✅ Complete | 109 Worker, 58 Admin unit, 25 browser, 78 deployment, 6 Demo API, and 4 site tests pass; production builds and the official npm audit pass     |
+| Live Demo              | ✅ 0.28.6   | Workflow `29803326084` passed parity and read-only checks; live Analytics shows non-empty local today traffic, trend, map, and audience panels |
 
 ---
 
 ## Linketry 0.28.5 Admin Deployment Readiness
 
-| Area                  | Status      | Notes                                                                                                                           |
-| --------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Production evidence   | ✅ Captured | `admin.uukk.de` advertised v0.28.4 while its entry module returned the HTML fallback and left an empty `#root`                  |
-| Readiness contract    | ✅ Complete | The configured Admin origin must advertise the target release and serve initial JS/CSS with executable MIME types              |
-| Upgrade coordination  | ✅ Complete | The GitHub run remains active until Pages propagation succeeds, so an older Admin does not refresh into a partial deployment    |
-| Credential boundary   | ✅ Preserved | The readiness probe is anonymous and never sends Admin, GitHub, or Cloudflare credentials                                      |
-| Redirect/data impact  | ✅ None     | Redirect handlers, Worker runtime behavior, D1/KV ownership, migrations, production data, and Demo isolation are unchanged      |
+| Area                 | Status       | Notes                                                                                                                        |
+| -------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| Production evidence  | ✅ Captured  | `admin.uukk.de` advertised v0.28.4 while its entry module returned the HTML fallback and left an empty `#root`               |
+| Readiness contract   | ✅ Complete  | The configured Admin origin must advertise the target release and serve initial JS/CSS with executable MIME types            |
+| Upgrade coordination | ✅ Complete  | The GitHub run remains active until Pages propagation succeeds, so an older Admin does not refresh into a partial deployment |
+| Credential boundary  | ✅ Preserved | The readiness probe is anonymous and never sends Admin, GitHub, or Cloudflare credentials                                    |
+| Redirect/data impact | ✅ None      | Redirect handlers, Worker runtime behavior, D1/KV ownership, migrations, production data, and Demo isolation are unchanged   |
 
 ---
 
 ## Linketry 0.28.4 Asynchronous Signed Click Webhook
 
-| Area                   | Status      | Notes                                                                                                                               |
-| ---------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Click event            | ✅ Complete | `link.clicked` is available as an explicit opt-in event and is excluded from default subscriptions                                 |
-| Async boundary         | ✅ Complete | Delivery runs only from Queue/`ctx.waitUntil()` visit post-processing after core D1 accounting and KV work                         |
-| Privacy                | ✅ Complete | Payload excludes IP/IP hash, User-Agent, Referer, country, target URLs, credentials, and raw visitor identity                      |
-| Signing and retry      | ✅ Complete | Transient failures receive at most three attempts with one stable event ID, timestamp, body, and HMAC-SHA256 signature             |
-| Failure observability  | ✅ Complete | Structured warnings contain event/status/error/attempt count without URL, payload, or secret                                       |
-| Dependency audit       | ✅ Complete | Official npm registry reports zero known vulnerabilities; transitive dev-only `brace-expansion` is updated to 1.1.16               |
-| Redirect/data impact   | ✅ None     | Redirect handlers/decisions, D1/KV ownership, migrations, production data, and Demo isolation are unchanged                        |
+| Area                  | Status      | Notes                                                                                                                  |
+| --------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Click event           | ✅ Complete | `link.clicked` is available as an explicit opt-in event and is excluded from default subscriptions                     |
+| Async boundary        | ✅ Complete | Delivery runs only from Queue/`ctx.waitUntil()` visit post-processing after core D1 accounting and KV work             |
+| Privacy               | ✅ Complete | Payload excludes IP/IP hash, User-Agent, Referer, country, target URLs, credentials, and raw visitor identity          |
+| Signing and retry     | ✅ Complete | Transient failures receive at most three attempts with one stable event ID, timestamp, body, and HMAC-SHA256 signature |
+| Failure observability | ✅ Complete | Structured warnings contain event/status/error/attempt count without URL, payload, or secret                           |
+| Dependency audit      | ✅ Complete | Official npm registry reports zero known vulnerabilities; transitive dev-only `brace-expansion` is updated to 1.1.16   |
+| Redirect/data impact  | ✅ None     | Redirect handlers/decisions, D1/KV ownership, migrations, production data, and Demo isolation are unchanged            |
 
 ---
 
 ## Linketry 0.28.3 Support And Compatibility Policy
 
-| Area                  | Status      | Notes                                                                                                                     |
-| --------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------- |
-| Security reporting    | 🟡 External | Policy and advisory URL are complete; GitHub activation is an external pre-1.0 gate and currently reports `enabled: false` |
-| Compatibility         | ✅ Complete | Patch/minor pre-1.0 behavior, `/api/v1`, and forward-only migration expectations are explicit                             |
-| Supported toolchain   | ✅ Complete | Node 24, npm 10+, Wrangler 4.111+ within major 4, current browsers, and protected workflows form the maintained contract   |
-| Backup and rollback   | ✅ Complete | One operator checklist covers backups, post-upgrade evidence, migration-aware rollback, and D1/KV ownership              |
-| Contract automation   | ✅ Complete | Deployment tests prevent security links, package engines, compatibility, and rollback language from drifting              |
-| Redirect/data impact  | ✅ None     | Redirects, Worker runtime behavior, D1/KV semantics, migrations, production data, and Demo isolation are unchanged        |
+| Area                 | Status      | Notes                                                                                                                      |
+| -------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Security reporting   | 🟡 External | Policy and advisory URL are complete; GitHub activation is an external pre-1.0 gate and currently reports `enabled: false` |
+| Compatibility        | ✅ Complete | Patch/minor pre-1.0 behavior, `/api/v1`, and forward-only migration expectations are explicit                              |
+| Supported toolchain  | ✅ Complete | Node 24, npm 10+, Wrangler 4.111+ within major 4, current browsers, and protected workflows form the maintained contract   |
+| Backup and rollback  | ✅ Complete | One operator checklist covers backups, post-upgrade evidence, migration-aware rollback, and D1/KV ownership                |
+| Contract automation  | ✅ Complete | Deployment tests prevent security links, package engines, compatibility, and rollback language from drifting               |
+| Redirect/data impact | ✅ None     | Redirects, Worker runtime behavior, D1/KV semantics, migrations, production data, and Demo isolation are unchanged         |
 
 ---
 
 ## Linketry 0.28.2 Data Scale Contract
 
-| Area                     | Status      | Notes                                                                                                                    |
-| ------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Stable pagination        | ✅ Complete | Links and Audit use ID tie-breakers when timestamps, clicks, or other primary sort values match                          |
-| Input boundaries         | ✅ Complete | Shared policy accepts only positive integers, caps pages at 100,000 and page sizes at 100, and preserves safe defaults   |
-| Scale fixtures           | ✅ Complete | Maintained migrations seed 20k Links, 100k Visits, 20k Audit rows, and 10k raw Health History entries in memory          |
-| Response budgets         | ✅ Complete | Executable budgets cover Links/Audit pages, representative Analytics queries, and Health History parsing                 |
-| Remote D1 validation     | 🟡 External | Owner-controlled remote rehearsal is still required to measure network and platform variance                            |
-| Redirect/data impact     | ✅ None     | Redirects, analytics ingestion, D1/KV semantics, migrations, production data, and Demo isolation are unchanged          |
+| Area                 | Status      | Notes                                                                                                                  |
+| -------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Stable pagination    | ✅ Complete | Links and Audit use ID tie-breakers when timestamps, clicks, or other primary sort values match                        |
+| Input boundaries     | ✅ Complete | Shared policy accepts only positive integers, caps pages at 100,000 and page sizes at 100, and preserves safe defaults |
+| Scale fixtures       | ✅ Complete | Maintained migrations seed 20k Links, 100k Visits, 20k Audit rows, and 10k raw Health History entries in memory        |
+| Response budgets     | ✅ Complete | Executable budgets cover Links/Audit pages, representative Analytics queries, and Health History parsing               |
+| Remote D1 validation | 🟡 External | Owner-controlled remote rehearsal is still required to measure network and platform variance                           |
+| Redirect/data impact | ✅ None     | Redirects, analytics ingestion, D1/KV semantics, migrations, production data, and Demo isolation are unchanged         |
 
 ---
 
 ## Linketry 0.28.1 Import Operating Envelope
 
-| Area                    | Status      | Notes                                                                                                                |
-| ----------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------- |
-| Shared limits           | ✅ Complete | Admin and Worker use one 10 MiB UTF-8 content limit and 50,000-item normalization limit                              |
-| Worker enforcement      | ✅ Complete | Preview/confirm reject oversized content before parsing/job creation; queued jobs stop before D1 writes on item excess |
-| Shlink API fetch        | ✅ Complete | Worker-generated exports use the content boundary; API pulls fail explicitly above 5,000 items or 100 pages           |
-| Admin UX                | ✅ Complete | Upload control shows the limit, rejects before reading, reports accessibly, and clears stale state                    |
-| Remaining scale work    | ✅ Advanced | Local D1-compatible fixtures and response budgets are delivered in v0.28.2; remote D1 rehearsal remains external     |
-| Redirect/data impact    | ✅ None     | Redirects, analytics, D1/KV semantics, migrations, production data, and Demo isolation are unchanged                 |
+| Area                 | Status      | Notes                                                                                                                  |
+| -------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Shared limits        | ✅ Complete | Admin and Worker use one 10 MiB UTF-8 content limit and 50,000-item normalization limit                                |
+| Worker enforcement   | ✅ Complete | Preview/confirm reject oversized content before parsing/job creation; queued jobs stop before D1 writes on item excess |
+| Shlink API fetch     | ✅ Complete | Worker-generated exports use the content boundary; API pulls fail explicitly above 5,000 items or 100 pages            |
+| Admin UX             | ✅ Complete | Upload control shows the limit, rejects before reading, reports accessibly, and clears stale state                     |
+| Remaining scale work | ✅ Advanced | Local D1-compatible fixtures and response budgets are delivered in v0.28.2; remote D1 rehearsal remains external       |
+| Redirect/data impact | ✅ None     | Redirects, analytics, D1/KV semantics, migrations, production data, and Demo isolation are unchanged                   |
 
 ---
 
 ## Linketry 0.28.0 Mainstream File Imports
 
-| Area                     | Status      | Notes                                                                                                                                       |
-| ------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Bitly CSV                | ✅ Complete | Preserves documented short/custom links, case-sensitive slugs, destinations, titles, engagements, creation dates, source IDs, and status |
-| Short.io CSV             | ✅ Complete | Preserves documented IDs, short domains/paths, destinations, titles, tags, clicks, timestamps, and expiry                                  |
-| Detection                | ✅ Complete | Requires multiple platform-specific headers before Generic CSV; unrelated partial files are not claimed                                   |
-| CSV parser               | ✅ Complete | Handles quoted commas, escaped quotes, CRLF, and multiline quoted values for named and Generic CSV imports                                 |
-| Preview/conflicts        | ✅ Complete | Shared tested policy keeps `skip` as default and `rename`/`overwrite` explicit                                                             |
-| Admin UX                 | ✅ Complete | Localized source choices are available and Shlink credential fields render only for explicit Shlink selection                             |
-| Phase 2                  | 🟡 Gated    | Rebrandly waits for a current redacted response and verified cursor pagination                                                            |
-| Redirect-path impact     | ✅ None     | Redirect handlers, async analytics, D1/KV semantics, migrations, production data, and Demo isolation are unchanged                        |
+| Area                 | Status      | Notes                                                                                                                                    |
+| -------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Bitly CSV            | ✅ Complete | Preserves documented short/custom links, case-sensitive slugs, destinations, titles, engagements, creation dates, source IDs, and status |
+| Short.io CSV         | ✅ Complete | Preserves documented IDs, short domains/paths, destinations, titles, tags, clicks, timestamps, and expiry                                |
+| Detection            | ✅ Complete | Requires multiple platform-specific headers before Generic CSV; unrelated partial files are not claimed                                  |
+| CSV parser           | ✅ Complete | Handles quoted commas, escaped quotes, CRLF, and multiline quoted values for named and Generic CSV imports                               |
+| Preview/conflicts    | ✅ Complete | Shared tested policy keeps `skip` as default and `rename`/`overwrite` explicit                                                           |
+| Admin UX             | ✅ Complete | Localized source choices are available and Shlink credential fields render only for explicit Shlink selection                            |
+| Phase 2              | 🟡 Gated    | Rebrandly waits for a current redacted response and verified cursor pagination                                                           |
+| Redirect-path impact | ✅ None     | Redirect handlers, async analytics, D1/KV semantics, migrations, production data, and Demo isolation are unchanged                       |
 
 ---
 
