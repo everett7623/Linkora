@@ -48,15 +48,18 @@ function expectedContentType(kind) {
   return kind === 'script' ? /^(?:application|text)\/javascript\b/i : /^text\/css\b/i;
 }
 
-function hasUnsafeLongTermCache(value) {
-  if (/\bimmutable\b/i.test(value)) return true;
-  const maxAge = value.match(/(?:^|,)\s*(?:s-maxage|max-age)\s*=\s*(\d+)/i);
-  return maxAge ? Number(maxAge[1]) > 0 : false;
-}
-
-function hasCanonicalAssetPath(assetPath) {
+export function canonicalViteAssetPath(assetPath) {
   const url = new URL(assetPath, 'https://admin.invalid');
-  return !url.search && !url.hash;
+  if (
+    url.search ||
+    url.hash ||
+    !/^\/assets\/[^/]+-[A-Za-z0-9_-]{8,}\.(?:js|css)$/.test(url.pathname)
+  ) {
+    throw new Error(
+      `Admin asset ${assetPath} must use its canonical Vite content-hashed path without a query or fragment.`
+    );
+  }
+  return url.pathname;
 }
 
 export async function verifyAdminLive({ adminUrl, version, fetchImpl = fetch }) {
@@ -85,22 +88,12 @@ export async function verifyAdminLive({ adminUrl, version, fetchImpl = fetch }) 
 
   await Promise.all(
     assets.map(async (asset) => {
-      if (!hasCanonicalAssetPath(asset.path)) {
-        throw new Error(
-          `Admin asset ${asset.path} must use its canonical hashed path without a query or fragment.`
-        );
-      }
+      canonicalViteAssetPath(asset.path);
       const response = await fetchRequired(fetchImpl, new URL(asset.path, adminOrigin).href);
       const contentType = response.headers.get('content-type') ?? '';
       if (!expectedContentType(asset.kind).test(contentType)) {
         throw new Error(
           `Admin asset ${asset.path} returned ${contentType || 'no Content-Type'} instead of ${asset.kind}.`
-        );
-      }
-      const cacheControl = response.headers.get('cache-control') ?? '';
-      if (hasUnsafeLongTermCache(cacheControl)) {
-        throw new Error(
-          `Admin asset ${asset.path} uses unsafe long-term caching: ${cacheControl}.`
         );
       }
     })

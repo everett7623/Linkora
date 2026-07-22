@@ -9,31 +9,33 @@ async function fixture(html) {
   const directory = await mkdtemp(join(tmpdir(), 'linketry-admin-assets-'));
   await mkdir(join(directory, 'assets'));
   await writeFile(join(directory, 'index.html'), html);
-  await writeFile(join(directory, 'assets', 'index-release.js'), 'export {};');
-  await writeFile(join(directory, 'assets', 'index-release.css'), 'body {}');
+  await writeFile(join(directory, 'assets', 'index-AbCd1234.js'), 'export {};');
+  await writeFile(join(directory, 'assets', 'index-EfGh5678.css'), 'body {}');
   return join(directory, 'index.html');
 }
 
 test('accepts canonical Vite entry assets that exist in the build', async () => {
   const indexPath = await fixture(`
-    <script type="module" src="/assets/index-release.js"></script>
-    <link rel="stylesheet" href="/assets/index-release.css">
+    <script type="module" src="/assets/index-AbCd1234.js"></script>
+    <link rel="stylesheet" href="/assets/index-EfGh5678.css">
   `);
   assert.deepEqual(await verifyAdminBuild(indexPath), [
-    '/assets/index-release.js',
-    '/assets/index-release.css',
+    '/assets/index-AbCd1234.js',
+    '/assets/index-EfGh5678.css',
   ]);
 });
 
 test('rejects query cache keys that create a second ES module identity', async () => {
   const indexPath = await fixture(`
-    <script type="module" src="/assets/index-release.js?v=0.29.4"></script>
-    <link rel="stylesheet" href="/assets/index-release.css">
+    <script type="module" src="/assets/index-AbCd1234.js?v=0.29.5"></script>
+    <link rel="stylesheet" href="/assets/index-EfGh5678.css">
   `);
-  await assert.rejects(verifyAdminBuild(indexPath), /canonical hashed path/);
+  await assert.rejects(verifyAdminBuild(indexPath), /canonical Vite content-hashed path/);
 });
 
 test('rejects missing initial build assets', async () => {
-  const indexPath = await fixture('<script type="module" src="/assets/missing.js"></script>');
+  const indexPath = await fixture(
+    '<script type="module" src="/assets/missing-AbCd1234.js"></script>'
+  );
   await assert.rejects(verifyAdminBuild(indexPath), /initial stylesheet/);
 });
