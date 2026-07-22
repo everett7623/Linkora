@@ -292,12 +292,22 @@ Status: complete in the repository; deployment remains separated between the aut
 - Public 1.0 still requires independent fresh-account, remote-D1 scale, assistive-technology, and private vulnerability-reporting evidence; the synthetic Demo keeps its isolated `workers.dev` redirect origin
 - Redirect handlers, asynchronous analytics ingestion, D1/KV ownership, migrations, production resources, and stored data are unchanged
 
+## 0.29.5: Admin Hashed Cache Readiness
+
+Status: in progress; the cache-policy correction and regression coverage are complete, while deployment convergence remains.
+
+- Build and live checks require canonical Vite content-hashed JavaScript and CSS without query or fragment identities
+- Long-lived caching is accepted only after the content hash is part of the canonical path
+- Missing assets, HTML fallbacks, wrong MIME types, and non-hashed paths continue to fail closed
+- Production and Demo already render authenticated v0.29.4 Overview pages; v0.29.5 aligns workflow status with that safe live behavior
+- Redirect logic, analytics, D1/KV ownership, migrations, and stored data remain unchanged
+
 ## 0.29.4: Admin Module Identity Recovery
 
-Status: in progress; the code fix and regression coverage are complete, while live recovery remains.
+Status: complete; production and Demo authenticated Overview pages render the recovered v0.29.4 Admin.
 
 - Initial Admin JavaScript and CSS use canonical Vite content-hashed paths without query or fragment identities
-- Build integrity and live readiness reject identity-changing URL suffixes, HTML fallbacks, wrong MIME types, and unsafe long-lived caching
+- Build integrity and live readiness reject identity-changing URL suffixes, non-hashed paths, HTML fallbacks, and wrong MIME types
 - Production and Demo deployment tracks render the built lazy Overview route in Chromium before Cloudflare writes
 - A localized root fallback replaces silent blank pages after unexpected rendering exceptions
 - Redirect logic, analytics, D1/KV ownership, migrations, and stored data remain unchanged

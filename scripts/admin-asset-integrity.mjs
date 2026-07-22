@@ -1,16 +1,6 @@
 import { access, readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
-import { collectInitialAssets } from './admin-live-smoke.mjs';
-
-function canonicalAssetPath(assetPath) {
-  const url = new URL(assetPath, 'https://admin.invalid');
-  if (url.search || url.hash) {
-    throw new Error(
-      `Admin asset ${assetPath} must use its canonical hashed path without a query or fragment.`
-    );
-  }
-  return url.pathname;
-}
+import { canonicalViteAssetPath, collectInitialAssets } from './admin-live-smoke.mjs';
 
 export async function verifyAdminBuild(indexPath) {
   const indexUrl = indexPath instanceof URL ? indexPath : pathToFileURL(indexPath);
@@ -25,7 +15,7 @@ export async function verifyAdminBuild(indexPath) {
 
   await Promise.all(
     assets.map(async (asset) => {
-      const pathname = canonicalAssetPath(asset.path);
+      const pathname = canonicalViteAssetPath(asset.path);
       await access(new URL(`.${pathname}`, indexUrl));
     })
   );

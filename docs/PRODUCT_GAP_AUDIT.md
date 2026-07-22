@@ -15,7 +15,14 @@ The review covered:
 - Production dependency advisories through the official npm registry
 - Current official Shlink, Dub, and Kutt documentation for product comparison
 
-The official full-tree dependency audit currently reports three high-severity findings on the development-tool path `wrangler → miniflare → sharp`; the advisory affects Sharp versions below 0.35.0, while npm's available automatic fix proposes an incompatible Wrangler downgrade. This is tracked separately from the v0.29.4 Admin recovery and does not change the deployed Admin or Worker runtime bundle. Vite remains on the supported 6.4 line; React, Tailwind, and React Router major releases remain separate work because they need dedicated migration testing.
+The official full-tree dependency audit currently reports three high-severity findings on the development-tool path `wrangler → miniflare → sharp`; the advisory affects Sharp versions below 0.35.0, while npm's available automatic fix proposes an incompatible Wrangler downgrade. This is tracked separately from the v0.29.5 Admin readiness correction and does not change the deployed Admin or Worker runtime bundle. Vite remains on the supported 6.4 line; React, Tailwind, and React Router major releases remain separate work because they need dedicated migration testing.
+
+## Reconciled In 0.29.5
+
+| Area                   | Status   | Notes                                                                                                                                   |
+| ---------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Hashed cache readiness | Complete | Canonical Vite content-hashed entry assets may use long-lived caching without weakening module identity or transport validation.        |
+| Live recovery evidence | Complete | Production and Demo authenticated Overview pages render v0.29.4; the remaining production red status was a cache-policy false positive. |
 
 ## Reconciled In 0.29.4
 

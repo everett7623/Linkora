@@ -10,32 +10,45 @@ Last updated: 2026-07-22
 
 | Layer                      | Status                | Notes                                                                                                                                                                                                   |
 | -------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Worker backend             | ✅ Runtime unchanged  | v0.29.4 changes Admin delivery and recovery only; redirect, API, analytics, D1, and KV behavior are unchanged                                                                                           |
-| Admin frontend             | ✅ 0.29.4 fixed       | Canonical hashed entry assets preserve one ES module/React identity; a root render fallback prevents silent blank pages                                                                                 |
+| Worker backend             | ✅ Runtime unchanged  | v0.29.5 changes Admin deployment readiness only; redirect, API, analytics, D1, and KV behavior are unchanged                                                                                            |
+| Admin frontend             | ✅ 0.29.5 ready       | Canonical content-hashed entry assets preserve one ES module/React identity and remain safe under long-lived custom-domain caching                                                                      |
 | Database schema            | ✅ Complete           | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
-| Documentation              | ✅ 0.29.4 updated     | Release notes, deployment guidance, progress, roadmap, and task records describe the module-identity regression and canonical-asset recovery                                                            |
-| Deployment                 | 🟡 v0.29.4 rollout    | Production and Demo currently expose the v0.29.3 invalid-hook-call failure; owner-approved recovery deployment and live verification remain                                                             |
+| Documentation              | ✅ 0.29.5 updated     | Release notes, deployment guidance, progress, roadmap, and task records describe the module-identity recovery and hashed-cache readiness contract                                                       |
+| Deployment                 | 🟡 v0.29.5 rollout    | Production and Demo render authenticated v0.29.4 Overview pages; v0.29.5 removes the production readiness false positive                                                                                |
 | End-to-end test            | ✅ Full regression    | 84 deployment, 110 Worker, 64 Admin unit, 25 Admin browser, 1 production-build browser, 6 Demo API, and 4 site tests pass; Worker type-check and Admin/Site builds pass                                 |
 | Known issues               | ✅ Tracked            | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | 🟡 0.29.4 prepared    | Repository targets the Admin module-identity recovery; production and Demo remain on affected v0.29.3 until deployment                                                                                  |
-| Repository update target   | ✅ 0.29.4 ready       | GitHub `main` package metadata remains the update-discovery source; older production versions can detect the newer repository version without a GitHub Release or tag                                   |
+| Current version            | 🟡 0.29.5 prepared    | Repository targets the canonical hashed-cache readiness correction; production and Demo currently run the functional v0.29.4 recovery                                                                   |
+| Repository update target   | ✅ 0.29.5 ready       | GitHub `main` package metadata remains the update-discovery source; older production versions can detect the newer repository version without a GitHub Release or tag                                   |
 | Next planned work          | 🟡 Pre-1.0 validation | Fresh-account rehearsal, remote-D1 scale evidence, assistive-technology review, and private vulnerability reporting remain; a branded Demo redirect is intentionally unnecessary                        |
 | Shlink migration readiness | ✅ Complete           | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete           | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
 
 ---
 
+## Linketry 0.29.5 Admin Hashed Cache Readiness
+
+| Area                 | Status      | Notes                                                                                                           |
+| -------------------- | ----------- | --------------------------------------------------------------------------------------------------------------- |
+| Live evidence        | ✅ Captured | Production and Demo authenticated Overview pages render v0.29.4 without blank roots or invalid-hook-call errors |
+| Hashed cache policy  | ✅ Fixed    | Long-lived caching is accepted only for canonical Vite content-hashed JavaScript and CSS paths                  |
+| Identity safety      | ✅ Retained | Query/fragment identities and non-hashed entry paths fail build and live readiness                              |
+| Transport safety     | ✅ Retained | Missing assets, HTML fallbacks, and incorrect executable MIME types still fail closed                           |
+| Workflow convergence | 🟡 Pending  | v0.29.5 production and Demo deployments must finish with successful readiness conclusions                       |
+| Redirect/data impact | ✅ None     | Redirect handlers, D1/KV ownership, migrations, analytics, and stored production/Demo data are unchanged        |
+
+---
+
 ## Linketry 0.29.4 Admin Module Identity Recovery
 
-| Area                 | Status      | Notes                                                                                                                         |
-| -------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| Root cause           | ✅ Captured | Versioned document imports and canonical lazy-chunk imports evaluated the same Vite entry twice and triggered React error 321 |
-| Canonical assets     | ✅ Fixed    | Initial JavaScript and CSS use only Vite content-hashed paths; build and live readiness reject query/fragment identities      |
-| Cache safety         | ✅ Fixed    | Browser-facing assets must revalidate and still pass executable MIME checks                                                   |
-| Browser regression   | ✅ Added    | Both deployment tracks render an authenticated lazy Overview from the built Admin before Cloudflare writes                    |
-| Render recovery      | ✅ Added    | Localized root fallback exposes a reload action instead of leaving an empty root after unexpected render failures             |
-| Live recovery        | 🟡 Pending  | Production and Demo require owner-approved v0.29.4 deployments and browser verification                                       |
-| Redirect/data impact | ✅ None     | Redirect handlers, D1/KV ownership, migrations, analytics, and stored production/Demo data are unchanged                      |
+| Area                 | Status      | Notes                                                                                                                                |
+| -------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Root cause           | ✅ Captured | Versioned document imports and canonical lazy-chunk imports evaluated the same Vite entry twice and triggered React error 321        |
+| Canonical assets     | ✅ Fixed    | Initial JavaScript and CSS use only Vite content-hashed paths; build and live readiness reject query/fragment identities             |
+| Cache safety         | ✅ Fixed    | Content-hashed assets remain identity-safe under long-lived caching and still pass executable MIME checks                            |
+| Browser regression   | ✅ Added    | Both deployment tracks render an authenticated lazy Overview from the built Admin before Cloudflare writes                           |
+| Render recovery      | ✅ Added    | Localized root fallback exposes a reload action instead of leaving an empty root after unexpected render failures                    |
+| Live recovery        | ✅ Verified | Production and Demo authenticated Overview pages render v0.29.4; production readiness exposed a separate cache-policy false positive |
+| Redirect/data impact | ✅ None     | Redirect handlers, D1/KV ownership, migrations, analytics, and stored production/Demo data are unchanged                             |
 
 ---
 

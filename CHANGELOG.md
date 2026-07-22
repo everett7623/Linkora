@@ -13,6 +13,20 @@ _(none)_
 
 ---
 
+## [0.29.5] - 2026-07-22
+
+### Fixed
+
+- Required initial Admin JavaScript and CSS to use canonical Vite content-hashed paths before deployment readiness accepts them.
+- Allowed long-lived custom-domain caching for those content-addressed assets while continuing to reject query/fragment identities, non-hashed paths, HTML fallbacks, and incorrect MIME types.
+- Prevented a successfully rendered production Admin deployment from ending with a false readiness failure solely because its hashed assets carried a one-year cache lifetime.
+
+### Tests
+
+- Added build and live regressions for canonical hashed assets, long-lived caching, query cache keys, non-hashed paths, HTML fallbacks, and executable MIME types.
+
+---
+
 ## [0.29.4] - 2026-07-22
 
 ### Fixed

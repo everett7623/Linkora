@@ -5,16 +5,30 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
-## In Progress - Admin Module Identity Recovery (v0.29.4)
+## In Progress - Admin Hashed Cache Readiness (v0.29.5)
+
+- [x] Deploy v0.29.4 and verify production and Demo authenticated Overview rendering
+- [x] Capture the production readiness false positive after all Cloudflare uploads succeeded
+- [x] Require canonical Vite content-hashed JavaScript and CSS paths
+- [x] Permit long-lived caching for canonical content-hashed assets
+- [x] Reject query/fragment identities and non-hashed entry paths
+- [x] Complete regression and synchronize v0.29.5 release metadata
+- [ ] Deploy v0.29.5 and verify both workflow conclusions
+
+Task record: `.codex/tasks/admin-hashed-cache-readiness-2026-07-22.md`
+
+---
+
+## Completed - Admin Module Identity Recovery (v0.29.4)
 
 - [x] Reproduce the production and Demo blank page after authentication
 - [x] Capture React error 321 and the versioned/unversioned entry module pair
 - [x] Remove post-build query cache keys from initial Admin assets
-- [x] Reject non-canonical initial assets and unsafe long-lived caching in build/live checks
+- [x] Reject query/fragment identities and non-canonical initial assets in build/live checks
 - [x] Add production-build browser smoke coverage to both deployment tracks
 - [x] Add a localized root render fallback
 - [x] Complete full regression and synchronize v0.29.4 release metadata
-- [ ] Deploy v0.29.4 and verify production and Demo Overview rendering
+- [x] Deploy v0.29.4 and verify production and Demo Overview rendering
 
 Task record: `.codex/tasks/admin-module-identity-recovery-2026-07-22.md`
 

@@ -107,7 +107,7 @@ LINKETRY_D1_DATABASE_NAME=linketry
 LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.29.4
+LINKETRY_APPROVED_RELEASE=0.29.5
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<output-of-npm-run-deploy:migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true
@@ -115,7 +115,7 @@ LINKETRY_FRESH_INSTALL_CONFIRMED=true
 
 The workflow validates these exact approvals and the selected account/resources before any Cloudflare write. For later releases, switch the track to `upgrade` and configure the verified-backup gates in [DEPLOYMENT_PREFLIGHT.md](DEPLOYMENT_PREFLIGHT.md).
 
-The post-deploy Admin readiness check is anonymous and read-only. It requests the canonical content-hashed asset paths used by browsers, without a cache-bypass header, and keeps the GitHub run active during Pages or custom-domain propagation. Query/fragment identities, HTML fallbacks, incorrect MIME types, and positive cache lifetimes fail readiness. DNS-only Pages CNAMEs remain preferred so zone-level cache rules cannot retain an SPA fallback under an Admin asset URL.
+The post-deploy Admin readiness check is anonymous and read-only. It requests the canonical Vite content-hashed asset paths used by browsers, without a cache-bypass header, and keeps the GitHub run active during Pages or custom-domain propagation. Query/fragment identities, non-hashed entry paths, HTML fallbacks, and incorrect MIME types fail readiness. Long-lived caching is safe only after the content hash is part of the canonical path. DNS-only Pages CNAMEs remain preferred so zone-level cache rules cannot retain an SPA fallback under an Admin asset URL.
 
 Optional advanced variables: `LINKETRY_KV_PREVIEW_ID`, `LINKETRY_WORKER_DOMAINS`, `LINKETRY_R2_BUCKET`, `LINKETRY_R2_PREVIEW_BUCKET`, and `LINKETRY_VISITS_QUEUE`. `LINKETRY_SITE_PROJECT` and `LINKETRY_SITE_URL` are official-project maintainer settings, not self-hosting requirements.
 
