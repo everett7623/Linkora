@@ -1,4 +1,6 @@
 import { pathToFileURL } from 'node:url';
+import { runBootstrapCli } from './lib/deployment-bootstrap-cli.mjs';
+import { buildBootstrapReport } from './lib/deployment-bootstrap-report.mjs';
 import { parseJsonOutput, runWrangler } from './lib/wrangler.mjs';
 
 const ACCOUNT_ID_PATTERN = /^[a-f0-9]{32}$/i;
@@ -13,12 +15,6 @@ function readValue(value) {
 
 function readEnv(env, key) {
   return readValue(env[key]);
-}
-
-function maskIdentifier(value) {
-  if (!value) return 'not configured';
-  if (value.length <= 8) return '*'.repeat(value.length);
-  return `${'*'.repeat(Math.min(12, value.length - 6))}${value.slice(-6)}`;
 }
 
 function normalizeHostname(value) {
@@ -170,87 +166,6 @@ function resolveResources(lists, names) {
   return { d1, kv, errors };
 }
 
-function buildBindings(config, names, resources) {
-  return {
-    LINKETRY_API_URL: `https://${config.domain}`,
-    LINKETRY_PAGES_PROJECT: names.pages,
-    LINKETRY_WORKER_NAME: names.worker,
-    LINKETRY_SHORT_DOMAIN: config.domain,
-    LINKETRY_D1_DATABASE_NAME: names.d1,
-    LINKETRY_D1_DATABASE_ID: resources.d1.id || '<created-after-apply>',
-    LINKETRY_KV_NAMESPACE_ID: resources.kv.id || '<created-after-apply>',
-  };
-}
-
-function buildWranglerBindingSnippet(names, resources) {
-  return [
-    '[[d1_databases]]',
-    'binding = "DB"',
-    `database_name = "${names.d1}"`,
-    `database_id = "${resources.d1.id || '<created-after-apply>'}"`,
-    'migrations_dir = "../../migrations"',
-    '',
-    '[[kv_namespaces]]',
-    'binding = "KV"',
-    `id = "${resources.kv.id || '<created-after-apply>'}"`,
-  ].join('\n');
-}
-
-function buildReport({
-  config,
-  confirmation,
-  names,
-  resources,
-  errors,
-  applied,
-  created,
-  mutationAttempted,
-}) {
-  const bindings = buildBindings(config, names, resources);
-  const ready = Boolean(resources.d1.id && resources.kv.id && errors.length === 0);
-  return {
-    ok: errors.length === 0,
-    mode: applied ? 'apply' : 'dry-run',
-    accountId: maskIdentifier(config.accountId),
-    prefix: config.prefix,
-    domain: config.domain,
-    location: config.location || 'automatic',
-    confirmation,
-    resources: {
-      d1: {
-        name: names.d1,
-        id: resources.d1.id || '',
-        action: resources.d1.exists ? 'reuse' : applied ? 'unresolved' : 'create',
-      },
-      kv: {
-        name: names.kv,
-        id: resources.kv.id || '',
-        action: resources.kv.exists ? 'reuse' : applied ? 'unresolved' : 'create',
-      },
-      worker: { name: names.worker, action: 'binding output only' },
-      pages: { name: names.pages, action: 'binding output only' },
-    },
-    created,
-    mutationAttempted,
-    mutationPerformed: created.length > 0,
-    bindingOutputReady: ready,
-    bindings,
-    wranglerToml: buildWranglerBindingSnippet(names, resources),
-    requiredSecrets: [
-      'CLOUDFLARE_ACCOUNT_ID (reuse the selected value; not printed)',
-      'CLOUDFLARE_API_TOKEN (CI only; never printed)',
-    ],
-    optionalNextResources: [
-      'KV preview namespace',
-      'R2 backup buckets',
-      'Queue',
-      'extra domains',
-      'advanced Cron',
-    ],
-    errors,
-  };
-}
-
 export async function runBootstrap({ options = {}, env = process.env, runner = runWrangler } = {}) {
   const config = normalizeOptions(options, env);
   const names = deriveResourceNames(config.prefix || 'linketry-missing');
@@ -260,7 +175,7 @@ export async function runBootstrap({ options = {}, env = process.env, runner = r
     kv: { name: names.kv, id: '', exists: false },
   };
   if (validation.errors.length > 0) {
-    return buildReport({
+    return buildBootstrapReport({
       config,
       confirmation: validation.confirmation,
       names,
@@ -274,7 +189,7 @@ export async function runBootstrap({ options = {}, env = process.env, runner = r
 
   const whoami = await invoke(runner, ['whoami', '--account', config.accountId], env);
   if (!successful(whoami)) {
-    return buildReport({
+    return buildBootstrapReport({
       config,
       confirmation: validation.confirmation,
       names,
@@ -331,7 +246,7 @@ export async function runBootstrap({ options = {}, env = process.env, runner = r
     }
   }
 
-  return buildReport({
+  return buildBootstrapReport({
     config,
     confirmation: validation.confirmation,
     names,
@@ -343,93 +258,6 @@ export async function runBootstrap({ options = {}, env = process.env, runner = r
   });
 }
 
-function parseArgs(argv) {
-  const options = {
-    prefix: '',
-    domain: '',
-    accountId: '',
-    location: '',
-    apply: false,
-    confirmation: '',
-    json: false,
-    help: false,
-  };
-  for (let index = 0; index < argv.length; index += 1) {
-    const argument = argv[index];
-    if (argument === '--prefix') options.prefix = argv[++index] ?? '';
-    else if (argument === '--domain') options.domain = argv[++index] ?? '';
-    else if (argument === '--account-id') options.accountId = argv[++index] ?? '';
-    else if (argument === '--location') options.location = argv[++index] ?? '';
-    else if (argument === '--apply') options.apply = true;
-    else if (argument === '--confirm') options.confirmation = argv[++index] ?? '';
-    else if (argument === '--json') options.json = true;
-    else if (argument === '--help' || argument === '-h') options.help = true;
-    else throw new Error(`Unknown option: ${argument}`);
-  }
-  return options;
-}
-
-function printHelp() {
-  console.log(`Linketry beginner Cloudflare bootstrap
-
-Usage:
-  npm run deploy:bootstrap -- --prefix linketry-<unique-name> --domain <hostname> --account-id <id>
-  npm run deploy:bootstrap -- --prefix linketry-<unique-name> --domain <hostname> --account-id <id> --apply --confirm <phrase>
-
-The first command is a read-only dry-run. It lists the selected account's D1/KV resources,
-shows whether each exact name will be created or reused, and prints the required confirmation.
-Apply mode creates only missing D1/KV resources, reads them back, and prints binding values.
-It never applies migrations, deploys code, writes secrets, changes DNS, or creates optional resources.`);
-}
-
-function printReport(report) {
-  console.log(`Linketry beginner bootstrap: ${report.ok ? 'PASS' : 'FAIL'}`);
-  console.log(`Mode: ${report.mode}`);
-  console.log(`Account: ${report.accountId}`);
-  console.log(`Prefix: ${report.prefix || 'not configured'}`);
-  console.log(`Domain: ${report.domain || 'not configured'}`);
-  console.log(`D1 location: ${report.location}`);
-  console.log('Resource plan:');
-  for (const [type, resource] of Object.entries(report.resources)) {
-    console.log(`  ${type}: ${resource.name} (${resource.action})`);
-  }
-  if (report.errors.length > 0) {
-    console.log('Errors:');
-    for (const error of report.errors) console.log(`  - ${error}`);
-  }
-  if (report.mode === 'dry-run' && report.ok) {
-    console.log('No mutations were performed. To apply this exact plan, rerun with:');
-    console.log(`  --apply --confirm ${report.confirmation}`);
-  }
-  if (report.bindingOutputReady) {
-    console.log('GitHub repository variables:');
-    for (const [key, value] of Object.entries(report.bindings)) console.log(`  ${key}=${value}`);
-    console.log('Wrangler TOML bindings:');
-    console.log(report.wranglerToml);
-  }
-  console.log(`Mutations attempted: ${report.mutationAttempted ? 'yes' : 'no'}`);
-  console.log(
-    `Mutations completed: ${report.mutationPerformed ? report.created.join(', ') : 'none'}`
-  );
-}
-
-async function main() {
-  try {
-    const options = parseArgs(process.argv.slice(2));
-    if (options.help) {
-      printHelp();
-      return;
-    }
-    const report = await runBootstrap({ options });
-    if (options.json) console.log(JSON.stringify(report, null, 2));
-    else printReport(report);
-    process.exitCode = report.ok ? 0 : 1;
-  } catch (error) {
-    console.error(error instanceof Error ? error.message : String(error));
-    process.exitCode = 2;
-  }
-}
-
 if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
-  await main();
+  await runBootstrapCli({ runBootstrap });
 }

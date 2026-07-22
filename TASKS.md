@@ -5,6 +5,30 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
+## 🟡 Ready To Release - Deployment Configuration Script Size Refactor (v0.29.9)
+
+- [x] Read the complete bootstrap/configuration scripts, tests, callers, and source-size inventory
+- [x] Split CLI/report/input responsibilities while preserving public exports and CLI behavior
+- [x] Complete release metadata and full regression
+- [ ] Push `main` and verify the production and Demo workflows
+
+Task record: `.codex/tasks/deployment-script-size-refactor-2026-07-22.md`
+
+---
+
+## ✅ Completed - GitHub Variable Inventory Cleanup (v0.29.9)
+
+- [x] Inventory repository and `linketry-demo` environment variables against every workflow and gate
+- [x] Classify canonical, conditional, default-backed, legacy, and unused values
+- [x] Stop fresh-install helpers from generating ignored version and duplicate short-domain variables
+- [x] Keep production approvals, Cloudflare bindings, and Demo isolation inputs unchanged
+- [x] Complete full regression and remove the reviewed remote variables
+- [x] Verify the reduced inventories and finalize the task record
+
+Task record: `.codex/tasks/github-variables-cleanup-2026-07-22.md`
+
+---
+
 ## ✅ Completed - Public Deployment Page And Localization (v0.29.7)
 
 - [x] Read the live site, deployment documentation, bootstrap behavior, and Cloudflare launch boundary

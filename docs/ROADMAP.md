@@ -313,6 +313,17 @@ Status: complete in the repository; publication follows the normal reviewed proj
 - Navigation uses a recognizable labeled GitHub mark and the deployment route is indexed in the sitemap
 - Worker, redirect, Admin, API, D1/KV, migration, and production deployment behavior remain unchanged
 
+## 0.29.9: GitHub Variable Inventory Cleanup And Deployment Script Size Refactor
+
+Status: prepared in the repository; the production v0.29.7 runtime remains unchanged until the approved `main` release completes.
+
+- Fresh-install helpers emit the canonical `LINKETRY_WORKER_DOMAINS` value and no longer create an ignored repository version variable
+- Existing `LINKETRY_SHORT_DOMAIN` installations remain readable while the official repository removes its duplicated fallback value
+- Inactive destructive-operation flags and completed fresh-install confirmation state are omitted because missing values already mean disabled
+- Demo values that exactly equal reviewed workflow defaults are omitted without changing the isolated resource targets
+- Release, commit, migration, backup, resource, domain, and account safety gates remain explicit
+- The two deployment configuration entries are now below the project JavaScript line limit; remaining source-size debt stays in bounded refactor batches
+
 ## 0.29.5: Admin Hashed Cache Readiness
 
 Status: complete; production run `29886864268` and isolated Demo run `29886793473` both passed readiness.

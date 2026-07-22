@@ -226,7 +226,7 @@ curl https://go.example.com/health
 Expected shape:
 
 ```json
-{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.29.7" } }
+{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.29.9" } }
 ```
 
 ### Build and Deploy Admin
@@ -287,12 +287,12 @@ To let GitHub Actions maintain a custom Admin-domain CNAME automatically, add an
 LINKETRY_API_URL=https://go.example.com
 LINKETRY_PAGES_PROJECT=linketry-alice-admin
 LINKETRY_WORKER_NAME=linketry-alice-worker
-LINKETRY_SHORT_DOMAIN=go.example.com
+LINKETRY_WORKER_DOMAINS=go.example.com
 LINKETRY_D1_DATABASE_NAME=linketry-alice-db
 LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.29.7
+LINKETRY_APPROVED_RELEASE=0.29.9
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true
@@ -318,9 +318,7 @@ Leave these unset for the basic deployment; enable them later from the Admin Adv
 
 ```txt
 LINKETRY_KV_PREVIEW_ID=<your-kv-preview-id>
-LINKETRY_VERSION=0.29.7
 LINKETRY_COMPATIBILITY_DATE=2026-07-08
-LINKETRY_WORKER_DOMAINS=go.example.com,s.example.com
 LINKETRY_R2_BUCKET=linketry-backups
 LINKETRY_R2_PREVIEW_BUCKET=linketry-backups-dev
 LINKETRY_VISITS_QUEUE=linketry-visits
@@ -328,7 +326,7 @@ LINKETRY_DAILY_CRON=0 18 * * *
 LINKETRY_HEALTH_CRON=0 * * * *
 ```
 
-`LINKETRY_WORKER_DOMAINS` replaces the single-domain fallback when set. Configure both R2 variables together. Queue and R2 are independent advanced capabilities; leaving them unset no longer blocks the basic Worker deployment.
+Add comma-separated hostnames to `LINKETRY_WORKER_DOMAINS` for multi-domain routing. Configure both R2 variables together. Queue and R2 are independent advanced capabilities; leaving them unset no longer blocks the basic Worker deployment. The deployed Worker version is always resolved from package metadata rather than a repository variable.
 
 ### Move imported links to a new short domain
 

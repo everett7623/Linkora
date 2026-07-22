@@ -99,6 +99,8 @@ test('apply creates only missing D1 and KV resources then prints complete bindin
   assert.equal(report.bindings.LINKETRY_D1_DATABASE_ID, d1Id);
   assert.equal(report.bindings.LINKETRY_KV_NAMESPACE_ID, kvId);
   assert.equal(report.bindings.LINKETRY_API_URL, 'https://go.alice.dev');
+  assert.equal(report.bindings.LINKETRY_WORKER_DOMAINS, 'go.alice.dev');
+  assert.equal('LINKETRY_SHORT_DOMAIN' in report.bindings, false);
   assert.equal(report.bindingOutputReady, true);
   assert.ok(state.calls.includes('d1 create linketry-alice-db --location apac'));
   assert.ok(state.calls.includes('kv namespace create linketry-alice-kv'));

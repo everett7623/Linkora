@@ -102,12 +102,12 @@ Run `npm run deploy:configure` as documented above to create and verify these mi
 LINKETRY_API_URL=https://go.example.com
 LINKETRY_PAGES_PROJECT=linketry-admin
 LINKETRY_WORKER_NAME=linketry-worker
-LINKETRY_SHORT_DOMAIN=go.example.com
+LINKETRY_WORKER_DOMAINS=go.example.com
 LINKETRY_D1_DATABASE_NAME=linketry
 LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.29.7
+LINKETRY_APPROVED_RELEASE=0.29.9
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<output-of-npm-run-deploy:migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true
@@ -117,13 +117,13 @@ The workflow validates these exact approvals and the selected account/resources 
 
 The post-deploy Admin readiness check is anonymous and read-only. It requests the canonical Vite content-hashed asset paths used by browsers, without a cache-bypass header, and keeps the GitHub run active during Pages or custom-domain propagation. Query/fragment identities, non-hashed entry paths, HTML fallbacks, and incorrect MIME types fail readiness. Long-lived caching is safe only after the content hash is part of the canonical path. DNS-only Pages CNAMEs remain preferred so zone-level cache rules cannot retain an SPA fallback under an Admin asset URL.
 
-Optional advanced variables: `LINKETRY_KV_PREVIEW_ID`, `LINKETRY_WORKER_DOMAINS`, `LINKETRY_R2_BUCKET`, `LINKETRY_R2_PREVIEW_BUCKET`, and `LINKETRY_VISITS_QUEUE`. `LINKETRY_SITE_PROJECT` and `LINKETRY_SITE_URL` are official-project maintainer settings, not self-hosting requirements.
+Optional advanced variables: `LINKETRY_KV_PREVIEW_ID`, `LINKETRY_R2_BUCKET`, `LINKETRY_R2_PREVIEW_BUCKET`, and `LINKETRY_VISITS_QUEUE`. Add more comma-separated values to `LINKETRY_WORKER_DOMAINS` only when the installation serves multiple short domains. `LINKETRY_SITE_PROJECT` and `LINKETRY_SITE_URL` are official-project maintainer settings, not self-hosting requirements.
 
 The basic Cloudflare API token needs Workers Scripts, D1, KV, Pages, and zone-scoped Workers Routes permissions. Add R2 and Queues permissions only when those advanced resources are configured.
 
 If either secret is missing, the workflow intentionally skips Cloudflare deployment after the type-check and Admin build pass. Use manual Wrangler deploys until the secrets are configured.
 If an Admin variable is missing, the workflow still builds Admin but skips the Pages deploy so it does not publish a build with the wrong API URL.
-If a Worker variable is missing, the workflow skips Worker deploy rather than relying on a committed production `wrangler.toml`. `LINKETRY_SHORT_DOMAIN` remains supported as a legacy single-domain fallback when `LINKETRY_WORKER_DOMAINS` is not set.
+If a Worker variable is missing, the workflow skips Worker deploy rather than relying on a committed production `wrangler.toml`. Older installations may retain `LINKETRY_SHORT_DOMAIN` as a legacy fallback, but new configuration writes only `LINKETRY_WORKER_DOMAINS`.
 
 `LINKETRY_SITE_PROJECT` is a maintainer-only optional deployment and is not required for a self-hosted Linketry instance. Its `linketry.com` apex custom domain must be associated in the Cloudflare Pages project before DNS can serve it.
 

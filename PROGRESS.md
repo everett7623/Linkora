@@ -10,18 +10,31 @@ Last updated: 2026-07-22
 
 | Layer                      | Status                | Notes                                                                                                                                                                                                   |
 | -------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Worker backend             | ✅ Runtime unchanged  | v0.29.7 changes the public project site and release metadata only; redirect, API, analytics, D1, and KV behavior are unchanged                                                                          |
-| Admin frontend             | ✅ 0.29.7 verified    | Normal and Demo production builds render the authenticated Overview with canonical content-hashed assets                                                                                                |
+| Worker backend             | ✅ Runtime unchanged  | v0.29.9 changes deployment configuration generation and documentation only; redirect, API, analytics, D1, and KV behavior are unchanged                                                                |
+| Admin frontend             | ✅ 0.29.7 live        | Production and Demo serve the reviewed v0.29.7 build while v0.29.9 changes no Admin application behavior                                                                                               |
 | Database schema            | ✅ Complete           | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
-| Documentation              | ✅ 0.29.7 updated     | The project site, release notes, deployment examples, progress, roadmap, and task records describe the dedicated deployment route and bilingual public site                                             |
-| Deployment                 | ✅ v0.29.5 live       | Production run `29886864268` and isolated Demo run `29886793473` passed; the v0.29.7 project-site release awaits the normal reviewed publication flow                                                   |
+| Documentation              | ✅ 0.29.9 updated     | Deployment examples now distinguish canonical, legacy, conditional, and package-derived configuration                                                                                                 |
+| Deployment                 | 🟡 v0.29.7 live       | v0.29.9 is prepared for the approved `main` release; prior production run `29895200301` and isolated Demo run `29895200339` passed                                                                      |
 | End-to-end test            | ✅ Full regression    | 84 deployment, 110 Worker, 64 Admin unit, 25 Admin browser, 2 production-build browser, and 8 site tests pass; Worker type-check and normal/Demo Admin plus Site builds pass                            |
 | Known issues               | ✅ Tracked            | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | 🟡 0.29.7 prepared    | Repository targets the dedicated bilingual deployment guide while production and Demo continue running the verified v0.29.5 runtime                                                                     |
-| Repository update target   | ✅ 0.29.7 ready       | GitHub `main` package metadata remains the update-discovery source; older production versions can detect the newer repository version without a GitHub Release or tag                                   |
+| Current version            | 🟡 0.29.9 prepared    | Repository targets the reduced GitHub variable inventory while production and Demo continue running the verified v0.29.7 runtime                                                                        |
+| Repository update target   | ✅ 0.29.9 ready       | GitHub `main` package metadata remains the update-discovery source; no GitHub Release or tag is required                                                                                                |
 | Next planned work          | 🟡 Pre-1.0 validation | Fresh-account rehearsal, remote-D1 scale evidence, assistive-technology review, and private vulnerability reporting remain; a branded Demo redirect is intentionally unnecessary                        |
 | Shlink migration readiness | ✅ Complete           | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Shlink feature gap audit   | ✅ Complete           | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+
+---
+
+## Linketry 0.29.9 GitHub Variable Inventory Cleanup And Deployment Script Size Refactor
+
+| Area                       | Status         | Notes                                                                                                                    |
+| -------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Dependency audit           | ✅ Complete    | Every repository and `linketry-demo` environment variable was traced through workflows, gates, scripts, and docs        |
+| Fresh-install output       | ✅ Simplified  | Helpers emit `LINKETRY_WORKER_DOMAINS` and package-derived versions; legacy `SHORT_DOMAIN` remains read-compatible       |
+| Production safety          | ✅ Preserved   | Release, commit, migration, backup, target, resource, and isolation approvals are unchanged                              |
+| Remote inventory           | ✅ Complete    | Removed 8 repository and 3 Demo default-backed variables; inventories are 27 and 17 with required safety inputs intact |
+| Source-size audit          | ✅ Improved   | Bootstrap and GitHub configuration entries are now below 300 lines; 32 unrelated files remain for separate bounded refactor batches |
+| Runtime/data impact        | ✅ None        | Redirects, Admin behavior, APIs, migrations, D1/KV/R2/Queue ownership, secrets, DNS, and stored data are unchanged       |
 
 ---
 

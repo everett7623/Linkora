@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { verifyDemoLiveParity } from './demo-live-smoke.mjs';
 
-const version = '0.29.7';
+const version = '0.29.9';
 const adminOrigin = 'https://demo.linketry.com';
 const apiOrigin = 'https://linketry-demo-worker.example.workers.dev';
 const darkLogo = readFileSync(new URL('../apps/admin/public/favicon.svg', import.meta.url));

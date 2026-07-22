@@ -3,21 +3,21 @@ import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { deriveResourceNames, runBootstrap } from './deployment-bootstrap.mjs';
+import { runGitHubConfigurationCli } from './lib/deployment-github-config-cli.mjs';
+import {
+  expectedGitHubConfirmation,
+  normalizeGitHubConfigurationOptions,
+  readGitHubConfigValue as readValue,
+  validateGitHubConfigurationOptions,
+} from './lib/deployment-github-config-input.mjs';
 import { inspectMigrations, readMigrationSources } from './deployment-workflow-gate.mjs';
 
 const SCRIPT_DIRECTORY = dirname(fileURLToPath(import.meta.url));
 const REPOSITORY_ROOT = resolve(SCRIPT_DIRECTORY, '..');
-const ACCOUNT_ID_PATTERN = /^[a-f0-9]{32}$/i;
 const RESOURCE_ID_PATTERN =
   /^(?:[a-f0-9]{32}|[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/i;
-const PREFIX_PATTERN = /^linketry-[a-z0-9](?:[a-z0-9-]{1,30}[a-z0-9])?$/;
-const REPOSITORY_PATTERN = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 const SHA_PATTERN = /^[a-f0-9]{40}$/i;
 const DIGEST_PATTERN = /^[a-f0-9]{64}$/i;
-
-function readValue(value) {
-  return String(value ?? '').trim();
-}
 
 function maskIdentifier(value) {
   if (!value) return 'not configured';
@@ -25,67 +25,7 @@ function maskIdentifier(value) {
   return `${'*'.repeat(Math.min(12, value.length - 6))}${value.slice(-6)}`;
 }
 
-function normalizeHostname(value) {
-  const candidate = readValue(value).toLowerCase();
-  if (!candidate || candidate.includes('/') || candidate.includes(':')) return '';
-  try {
-    const parsed = new URL(`https://${candidate}`);
-    return parsed.hostname === candidate ? candidate : '';
-  } catch {
-    return '';
-  }
-}
-
-function isPlaceholderHostname(value) {
-  return /[<>]/.test(value) || /(?:^|\.)example\.(?:com|net|org)$/i.test(value);
-}
-
-function normalizeOptions(options, env) {
-  const prefix = readValue(options.prefix || env.LINKETRY_BOOTSTRAP_PREFIX).toLowerCase();
-  const accountId = readValue(options.accountId || env.CLOUDFLARE_ACCOUNT_ID).toLowerCase();
-  const domain = normalizeHostname(
-    options.domain || env.LINKETRY_BOOTSTRAP_DOMAIN || env.LINKETRY_SHORT_DOMAIN
-  );
-  const repository = readValue(options.repository || env.LINKETRY_GITHUB_REPOSITORY);
-  return {
-    prefix,
-    accountId,
-    domain,
-    repository,
-    apply: Boolean(options.apply),
-    confirmation: readValue(options.confirmation),
-  };
-}
-
-export function expectedGitHubConfirmation({ repository, accountId, prefix }) {
-  const suffix = accountId.length >= 6 ? accountId.slice(-6).toLowerCase() : 'unknown';
-  return `github:${repository.toLowerCase()}:${suffix}:${prefix || 'missing-prefix'}`;
-}
-
-function validateOptions(config) {
-  const errors = [];
-  if (!REPOSITORY_PATTERN.test(config.repository) || config.repository.includes('..')) {
-    errors.push('Use --repo with one GitHub owner/repository value.');
-  }
-  if (!ACCOUNT_ID_PATTERN.test(config.accountId)) {
-    errors.push('CLOUDFLARE_ACCOUNT_ID or --account-id must be a 32-character account ID.');
-  }
-  if (!PREFIX_PATTERN.test(config.prefix) || config.prefix === 'linketry-demo') {
-    errors.push(
-      'Use --prefix linketry-<unique-name> with lowercase letters, numbers, and hyphens; the official Demo prefix is reserved.'
-    );
-  }
-  if (!config.domain || isPlaceholderHostname(config.domain)) {
-    errors.push(
-      'Use --domain with your own hostname, without a protocol, path, or example.com placeholder.'
-    );
-  }
-  const confirmation = expectedGitHubConfirmation(config);
-  if (config.apply && config.confirmation !== confirmation) {
-    errors.push(`Apply mode requires the exact confirmation phrase: ${confirmation}`);
-  }
-  return { errors, confirmation };
-}
+export { expectedGitHubConfirmation };
 
 function runCommand(command, args, { input = '' } = {}) {
   return spawnSync(command, args, {
@@ -137,7 +77,7 @@ export function buildGitHubVariables({ config, resources, metadata }) {
     LINKETRY_API_URL: `https://${config.domain}`,
     LINKETRY_PAGES_PROJECT: names.pages,
     LINKETRY_WORKER_NAME: names.worker,
-    LINKETRY_SHORT_DOMAIN: config.domain,
+    LINKETRY_WORKER_DOMAINS: config.domain,
     LINKETRY_D1_DATABASE_NAME: names.d1,
     LINKETRY_D1_DATABASE_ID: resources.d1.id,
     LINKETRY_KV_NAMESPACE_ID: resources.kv.id,
@@ -146,7 +86,6 @@ export function buildGitHubVariables({ config, resources, metadata }) {
     LINKETRY_APPROVED_COMMIT: metadata.commit,
     LINKETRY_APPROVED_MIGRATIONS_SHA256: metadata.migrationDigest,
     LINKETRY_FRESH_INSTALL_CONFIRMED: 'true',
-    LINKETRY_VERSION: metadata.version,
   };
 }
 
@@ -207,8 +146,8 @@ export async function runGitHubConfiguration({
   bootstrap = runBootstrap,
   metadata = null,
 } = {}) {
-  const config = normalizeOptions(options, env);
-  const validation = validateOptions(config);
+  const config = normalizeGitHubConfigurationOptions(options, env);
+  const validation = validateGitHubConfigurationOptions(config);
   const report = baseReport(config, validation.confirmation, [...validation.errors]);
   if (report.errors.length > 0) return report;
 
@@ -341,78 +280,6 @@ export async function runGitHubConfiguration({
   return report;
 }
 
-function parseArgs(argv) {
-  const options = {
-    repository: '',
-    prefix: '',
-    domain: '',
-    accountId: '',
-    apply: false,
-    confirmation: '',
-    json: false,
-    help: false,
-  };
-  for (let index = 0; index < argv.length; index += 1) {
-    const argument = argv[index];
-    if (argument === '--repo') options.repository = argv[++index] ?? '';
-    else if (argument === '--prefix') options.prefix = argv[++index] ?? '';
-    else if (argument === '--domain') options.domain = argv[++index] ?? '';
-    else if (argument === '--account-id') options.accountId = argv[++index] ?? '';
-    else if (argument === '--apply') options.apply = true;
-    else if (argument === '--confirm') options.confirmation = argv[++index] ?? '';
-    else if (argument === '--json') options.json = true;
-    else if (argument === '--help' || argument === '-h') options.help = true;
-    else throw new Error(`Unknown option: ${argument}`);
-  }
-  return options;
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
+  await runGitHubConfigurationCli({ runGitHubConfiguration });
 }
-
-function printHelp() {
-  console.log(`Linketry beginner GitHub configuration
-
-Usage:
-  npm run deploy:configure -- --repo <owner/repository> --prefix linketry-<name> --domain <hostname> --account-id <id>
-  npm run deploy:configure -- --repo <owner/repository> --prefix linketry-<name> --domain <hostname> --account-id <id> --apply --confirm <phrase>
-
-The first command is a read-only dry-run. It reuses the exact D1/KV resources discovered
-by deploy:bootstrap and prints the repository secret/variable plan. Apply requires the
-printed confirmation, verifies GitHub authentication and CLOUDFLARE_API_TOKEN, then sets
-the account ID plus the minimum fresh-deployment variables. It never reads or prints token values.`);
-}
-
-function printReport(report) {
-  console.log(`Linketry GitHub configuration: ${report.ok ? 'PASS' : 'FAIL'}`);
-  console.log(`Mode: ${report.mode}`);
-  console.log(`Repository: ${report.repository}`);
-  console.log(`Cloudflare account: ${report.accountId}`);
-  console.log(`Prefix: ${report.prefix}`);
-  console.log(`Domain: ${report.domain}`);
-  console.log('Repository variable plan:');
-  for (const [name, value] of Object.entries(report.variables)) console.log(`  ${name}=${value}`);
-  console.log(`Required apply confirmation: ${report.confirmation}`);
-  console.log(
-    report.mutations.length > 0
-      ? `Applied: ${report.mutations.join(', ')}`
-      : 'No GitHub repository mutations were performed.'
-  );
-  for (const error of report.errors) console.error(`ERROR: ${error}`);
-}
-
-async function main() {
-  try {
-    const options = parseArgs(process.argv.slice(2));
-    if (options.help) {
-      printHelp();
-      return;
-    }
-    const report = await runGitHubConfiguration({ options });
-    if (options.json) console.log(JSON.stringify(report, null, 2));
-    else printReport(report);
-    process.exitCode = report.ok ? 0 : 1;
-  } catch (error) {
-    console.error(error instanceof Error ? error.message : String(error));
-    process.exitCode = 2;
-  }
-}
-
-if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) await main();

@@ -88,9 +88,12 @@ test('dry-run derives the complete minimum repository plan without GitHub mutati
   assert.equal(report.variables.LINKETRY_PAGES_PROJECT, 'linketry-alice-admin');
   assert.equal(report.variables.LINKETRY_D1_DATABASE_ID, d1Id);
   assert.equal(report.variables.LINKETRY_KV_NAMESPACE_ID, kvId);
+  assert.equal(report.variables.LINKETRY_WORKER_DOMAINS, 'go.alice.dev');
   assert.equal(report.variables.LINKETRY_APPROVED_RELEASE, metadata.version);
   assert.equal(report.variables.LINKETRY_APPROVED_COMMIT, commit);
   assert.equal(report.variables.LINKETRY_APPROVED_MIGRATIONS_SHA256, migrationDigest);
+  assert.equal('LINKETRY_SHORT_DOMAIN' in report.variables, false);
+  assert.equal('LINKETRY_VERSION' in report.variables, false);
 });
 
 test('apply requires the exact repository/account/prefix confirmation before any access', async () => {
@@ -196,8 +199,6 @@ test('apply stops after a variable write failure and reports no command output',
   assert.equal(report.ok, false);
   assert.match(report.errors.join(' '), /LINKETRY_WORKER_NAME/);
   assert.doesNotMatch(JSON.stringify(report), /hidden/);
-  assert.equal(
-    calls.some((call) => call.args[0] === 'variable' && call.args[2] === 'LINKETRY_SHORT_DOMAIN'),
-    false
-  );
+  assert.equal(calls.some((call) => call.args[2] === 'LINKETRY_SHORT_DOMAIN'), false);
+  assert.equal(calls.some((call) => call.args[2] === 'LINKETRY_VERSION'), false);
 });

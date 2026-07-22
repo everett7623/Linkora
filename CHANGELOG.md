@@ -13,6 +13,28 @@ _(none)_
 
 ---
 
+## [0.29.9] - 2026-07-22
+
+### Changed
+
+- Reduced the official repository variable inventory by removing ignored version metadata, inactive destructive-operation flags, a completed fresh-install confirmation, and the duplicated single-domain fallback.
+- Made `LINKETRY_WORKER_DOMAINS` the only variable emitted by fresh-install bootstrap and GitHub configuration helpers while retaining read compatibility for older `LINKETRY_SHORT_DOMAIN` installations.
+- Removed official Demo environment values that exactly duplicated the reviewed API Pages project, API custom-domain, and compatibility-date workflow defaults.
+- Clarified that deployed Worker versions come from package metadata rather than a manually maintained GitHub repository variable.
+- Split deployment bootstrap and GitHub configuration responsibilities into bounded core, input, report, and CLI modules without changing their public exports or command behavior.
+
+### Safety
+
+- Preserved exact production release, commit, migration, backup, target, Cloudflare resource, and Demo isolation approvals.
+- Kept missing destructive-operation flags fail-closed as disabled and made no Worker, redirect, API, D1, KV, R2, Queue, DNS, secret, or production-data changes.
+
+### Tests
+
+- Added deployment helper assertions for the canonical multi-domain variable and the absence of generated legacy/version variables.
+- Reduced the audited source-size debt from 34 to 32 files by bringing both changed deployment configuration entries below the 300-line JavaScript limit; remaining unrelated files stay in separate refactor batches.
+
+---
+
 ## [0.29.7] - 2026-07-22
 
 ### Added

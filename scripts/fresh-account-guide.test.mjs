@@ -43,4 +43,6 @@ test('beginner deployment docs keep one automated basic path', async () => {
   assert.match(selfHosting, /Advanced Manual Deployment/);
   assert.match(selfHosting, /wrangler deploy --secrets-file|deploys Worker secrets alongside/);
   assert.doesNotMatch(selfHosting, /Ensure LINKETRY_ADMIN_TOKEN secret/);
+  assert.match(selfHosting, /LINKETRY_WORKER_DOMAINS=go\.example\.com/);
+  assert.doesNotMatch(selfHosting, /^LINKETRY_VERSION=/m);
 });
