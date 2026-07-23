@@ -5,12 +5,24 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
-## 🟡 Ready To Release - Deployment Configuration Script Size Refactor (v0.29.9)
+## 🟡 Ready To Release - Documentation Reconciliation And Mainstream Tool Gap Audit (v0.29.10)
+
+- [x] Verify the remote `main` commit, production/Demo workflows, and public v0.29.9 runtime
+- [x] Reconcile release documentation, V7 status, version examples, and maintenance metadata
+- [x] Compare official Bitly, Short.io, Dub, Rebrandly, and Shlink capability documentation
+- [x] Add bounded URL semantics, deep-linking, and QR branding priorities without expanding current scope
+- [ ] Push `main` and verify the v0.29.10 documentation maintenance release
+
+Task record: `.codex/tasks/documentation-reconciliation-market-gap-audit-2026-07-23.md`
+
+---
+
+## ✅ Completed - Deployment Configuration Script Size Refactor (v0.29.9)
 
 - [x] Read the complete bootstrap/configuration scripts, tests, callers, and source-size inventory
 - [x] Split CLI/report/input responsibilities while preserving public exports and CLI behavior
 - [x] Complete release metadata and full regression
-- [ ] Push `main` and verify the production and Demo workflows
+- [x] Push `main` and verify production workflow `29898513486` plus isolated Demo workflow `29898513182`
 
 Task record: `.codex/tasks/deployment-script-size-refactor-2026-07-22.md`
 
@@ -576,7 +588,9 @@ Task record: `.codex/tasks/mainstream-import-adapters-2026-07-20.md`
 - [ ] Demo follow-up: activate the account R2 subscription, resolve error `10042`, restore the two R2 variables, rerun deployment, and verify artifact downloads
 - [x] Demo follow-up: implement `demoapi.linketry.com` through a Demo-account Pages Function and Service Binding, retaining `workers.dev` as the fallback origin
 - [x] Production follow-up: add a repository-scoped Actions-write token as `LINKETRY_GITHUB_UPDATE_TOKEN`, redeploy, and verify one-click readiness
-- [ ] V9+: Integrate next high-value Shlink capabilities into Linketry (multi-segment slugs, extra-path forwarding, expired-link cleanup)
+- [ ] V9+: Add multi-segment slugs and opt-in query/extra-path forwarding with strict, append, and ignore modes while preserving existing redirect defaults
+- [ ] V9+: Add iOS/Android mobile deep-link targets with explicit web fallbacks and no redirect-path network dependency
+- [ ] V9+: Add branded QR Code assets with safe styling, multiple export formats, and separately labeled scan attribution
 
 - [x] V7: Add configurable backup retention, starting with a 30-day default
 - [x] V7: Add periodic target health monitoring, failure alerts, recovery alerts, and bounded status history

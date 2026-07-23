@@ -2,7 +2,7 @@
 
 Quick reference for what is done, what is in progress, and what is not started.
 
-Last updated: 2026-07-22
+Last updated: 2026-07-23
 
 ---
 
@@ -10,18 +10,30 @@ Last updated: 2026-07-22
 
 | Layer                      | Status                | Notes                                                                                                                                                                                                   |
 | -------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Worker backend             | ✅ Runtime unchanged  | v0.29.9 changes deployment configuration generation and documentation only; redirect, API, analytics, D1, and KV behavior are unchanged                                                                |
-| Admin frontend             | ✅ 0.29.7 live        | Production and Demo serve the reviewed v0.29.7 build while v0.29.9 changes no Admin application behavior                                                                                               |
+| Worker backend             | ✅ 0.29.9 live        | Production Worker health reports v0.29.9 after the approved `main` workflow; redirect, API, analytics, D1, and KV behavior are unchanged                                                              |
+| Admin frontend             | ✅ 0.29.9 live        | Production and isolated Demo Admin both serve v0.29.9 after their verified deployment workflows                                                                                                       |
 | Database schema            | ✅ Complete           | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
-| Documentation              | ✅ 0.29.9 updated     | Deployment examples now distinguish canonical, legacy, conditional, and package-derived configuration                                                                                                 |
-| Deployment                 | 🟡 v0.29.7 live       | v0.29.9 is prepared for the approved `main` release; prior production run `29895200301` and isolated Demo run `29895200339` passed                                                                      |
+| Documentation              | 🟡 0.29.10 prepared   | Release records, examples, and the mainstream-tool gap audit are synchronized for the next reviewed documentation release                                                                              |
+| Deployment                 | ✅ 0.29.9 live        | Production run `29898513486` and isolated Demo run `29898513182` deployed and verified the approved `ba27982` commit                                                                                   |
 | End-to-end test            | ✅ Full regression    | 84 deployment, 110 Worker, 64 Admin unit, 25 Admin browser, 2 production-build browser, and 8 site tests pass; Worker type-check and normal/Demo Admin plus Site builds pass                            |
 | Known issues               | ✅ Tracked            | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | 🟡 0.29.9 prepared    | Repository targets the reduced GitHub variable inventory while production and Demo continue running the verified v0.29.7 runtime                                                                        |
-| Repository update target   | ✅ 0.29.9 ready       | GitHub `main` package metadata remains the update-discovery source; no GitHub Release or tag is required                                                                                                |
-| Next planned work          | 🟡 Pre-1.0 validation | Fresh-account rehearsal, remote-D1 scale evidence, assistive-technology review, and private vulnerability reporting remain; a branded Demo redirect is intentionally unnecessary                        |
+| Current version            | 🟡 0.29.10 prepared   | Repository documents the completed v0.29.9 release and bounded post-validation priorities; production and Demo remain verified on v0.29.9 until this maintenance release is approved                   |
+| Repository update target   | 🟡 0.29.10 prepared   | GitHub `main` package metadata remains the update-discovery source; no GitHub Release or tag is required                                                                                                |
+| Next planned work          | 🟡 Pre-1.0 validation | Fresh-account rehearsal, remote-D1 scale evidence, assistive-technology review, and private vulnerability reporting remain; then prioritize URL semantics, mobile deep links, and branded QR assets |
 | Shlink migration readiness | ✅ Complete           | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
-| Shlink feature gap audit   | ✅ Complete           | Gap analysis documented in `docs/SHLINK_FEATURE_GAP.md`; highest-value missing capabilities identified as query-param forwarding, title auto-resolution, and multi-segment/strict-mode redirect options |
+| Mainstream-tool gap audit  | ✅ Complete           | [Official-vendor comparison](docs/MAINSTREAM_SHORT_LINK_GAP_AUDIT.md) prioritizes URL semantics, mobile deep links, and QR branding without expanding the redirect hot path                            |
+
+---
+
+## Linketry 0.29.10 Documentation Reconciliation And Mainstream Tool Gap Audit
+
+| Area                        | Status      | Notes                                                                                                                                                  |
+| --------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Release reconciliation      | ✅ Complete | Remote `main`, both GitHub Actions workflows, and production/Demo HTTP checks confirm the completed v0.29.9 release                                  |
+| Version status              | ✅ Corrected | V7 is complete for its tracked scope; V9 and Pre-1.0 validation remain in progress                                                                    |
+| Market gap audit            | ✅ Complete | Official Bitly, Short.io, Dub, Rebrandly, and Shlink documentation was compared against the documented Linketry surface                              |
+| Bounded priorities          | ✅ Recorded | Multi-segment URL semantics, mobile deep links, and branded QR assets follow Pre-1.0 validation; cloaking and link-in-bio remain deliberate deferrals |
+| Runtime/data impact         | ✅ None     | This maintenance release changes documentation, examples, metadata, and release fixtures only                                                        |
 
 ---
 
@@ -32,8 +44,9 @@ Last updated: 2026-07-22
 | Dependency audit           | ✅ Complete    | Every repository and `linketry-demo` environment variable was traced through workflows, gates, scripts, and docs        |
 | Fresh-install output       | ✅ Simplified  | Helpers emit `LINKETRY_WORKER_DOMAINS` and package-derived versions; legacy `SHORT_DOMAIN` remains read-compatible       |
 | Production safety          | ✅ Preserved   | Release, commit, migration, backup, target, resource, and isolation approvals are unchanged                              |
-| Remote inventory           | ✅ Complete    | Removed 8 repository and 3 Demo default-backed variables; inventories are 27 and 17 with required safety inputs intact |
+| Remote inventory           | ✅ Complete    | Removed 8 current-upgrade repository and 3 Demo default-backed variables; inventories are 27 and 17 with required safety inputs intact |
 | Source-size audit          | ✅ Improved   | Bootstrap and GitHub configuration entries are now below 300 lines; 32 unrelated files remain for separate bounded refactor batches |
+| Deployment evidence        | ✅ Complete    | Production run `29898513486` and isolated Demo run `29898513182` deployed the approved `ba27982` commit and passed        |
 | Runtime/data impact        | ✅ None        | Redirects, Admin behavior, APIs, migrations, D1/KV/R2/Queue ownership, secrets, DNS, and stored data are unchanged       |
 
 ---
@@ -876,7 +889,7 @@ Last updated: 2026-07-22
 | V4      | ✅ Done         |
 | V5      | ✅ Done         |
 | V6      | ✅ Done         |
-| V7      | In Progress     |
+| V7      | ✅ Done         |
 | V8      | ✅ Done         |
 | V9      | In Progress     |
 | V10     | Future optional |

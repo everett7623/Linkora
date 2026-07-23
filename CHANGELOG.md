@@ -13,11 +13,34 @@ _(none)_
 
 ---
 
+## [0.29.10] - 2026-07-23
+
+### Changed
+
+- Reconciled development records with the completed v0.29.9 production and isolated Demo release, including the verified live version and workflow results.
+- Corrected the V7 status to complete for its tracked scope and clarified that the fresh-install confirmation remains required only for fresh deployments, not the current upgrade track.
+- Updated current-version examples, package metadata, OpenAPI metadata, and release-facing fixtures to v0.29.10.
+
+### Added
+
+- Added a current official-vendor gap audit and prioritized multi-segment URL semantics, mobile deep links, and branded QR assets after Pre-1.0 validation.
+
+### Safety
+
+- No Worker redirect, Admin behavior, API contract, D1/KV schema, Cloudflare resource, secret, or production-data behavior changed.
+- Link cloaking, landing-page scope, invasive attribution, and collaboration features remain outside the immediate release path.
+
+### Tests
+
+- Verified 110 Worker tests, 84 deployment tests, 8 project-site tests, and the Admin production build with canonical asset integrity checks.
+
+---
+
 ## [0.29.9] - 2026-07-22
 
 ### Changed
 
-- Reduced the official repository variable inventory by removing ignored version metadata, inactive destructive-operation flags, a completed fresh-install confirmation, and the duplicated single-domain fallback.
+- Reduced the current upgrade-track repository variable inventory by removing ignored version metadata, inactive destructive-operation flags, the not-applicable fresh-install confirmation, and the duplicated single-domain fallback. Fresh configuration continues to generate its required confirmation.
 - Made `LINKETRY_WORKER_DOMAINS` the only variable emitted by fresh-install bootstrap and GitHub configuration helpers while retaining read compatibility for older `LINKETRY_SHORT_DOMAIN` installations.
 - Removed official Demo environment values that exactly duplicated the reviewed API Pages project, API custom-domain, and compatibility-date workflow defaults.
 - Clarified that deployed Worker versions come from package metadata rather than a manually maintained GitHub repository variable.

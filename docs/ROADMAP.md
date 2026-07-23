@@ -313,13 +313,23 @@ Status: complete in the repository; publication follows the normal reviewed proj
 - Navigation uses a recognizable labeled GitHub mark and the deployment route is indexed in the sitemap
 - Worker, redirect, Admin, API, D1/KV, migration, and production deployment behavior remain unchanged
 
+## 0.29.10: Documentation Reconciliation And Mainstream Tool Gap Audit
+
+Status: prepared in the repository after the completed v0.29.9 production and isolated Demo release.
+
+- Production workflow `29898513486` and isolated Demo workflow `29898513182` completed successfully for `ba27982`; public Worker/Admin checks reported v0.29.9.
+- Development documentation now distinguishes the completed runtime release from the prepared v0.29.10 maintenance release, and V7 is marked complete for its tracked scope.
+- An official-vendor audit identifies the next bounded compatibility priorities: multi-segment URL semantics, mobile deep links, and branded QR assets.
+- Link cloaking, link-in-bio pages, broad marketplace integrations, and collaboration remain intentionally outside the immediate roadmap.
+- Redirect behavior, D1/KV ownership, migration state, production resources, and stored data are unchanged.
+
 ## 0.29.9: GitHub Variable Inventory Cleanup And Deployment Script Size Refactor
 
-Status: prepared in the repository; the production v0.29.7 runtime remains unchanged until the approved `main` release completes.
+Status: complete. Production and isolated Demo deployment workflows passed for the approved `ba27982` commit, and public Worker/Admin checks reported v0.29.9.
 
 - Fresh-install helpers emit the canonical `LINKETRY_WORKER_DOMAINS` value and no longer create an ignored repository version variable
 - Existing `LINKETRY_SHORT_DOMAIN` installations remain readable while the official repository removes its duplicated fallback value
-- Inactive destructive-operation flags and completed fresh-install confirmation state are omitted because missing values already mean disabled
+- Inactive destructive-operation flags and the not-applicable fresh-install confirmation were removed from the current upgrade track; fresh configuration still emits its required confirmation
 - Demo values that exactly equal reviewed workflow defaults are omitted without changing the isolated resource targets
 - Release, commit, migration, backup, resource, domain, and account safety gates remain explicit
 - The two deployment configuration entries are now below the project JavaScript line limit; remaining source-size debt stays in bounded refactor batches
@@ -444,6 +454,9 @@ Planned:
 - Evaluate opt-in fallback_url failover from previously recorded health state; never probe a destination synchronously during redirect
 - Long-idle auto-archive rules with review queue and dry-run mode
 - Done in v0.28.0: fixture-backed Bitly and Short.io CSV imports; Rebrandly JSON/API remains second, and other providers wait for a current verified export contract
+- Planned after Pre-1.0 validation: multi-segment slugs plus per-link opt-in query forwarding and strict/append/ignore extra-path behavior; existing links retain exact-match, non-forwarding defaults
+- Planned after URL-semantics validation: explicit iOS, Android, and web fallback targets for mobile deep links, resolved in the existing evaluator without an upstream call
+- Planned after mobile-routing validation: branded QR Code assets with visual safety guardrails, PNG/SVG/PDF exports, and scan attribution that is labeled separately from link-click analytics
 
 ## Pre-1.0: Integration And Public Launch
 

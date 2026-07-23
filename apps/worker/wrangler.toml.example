@@ -13,7 +13,7 @@ routes = [
 ]
 
 [vars]
-LINKETRY_VERSION = "0.29.9"
+LINKETRY_VERSION = "0.29.10"
 LINKETRY_DAILY_CRON = "0 18 * * *"
 LINKETRY_HEALTH_CRON = "0 * * * *"
 LINKETRY_UPDATE_REPOSITORY = "<your-github-owner>/<your-linketry-repository>"
