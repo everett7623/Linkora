@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#07111f" />
+    <meta name="theme-color" content="#0a0d11" />
     <meta
       name="description"
       content="Self-hosted link management, analytics and monitoring on your Cloudflare account."
@@ -51,58 +51,105 @@
         >
           <span data-i18n="nav.menu">Menu</span><i aria-hidden="true"></i>
         </button>
-        <nav id="site-navigation" class="site-nav" aria-label="Primary" data-i18n-aria-label="nav.primary" data-navigation>
-          <a href="#features" data-i18n="nav.features">Features</a><a href="#architecture" data-i18n="nav.architecture">Architecture</a
-          ><a href="/deploy/" data-i18n="nav.deploy">Deploy</a><a href="#docs" data-i18n="nav.docs">Docs</a
+        <nav
+          id="site-navigation"
+          class="site-nav"
+          aria-label="Primary"
+          data-i18n-aria-label="nav.primary"
+          data-navigation
+        >
+          <a href="#features" data-i18n="nav.features">Features</a
+          ><a href="#architecture" data-i18n="nav.architecture">Architecture</a
+          ><a href="/deploy/" data-i18n="nav.deploy">Deploy</a
+          ><a href="#docs" data-i18n="nav.docs">Docs</a
           ><a class="nav-demo" href="https://demo.linketry.com" data-i18n="nav.demo">Live Demo</a
-          ><a href="https://everettlabs.dev/coffee/" target="_blank" rel="noopener noreferrer"
-            data-i18n="nav.coffee">Coffee</a
+          ><a
+            href="https://everettlabs.dev/coffee/"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-i18n="nav.coffee"
+            >Coffee</a
           ><a
             class="nav-source"
             href="https://github.com/everett7623/Linketry"
             aria-label="GitHub repository"
-            title="GitHub repository"
-            ><svg
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              fill="currentColor"
-              aria-hidden="true"
-            >
+            title="GitHub"
+            ><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
               <path
                 d="M12 2C6.48 2 2 6.59 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.89-2.78.62-3.37-1.21-3.37-1.21-.45-1.2-1.11-1.52-1.11-1.52-.91-.64.07-.63.07-.63 1 .08 1.53 1.06 1.53 1.06.9 1.57 2.35 1.12 2.92.86.09-.67.35-1.12.64-1.38-2.22-.26-4.56-1.15-4.56-5.1 0-1.13.39-2.05 1.04-2.77-.1-.27-.45-1.31.1-2.73 0 0 .85-.28 2.75 1.06A9.22 9.22 0 0 1 12 6.12c.85 0 1.7.12 2.5.35 1.9-1.34 2.74-1.06 2.74-1.06.55 1.42.2 2.46.1 2.73.65.72 1.04 1.64 1.04 2.77 0 3.96-2.35 4.84-4.58 5.09.36.32.68.93.68 1.88 0 1.36-.01 2.45-.01 2.79 0 .27.18.59.69.49A10.25 10.25 0 0 0 22 12.25C22 6.59 17.52 2 12 2Z"
               />
-            </svg><span data-i18n="nav.github">GitHub</span>
+            </svg>
           </a>
-          <label class="language-control">
-            <span class="sr-only" data-i18n="nav.language">Language</span>
-            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 6h-3.1a15.7 15.7 0 0 0-1.16-3.14A8.1 8.1 0 0 1 18.9 8ZM12 4c.83 1.1 1.5 2.47 1.88 4h-3.76C10.5 6.47 11.17 5.1 12 4ZM4.26 14A8.62 8.62 0 0 1 4 12c0-.69.09-1.36.26-2h3.5a17.56 17.56 0 0 0 0 4h-3.5Zm.84 2h3.1a15.7 15.7 0 0 0 1.16 3.14A8.1 8.1 0 0 1 5.1 16Zm3.1-8H5.1a8.1 8.1 0 0 1 4.26-3.14A15.7 15.7 0 0 0 8.2 8Zm3.8 12c-.83-1.1-1.5-2.47-1.88-4h3.76c-.38 1.53-1.05 2.9-1.88 4Zm2.34-6h-4.68a15.62 15.62 0 0 1 0-4h4.68a15.62 15.62 0 0 1 0 4Zm.3 5.14A15.7 15.7 0 0 0 15.8 16h3.1a8.1 8.1 0 0 1-4.26 3.14ZM16.24 14a17.56 17.56 0 0 0 0-4h3.5c.17.64.26 1.31.26 2s-.09 1.36-.26 2h-3.5Z" fill="currentColor" /></svg>
-            <select data-site-locale aria-label="Language" data-i18n-aria-label="nav.language"></select>
-          </label>
+          <div class="language-menu" data-language-menu>
+            <button
+              class="language-trigger"
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded="false"
+              aria-label="Language"
+              data-i18n-aria-label="nav.language"
+              data-language-trigger
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <path
+                  d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 6h-3.1a15.7 15.7 0 0 0-1.16-3.14A8.1 8.1 0 0 1 18.9 8ZM12 4c.83 1.1 1.5 2.47 1.88 4h-3.76C10.5 6.47 11.17 5.1 12 4ZM4.26 14A8.62 8.62 0 0 1 4 12c0-.69.09-1.36.26-2h3.5a17.56 17.56 0 0 0 0 4h-3.5Zm.84 2h3.1a15.7 15.7 0 0 0 1.16 3.14A8.1 8.1 0 0 1 5.1 16Zm3.1-8H5.1a8.1 8.1 0 0 1 4.26-3.14A15.7 15.7 0 0 0 8.2 8Zm3.8 12c-.83-1.1-1.5-2.47-1.88-4h3.76c-.38 1.53-1.05 2.9-1.88 4Zm2.34-6h-4.68a15.62 15.62 0 0 1 0-4h4.68a15.62 15.62 0 0 1 0 4Zm.3 5.14A15.7 15.7 0 0 0 15.8 16h3.1a8.1 8.1 0 0 1-4.26 3.14ZM16.24 14a17.56 17.56 0 0 0 0-4h3.5c.17.64.26 1.31.26 2s-.09 1.36-.26 2h-3.5Z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span data-language-current>English</span>
+              <svg
+                class="language-chevron"
+                viewBox="0 0 16 16"
+                width="14"
+                height="14"
+                aria-hidden="true"
+              >
+                <path
+                  d="m4 6 4 4 4-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                />
+              </svg>
+            </button>
+            <div class="language-popover" role="menu" data-language-options hidden></div>
+          </div>
         </nav>
       </div>
     </header>
 
     <main id="main">
       <section id="top" class="hero">
-        <div class="hero-glow" aria-hidden="true"></div>
         <div class="shell hero-grid">
           <div class="hero-copy">
-            <p class="eyebrow"><span></span> <span data-i18n="home.openSource">Open source · Self-hosted</span></p>
-            <h1><span data-i18n="home.heroLineOne">Own every link.</span><br /><em data-i18n="home.heroLineTwo">Understand every click.</em></h1>
-            <p class="hero-lede" data-i18n="home.heroLede">Short links, analytics, health monitoring, imports, backups and automation—deployed inside your own Cloudflare account.</p>
+            <p class="eyebrow">
+              <span></span> <span data-i18n="home.openSource">Open source · Self-hosted</span>
+            </p>
+            <h1>
+              <span data-i18n="home.heroLineOne">Own every link.</span><br /><em
+                data-i18n="home.heroLineTwo"
+                >Understand every click.</em
+              >
+            </h1>
+            <p class="hero-lede" data-i18n="home.heroLede">
+              Short links, analytics, health monitoring, imports, backups and automation—deployed
+              inside your own Cloudflare account.
+            </p>
             <div class="actions">
               <a class="button demo" href="https://demo.linketry.com"
-                ><span data-i18n="home.liveDemo">Open live demo</span> <span aria-hidden="true">↗</span></a
+                ><span data-i18n="home.liveDemo">Open live demo</span>
+                <span aria-hidden="true">↗</span></a
               >
               <a class="button primary" href="/deploy/"
-                ><span data-i18n="home.deploy">Explore deployment options</span> <span aria-hidden="true">↓</span></a
-              >
-              <a class="button secondary" href="https://github.com/everett7623/Linketry"
-                ><span data-i18n="home.github">View on GitHub</span> <span aria-hidden="true">↗</span></a
+                ><span data-i18n="home.deploy">Explore deployment options</span>
+                <span aria-hidden="true">↓</span></a
               >
             </div>
-            <p class="demo-status" data-i18n="home.demoStatus">Read only · Synthetic data · No token required</p>
+            <p class="demo-status" data-i18n="home.demoStatus">
+              Read only · Synthetic data · No token required
+            </p>
             <ul class="proof">
               <li>✓ <span data-i18n="home.proofData">Your data</span></li>
               <li>✓ <span data-i18n="home.proofDomains">Your domains</span></li>
@@ -110,7 +157,11 @@
             </ul>
           </div>
 
-          <div class="link-console" aria-label="Example Linketry redirect" data-i18n-aria-label="home.consoleAria">
+          <div
+            class="link-console"
+            aria-label="Example Linketry redirect"
+            data-i18n-aria-label="home.consoleAria"
+          >
             <div class="console-bar">
               <span></span><span></span><span></span>
               <p data-i18n="home.consoleTitle">Redirect inspector</p>
@@ -119,27 +170,38 @@
               <div class="route">
                 <b>L</b>
                 <div>
-                  <small data-i18n="home.consoleShort">SHORT LINK</small><code>go.your-domain.com/<strong>launch</strong></code>
+                  <small data-i18n="home.consoleShort">SHORT LINK</small
+                  ><code>go.your-domain.com/<strong>launch</strong></code>
                 </div>
                 <i>302</i>
               </div>
               <div class="route-path" aria-hidden="true">↓</div>
               <div class="route">
                 <b class="destination">↗</b>
-                <div><small data-i18n="home.consoleDestination">DESTINATION</small><code>example.com/product/launch</code></div>
+                <div>
+                  <small data-i18n="home.consoleDestination">DESTINATION</small
+                  ><code>example.com/product/launch</code>
+                </div>
                 <i class="latency">24 ms</i>
               </div>
               <div class="console-stats">
-                <div><strong>12.8k</strong><small data-i18n="home.consoleVisits">VISITS</small></div>
-                <div><strong>34</strong><small data-i18n="home.consoleCountries">COUNTRIES</small></div>
-                <div><strong>99.99%</strong><small data-i18n="home.consoleUptime">UPTIME</small></div>
+                <div>
+                  <strong>12.8k</strong><small data-i18n="home.consoleVisits">VISITS</small>
+                </div>
+                <div>
+                  <strong>34</strong><small data-i18n="home.consoleCountries">COUNTRIES</small>
+                </div>
+                <div>
+                  <strong>99.99%</strong><small data-i18n="home.consoleUptime">UPTIME</small>
+                </div>
               </div>
             </div>
           </div>
         </div>
         <div class="shell platform-strip" aria-label="Cloudflare platform components">
-          <span data-i18n="home.platform">RUNS ON</span><strong>Workers</strong><strong>D1</strong><strong>KV</strong
-          ><strong>Pages</strong><strong>R2 <small data-i18n="home.platformOptional">optional</small></strong
+          <span data-i18n="home.platform">RUNS ON</span><strong>Workers</strong><strong>D1</strong
+          ><strong>KV</strong><strong>Pages</strong
+          ><strong>R2 <small data-i18n="home.platformOptional">optional</small></strong
           ><strong>Queues <small data-i18n="home.platformOptional">optional</small></strong>
         </div>
       </section>
@@ -148,17 +210,25 @@
         <div class="shell">
           <div class="section-heading">
             <div>
-              <p class="eyebrow"><span></span> <span data-i18n="home.featureEyebrow">A complete link stack</span></p>
+              <p class="eyebrow">
+                <span></span> <span data-i18n="home.featureEyebrow">A complete link stack</span>
+              </p>
               <h2 data-i18n="home.featureTitle">More than a URL shortener.</h2>
             </div>
-            <p data-i18n="home.featureLede">Run the daily link workflow from one calm interface, while keeping D1 as your source of truth and KV as a fast redirect cache.</p>
+            <p data-i18n="home.featureLede">
+              Run the daily link workflow from one calm interface, while keeping D1 as your source
+              of truth and KV as a fast redirect cache.
+            </p>
           </div>
           <div class="feature-grid">
             <article class="feature-card wide">
               <span>01</span>
               <div>
                 <h3 data-i18n="home.featureOneTitle">Manage and migrate</h3>
-                <p data-i18n="home.featureOneText">Create, tag, group, archive and bulk-manage links. Import Shlink, JSON or CSV safely with previews, conflict checks and migration records.</p>
+                <p data-i18n="home.featureOneText">
+                  Create, tag, group, archive and bulk-manage links. Import Shlink, JSON or CSV
+                  safely with previews, conflict checks and migration records.
+                </p>
               </div>
               <div class="tag-cloud">
                 <i>/launch</i><i>/docs</i><i>/newsletter</i><i>/campaign</i>
@@ -167,7 +237,10 @@
             <article class="feature-card">
               <span>02</span>
               <h3 data-i18n="home.featureTwoTitle">Measure what matters</h3>
-              <p data-i18n="home.featureTwoText">Explore clicks, visitors, countries, devices, referers, campaigns and conversions with saved views and scheduled reports.</p>
+              <p data-i18n="home.featureTwoText">
+                Explore clicks, visitors, countries, devices, referers, campaigns and conversions
+                with saved views and scheduled reports.
+              </p>
               <div class="mini-bars" aria-hidden="true">
                 <i style="--bar: 46%"></i><i style="--bar: 68%"></i><i style="--bar: 55%"></i
                 ><i style="--bar: 88%"></i><i style="--bar: 72%"></i><i style="--bar: 96%"></i>
@@ -176,14 +249,22 @@
             <article class="feature-card">
               <span>03</span>
               <h3 data-i18n="home.featureThreeTitle">Monitor and recover</h3>
-              <p data-i18n="home.featureThreeText">Detect broken destinations, send recovery-aware alerts, keep audit history and protect operations with backups and restore previews.</p>
-              <div class="health"><i></i> <span data-i18n="home.health">All monitored destinations healthy</span></div>
+              <p data-i18n="home.featureThreeText">
+                Detect broken destinations, send recovery-aware alerts, keep audit history and
+                protect operations with backups and restore previews.
+              </p>
+              <div class="health">
+                <i></i> <span data-i18n="home.health">All monitored destinations healthy</span>
+              </div>
             </article>
             <article class="feature-card wide">
               <span>04</span>
               <div>
                 <h3 data-i18n="home.featureFourTitle">Integrate on a stable API</h3>
-                <p data-i18n="home.featureFourText">Build browser extensions, Shortcuts or internal tools against a versioned OpenAPI contract, scoped tokens and signed webhooks.</p>
+                <p data-i18n="home.featureFourText">
+                  Build browser extensions, Shortcuts or internal tools against a versioned OpenAPI
+                  contract, scoped tokens and signed webhooks.
+                </p>
               </div>
               <pre><code><b>GET</b> /api/v1/links
 Authorization: Bearer ••••••••
@@ -197,22 +278,43 @@ Authorization: Bearer ••••••••
       <section class="section product-section">
         <div class="shell product-grid">
           <div class="product-copy">
-            <p class="eyebrow"><span></span> <span data-i18n="home.productEyebrow">One focused workspace</span></p>
+            <p class="eyebrow">
+              <span></span> <span data-i18n="home.productEyebrow">One focused workspace</span>
+            </p>
             <h2 data-i18n="home.productTitle">Clear operations as your link library grows.</h2>
-            <p data-i18n="home.productText">Simple mode keeps everyday actions close. Advanced mode reveals analytics, monitoring, automation, backups and API tools when you need them.</p>
+            <p data-i18n="home.productText">
+              Simple mode keeps everyday actions close. Advanced mode reveals analytics, monitoring,
+              automation, backups and API tools when you need them.
+            </p>
             <ul>
               <li>✓ <span data-i18n="home.productOne">English and Simplified Chinese</span></li>
               <li>✓ <span data-i18n="home.productTwo">Duplicate destination warnings</span></li>
-              <li>✓ <span data-i18n="home.productThree">Password protection starts disabled</span></li>
-              <li>✓ <span data-i18n="home.productFour">Exportable data and change records</span></li>
+              <li>
+                ✓ <span data-i18n="home.productThree">Password protection starts disabled</span>
+              </li>
+              <li>
+                ✓ <span data-i18n="home.productFour">Exportable data and change records</span>
+              </li>
             </ul>
           </div>
-          <div class="admin-preview" role="img" aria-label="Preview of the Linketry Admin overview" data-i18n-aria-label="home.previewAria">
+          <div
+            class="admin-preview"
+            role="img"
+            aria-label="Preview of the Linketry Admin overview"
+            data-i18n-aria-label="home.previewAria"
+          >
             <aside>
               <div><img src="/favicon.svg" alt="" />Linketry</div>
-              <small data-i18n="home.previewDaily">DAILY</small><b>⌂ <span data-i18n="home.previewOverview">Overview</span></b><span>⌁ <span data-i18n="home.previewLinks">Links</span></span><span>＋ <span data-i18n="home.previewCreate">Create link</span></span
-              ><span>◇ <span data-i18n="home.previewTags">Tags</span></span><small data-i18n="home.previewInsights">INSIGHTS</small><span>▥ <span data-i18n="home.previewAnalytics">Analytics</span></span
-              ><span>◉ <span data-i18n="home.previewHealth">Health checks</span></span><small data-i18n="home.previewSystem">SYSTEM</small><span>⚙ <span data-i18n="home.previewSettings">Settings</span></span>
+              <small data-i18n="home.previewDaily">DAILY</small
+              ><b>⌂ <span data-i18n="home.previewOverview">Overview</span></b
+              ><span>⌁ <span data-i18n="home.previewLinks">Links</span></span
+              ><span>＋ <span data-i18n="home.previewCreate">Create link</span></span
+              ><span>◇ <span data-i18n="home.previewTags">Tags</span></span
+              ><small data-i18n="home.previewInsights">INSIGHTS</small
+              ><span>▥ <span data-i18n="home.previewAnalytics">Analytics</span></span
+              ><span>◉ <span data-i18n="home.previewHealth">Health checks</span></span
+              ><small data-i18n="home.previewSystem">SYSTEM</small
+              ><span>⚙ <span data-i18n="home.previewSettings">Settings</span></span>
             </aside>
             <div class="preview-main">
               <header>
@@ -223,22 +325,48 @@ Authorization: Bearer ••••••••
                 <button>＋ <span data-i18n="home.previewCreate">Create link</span></button>
               </header>
               <div class="metrics">
-                <div><small data-i18n="home.previewTotalLinks">TOTAL LINKS</small><strong>1,248</strong><i>⌁</i></div>
-                <div><small data-i18n="home.previewTotalClicks">TOTAL CLICKS</small><strong>82,491</strong><i>↗</i></div>
-                <div><small data-i18n="home.previewToday">TODAY</small><strong>734</strong><i>↗</i></div>
+                <div>
+                  <small data-i18n="home.previewTotalLinks">TOTAL LINKS</small><strong>1,248</strong
+                  ><i>⌁</i>
+                </div>
+                <div>
+                  <small data-i18n="home.previewTotalClicks">TOTAL CLICKS</small
+                  ><strong>82,491</strong><i>↗</i>
+                </div>
+                <div>
+                  <small data-i18n="home.previewToday">TODAY</small><strong>734</strong><i>↗</i>
+                </div>
               </div>
               <div class="preview-panels">
                 <div>
                   <b data-i18n="home.previewRecent">Recently created</b>
-                  <p><span>/launch</span><small>42 <span data-i18n="home.previewClickUnit">clicks</span></small></p>
-                  <p><span>/docs</span><small>18 <span data-i18n="home.previewClickUnit">clicks</span></small></p>
-                  <p><span>/news</span><small>7 <span data-i18n="home.previewClickUnit">clicks</span></small></p>
+                  <p>
+                    <span>/launch</span
+                    ><small>42 <span data-i18n="home.previewClickUnit">clicks</span></small>
+                  </p>
+                  <p>
+                    <span>/docs</span
+                    ><small>18 <span data-i18n="home.previewClickUnit">clicks</span></small>
+                  </p>
+                  <p>
+                    <span>/news</span
+                    ><small>7 <span data-i18n="home.previewClickUnit">clicks</span></small>
+                  </p>
                 </div>
                 <div>
                   <b data-i18n="home.previewTop">Top links</b>
-                  <p><span>/product</span><small>12.8k <span data-i18n="home.previewClickUnit">clicks</span></small></p>
-                  <p><span>/github</span><small>9.4k <span data-i18n="home.previewClickUnit">clicks</span></small></p>
-                  <p><span>/start</span><small>7.1k <span data-i18n="home.previewClickUnit">clicks</span></small></p>
+                  <p>
+                    <span>/product</span
+                    ><small>12.8k <span data-i18n="home.previewClickUnit">clicks</span></small>
+                  </p>
+                  <p>
+                    <span>/github</span
+                    ><small>9.4k <span data-i18n="home.previewClickUnit">clicks</span></small>
+                  </p>
+                  <p>
+                    <span>/start</span
+                    ><small>7.1k <span data-i18n="home.previewClickUnit">clicks</span></small>
+                  </p>
                 </div>
               </div>
             </div>
@@ -250,43 +378,78 @@ Authorization: Bearer ••••••••
         <div class="shell">
           <div class="section-heading">
             <div>
-              <p class="eyebrow"><span></span> <span data-i18n="home.architectureEyebrow">Built for the edge</span></p>
+              <p class="eyebrow">
+                <span></span> <span data-i18n="home.architectureEyebrow">Built for the edge</span>
+              </p>
               <h2 data-i18n="home.architectureTitle">Fast redirects. Durable truth.</h2>
             </div>
-            <p data-i18n="home.architectureText">The redirect path stays small. Analytics and monitoring run outside the critical response, so observability cannot hold up a visitor.</p>
+            <p data-i18n="home.architectureText">
+              The redirect path stays small. Analytics and monitoring run outside the critical
+              response, so observability cannot hold up a visitor.
+            </p>
           </div>
-          <div class="architecture-map" role="img" aria-label="Linketry redirect architecture" data-i18n-aria-label="home.architectureAria">
+          <div
+            class="architecture-map"
+            role="img"
+            aria-label="Linketry redirect architecture"
+            data-i18n-aria-label="home.architectureAria"
+          >
             <div class="arch-node">
-              <small data-i18n="home.architectureRequest">REQUEST</small><strong data-i18n="home.architectureVisitor">Visitor</strong><span>go.example.com/docs</span>
+              <small data-i18n="home.architectureRequest">REQUEST</small
+              ><strong data-i18n="home.architectureVisitor">Visitor</strong
+              ><span>go.example.com/docs</span>
             </div>
             <div class="arch-arrow"><small>HTTPS</small>→</div>
             <div class="arch-node worker">
-              <small data-i18n="home.architectureEdge">EDGE</small><strong data-i18n="home.architectureWorker">Cloudflare Worker</strong><span data-i18n="home.architectureAdminApi">Redirect + Admin API</span>
+              <small data-i18n="home.architectureEdge">EDGE</small
+              ><strong data-i18n="home.architectureWorker">Cloudflare Worker</strong
+              ><span data-i18n="home.architectureAdminApi">Redirect + Admin API</span>
             </div>
-            <div class="branches"><i><span data-i18n="home.architectureCacheFlow">cache</span> →</i><i><span data-i18n="home.architectureTruthFlow">truth</span> →</i><i><span data-i18n="home.architectureAsyncFlow">async</span> →</i></div>
+            <div class="branches">
+              <i><span data-i18n="home.architectureCacheFlow">cache</span> →</i
+              ><i><span data-i18n="home.architectureTruthFlow">truth</span> →</i
+              ><i><span data-i18n="home.architectureAsyncFlow">async</span> →</i>
+            </div>
             <div class="stores">
-              <div><small data-i18n="home.architectureFastPath">FAST PATH</small><strong>KV</strong><span data-i18n="home.architectureCache">Redirect cache</span></div>
+              <div>
+                <small data-i18n="home.architectureFastPath">FAST PATH</small><strong>KV</strong
+                ><span data-i18n="home.architectureCache">Redirect cache</span>
+              </div>
               <div class="primary-store">
-                <small data-i18n="home.architecturePrimary">PRIMARY</small><strong>D1</strong><span data-i18n="home.architectureLinksAnalytics">Links + analytics</span>
+                <small data-i18n="home.architecturePrimary">PRIMARY</small><strong>D1</strong
+                ><span data-i18n="home.architectureLinksAnalytics">Links + analytics</span>
               </div>
               <div>
-                <small data-i18n="home.architectureOptional">OPTIONAL</small><strong>R2 / Queue</strong><span data-i18n="home.architectureBackupEvents">Backup + events</span>
+                <small data-i18n="home.architectureOptional">OPTIONAL</small
+                ><strong>R2 / Queue</strong
+                ><span data-i18n="home.architectureBackupEvents">Backup + events</span>
               </div>
             </div>
           </div>
-          <p class="architecture-note" data-i18n-html="home.architectureNote"><span>Principle</span> D1 is always the source of truth. KV accelerates redirects but never owns primary link state.</p>
+          <p class="architecture-note" data-i18n-html="home.architectureNote">
+            <span>Principle</span> D1 is always the source of truth. KV accelerates redirects but
+            never owns primary link state.
+          </p>
         </div>
       </section>
 
       <section class="section deployment-bridge">
         <div class="shell deployment-bridge-inner">
           <div>
-            <p class="eyebrow"><span></span> <span data-i18n="home.deployEyebrow">Self-hosted on Cloudflare</span></p>
+            <p class="eyebrow">
+              <span></span> <span data-i18n="home.deployEyebrow">Self-hosted on Cloudflare</span>
+            </p>
             <h2 data-i18n="home.deployTitle">A deployment path that stays understandable.</h2>
           </div>
           <div>
-            <p data-i18n="home.deployText">Start from Cloudflare or follow the reviewed repository workflow. Both paths keep resource ownership, secrets, dry runs and confirmation gates explicit.</p>
-            <a class="button primary" href="/deploy/"><span data-i18n="home.deployAction">View deployment paths</span> <span aria-hidden="true">↗</span></a>
+            <p data-i18n="home.deployText">
+              Start from Cloudflare or follow the reviewed repository workflow. Both paths keep
+              resource ownership, secrets, dry runs and confirmation gates explicit.
+            </p>
+            <a class="button primary" href="/deploy/"
+              ><span data-i18n="home.deployAction">View deployment paths</span>
+              <span aria-hidden="true">↗</span></a
+            >
           </div>
         </div>
       </section>
@@ -295,34 +458,46 @@ Authorization: Bearer ••••••••
         <div class="shell">
           <div class="section-heading">
             <div>
-              <p class="eyebrow"><span></span> <span data-i18n="home.docsEyebrow">Open by default</span></p>
+              <p class="eyebrow">
+                <span></span> <span data-i18n="home.docsEyebrow">Open by default</span>
+              </p>
               <h2 data-i18n="home.docsTitle">Docs for operators and builders.</h2>
             </div>
-            <p data-i18n="home.docsText">Every feature, deployment track and recovery path lives with the source.</p>
+            <p data-i18n="home.docsText">
+              Every feature, deployment track and recovery path lives with the source.
+            </p>
           </div>
           <div class="docs-grid">
             <a href="https://github.com/everett7623/Linketry/blob/main/docs/SELF_HOSTING.md"
               ><span>01</span>
               <h3 data-i18n="home.docsSelfTitle">Self-hosting</h3>
-              <p data-i18n="home.docsSelfText">Provision D1 and KV, deploy, log in and run smoke checks.</p>
+              <p data-i18n="home.docsSelfText">
+                Provision D1 and KV, deploy, log in and run smoke checks.
+              </p>
               <b><span data-i18n="home.docsSelfAction">Open guide</span> ↗</b></a
             >
             <a href="https://github.com/everett7623/Linketry/blob/main/docs/API.md"
               ><span>02</span>
               <h3 data-i18n="home.docsApiTitle">API contract</h3>
-              <p data-i18n="home.docsApiText">Use the authenticated versioned API and OpenAPI document.</p>
+              <p data-i18n="home.docsApiText">
+                Use the authenticated versioned API and OpenAPI document.
+              </p>
               <b><span data-i18n="home.docsApiAction">Read API docs</span> ↗</b></a
             >
             <a href="https://github.com/everett7623/Linketry/blob/main/docs/BACKUP_AND_RESTORE.md"
               ><span>03</span>
               <h3 data-i18n="home.docsBackupTitle">Backup & recovery</h3>
-              <p data-i18n="home.docsBackupText">Export portable data and preview restores before writing.</p>
+              <p data-i18n="home.docsBackupText">
+                Export portable data and preview restores before writing.
+              </p>
               <b><span data-i18n="home.docsBackupAction">Plan recovery</span> ↗</b></a
             >
             <a href="https://github.com/everett7623/Linketry/blob/main/docs/ROADMAP.md"
               ><span>04</span>
               <h3 data-i18n="home.docsRoadmapTitle">Roadmap</h3>
-              <p data-i18n="home.docsRoadmapText">See what is complete and which ideas remain deferred.</p>
+              <p data-i18n="home.docsRoadmapText">
+                See what is complete and which ideas remain deferred.
+              </p>
               <b><span data-i18n="home.docsRoadmapAction">View roadmap</span> ↗</b></a
             >
           </div>
@@ -332,24 +507,32 @@ Authorization: Bearer ••••••••
       <section class="section roadmap-section">
         <div class="shell roadmap-grid">
           <div>
-            <p class="eyebrow"><span></span> <span data-i18n="home.roadmapEyebrow">Road to 1.0</span></p>
+            <p class="eyebrow">
+              <span></span> <span data-i18n="home.roadmapEyebrow">Road to 1.0</span>
+            </p>
             <h2 data-i18n="home.roadmapTitle">Built in public, one stable layer at a time.</h2>
           </div>
           <div class="roadmap-list">
             <article class="complete">
               <span data-i18n="home.roadmapComplete">Complete</span>
               <h3 data-i18n="home.roadmapCoreTitle">Core link platform</h3>
-              <p data-i18n="home.roadmapCoreText">Redirects, Admin, analytics, monitoring, migration, backups and OpenAPI.</p>
+              <p data-i18n="home.roadmapCoreText">
+                Redirects, Admin, analytics, monitoring, migration, backups and OpenAPI.
+              </p>
             </article>
             <article class="active">
               <span data-i18n="home.roadmapActive">In progress</span>
               <h3 data-i18n="home.roadmapActiveTitle">Public launch foundation</h3>
-              <p data-i18n="home.roadmapActiveText">Beginner deployment, project site, isolated Demo and operational hardening.</p>
+              <p data-i18n="home.roadmapActiveText">
+                Beginner deployment, project site, isolated Demo and operational hardening.
+              </p>
             </article>
             <article>
               <span data-i18n="home.roadmapPlanned">Planned</span>
               <h3 data-i18n="home.roadmapPlannedTitle">Access and integrations</h3>
-              <p data-i18n="home.roadmapPlannedText">Optional Cloudflare Access, async events, card views and richer link presentation.</p>
+              <p data-i18n="home.roadmapPlannedText">
+                Optional Cloudflare Access, async events, card views and richer link presentation.
+              </p>
             </article>
           </div>
         </div>
@@ -358,8 +541,12 @@ Authorization: Bearer ••••••••
       <section class="final-cta">
         <div class="shell">
           <div>
-            <p class="eyebrow"><span></span> <span data-i18n="home.ctaEyebrow">Your links, your infrastructure</span></p>
-            <h2 data-i18n-html="home.ctaTitle">Start with one link.<br />Keep control as you grow.</h2>
+            <p class="eyebrow">
+              <span></span> <span data-i18n="home.ctaEyebrow">Your links, your infrastructure</span>
+            </p>
+            <h2 data-i18n-html="home.ctaTitle">
+              Start with one link.<br />Keep control as you grow.
+            </h2>
           </div>
           <div class="actions">
             <a class="button primary" href="https://github.com/everett7623/Linketry"
@@ -367,7 +554,8 @@ Authorization: Bearer ••••••••
             ><a
               class="button secondary"
               href="https://github.com/everett7623/Linketry/blob/main/docs/SELF_HOSTING.md"
-              data-i18n="home.ctaGuide">Read the guide</a
+              data-i18n="home.ctaGuide"
+              >Read the guide</a
             >
           </div>
         </div>
@@ -382,11 +570,22 @@ Authorization: Bearer ••••••••
         <p data-i18n="footer.description">Self-hosted link management, analytics and monitoring.</p>
         <nav aria-label="Footer">
           <a href="https://demo.linketry.com" data-i18n="nav.demo">Live Demo</a
-          ><a href="https://everettlabs.dev/coffee/" target="_blank" rel="noopener noreferrer"
-            data-i18n="nav.coffee">Coffee</a
+          ><a
+            href="https://everettlabs.dev/coffee/"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-i18n="nav.coffee"
+            >Coffee</a
           ><a href="https://github.com/everett7623/Linketry">GitHub</a
-          ><a href="https://github.com/everett7623/Linketry/blob/main/LICENSE" data-i18n="footer.license">GPL-3.0</a
-          ><a href="https://github.com/everett7623/Linketry/blob/main/docs/ROADMAP.md" data-i18n="footer.roadmap">Roadmap</a>
+          ><a
+            href="https://github.com/everett7623/Linketry/blob/main/LICENSE"
+            data-i18n="footer.license"
+            >GPL-3.0</a
+          ><a
+            href="https://github.com/everett7623/Linketry/blob/main/docs/ROADMAP.md"
+            data-i18n="footer.roadmap"
+            >Roadmap</a
+          >
         </nav>
       </div>
       <div class="shell footer-bottom">

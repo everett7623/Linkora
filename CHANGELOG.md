@@ -13,6 +13,29 @@ _(none)_
 
 ---
 
+## [0.29.12] - 2026-07-24
+
+### Changed
+
+- Refined the public site into a quieter product-focused visual system with solid surfaces, restrained accents, stable typography, and a clearer two-action homepage hero.
+- Replaced the native locale selector on the homepage and deployment page with a consistent language menu that supports English and Simplified Chinese.
+- Reduced the primary-navigation GitHub entry to its recognizable icon while retaining its accessible repository name and tooltip.
+
+### Accessibility
+
+- Added checked-state announcements, outside-click dismissal, Escape handling, and Arrow/Home/End keyboard navigation to the language menu.
+- Preserved responsive mobile navigation, focus visibility, locale persistence, and URL `?lang=` behavior.
+
+### Safety
+
+- The change is limited to the public project site and release metadata; Worker redirects, Admin behavior, APIs, D1/KV ownership, migrations, secrets, and production resources are unchanged.
+
+### Tests
+
+- Verified 8 project-site, 110 Worker, 84 deployment, 6 Demo API, 64 Admin unit, and 25 Admin browser tests; Worker type-check; normal/Demo Admin and project-site builds; two production-build browser checks; and live local desktop/mobile site checks.
+
+---
+
 ## [0.29.11] - 2026-07-24
 
 ### Changed

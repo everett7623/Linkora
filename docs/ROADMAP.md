@@ -313,9 +313,19 @@ Status: complete in the repository; publication follows the normal reviewed proj
 - Navigation uses a recognizable labeled GitHub mark and the deployment route is indexed in the sitemap
 - Worker, redirect, Admin, API, D1/KV, migration, and production deployment behavior remain unchanged
 
+## 0.29.12: Public Site Visual And Language Navigation
+
+Status: prepared in the repository; publication follows the normal reviewed project-site workflow.
+
+- The homepage and deployment page use a quieter product-focused surface system without decorative hero glow or headline gradients
+- The homepage hero prioritizes the live Demo and deployment paths while GitHub remains available as a compact primary-navigation icon
+- The native locale select is replaced by a responsive English/Simplified Chinese menu with checked state, outside click, Escape, and arrow-key handling
+- Desktop and mobile checks confirm bounded navigation, stable hero layout, and no horizontal overflow
+- Worker redirects, Admin behavior, APIs, D1/KV ownership, migrations, credentials, and production resources remain unchanged
+
 ## 0.29.11: Sidebar Version Center
 
-Status: prepared in the repository; production and Demo remain on the verified v0.29.10 runtime.
+Status: deployed to the isolated Demo; production remains on v0.29.10 because stale exact release/commit approvals stopped the production workflow before mutations.
 
 - The compact Admin brand area now makes the installed version and update state visible without taking toolbar space.
 - A contextual version panel exposes installed/latest state, explicit refresh, changelog access, and the existing protected online-upgrade handoff.

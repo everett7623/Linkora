@@ -32,6 +32,8 @@ Align the Linketry Admin shell with the compact Sub2API-style reference: make th
 - 8 project-site tests plus normal/Demo Admin and project-site production builds pass.
 - Desktop and mobile browser inspection confirms a 320 px panel that remains inside the viewport.
 
-## Remaining Release Step
+## Release Outcome
 
-- Push `main`, then verify the protected production and isolated Demo workflows for v0.29.11.
+- `main` was pushed at commit `6806f4c685caa52afe83caf459f27344c5ca29e0`.
+- Isolated Demo workflow `30068332458` completed successfully for v0.29.11.
+- Production workflow `30068332470` stopped before mutations because the exact release and commit approvals still referenced v0.29.9 and commit `ba27982e0b11fa81645a2f6a2961e59c214e0a4c`; production remains on v0.29.10 until those approvals are deliberately updated.

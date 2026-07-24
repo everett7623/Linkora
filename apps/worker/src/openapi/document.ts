@@ -154,7 +154,7 @@ const jsonResponse = (
   content: { 'application/json': { schema } },
 });
 
-export function createOpenApiDocument(_env: Env, version = '0.29.11') {
+export function createOpenApiDocument(_env: Env, version = '0.29.12') {
   const paths: Record<string, Record<string, unknown>> = {};
   for (const operation of API_OPERATIONS) {
     const parameters = [...operation.path.matchAll(/\{([^}]+)\}/g)].map((match) => ({

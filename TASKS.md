@@ -5,13 +5,28 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
-## 🟡 Ready To Release - Sidebar Version Center (v0.29.11)
+## 🟡 Ready To Release - Public Site Visual And Language Navigation (v0.29.12)
+
+- [x] Review the live site, supplied screenshots, frontend guidance, and current release state
+- [x] Refine the public visual hierarchy and remove decorative hero glow/gradient treatment
+- [x] Replace the native locale selector with a responsive keyboard-accessible language menu
+- [x] Reduce primary-navigation GitHub controls to an accessible icon-only action
+- [x] Run project-site tests/build and local desktop/mobile browser verification
+- [x] Complete full Worker, deployment, Demo API, Admin, project-site, type-check, and build regression
+- [ ] Commit, push, and verify the v0.29.12 production and Demo workflows
+
+Task record: `.codex/tasks/site-visual-navigation-2026-07-24.md`
+
+---
+
+## 🟠 Production Approval Required - Sidebar Version Center (v0.29.11)
 
 - [x] Audit the current Linketry Admin shell and the supplied Sub2API reference states
 - [x] Add a compact sidebar version trigger and contextual release-status panel
 - [x] Reuse the protected online-upgrade action and retain the existing top-level fallback
 - [x] Run Admin browser coverage, responsive screenshots, and full affected regression
-- [ ] Push `main` and verify the v0.29.11 production and Demo workflows
+- [x] Push `main`; Demo workflow `30068332458` completed successfully
+- [ ] Update the exact production release/commit approvals and rerun after workflow `30068332470` stopped safely before mutations
 
 Task record: `.codex/tasks/sidebar-update-center-2026-07-23.md`
 

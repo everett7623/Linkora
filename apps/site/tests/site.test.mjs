@@ -8,8 +8,12 @@ const headers = await readFile(new URL('../public/_headers', import.meta.url), '
 const sitemap = await readFile(new URL('../public/sitemap.xml', import.meta.url), 'utf8');
 const script = await readFile(new URL('../src/main.ts', import.meta.url), 'utf8');
 const localeScript = await readFile(new URL('../src/siteI18n.ts', import.meta.url), 'utf8');
+const styles = await readFile(new URL('../src/styles.css', import.meta.url), 'utf8');
 const messages = await readFile(new URL('../src/siteMessages.ts', import.meta.url), 'utf8');
-const visualMessages = await readFile(new URL('../src/siteVisualMessages.ts', import.meta.url), 'utf8');
+const visualMessages = await readFile(
+  new URL('../src/siteVisualMessages.ts', import.meta.url),
+  'utf8'
+);
 const viteConfig = await readFile(new URL('../vite.config.ts', import.meta.url), 'utf8');
 
 test('project site publishes the complete public-launch content contract', () => {
@@ -47,7 +51,10 @@ test('deployment page presents a Cloudflare launch and guarded repository workfl
     assert.match(deployPage, new RegExp(content.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
 
-  assert.match(deployPage, /https:\/\/deploy\.workers\.cloudflare\.com\/\?url=https:\/\/github\.com\/everett7623\/Linketry/);
+  assert.match(
+    deployPage,
+    /https:\/\/deploy\.workers\.cloudflare\.com\/\?url=https:\/\/github\.com\/everett7623\/Linketry/
+  );
   assert.match(deployPage, /data-copy-deploy-prompt="ai-deploy-prompt"/);
   assert.match(deployPage, /id="deploy-copy-status"[^>]*aria-live="polite"/);
   assert.match(script, /navigator\.clipboard\.writeText\(promptText\)/);
@@ -67,10 +74,14 @@ test('project site uses canonical Linketry identity and public links', () => {
   assert.doesNotMatch(page, /Linkora/i);
 });
 
-test('primary navigation presents GitHub with a recognizable mark and label', () => {
-  assert.match(page, /class="nav-source"[^>]*aria-label="GitHub repository"[^>]*title="GitHub repository"/);
+test('primary navigation presents GitHub as an accessible icon-only action', () => {
+  assert.match(page, /class="nav-source"[^>]*aria-label="GitHub repository"[^>]*title="GitHub"/);
   assert.match(page, /class="nav-source"[\s\S]*?<svg[\s\S]*?fill="currentColor"/);
-  assert.match(page, /class="nav-source"[\s\S]*?<span data-i18n="nav\.github">GitHub<\/span>/);
+  assert.doesNotMatch(
+    page,
+    /class="nav-source"[\s\S]*?<span data-i18n="nav\.github">GitHub<\/span>/
+  );
+  assert.doesNotMatch(page, />View on GitHub</);
 });
 
 test('site localization defaults to English and registers complete English and Simplified Chinese catalogs', () => {
@@ -79,13 +90,20 @@ test('site localization defaults to English and registers complete English and S
   assert.match(localeScript, /SITE_LOCALE_STORAGE_KEY/);
   assert.match(localeScript, /new URLSearchParams\(window\.location\.search\)\.get\('lang'\)/);
   assert.match(localeScript, /window\.localStorage\.getItem/);
-  assert.match(localeScript, /data-site-locale/);
-  assert.match(page, /data-site-locale/);
-  assert.match(deployPage, /data-site-locale/);
+  assert.match(localeScript, /data-site-locale-option/);
+  assert.match(localeScript, /event\.key === 'Escape'/);
+  assert.match(localeScript, /\['ArrowDown', 'ArrowUp', 'Home', 'End'\]/);
+  assert.match(page, /data-language-menu/);
+  assert.match(page, /data-language-trigger/);
+  assert.match(page, /role="menu" data-language-options hidden/);
+  assert.match(deployPage, /data-language-menu/);
+  assert.match(styles, /\.language-popover\[hidden\]\s*{\s*display:\s*none;/);
+  assert.doesNotMatch(page, /<select[^>]*data-site-locale/);
+  assert.doesNotMatch(deployPage, /<select[^>]*data-site-locale/);
 
-  const localizedKeys = [...`${page}\n${deployPage}`.matchAll(/data-i18n(?:-[a-z-]+)?="([^"]+)"/g)].map(
-    ([, key]) => key
-  );
+  const localizedKeys = [
+    ...`${page}\n${deployPage}`.matchAll(/data-i18n(?:-[a-z-]+)?="([^"]+)"/g),
+  ].map(([, key]) => key);
   for (const key of localizedKeys) {
     assert.match(
       `${messages}\n${visualMessages}`,
@@ -97,7 +115,7 @@ test('site localization defaults to English and registers complete English and S
 test('external coffee links do not retain opener access', () => {
   assert.match(
     page,
-    /href="https:\/\/everettlabs\.dev\/coffee\/" target="_blank" rel="noopener noreferrer"/
+    /href="https:\/\/everettlabs\.dev\/coffee\/"\s+target="_blank"\s+rel="noopener noreferrer"/
   );
 });
 

@@ -11,17 +11,30 @@ Last updated: 2026-07-24
 | Layer                      | Status                | Notes                                                                                                                                                                                                   |
 | -------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Worker backend             | ✅ 0.29.10 live       | Production Worker health reports v0.29.10; redirect, API, analytics, D1, and KV behavior are unchanged                                                                                               |
-| Admin frontend             | ✅ 0.29.10 live       | Production and isolated Demo Admin both serve v0.29.10                                                                                                                                                |
+| Admin frontend             | 🟡 Split runtime      | Production Admin serves v0.29.10; isolated Demo Admin serves v0.29.11 from workflow `30068332458`                                                                                                      |
 | Database schema            | ✅ Complete           | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
-| Documentation              | 🟡 0.29.11 prepared   | Sidebar version center, examples, task record, and release metadata are synchronized for the next reviewed release                                                                                    |
-| Deployment                 | 🟡 0.29.10 runtime live | Demo run `29982497745` passed; production runtime is live, while custom-domain Admin readiness remains a tracked cache follow-up                                                                      |
-| End-to-end test            | ✅ Full regression    | 84 deployment, 110 Worker, 64 Admin unit, 25 Admin browser, 2 production-build browser, and 8 site tests pass; Worker type-check and normal/Demo Admin plus Site builds pass                            |
+| Documentation              | 🟡 0.29.12 prepared   | Public-site visual/navigation changes, examples, task record, and release metadata are synchronized for the next reviewed release                                                                      |
+| Deployment                 | 🟡 Split runtime      | Demo run `30068332458` deployed v0.29.11; production run `30068332470` stopped at the stale release/commit approval gate without mutations, so production remains on v0.29.10                            |
+| End-to-end test            | ✅ Full regression    | 84 deployment, 110 Worker, 6 Demo API, 64 Admin unit, 25 Admin browser, 2 production-build browser, and 8 site tests pass; Worker type-check and normal/Demo Admin plus Site builds pass                 |
 | Known issues               | ✅ Tracked            | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | 🟡 0.29.11 prepared   | Repository adds the sidebar version center while production and Demo run the verified v0.29.10 runtime                                                                                                 |
-| Repository update target   | 🟡 0.29.11 prepared   | GitHub `main` package metadata remains the update-discovery source; no GitHub Release or tag is required                                                                                                |
+| Current version            | 🟡 0.29.12 prepared   | Repository adds the public-site visual/navigation refinement; Demo runs v0.29.11 and production remains on v0.29.10 pending exact approval updates                                                       |
+| Repository update target   | 🟡 0.29.12 prepared   | GitHub `main` package metadata remains the update-discovery source; no GitHub Release or tag is required                                                                                                |
 | Next planned work          | 🟡 Pre-1.0 validation | Fresh-account rehearsal, remote-D1 scale evidence, assistive-technology review, and private vulnerability reporting remain; then prioritize URL semantics, mobile deep links, and branded QR assets |
 | Shlink migration readiness | ✅ Complete           | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Mainstream-tool gap audit  | ✅ Complete           | [Official-vendor comparison](docs/MAINSTREAM_SHORT_LINK_GAP_AUDIT.md) prioritizes URL semantics, mobile deep links, and QR branding without expanding the redirect hot path                            |
+
+---
+
+## Linketry 0.29.12 Public Site Visual And Language Navigation
+
+| Area                    | Status       | Notes                                                                                                                                    |
+| ----------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Visual hierarchy        | ✅ Complete  | The public site uses solid surfaces, restrained accent colors, stable typography, and a clearer two-action homepage hero                 |
+| GitHub navigation       | ✅ Complete  | The primary navigation uses a compact icon-only GitHub action with an accessible repository name and native tooltip                     |
+| Language menu           | ✅ Complete  | Homepage and deployment page share a custom English/Simplified Chinese menu with checked state, outside click, Escape, and arrow keys    |
+| Responsive behavior     | ✅ Complete  | Desktop and mobile browser checks confirm bounded navigation, menu placement, hero layout, and no horizontal overflow                   |
+| Release baseline        | ✅ Recorded  | v0.29.11 Demo is live; production remains v0.29.10 because stale approval values stopped the v0.29.11 workflow before mutations          |
+| Runtime/data impact     | ✅ None      | Redirects, Admin behavior, APIs, D1/KV ownership, migrations, stored data, secrets, and Cloudflare resources are unchanged              |
 
 ---
 
