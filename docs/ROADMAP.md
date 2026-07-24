@@ -313,9 +313,20 @@ Status: complete in the repository; publication follows the normal reviewed proj
 - Navigation uses a recognizable labeled GitHub mark and the deployment route is indexed in the sitemap
 - Worker, redirect, Admin, API, D1/KV, migration, and production deployment behavior remain unchanged
 
-## 0.29.12: Public Site Visual And Language Navigation
+## 0.29.13: Public Site Language Icon
 
 Status: prepared in the repository; publication follows the normal reviewed project-site workflow.
+
+- The public header uses a compact translation icon instead of showing the current locale and a chevron inside the trigger
+- GitHub and language actions share stable icon-button dimensions while the expanded menu retains full native language names
+- The localized current language remains available through the trigger's accessible name and native tooltip
+- Eyebrow decoration styles are isolated from translated labels so homepage and deployment headings remain separated in both languages
+- Desktop and mobile checks cover all 10 eyebrow/heading pairs, menu anchoring, hidden/expanded states, runtime errors, and horizontal overflow
+- Worker redirects, Admin behavior, APIs, D1/KV ownership, migrations, credentials, and production resources remain unchanged
+
+## 0.29.12: Public Site Visual And Language Navigation
+
+Status: complete; production workflow `30075595234` and isolated Demo workflow `30072730389` successfully deployed commit `f32e86e`.
 
 - The homepage and deployment page use a quieter product-focused surface system without decorative hero glow or headline gradients
 - The homepage hero prioritizes the live Demo and deployment paths while GitHub remains available as a compact primary-navigation icon

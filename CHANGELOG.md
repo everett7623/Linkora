@@ -13,6 +13,29 @@ _(none)_
 
 ---
 
+## [0.29.13] - 2026-07-24
+
+### Changed
+
+- Replaced the public-site language trigger's visible locale text and chevron with a compact translation icon that matches the GitHub navigation action.
+- Kept the full English and Simplified Chinese labels inside the expanded menu while reducing header width on desktop and mobile.
+- Scoped eyebrow decoration styles to the leading rule element so translated section labels keep their natural dimensions and no longer overlap homepage or deployment headings.
+
+### Accessibility
+
+- The icon-only trigger exposes the localized current language through a dynamic accessible name and native tooltip, such as `Language: English` or `语言: 简体中文`.
+- Existing checked states, keyboard navigation, Escape handling, outside-click dismissal, locale persistence, and URL `?lang=` behavior remain unchanged.
+
+### Safety
+
+- The change is limited to public-site presentation and release metadata; Worker redirects, Admin behavior, APIs, D1/KV ownership, migrations, secrets, and production resources are unchanged.
+
+### Tests
+
+- Verified 9 project-site contract tests, the production site build, and local desktop/mobile browser behavior for icon sizing, menu anchoring, localized accessible names, all 10 eyebrow/heading boundaries, console errors, and horizontal overflow.
+
+---
+
 ## [0.29.12] - 2026-07-24
 
 ### Changed

@@ -8,86 +8,100 @@ Last updated: 2026-07-24
 
 ## Overall Status
 
-| Layer                      | Status                | Notes                                                                                                                                                                                                   |
-| -------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Worker backend             | ✅ 0.29.10 live       | Production Worker health reports v0.29.10; redirect, API, analytics, D1, and KV behavior are unchanged                                                                                               |
-| Admin frontend             | 🟡 Split runtime      | Production Admin serves v0.29.10; isolated Demo Admin serves v0.29.11 from workflow `30068332458`                                                                                                      |
-| Database schema            | ✅ Complete           | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
-| Documentation              | 🟡 0.29.12 prepared   | Public-site visual/navigation changes, examples, task record, and release metadata are synchronized for the next reviewed release                                                                      |
-| Deployment                 | 🟡 Split runtime      | Demo run `30068332458` deployed v0.29.11; production run `30068332470` stopped at the stale release/commit approval gate without mutations, so production remains on v0.29.10                            |
-| End-to-end test            | ✅ Full regression    | 84 deployment, 110 Worker, 6 Demo API, 64 Admin unit, 25 Admin browser, 2 production-build browser, and 8 site tests pass; Worker type-check and normal/Demo Admin plus Site builds pass                 |
-| Known issues               | ✅ Tracked            | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | 🟡 0.29.12 prepared   | Repository adds the public-site visual/navigation refinement; Demo runs v0.29.11 and production remains on v0.29.10 pending exact approval updates                                                       |
-| Repository update target   | 🟡 0.29.12 prepared   | GitHub `main` package metadata remains the update-discovery source; no GitHub Release or tag is required                                                                                                |
+| Layer                      | Status                | Notes                                                                                                                                                                                               |
+| -------------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Worker backend             | ✅ 0.29.12 live       | Production Worker health reports v0.29.12; redirect, API, analytics, D1, and KV behavior are unchanged                                                                                              |
+| Admin frontend             | ✅ 0.29.12 live       | Production and isolated Demo Admin deployments completed successfully for v0.29.12                                                                                                                  |
+| Database schema            | ✅ Complete           | V6 analytics migration applied in production through GitHub Actions                                                                                                                                 |
+| Documentation              | 🟡 0.29.13 prepared   | Language icon refinement, eyebrow layout repair, examples, task record, and release metadata are synchronized for the next reviewed release                                                         |
+| Deployment                 | ✅ 0.29.12 live       | Production run `30075595234` and isolated Demo run `30072730389` completed successfully for commit `f32e86e`                                                                                        |
+| End-to-end test            | ✅ Full regression    | 84 deployment, 110 Worker, 6 Demo API, 64 Admin unit, 25 Admin browser, 2 production-build browser, and 9 site tests pass; Worker type-check and normal/Demo Admin plus Site builds pass            |
+| Known issues               | ✅ Tracked            | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                      |
+| Current version            | 🟡 0.29.13 prepared   | Repository refines the public-site language trigger and repairs section-label overlap after the verified v0.29.12 production and Demo release                                                       |
+| Repository update target   | 🟡 0.29.13 prepared   | GitHub `main` package metadata remains the update-discovery source; no GitHub Release or tag is required                                                                                            |
 | Next planned work          | 🟡 Pre-1.0 validation | Fresh-account rehearsal, remote-D1 scale evidence, assistive-technology review, and private vulnerability reporting remain; then prioritize URL semantics, mobile deep links, and branded QR assets |
-| Shlink migration readiness | ✅ Complete           | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
-| Mainstream-tool gap audit  | ✅ Complete           | [Official-vendor comparison](docs/MAINSTREAM_SHORT_LINK_GAP_AUDIT.md) prioritizes URL semantics, mobile deep links, and QR branding without expanding the redirect hot path                            |
+| Shlink migration readiness | ✅ Complete           | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                           |
+| Mainstream-tool gap audit  | ✅ Complete           | [Official-vendor comparison](docs/MAINSTREAM_SHORT_LINK_GAP_AUDIT.md) prioritizes URL semantics, mobile deep links, and QR branding without expanding the redirect hot path                         |
+
+---
+
+## Linketry 0.29.13 Public Site Language Icon
+
+| Area                | Status      | Notes                                                                                                                              |
+| ------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Language trigger    | ✅ Complete | The header now uses a compact translation icon instead of visible locale text and a chevron                                        |
+| Visual consistency  | ✅ Complete | GitHub and language actions share stable 40 px icon-button dimensions without increasing navigation width                          |
+| Section labels      | ✅ Repaired | Decorative eyebrow rules target only the leading line; English and Chinese labels retain natural width and cannot overlap headings |
+| Accessible state    | ✅ Complete | The trigger exposes the localized current language through its `aria-label` and tooltip while menu radio states remain unchanged   |
+| Responsive behavior | ✅ Complete | Desktop and mobile checks cover all 10 eyebrow/heading pairs, menu states, console errors, and horizontal overflow                 |
+| Release baseline    | ✅ Verified | Production v0.29.12 and Demo v0.29.12 are live through workflows `30075595234` and `30072730389`                                   |
+| Runtime/data impact | ✅ None     | Redirects, Admin behavior, APIs, D1/KV ownership, migrations, stored data, secrets, and Cloudflare resources are unchanged         |
 
 ---
 
 ## Linketry 0.29.12 Public Site Visual And Language Navigation
 
-| Area                    | Status       | Notes                                                                                                                                    |
-| ----------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Visual hierarchy        | ✅ Complete  | The public site uses solid surfaces, restrained accent colors, stable typography, and a clearer two-action homepage hero                 |
-| GitHub navigation       | ✅ Complete  | The primary navigation uses a compact icon-only GitHub action with an accessible repository name and native tooltip                     |
-| Language menu           | ✅ Complete  | Homepage and deployment page share a custom English/Simplified Chinese menu with checked state, outside click, Escape, and arrow keys    |
-| Responsive behavior     | ✅ Complete  | Desktop and mobile browser checks confirm bounded navigation, menu placement, hero layout, and no horizontal overflow                   |
-| Release baseline        | ✅ Recorded  | v0.29.11 Demo is live; production remains v0.29.10 because stale approval values stopped the v0.29.11 workflow before mutations          |
-| Runtime/data impact     | ✅ None      | Redirects, Admin behavior, APIs, D1/KV ownership, migrations, stored data, secrets, and Cloudflare resources are unchanged              |
+| Area                | Status      | Notes                                                                                                                                 |
+| ------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Visual hierarchy    | ✅ Complete | The public site uses solid surfaces, restrained accent colors, stable typography, and a clearer two-action homepage hero              |
+| GitHub navigation   | ✅ Complete | The primary navigation uses a compact icon-only GitHub action with an accessible repository name and native tooltip                   |
+| Language menu       | ✅ Complete | Homepage and deployment page share a custom English/Simplified Chinese menu with checked state, outside click, Escape, and arrow keys |
+| Responsive behavior | ✅ Complete | Desktop and mobile browser checks confirm bounded navigation, menu placement, hero layout, and no horizontal overflow                 |
+| Release baseline    | ✅ Complete | Production workflow `30075595234` and Demo workflow `30072730389` successfully deployed v0.29.12 from commit `f32e86e`                |
+| Runtime/data impact | ✅ None     | Redirects, Admin behavior, APIs, D1/KV ownership, migrations, stored data, secrets, and Cloudflare resources are unchanged            |
 
 ---
 
 ## Linketry 0.29.11 Sidebar Version Center
 
-| Area                   | Status      | Notes                                                                                                                                            |
-| ---------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Sidebar information    | ✅ Complete | The product mark, installed version, and availability state use one compact, scannable Admin shell region                                       |
-| Release panel          | ✅ Complete | A contextual panel exposes installed/latest status, explicit refresh, changelog access, and the existing protected upgrade action               |
-| Responsive behavior    | ✅ Complete | The panel anchors beside expanded/collapsed desktop navigation and stays bounded inside mobile viewports                                         |
-| Upgrade safety         | ✅ Preserved | Existing confirmation, repository, backup, migration, target, and release gates remain the only upgrade path                                    |
-| Verification           | ✅ Complete | Desktop and mobile browser checks plus the full 25-test Admin browser suite pass; unit, Worker, deployment, site, type-check, and build regressions also pass |
-| Runtime/data impact    | ✅ None     | Redirects, Admin API behavior, D1/KV ownership, migrations, stored data, and Cloudflare resource configuration are unchanged                    |
+| Area                | Status       | Notes                                                                                                                                                         |
+| ------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sidebar information | ✅ Complete  | The product mark, installed version, and availability state use one compact, scannable Admin shell region                                                     |
+| Release panel       | ✅ Complete  | A contextual panel exposes installed/latest status, explicit refresh, changelog access, and the existing protected upgrade action                             |
+| Responsive behavior | ✅ Complete  | The panel anchors beside expanded/collapsed desktop navigation and stays bounded inside mobile viewports                                                      |
+| Upgrade safety      | ✅ Preserved | Existing confirmation, repository, backup, migration, target, and release gates remain the only upgrade path                                                  |
+| Verification        | ✅ Complete  | Desktop and mobile browser checks plus the full 25-test Admin browser suite pass; unit, Worker, deployment, site, type-check, and build regressions also pass |
+| Runtime/data impact | ✅ None      | Redirects, Admin API behavior, D1/KV ownership, migrations, stored data, and Cloudflare resource configuration are unchanged                                  |
 
 ---
 
 ## Linketry 0.29.10 Documentation Reconciliation And Mainstream Tool Gap Audit
 
-| Area                        | Status      | Notes                                                                                                                                                  |
-| --------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Release reconciliation      | ✅ Complete | Remote `main`, both GitHub Actions workflows, and production/Demo HTTP checks confirm the completed v0.29.9 release                                  |
-| Version status              | ✅ Corrected | V7 is complete for its tracked scope; V9 and Pre-1.0 validation remain in progress                                                                    |
-| Market gap audit            | ✅ Complete | Official Bitly, Short.io, Dub, Rebrandly, and Shlink documentation was compared against the documented Linketry surface                              |
-| Bounded priorities          | ✅ Recorded | Multi-segment URL semantics, mobile deep links, and branded QR assets follow Pre-1.0 validation; cloaking and link-in-bio remain deliberate deferrals |
-| Runtime/data impact         | ✅ None     | This maintenance release changes documentation, examples, metadata, and release fixtures only                                                        |
+| Area                   | Status       | Notes                                                                                                                                                 |
+| ---------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Release reconciliation | ✅ Complete  | Remote `main`, both GitHub Actions workflows, and production/Demo HTTP checks confirm the completed v0.29.9 release                                   |
+| Version status         | ✅ Corrected | V7 is complete for its tracked scope; V9 and Pre-1.0 validation remain in progress                                                                    |
+| Market gap audit       | ✅ Complete  | Official Bitly, Short.io, Dub, Rebrandly, and Shlink documentation was compared against the documented Linketry surface                               |
+| Bounded priorities     | ✅ Recorded  | Multi-segment URL semantics, mobile deep links, and branded QR assets follow Pre-1.0 validation; cloaking and link-in-bio remain deliberate deferrals |
+| Runtime/data impact    | ✅ None      | This maintenance release changes documentation, examples, metadata, and release fixtures only                                                         |
 
 ---
 
 ## Linketry 0.29.9 GitHub Variable Inventory Cleanup And Deployment Script Size Refactor
 
-| Area                       | Status         | Notes                                                                                                                    |
-| -------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Dependency audit           | ✅ Complete    | Every repository and `linketry-demo` environment variable was traced through workflows, gates, scripts, and docs        |
-| Fresh-install output       | ✅ Simplified  | Helpers emit `LINKETRY_WORKER_DOMAINS` and package-derived versions; legacy `SHORT_DOMAIN` remains read-compatible       |
-| Production safety          | ✅ Preserved   | Release, commit, migration, backup, target, resource, and isolation approvals are unchanged                              |
-| Remote inventory           | ✅ Complete    | Removed 8 current-upgrade repository and 3 Demo default-backed variables; inventories are 27 and 17 with required safety inputs intact |
-| Source-size audit          | ✅ Improved   | Bootstrap and GitHub configuration entries are now below 300 lines; 32 unrelated files remain for separate bounded refactor batches |
-| Deployment evidence        | ✅ Complete    | Production run `29898513486` and isolated Demo run `29898513182` deployed the approved `ba27982` commit and passed        |
-| Runtime/data impact        | ✅ None        | Redirects, Admin behavior, APIs, migrations, D1/KV/R2/Queue ownership, secrets, DNS, and stored data are unchanged       |
+| Area                 | Status        | Notes                                                                                                                                  |
+| -------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Dependency audit     | ✅ Complete   | Every repository and `linketry-demo` environment variable was traced through workflows, gates, scripts, and docs                       |
+| Fresh-install output | ✅ Simplified | Helpers emit `LINKETRY_WORKER_DOMAINS` and package-derived versions; legacy `SHORT_DOMAIN` remains read-compatible                     |
+| Production safety    | ✅ Preserved  | Release, commit, migration, backup, target, resource, and isolation approvals are unchanged                                            |
+| Remote inventory     | ✅ Complete   | Removed 8 current-upgrade repository and 3 Demo default-backed variables; inventories are 27 and 17 with required safety inputs intact |
+| Source-size audit    | ✅ Improved   | Bootstrap and GitHub configuration entries are now below 300 lines; 32 unrelated files remain for separate bounded refactor batches    |
+| Deployment evidence  | ✅ Complete   | Production run `29898513486` and isolated Demo run `29898513182` deployed the approved `ba27982` commit and passed                     |
+| Runtime/data impact  | ✅ None       | Redirects, Admin behavior, APIs, migrations, D1/KV/R2/Queue ownership, secrets, DNS, and stored data are unchanged                     |
 
 ---
 
 ## Linketry 0.29.7 Public Deployment Page And Localization
 
-| Area                    | Status      | Notes                                                                                                                        |
-| ----------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Dedicated deployment UI | ✅ Complete | `/deploy/` separates the Cloudflare Quick Deploy launcher from the reviewed repository workflow                            |
+| Area                    | Status      | Notes                                                                                                                          |
+| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Dedicated deployment UI | ✅ Complete | `/deploy/` separates the Cloudflare Quick Deploy launcher from the reviewed repository workflow                                |
 | Cloudflare boundary     | ✅ Explicit | The quick launcher starts the authenticated Cloudflare flow but never claims to choose account, D1/KV, Pages/Admin, or secrets |
-| Public localization     | ✅ Complete | English is the default; Simplified Chinese is complete, persists locally, accepts `?lang=`, and has a single locale registry |
-| GitHub identifier       | ✅ Complete | Navigation uses a filled GitHub mark with a visible label and accessible repository name                                    |
-| Discoverability         | ✅ Complete | Homepage, primary navigation, sitemap, self-hosting docs, and deployment docs link to the dedicated route                  |
-| Runtime impact          | ✅ None     | Worker, redirects, Admin, APIs, D1/KV ownership, migrations, credentials, and production resources are unchanged           |
-| Verification            | ✅ Complete | Site contract/build and live local desktop/mobile locale checks pass without console warnings                               |
+| Public localization     | ✅ Complete | English is the default; Simplified Chinese is complete, persists locally, accepts `?lang=`, and has a single locale registry   |
+| GitHub identifier       | ✅ Complete | Navigation uses a filled GitHub mark with a visible label and accessible repository name                                       |
+| Discoverability         | ✅ Complete | Homepage, primary navigation, sitemap, self-hosting docs, and deployment docs link to the dedicated route                      |
+| Runtime impact          | ✅ None     | Worker, redirects, Admin, APIs, D1/KV ownership, migrations, credentials, and production resources are unchanged               |
+| Verification            | ✅ Complete | Site contract/build and live local desktop/mobile locale checks pass without console warnings                                  |
 
 ---
 
@@ -884,17 +898,17 @@ Last updated: 2026-07-24
 
 ## Known Issues
 
-| Issue                                               | Status          | Notes                                                                                           |
-| --------------------------------------------------- | --------------- | ----------------------------------------------------------------------------------------------- |
-| Browser plugin instability                          | ℹ️ Not blocking | API and production smoke checks completed; browser plugin not required for remaining cutover    |
-| Admin custom-domain asset convergence                | 🟡 Follow-up    | Production serves v0.29.10, but GitHub Runner repeatedly received a cached HTML fallback for a canonical JS path; direct Pages origin was healthy |
-| Admin API on `workers.dev` unavailable              | ℹ️ Not blocking | Admin should be built with the configured Worker/API origin                                     |
-| Wrangler v3 update warning                          | ✅ Fixed        | Project toolchain upgraded to Wrangler 4.111.0 in v0.13.0                                       |
-| KV stale active entry after admin changes           | ✅ Fixed        | Redirect handler now re-checks D1 on KV hits and preserves active KV only if D1 is unavailable  |
-| API Origin override cleared after transient failure | ✅ Fixed        | Admin only persists fallback to the build-time API after that origin authenticates successfully |
-| Large Shlink import confirm timeout                 | ✅ Fixed        | v0.9.13 returns a pending job before background parsing and reports failed jobs correctly       |
-| Large import stops after about 73 links             | ✅ Fixed        | v0.9.16 batches D1 writes; actual 195-row CSV passed first-import and duplicate-import checks   |
-| Admin remains in importing state after completion   | ✅ Fixed        | v0.9.17 uses immediate non-cached polling and clears completed import state                     |
+| Issue                                               | Status          | Notes                                                                                                                                             |
+| --------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Browser plugin instability                          | ℹ️ Not blocking | API and production smoke checks completed; browser plugin not required for remaining cutover                                                      |
+| Admin custom-domain asset convergence               | 🟡 Follow-up    | Production serves v0.29.10, but GitHub Runner repeatedly received a cached HTML fallback for a canonical JS path; direct Pages origin was healthy |
+| Admin API on `workers.dev` unavailable              | ℹ️ Not blocking | Admin should be built with the configured Worker/API origin                                                                                       |
+| Wrangler v3 update warning                          | ✅ Fixed        | Project toolchain upgraded to Wrangler 4.111.0 in v0.13.0                                                                                         |
+| KV stale active entry after admin changes           | ✅ Fixed        | Redirect handler now re-checks D1 on KV hits and preserves active KV only if D1 is unavailable                                                    |
+| API Origin override cleared after transient failure | ✅ Fixed        | Admin only persists fallback to the build-time API after that origin authenticates successfully                                                   |
+| Large Shlink import confirm timeout                 | ✅ Fixed        | v0.9.13 returns a pending job before background parsing and reports failed jobs correctly                                                         |
+| Large import stops after about 73 links             | ✅ Fixed        | v0.9.16 batches D1 writes; actual 195-row CSV passed first-import and duplicate-import checks                                                     |
+| Admin remains in importing state after completion   | ✅ Fixed        | v0.9.17 uses immediate non-cached polling and clears completed import state                                                                       |
 
 ## Migration Status
 

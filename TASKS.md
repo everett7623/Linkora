@@ -5,7 +5,21 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
-## 🟡 Ready To Release - Public Site Visual And Language Navigation (v0.29.12)
+## 🟡 Ready To Release - Public Site Language Icon (v0.29.13)
+
+- [x] Verify the v0.29.12 production, Demo, and public-site release baseline
+- [x] Replace visible locale text and chevron with a compact translation icon
+- [x] Preserve dynamic localized accessible names and existing menu interaction
+- [x] Repair translated eyebrow labels that overlapped homepage and deployment headings
+- [x] Verify desktop/mobile icon sizing, menu anchoring, and overflow behavior
+- [x] Check all 10 eyebrow/heading pairs in English and Simplified Chinese with no runtime errors
+- [ ] Complete affected regression, commit, push, and verify v0.29.13 workflows
+
+Task record: `.codex/tasks/site-language-icon-2026-07-24.md`
+
+---
+
+## ✅ Completed - Public Site Visual And Language Navigation (v0.29.12)
 
 - [x] Review the live site, supplied screenshots, frontend guidance, and current release state
 - [x] Refine the public visual hierarchy and remove decorative hero glow/gradient treatment
@@ -13,20 +27,20 @@ One item in "In Progress" at a time whenever possible.
 - [x] Reduce primary-navigation GitHub controls to an accessible icon-only action
 - [x] Run project-site tests/build and local desktop/mobile browser verification
 - [x] Complete full Worker, deployment, Demo API, Admin, project-site, type-check, and build regression
-- [ ] Commit, push, and verify the v0.29.12 production and Demo workflows
+- [x] Commit and push `f32e86e`; production workflow `30075595234` and Demo workflow `30072730389` passed
 
 Task record: `.codex/tasks/site-visual-navigation-2026-07-24.md`
 
 ---
 
-## 🟠 Production Approval Required - Sidebar Version Center (v0.29.11)
+## ✅ Completed - Sidebar Version Center (v0.29.11, shipped in v0.29.12)
 
 - [x] Audit the current Linketry Admin shell and the supplied Sub2API reference states
 - [x] Add a compact sidebar version trigger and contextual release-status panel
 - [x] Reuse the protected online-upgrade action and retain the existing top-level fallback
 - [x] Run Admin browser coverage, responsive screenshots, and full affected regression
 - [x] Push `main`; Demo workflow `30068332458` completed successfully
-- [ ] Update the exact production release/commit approvals and rerun after workflow `30068332470` stopped safely before mutations
+- [x] Production approval was updated and the feature shipped through successful v0.29.12 workflow `30075595234`
 
 Task record: `.codex/tasks/sidebar-update-center-2026-07-23.md`
 

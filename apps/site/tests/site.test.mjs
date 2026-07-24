@@ -84,6 +84,12 @@ test('primary navigation presents GitHub as an accessible icon-only action', () 
   assert.doesNotMatch(page, />View on GitHub</);
 });
 
+test('eyebrow decoration does not constrain translated labels', () => {
+  assert.match(styles, /\.eyebrow\s*>\s*span:first-child\s*{/);
+  assert.match(styles, /\.eyebrow\s*>\s*span:last-child\s*{\s*min-width:\s*0;/);
+  assert.doesNotMatch(styles, /\.eyebrow span\s*{/);
+});
+
 test('site localization defaults to English and registers complete English and Simplified Chinese catalogs', () => {
   assert.match(messages, /DEFAULT_SITE_LOCALE: SiteLocale = 'en'/);
   assert.match(messages, /code: 'zh-CN', label: '简体中文'/);
@@ -95,8 +101,14 @@ test('site localization defaults to English and registers complete English and S
   assert.match(localeScript, /\['ArrowDown', 'ArrowUp', 'Home', 'End'\]/);
   assert.match(page, /data-language-menu/);
   assert.match(page, /data-language-trigger/);
+  assert.match(page, /class="language-icon"/);
+  assert.match(page, /aria-label="Language: English"/);
+  assert.doesNotMatch(page, /data-language-current/);
+  assert.doesNotMatch(page, /class="language-chevron"/);
   assert.match(page, /role="menu" data-language-options hidden/);
   assert.match(deployPage, /data-language-menu/);
+  assert.match(localeScript, /trigger\.setAttribute\('aria-label', accessibleLabel\)/);
+  assert.match(localeScript, /trigger\.title = accessibleLabel/);
   assert.match(styles, /\.language-popover\[hidden\]\s*{\s*display:\s*none;/);
   assert.doesNotMatch(page, /<select[^>]*data-site-locale/);
   assert.doesNotMatch(deployPage, /<select[^>]*data-site-locale/);

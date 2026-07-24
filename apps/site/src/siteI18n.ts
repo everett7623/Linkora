@@ -78,8 +78,10 @@ function localizeElements() {
 
 function syncLanguageMenus(locale: SiteLocale) {
   const metadata = siteLocales.find((item) => item.code === locale) ?? siteLocales[0];
-  document.querySelectorAll<HTMLElement>('[data-language-current]').forEach((label) => {
-    label.textContent = metadata.label;
+  const accessibleLabel = `${translate('nav.language')}: ${metadata.label}`;
+  document.querySelectorAll<HTMLButtonElement>('[data-language-trigger]').forEach((trigger) => {
+    trigger.setAttribute('aria-label', accessibleLabel);
+    trigger.title = accessibleLabel;
   });
   document.querySelectorAll<HTMLButtonElement>('[data-site-locale-option]').forEach((option) => {
     option.setAttribute('aria-checked', String(option.dataset.siteLocaleOption === locale));

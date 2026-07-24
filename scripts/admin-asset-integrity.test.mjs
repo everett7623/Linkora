@@ -27,7 +27,7 @@ test('accepts canonical Vite entry assets that exist in the build', async () => 
 
 test('rejects query cache keys that create a second ES module identity', async () => {
   const indexPath = await fixture(`
-    <script type="module" src="/assets/index-AbCd1234.js?v=0.29.12"></script>
+    <script type="module" src="/assets/index-AbCd1234.js?v=0.29.13"></script>
     <link rel="stylesheet" href="/assets/index-EfGh5678.css">
   `);
   await assert.rejects(verifyAdminBuild(indexPath), /canonical Vite content-hashed path/);
