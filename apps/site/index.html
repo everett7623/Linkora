@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0a0d11" />
     <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta
       name="description"
       content="Self-hosted link management, analytics and monitoring on your Cloudflare account."
       data-i18n-content="meta.homeDescription"
@@ -26,6 +30,7 @@
     />
     <meta name="twitter:image" content="https://linketry.com/favicon.svg" />
     <link rel="canonical" href="https://linketry.com/" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="Linketry for AI agents" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link
       rel="icon"
@@ -34,6 +39,92 @@
       media="(prefers-color-scheme: light)"
     />
     <title>Linketry — Own every link</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://linketry.com/#website",
+            "url": "https://linketry.com/",
+            "name": "Linketry",
+            "description": "Self-hosted link management, analytics and monitoring on Cloudflare.",
+            "inLanguage": ["en", "zh-CN"],
+            "publisher": { "@id": "https://linketry.com/#publisher" }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://linketry.com/#publisher",
+            "name": "everettlabs",
+            "url": "https://everettlabs.dev/",
+            "sameAs": ["https://github.com/everett7623"]
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "https://linketry.com/#software",
+            "name": "Linketry",
+            "url": "https://linketry.com/",
+            "description": "An open-source, self-hosted platform for short links, analytics, destination health monitoring, imports, backups and automation.",
+            "applicationCategory": "BusinessApplication",
+            "applicationSubCategory": "Link management and analytics",
+            "operatingSystem": "Cloudflare Workers",
+            "softwareVersion": "0.29.14",
+            "isAccessibleForFree": true,
+            "license": "https://github.com/everett7623/Linketry/blob/main/LICENSE",
+            "codeRepository": "https://github.com/everett7623/Linketry",
+            "installUrl": "https://linketry.com/deploy/",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            "featureList": [
+              "Short-link management",
+              "Click analytics",
+              "Destination health monitoring",
+              "Shlink, JSON and CSV imports",
+              "Backup and restore",
+              "Versioned Admin API"
+            ],
+            "author": { "@id": "https://linketry.com/#publisher" }
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://linketry.com/#facts",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What is Linketry?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Linketry is an open-source, self-hosted platform for managing short links, analytics, destination health, imports, backups and automation on Cloudflare."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Where does Linketry store data?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "D1 is the source of truth. KV is used only as a redirect cache, and optional R2 stores backups."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Does a production Linketry deployment require the public Demo?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Production self-hosting creates resources in the owner's Cloudflare account and never requires Demo mode, Demo resources or synthetic data."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can analytics failures delay a short-link redirect?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Redirects are returned first and analytics work runs asynchronously through the Worker execution context."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body data-page-title="meta.homeTitle">
     <a class="skip-link" href="#main" data-i18n="home.skip">Skip to content</a>
@@ -427,6 +518,50 @@ Authorization: Bearer ••••••••
             <span>Principle</span> D1 is always the source of truth. KV accelerates redirects but
             never owns primary link state.
           </p>
+        </div>
+      </section>
+
+      <section class="section facts-section" aria-labelledby="facts-title">
+        <div class="shell facts-layout">
+          <div>
+            <p class="eyebrow">
+              <span></span> <span data-i18n="home.factsEyebrow">Canonical facts</span>
+            </p>
+            <h2 id="facts-title" data-i18n="home.factsTitle">Clear answers about Linketry.</h2>
+            <p data-i18n="home.factsLede">
+              Concise product and infrastructure facts for operators, search engines and AI
+              assistants.
+            </p>
+          </div>
+          <dl class="facts-list">
+            <div>
+              <dt data-i18n="home.factsWhatQuestion">What is Linketry?</dt>
+              <dd data-i18n="home.factsWhatAnswer">
+                An open-source, self-hosted platform for short links, analytics, destination health,
+                imports, backups and automation on Cloudflare.
+              </dd>
+            </div>
+            <div>
+              <dt data-i18n="home.factsDataQuestion">Where is data stored?</dt>
+              <dd data-i18n="home.factsDataAnswer">
+                D1 is the source of truth. KV is redirect cache only; optional R2 stores backups.
+              </dd>
+            </div>
+            <div>
+              <dt data-i18n="home.factsDemoQuestion">Does production require the public Demo?</dt>
+              <dd data-i18n="home.factsDemoAnswer">
+                No. Production uses resources in the owner's account and never requires Demo mode,
+                Demo resources or synthetic data.
+              </dd>
+            </div>
+            <div>
+              <dt data-i18n="home.factsRedirectQuestion">Can analytics delay a redirect?</dt>
+              <dd data-i18n="home.factsRedirectAnswer">
+                No. Redirects return first; analytics work runs asynchronously outside the critical
+                response.
+              </dd>
+            </div>
+          </dl>
         </div>
       </section>
 

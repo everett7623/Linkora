@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0a0d11" />
     <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta
       name="description"
-      content="Choose an honest Cloudflare Quick Deploy launch or a reviewed Linketry repository workflow."
+      content="Deploy a production Linketry instance with Cloudflare Quick Deploy or the reviewed repository workflow."
       data-i18n-content="meta.deployDescription"
     />
     <meta property="og:type" content="website" />
@@ -15,6 +19,7 @@
     <meta property="og:image" content="https://linketry.com/favicon.svg" />
     <meta name="twitter:card" content="summary" />
     <link rel="canonical" href="https://linketry.com/deploy/" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="Linketry for AI agents" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link
       rel="icon"
@@ -23,6 +28,48 @@
       media="(prefers-color-scheme: light)"
     />
     <title>Deploy Linketry on Cloudflare</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "@id": "https://linketry.com/deploy/#production-quick-deploy",
+        "name": "Deploy a production Linketry instance on Cloudflare",
+        "description": "Create a normal self-hosted Linketry production instance with one Worker, a fresh D1 database, a KV cache namespace and the Admin at /admin/.",
+        "inLanguage": ["en", "zh-CN"],
+        "url": "https://linketry.com/deploy/",
+        "isPartOf": { "@id": "https://linketry.com/#website" },
+        "supply": [
+          {
+            "@type": "HowToSupply",
+            "name": "A private production LINKETRY_ADMIN_TOKEN"
+          }
+        ],
+        "tool": [
+          { "@type": "HowToTool", "name": "Cloudflare account" },
+          { "@type": "HowToTool", "name": "GitHub or GitLab account" }
+        ],
+        "step": [
+          {
+            "@type": "HowToStep",
+            "position": 1,
+            "name": "Sign in",
+            "text": "Sign in to the Cloudflare account that will own the production instance."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 2,
+            "name": "Choose production resources",
+            "text": "Choose the Worker, D1 and KV names, then enter a private Admin login token."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 3,
+            "name": "Deploy and open Admin",
+            "text": "Deploy, open the Worker URL at /admin/, and configure the hostname as the first short-link domain."
+          }
+        ]
+      }
+    </script>
   </head>
   <body data-page-title="meta.deployTitle">
     <a class="skip-link" href="#deploy-options" data-i18n="deploy.skip"
@@ -116,9 +163,9 @@
           </p>
           <h1 data-i18n="deploy.title">Deploy Linketry with the right amount of control.</h1>
           <p class="deploy-hero-lede" data-i18n="deploy.lede">
-            Start in Cloudflare when you want a fast dashboard launch, or use the reviewed
-            repository workflow when you need an auditable resource plan. Both paths keep your
-            account and data in your hands.
+            Create a normal production instance in your own Cloudflare account. Quick Deploy bundles
+            the Admin with one Worker; the reviewed repository workflow keeps the separate Pages
+            architecture and stricter approval gates.
           </p>
           <div class="actions">
             <a
@@ -126,7 +173,7 @@
               href="https://deploy.workers.cloudflare.com/?url=https://github.com/everett7623/Linketry"
               target="_blank"
               rel="noopener noreferrer"
-              ><span data-i18n="deploy.quickAction">Launch on Cloudflare</span>
+              ><span data-i18n="deploy.quickAction">Deploy production on Cloudflare</span>
               <span aria-hidden="true">↗</span></a
             >
             <a
@@ -143,30 +190,33 @@
         <div class="shell">
           <div class="deploy-track-grid">
             <article class="deploy-track quick-track">
-              <p class="route-label" data-i18n="deploy.quickLabel">A · Cloudflare Quick Deploy</p>
-              <h2 data-i18n="deploy.quickTitle">Start from the Cloudflare dashboard.</h2>
+              <p class="route-label" data-i18n="deploy.quickLabel">
+                A · Cloudflare production deploy
+              </p>
+              <h2 data-i18n="deploy.quickTitle">Create one complete production Worker.</h2>
               <p class="route-summary" data-i18n="deploy.quickText">
-                The official launcher opens Cloudflare's authenticated repository-deployment flow.
-                It is the fastest way to begin a new installation from your own account.
+                Cloudflare forks the repository, provisions a new D1 database and KV namespace,
+                builds the Admin into the Worker, and applies the production migrations in your
+                account.
               </p>
               <ol class="route-steps">
                 <li>
                   <span>1</span>
                   <p data-i18n="deploy.quickStepOne">
-                    Sign in to the Cloudflare account that will own the application.
+                    Sign in to the Cloudflare account that will own this production instance.
                   </p>
                 </li>
                 <li>
                   <span>2</span>
                   <p data-i18n="deploy.quickStepTwo">
-                    Review the repository and choose the deployment target before creating it.
+                    Choose the Worker, D1 and KV names, then enter a private Admin login token.
                   </p>
                 </li>
                 <li>
                   <span>3</span>
                   <p data-i18n="deploy.quickStepThree">
-                    Complete the required D1, KV, Pages/Admin and private Admin-token choices in the
-                    guided setup.
+                    Deploy, open the Worker URL at /admin/, and configure that hostname as your
+                    first short-link domain.
                   </p>
                 </li>
               </ol>
@@ -175,17 +225,16 @@
                 href="https://deploy.workers.cloudflare.com/?url=https://github.com/everett7623/Linketry"
                 target="_blank"
                 rel="noopener noreferrer"
-                ><span data-i18n="deploy.quickActionLabel">Open Cloudflare deploy</span>
+                ><span data-i18n="deploy.quickActionLabel">Deploy production instance</span>
                 <span aria-hidden="true">↗</span></a
               >
               <div class="deploy-track-note">
                 <strong data-i18n="deploy.quickNoteTitle"
-                  >A secure first install cannot be configuration-free.</strong
+                  >Production only. No Demo resources or synthetic data.</strong
                 >
                 <p data-i18n="deploy.quickNote">
-                  A launcher cannot safely choose your account, custom hostname, D1/KV bindings, or
-                  private Admin secret. Linketry never invents those values or sends them through a
-                  public page.
+                  The quick profile never enables Demo mode and never asks for LINKETRY_DEMO_*
+                  values. It starts on workers.dev; add a custom domain later when you are ready.
                 </p>
               </div>
             </article>

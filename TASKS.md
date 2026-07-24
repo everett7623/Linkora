@@ -5,7 +5,21 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
-## 🟡 Ready To Release - Public Site Language Icon (v0.29.13)
+## ✅ Completed - Production-Only Cloudflare Quick Deploy (v0.29.14)
+
+- [x] Synchronize local `main` with remote and reconstruct the v0.29.13 release breakpoint
+- [x] Confirm Cloudflare Deploy Button was scanning Demo variables from the root environment example
+- [x] Add a production-only Worker/D1/KV deployment profile with bundled `/admin/`
+- [x] Remove Demo variables from Cloudflare-scanned environment examples
+- [x] Preserve the reviewed Worker + Pages workflow and official isolated Demo workflow
+- [x] Add grounded GEO facts, JSON-LD, `llms.txt`, sitemap metadata, and AI-aware crawler directives
+- [x] Complete deployment, Worker, Admin, site, build, browser, and local Wrangler dry-run regression without external writes
+
+Task record: `.codex/tasks/cloudflare-production-quick-deploy-2026-07-25.md`
+
+---
+
+## ✅ Completed - Public Site Language Icon (v0.29.13, superseded by v0.29.14)
 
 - [x] Verify the v0.29.12 production, Demo, and public-site release baseline
 - [x] Replace visible locale text and chevron with a compact translation icon
@@ -13,7 +27,7 @@ One item in "In Progress" at a time whenever possible.
 - [x] Repair translated eyebrow labels that overlapped homepage and deployment headings
 - [x] Verify desktop/mobile icon sizing, menu anchoring, and overflow behavior
 - [x] Check all 10 eyebrow/heading pairs in English and Simplified Chinese with no runtime errors
-- [ ] Complete affected regression, commit, push, and verify v0.29.13 workflows
+- [x] Carry affected coverage into the v0.29.14 full local regression; no standalone v0.29.13 publication was made
 
 Task record: `.codex/tasks/site-language-icon-2026-07-24.md`
 

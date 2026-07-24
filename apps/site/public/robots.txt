@@ -1,4 +1,13 @@
+User-agent: OAI-SearchBot
+Content-Signal: search=yes, ai-input=yes, ai-train=no, use=reference
+Allow: /
+
+User-agent: GPTBot
+Content-Signal: search=yes, ai-input=yes, ai-train=no, use=reference
+Disallow: /
+
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=no, use=reference
 Allow: /
 
 Sitemap: https://linketry.com/sitemap.xml

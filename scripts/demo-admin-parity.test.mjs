@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { verifyDemoLiveParity } from './demo-live-smoke.mjs';
 
-const version = '0.29.13';
+const version = '0.29.14';
 const adminOrigin = 'https://demo.linketry.com';
 const apiOrigin = 'https://linketry-demo-worker.example.workers.dev';
 const darkLogo = readFileSync(new URL('../apps/admin/public/favicon.svg', import.meta.url));
@@ -54,12 +54,15 @@ test('Admin and project site use identical canonical dark and light brand assets
   );
 
   const index = readFileSync(new URL('../apps/admin/index.html', import.meta.url), 'utf8');
-  assert.match(index, new RegExp(`href="/favicon\\.svg\\?v=${version.replaceAll('.', '\\.')}"`));
   assert.match(
     index,
-    new RegExp(`href="/favicon-light\\.svg\\?v=${version.replaceAll('.', '\\.')}"`)
+    new RegExp(`href="%BASE_URL%favicon\\.svg\\?v=${version.replaceAll('.', '\\.')}"`)
   );
-  assert.match(index, /<script src="\/theme-init\.js"><\/script>/);
+  assert.match(
+    index,
+    new RegExp(`href="%BASE_URL%favicon-light\\.svg\\?v=${version.replaceAll('.', '\\.')}"`)
+  );
+  assert.match(index, /<script src="%BASE_URL%theme-init\.js"><\/script>/);
   const themeInit = readFileSync(
     new URL('../apps/admin/public/theme-init.js', import.meta.url),
     'utf8'

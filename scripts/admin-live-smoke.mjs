@@ -21,14 +21,14 @@ export function collectInitialAssets(html) {
   for (const tag of html.match(/<(?:script|link)\b[^>]*>/gi) ?? []) {
     if (tag.startsWith('<script')) {
       const source = readAttribute(tag, 'src');
-      if (readAttribute(tag, 'type') === 'module' && source.startsWith('/assets/')) {
+      if (readAttribute(tag, 'type') === 'module' && /^\/(?:admin\/)?assets\//.test(source)) {
         assets.push({ path: source, kind: 'script' });
       }
       continue;
     }
 
     const source = readAttribute(tag, 'href');
-    if (readAttribute(tag, 'rel') === 'stylesheet' && source.startsWith('/assets/')) {
+    if (readAttribute(tag, 'rel') === 'stylesheet' && /^\/(?:admin\/)?assets\//.test(source)) {
       assets.push({ path: source, kind: 'style' });
     }
   }
@@ -53,7 +53,7 @@ export function canonicalViteAssetPath(assetPath) {
   if (
     url.search ||
     url.hash ||
-    !/^\/assets\/[^/]+-[A-Za-z0-9_-]{8,}\.(?:js|css)$/.test(url.pathname)
+    !/^\/(?:admin\/)?assets\/[^/]+-[A-Za-z0-9_-]{8,}\.(?:js|css)$/.test(url.pathname)
   ) {
     throw new Error(
       `Admin asset ${assetPath} must use its canonical Vite content-hashed path without a query or fragment.`

@@ -1,4 +1,4 @@
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import { cors } from 'hono/cors';
 import type { Env } from './types';
 import { handleRedirect } from './routes/redirect';
@@ -106,6 +106,28 @@ app.get('/health', (c) => {
 });
 
 registerAdminApiRoutes(app);
+
+async function bundledAdminNotFound(c: Context<{ Bindings: Env }>) {
+  return notFound(
+    await getPublicPageMessage(c.env, '404', { slug: 'admin' }),
+    resolvePublicLocale(c.req.header('Accept-Language'))
+  );
+}
+
+app.get('/admin', async (c) => {
+  if (!c.env.ASSETS) return bundledAdminNotFound(c);
+  const url = new URL(c.req.url);
+  url.pathname = '/admin/';
+  return Response.redirect(url.href, 308);
+});
+
+app.get('/admin/*', async (c) => {
+  if (!c.env.ASSETS) return bundledAdminNotFound(c);
+  const url = new URL(c.req.url);
+  url.pathname = '/admin/';
+  url.search = '';
+  return c.env.ASSETS.fetch(new Request(url, c.req.raw));
+});
 
 // Slug redirect - catch all (must be last)
 app.get('/:slug', async (c) => {

@@ -2,7 +2,29 @@
 
 This guide is for people who fork or clone Linketry and want to deploy it to their own Cloudflare account.
 
-Start with the public [deployment options page](https://linketry.com/deploy/) to choose between the Cloudflare Quick Deploy launcher and the reviewed repository workflow. The launcher begins Cloudflare's authenticated flow; it does not silently choose your account, D1/KV bindings, hostname, Pages/Admin settings, or private Admin token.
+Start with the public [deployment options page](https://linketry.com/deploy/) to choose between the production-only Cloudflare Quick Deploy profile and the reviewed repository workflow.
+
+## Cloudflare Production Quick Deploy
+
+Use the Deploy to Cloudflare button for a new self-hosted production instance when you want the smallest working topology. Cloudflare forks the repository into your Git account and creates these resources in the account you select:
+
+| Resource      | Production purpose                                                         |
+| ------------- | -------------------------------------------------------------------------- |
+| Worker        | Short links, `/api/v1/*`, scheduled work, and the bundled Admin            |
+| D1 database   | Source of truth for links, settings, visits, and operational records       |
+| KV namespace  | Redirect cache only; D1 remains authoritative                              |
+| Admin assets  | Built into the same Worker and served from `/admin/`                       |
+| Admin secret  | Private `LINKETRY_ADMIN_TOKEN` entered through Cloudflare's protected form |
+
+The quick profile does **not** enable `LINKETRY_DEMO_MODE`, request any `LINKETRY_DEMO_*` variable, create the official Demo Worker/Pages projects, or seed synthetic data. It also does not create a separate Pages project because Cloudflare Deploy Buttons support one Worker application; the Admin is bundled as Worker static assets instead.
+
+1. Open the Cloudflare deployment button and sign in to the account that will own the instance.
+2. Choose unique Worker, D1, and KV names. Enter a long random `LINKETRY_ADMIN_TOKEN` and save it in a password manager.
+3. Deploy. Cloudflare binds the new D1/KV resources, builds the Admin, deploys the Worker, and applies the production migrations.
+4. Open `https://<worker>.<account-subdomain>.workers.dev/admin/` and log in with the saved token.
+5. In Admin Settings, use the Worker hostname as the first short-link domain. Add a custom domain later if desired.
+
+This is a fresh-install path. Do not point it at an existing D1/KV resource or use it to upgrade an existing Linketry instance. The reviewed workflow below remains the operator path for custom domains, separate Pages Admin hosting, explicit dry runs, protected approvals, backups, and controlled upgrades.
 
 ## Deployment Track
 
@@ -20,7 +42,7 @@ Linketry keeps three deployment tracks separate:
 
 Do not use the official Demo workflow to upgrade an existing deployment. Do not use an existing production database as the target for this fresh-install guide.
 
-Linketry is free and open source first. The recommended basic setup requires only one custom hostname:
+Linketry is free and open source first. The reviewed repository setup below requires only one custom hostname:
 
 | Hostname      | Purpose                                               | Example                    |
 | ------------- | ----------------------------------------------------- | -------------------------- |
@@ -226,7 +248,7 @@ curl https://go.example.com/health
 Expected shape:
 
 ```json
-{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.29.13" } }
+{ "success": true, "data": { "status": "ok", "name": "Linketry", "version": "0.29.14" } }
 ```
 
 ### Build and Deploy Admin
@@ -292,7 +314,7 @@ LINKETRY_D1_DATABASE_NAME=linketry-alice-db
 LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.29.13
+LINKETRY_APPROVED_RELEASE=0.29.14
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true

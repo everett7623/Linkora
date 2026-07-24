@@ -4,7 +4,7 @@ import test from 'node:test';
 import { collectInitialAssets, verifyAdminLive, waitForAdminLive } from './admin-live-smoke.mjs';
 
 const adminUrl = 'https://admin.example.com';
-const version = '0.29.13';
+const version = '0.29.14';
 const html = `
   <meta name="linketry-version" content="${version}">
   <script type="module" crossorigin src="/assets/index-AbCd1234.js"></script>
@@ -94,7 +94,7 @@ test('requires canonical content-hashed paths and permits their long-term cachin
         const url = new URL(String(input));
         if (url.pathname === '/') {
           return response(
-            html.replace('/assets/index-AbCd1234.js', '/assets/index-AbCd1234.js?v=0.29.13'),
+            html.replace('/assets/index-AbCd1234.js', '/assets/index-AbCd1234.js?v=0.29.14'),
             'text/html'
           );
         }

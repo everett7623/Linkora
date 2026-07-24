@@ -2,7 +2,7 @@
 
 Quick reference for what is done, what is in progress, and what is not started.
 
-Last updated: 2026-07-24
+Last updated: 2026-07-25
 
 ---
 
@@ -13,15 +13,30 @@ Last updated: 2026-07-24
 | Worker backend             | ✅ 0.29.12 live       | Production Worker health reports v0.29.12; redirect, API, analytics, D1, and KV behavior are unchanged                                                                                              |
 | Admin frontend             | ✅ 0.29.12 live       | Production and isolated Demo Admin deployments completed successfully for v0.29.12                                                                                                                  |
 | Database schema            | ✅ Complete           | V6 analytics migration applied in production through GitHub Actions                                                                                                                                 |
-| Documentation              | 🟡 0.29.13 prepared   | Language icon refinement, eyebrow layout repair, examples, task record, and release metadata are synchronized for the next reviewed release                                                         |
-| Deployment                 | ✅ 0.29.12 live       | Production run `30075595234` and isolated Demo run `30072730389` completed successfully for commit `f32e86e`                                                                                        |
-| End-to-end test            | ✅ Full regression    | 84 deployment, 110 Worker, 6 Demo API, 64 Admin unit, 25 Admin browser, 2 production-build browser, and 9 site tests pass; Worker type-check and normal/Demo Admin plus Site builds pass            |
+| Documentation              | ✅ 0.29.14 local      | Production-only Cloudflare Quick Deploy, bundled Admin guidance, GEO contract, examples, task record, and release metadata are locally verified                                                       |
+| Deployment                 | 🟡 0.29.14 pending    | v0.29.14 has only local dry-run verification; production and Demo remain on the v0.29.12 workflows `30075595234` and `30072730389`                                                                   |
+| End-to-end test            | ✅ Full regression    | 87 deployment, 110 Worker, 6 Demo API, 64 Admin unit, 25 Admin browser, 2 production-build browser, and 10 site tests pass; Worker type-check, normal/Demo Admin, Site, and Quick Deploy builds pass |
 | Known issues               | ✅ Tracked            | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                      |
-| Current version            | 🟡 0.29.13 prepared   | Repository refines the public-site language trigger and repairs section-label overlap after the verified v0.29.12 production and Demo release                                                       |
-| Repository update target   | 🟡 0.29.13 prepared   | GitHub `main` package metadata remains the update-discovery source; no GitHub Release or tag is required                                                                                            |
+| Current version            | ✅ 0.29.14 release    | The repository publishes the production-only Cloudflare Quick Deploy profile; existing production and Demo instances remain on v0.29.12 until separately deployed                                  |
+| Repository update target   | ✅ 0.29.14 release    | GitHub `main` package metadata remains the update-discovery source; no GitHub Release or tag is required                                                                                            |
 | Next planned work          | 🟡 Pre-1.0 validation | Fresh-account rehearsal, remote-D1 scale evidence, assistive-technology review, and private vulnerability reporting remain; then prioritize URL semantics, mobile deep links, and branded QR assets |
 | Shlink migration readiness | ✅ Complete           | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                           |
 | Mainstream-tool gap audit  | ✅ Complete           | [Official-vendor comparison](docs/MAINSTREAM_SHORT_LINK_GAP_AUDIT.md) prioritizes URL semantics, mobile deep links, and QR branding without expanding the redirect hot path                         |
+
+---
+
+## Linketry 0.29.14 Production-Only Cloudflare Quick Deploy
+
+| Area                     | Status        | Notes                                                                                                                         |
+| ------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Resource profile         | ✅ Production | Cloudflare provisions one normal Worker, one fresh D1 database, and one KV cache namespace in the installing user's account   |
+| Admin delivery           | ✅ Bundled    | The normal authenticated Admin is built as Worker static assets under `/admin/`; D1 migrations run after deployment           |
+| Secret surface           | ✅ Minimal    | The launcher requests only `LINKETRY_ADMIN_TOKEN`; scanned environment examples contain no `LINKETRY_DEMO_*` values           |
+| Demo boundary            | ✅ Isolated   | Quick Deploy never enables Demo mode, creates Demo resources, or seeds synthetic data; the official Demo workflow is separate |
+| Existing deployment path | ✅ Preserved  | Reviewed GitHub Actions still deploys Worker + Pages with its release, migration, backup, and target gates                    |
+| Redirect/data impact     | ✅ Preserved  | Redirect evaluation is unchanged; D1 remains authoritative, KV remains cache only, and analytics stays asynchronous           |
+| GEO discovery            | ✅ Grounded   | Visible facts, JSON-LD, `llms.txt`, sitemap dates, and AI-aware robots directives use the same reviewed product claims        |
+| Local verification       | ✅ Complete   | 87 deployment, 110 Worker, 64 Admin unit, 25 Admin browser, 6 Demo API, and 10 site tests pass; builds, Wrangler dry-run, and desktop/mobile checks pass |
 
 ---
 

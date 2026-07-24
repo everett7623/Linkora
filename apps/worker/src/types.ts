@@ -3,6 +3,7 @@ import type { VisitQueueMessage } from '@linketry/shared';
 export interface Env {
   DB: D1Database;
   KV: KVNamespace;
+  ASSETS?: Fetcher;
   BACKUPS?: R2Bucket;
   VISITS_QUEUE?: Queue<VisitQueueMessage>;
   DEMO_RATE_LIMITER?: RateLimit;

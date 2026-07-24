@@ -7,8 +7,10 @@ const adminPackage = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf8')
 ) as { version?: string };
 const linketryVersion = adminPackage.version ?? '0.0.0';
+const basePath = process.env.VITE_LINKETRY_BASE_PATH === '/admin/' ? '/admin/' : '/';
 
 export default defineConfig({
+  base: basePath,
   plugins: [
     react(),
     {
@@ -37,7 +39,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: 'dist',
+    outDir: basePath === '/admin/' ? 'dist/admin' : 'dist',
     sourcemap: true,
   },
 });

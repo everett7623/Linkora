@@ -2,13 +2,20 @@
 
 This document is the short deployment checklist.
 
-For a fresh self-hosted install, begin with the public [deployment options page](https://linketry.com/deploy/) and then use [SELF_HOSTING.md](SELF_HOSTING.md). The Cloudflare Quick Deploy launcher starts an authenticated dashboard flow; the reviewed repository workflow remains the supported path for explicit D1/KV planning and protected release configuration. Installations older than 0.10 must use [UPGRADING_PRE_0_10.md](UPGRADING_PRE_0_10.md) and retain their current binding IDs until migration is verified.
+For a fresh self-hosted install, begin with the public [deployment options page](https://linketry.com/deploy/) and then use [SELF_HOSTING.md](SELF_HOSTING.md). Cloudflare Quick Deploy creates a production-only Worker with a fresh D1 database, KV namespace, and bundled `/admin/`; it never creates or configures the official Demo. The reviewed repository workflow remains the supported path for explicit D1/KV planning, separate Pages hosting, custom domains, and protected release configuration. Installations older than 0.10 must use [UPGRADING_PRE_0_10.md](UPGRADING_PRE_0_10.md) and retain their current binding IDs until migration is verified.
 
 The longer maintainer production runbook is in [../DEPLOYMENT.md](../DEPLOYMENT.md).
 
 ## Targets
 
-Basic profile:
+Cloudflare Quick Deploy profile:
+
+- Worker API and short links: `<worker>.<account>.workers.dev`
+- Bundled production Admin: `<worker>.<account>.workers.dev/admin/`
+- Fresh production D1 and KV bindings: selected in the Cloudflare form
+- Demo mode, Demo resources, Pages, R2, and Queue: not configured
+
+Reviewed repository basic profile:
 
 - Short links and Worker API: `go.example.com`
 - Admin frontend: `linketry-admin.pages.dev`
@@ -107,7 +114,7 @@ LINKETRY_D1_DATABASE_NAME=linketry
 LINKETRY_D1_DATABASE_ID=<your-d1-database-id>
 LINKETRY_KV_NAMESPACE_ID=<your-kv-namespace-id>
 LINKETRY_DEPLOYMENT_TRACK=fresh
-LINKETRY_APPROVED_RELEASE=0.29.13
+LINKETRY_APPROVED_RELEASE=0.29.14
 LINKETRY_APPROVED_COMMIT=<40-character-commit-sha>
 LINKETRY_APPROVED_MIGRATIONS_SHA256=<output-of-npm-run-deploy:migration-digest>
 LINKETRY_FRESH_INSTALL_CONFIRMED=true

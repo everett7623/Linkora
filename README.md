@@ -25,7 +25,7 @@ Linketry is a self-hosted link management, analytics and monitoring platform.
 
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/everett7623/Linketry)
 
-> **New to self-hosting?** Start at the [deployment options page](https://linketry.com/deploy/) to choose Cloudflare Quick Deploy or the reviewed repository workflow, then follow the [quick-start guide](docs/SELF_HOSTING.md) and run the [read-only deployment preflight](docs/DEPLOYMENT_PREFLIGHT.md). The Cloudflare launcher starts an authenticated deployment flow but does not silently choose your D1/KV bindings or private Admin secret. Installations older than 0.10 must use the [non-destructive upgrade guide](docs/UPGRADING_PRE_0_10.md) and keep their current D1/KV/R2/Queue bindings until migration is verified.
+> **New to self-hosting?** The Cloudflare button creates a normal production instance in your account: one Worker with the Admin at `/admin/`, a new D1 database, and a new KV namespace. It asks only for your private Admin login token; it does not enable Demo mode, create Demo resources, or seed synthetic data. Use the [deployment options page](https://linketry.com/deploy/) and [self-hosting guide](docs/SELF_HOSTING.md) for the exact first-login steps or the separate reviewed Worker + Pages workflow. Installations older than 0.10 must use the [non-destructive upgrade guide](docs/UPGRADING_PRE_0_10.md) and keep their current D1/KV/R2/Queue bindings until migration is verified.
 
 The official project site lives in `apps/site`, is deployed independently from the Admin, and is live at [linketry.com](https://linketry.com); [linketry-site.pages.dev](https://linketry-site.pages.dev) remains its automatic Pages URL. The isolated public Demo is live at [demo.linketry.com](https://demo.linketry.com) with the same Admin version, dark/light Logo assets, complete production navigation, responsive layout, and synthetic advanced-feature records. Its deployment fails unless those assets, 18 read APIs, and the read-only write boundary pass live verification. The Demo asks for a public preview code to enter the Admin; this code is a UX gate, not a Cloudflare or Admin secret. The internal Admin token remains a random Worker secret. Project support uses the owner-managed [Coffee page](https://everettlabs.dev/coffee/).
 
@@ -218,7 +218,7 @@ wrangler secret put LINKETRY_ADMIN_TOKEN
 
 ## Environment Variables
 
-See `.env.example`, `apps/worker/.dev.vars.example`, and `apps/admin/.env.example` for all required variables.
+The root `.env.example` intentionally contains only the production Admin secret requested by Cloudflare Quick Deploy. See `apps/admin/.env.example`, [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md), and [docs/DEPLOYMENT_PREFLIGHT.md](docs/DEPLOYMENT_PREFLIGHT.md) for the separate Admin build, reviewed GitHub workflow, optional capability, and official Demo variables. Public-site search and AI discovery policy is documented in [docs/GEO.md](docs/GEO.md).
 
 | Variable                         | Description                                          |
 | -------------------------------- | ---------------------------------------------------- |
@@ -235,7 +235,20 @@ See `.env.example`, `apps/worker/.dev.vars.example`, and `apps/admin/.env.exampl
 
 Pushing to `main` can deploy automatically through GitHub Actions after the Cloudflare secrets in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) are configured.
 
-### Quick deployment (recommended)
+### Cloudflare production quick deploy
+
+The Deploy to Cloudflare button provisions a self-contained production profile in the user's account:
+
+```txt
+https://<worker>.<account>.workers.dev/         Worker API + short links
+https://<worker>.<account>.workers.dev/admin/  Admin UI
+```
+
+Cloudflare creates and binds a fresh D1 database and KV namespace, builds the Admin under `/admin/`, deploys the Worker, and then applies the D1 migrations. Enter a long random `LINKETRY_ADMIN_TOKEN` in the hidden setup field and save it in a password manager. No `LINKETRY_DEMO_*` value, Demo resource, Demo mode, or synthetic seed is part of this path.
+
+After deployment, open `/admin/`, log in, and set the Worker hostname as the initial short-link domain. Add a custom domain later if needed. Existing installations must not use this fresh-install profile.
+
+### Reviewed deployment (recommended for operators)
 
 Configure only one custom hostname. Cloudflare Pages automatically provides the Admin URL, so beginners do not need to create an Admin DNS record or custom domain.
 

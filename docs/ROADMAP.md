@@ -324,6 +324,18 @@ Status: prepared in the repository; publication follows the normal reviewed proj
 - Desktop and mobile checks cover all 10 eyebrow/heading pairs, menu anchoring, hidden/expanded states, runtime errors, and horizontal overflow
 - Worker redirects, Admin behavior, APIs, D1/KV ownership, migrations, credentials, and production resources remain unchanged
 
+## 0.29.14: Production-Only Cloudflare Quick Deploy
+
+Status: implemented and locally verified; publication is pending.
+
+- Cloudflare Quick Deploy provisions one normal Worker, one fresh D1 database, and one KV cache namespace in the installing user's account
+- The authenticated Admin is bundled under `/admin/` so the one-Worker deployment is complete without an unsupported second Pages application
+- Cloudflare-scanned environment examples request only the private production Admin token and contain no `LINKETRY_DEMO_*` configuration
+- The quick profile never enables Demo mode, creates isolated Demo resources, or seeds synthetic data
+- The reviewed Worker + Pages workflow remains available for explicit resource plans, custom domains, protected upgrades, and advanced capabilities
+- The public site publishes grounded facts through visible content, structured data, `llms.txt`, sitemap metadata, and a search/AI-input/no-training crawler policy
+- Redirect evaluation, asynchronous analytics, D1/KV ownership, official Demo isolation, and existing production resources remain unchanged
+
 ## 0.29.12: Public Site Visual And Language Navigation
 
 Status: complete; production workflow `30075595234` and isolated Demo workflow `30072730389` successfully deployed commit `f32e86e`.

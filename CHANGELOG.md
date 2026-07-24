@@ -13,6 +13,27 @@ _(none)_
 
 ---
 
+## [0.29.14] - 2026-07-25
+
+### Fixed
+
+- Replaced the misleading Cloudflare launcher contract with a deployable production-only profile that provisions one Worker, one D1 database, and one KV namespace in the installing user's account.
+- Removed every `LINKETRY_DEMO_*` value from files scanned by Cloudflare Deploy Button, so new self-hosters are no longer asked to configure the maintainer's isolated Demo environment.
+
+### Added
+
+- Bundled the normal Admin build under `/admin/` as Worker static assets for Cloudflare Quick Deploy, while preserving the existing separate Pages Admin architecture for reviewed GitHub Actions deployments.
+- Added post-deploy production D1 migrations, binding descriptions, `/admin/` browser routing, and contract coverage for the one-click resource and secret boundary.
+- Added grounded GEO support for the public site: visible canonical facts, WebApplication/FAQ/HowTo JSON-LD, `llms.txt`, sitemap dates, and explicit AI-aware robots directives.
+
+### Safety
+
+- The quick profile never enables Demo mode or synthetic seeding, and D1 remains the source of truth while KV remains cache only.
+- Existing production/Demo workflows, Pages deployments, custom domains, redirect evaluation, asynchronous analytics, and stored data are unchanged.
+- Public discovery permits search and real-time AI citation while reserving rights against AI training; no ranking or citation outcome is claimed.
+
+---
+
 ## [0.29.13] - 2026-07-24
 
 ### Changed

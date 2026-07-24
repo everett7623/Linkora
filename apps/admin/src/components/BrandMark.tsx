@@ -19,7 +19,7 @@ const sizeClasses: Record<BrandMarkSize, string> = {
 export function BrandMark({ size = 'md', decorative = true, className }: BrandMarkProps) {
   const { resolvedTheme } = useTheme();
   const asset = resolvedTheme === 'light' ? 'favicon-light.svg' : 'favicon.svg';
-  const src = `/${asset}?v=${encodeURIComponent(LINKETRY_VERSION)}`;
+  const src = `${import.meta.env.BASE_URL}${asset}?v=${encodeURIComponent(LINKETRY_VERSION)}`;
 
   return (
     <img

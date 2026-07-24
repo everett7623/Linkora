@@ -6,6 +6,8 @@ const page = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const deployPage = await readFile(new URL('../deploy/index.html', import.meta.url), 'utf8');
 const headers = await readFile(new URL('../public/_headers', import.meta.url), 'utf8');
 const sitemap = await readFile(new URL('../public/sitemap.xml', import.meta.url), 'utf8');
+const robots = await readFile(new URL('../public/robots.txt', import.meta.url), 'utf8');
+const llms = await readFile(new URL('../public/llms.txt', import.meta.url), 'utf8');
 const script = await readFile(new URL('../src/main.ts', import.meta.url), 'utf8');
 const localeScript = await readFile(new URL('../src/siteI18n.ts', import.meta.url), 'utf8');
 const styles = await readFile(new URL('../src/styles.css', import.meta.url), 'utf8');
@@ -15,6 +17,12 @@ const visualMessages = await readFile(
   'utf8'
 );
 const viteConfig = await readFile(new URL('../vite.config.ts', import.meta.url), 'utf8');
+
+function structuredData(document) {
+  return [
+    ...document.matchAll(/<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/g),
+  ].map(([, source]) => JSON.parse(source));
+}
 
 test('project site publishes the complete public-launch content contract', () => {
   for (const content of [
@@ -40,11 +48,11 @@ test('project site exposes a dedicated deployment route from primary actions', (
 
 test('deployment page presents a Cloudflare launch and guarded repository workflow', () => {
   for (const content of [
-    'A · Cloudflare Quick Deploy',
-    'Start from the Cloudflare dashboard',
+    'A · Cloudflare production deploy',
+    'Create one complete production Worker',
     'B · Reviewed repository workflow',
     'Provision exactly what you approve',
-    'A secure first install cannot be configuration-free',
+    'Production only. No Demo resources or synthetic data',
     'docs/SELF_HOSTING.md',
     'UPGRADING_PRE_0_10.md',
   ]) {
@@ -59,6 +67,7 @@ test('deployment page presents a Cloudflare launch and guarded repository workfl
   assert.match(deployPage, /id="deploy-copy-status"[^>]*aria-live="polite"/);
   assert.match(script, /navigator\.clipboard\.writeText\(promptText\)/);
   assert.doesNotMatch(deployPage, /100% free|free forever|zero configuration/i);
+  assert.match(deployPage, /never asks for LINKETRY_DEMO_\*/);
 });
 
 test('project site uses canonical Linketry identity and public links', () => {
@@ -72,6 +81,34 @@ test('project site uses canonical Linketry identity and public links', () => {
   assert.match(page, /docs\/SELF_HOSTING\.md/);
   assert.match(page, /docs\/ROADMAP\.md/);
   assert.doesNotMatch(page, /Linkora/i);
+});
+
+test('project site exposes grounded machine-readable facts for search and AI discovery', () => {
+  const [homeData] = structuredData(page);
+  const [deployData] = structuredData(deployPage);
+  const software = homeData['@graph'].find((item) => item['@type'] === 'WebApplication');
+  const facts = homeData['@graph'].find((item) => item['@type'] === 'FAQPage');
+
+  assert.equal(software.name, 'Linketry');
+  assert.equal(software.softwareVersion, '0.29.14');
+  assert.equal(software.isAccessibleForFree, true);
+  assert.equal(software.offers.price, '0');
+  assert.match(software.codeRepository, /github\.com\/everett7623\/Linketry/);
+  assert.equal(facts.mainEntity.length, 4);
+  assert.match(page, /data-i18n="home\.factsWhatQuestion"/);
+  assert.equal(deployData['@type'], 'HowTo');
+  assert.equal(deployData.step.length, 3);
+  assert.match(page, /rel="alternate" type="text\/plain" href="\/llms\.txt"/);
+  assert.match(deployPage, /rel="alternate" type="text\/plain" href="\/llms\.txt"/);
+  assert.match(page, /name="robots"/);
+  assert.match(deployPage, /name="robots"/);
+  assert.match(sitemap, /<lastmod>2026-07-25<\/lastmod>/);
+  assert.match(robots, /User-agent: OAI-SearchBot/);
+  assert.match(robots, /User-agent: GPTBot[\s\S]*Disallow: \//);
+  assert.match(robots, /Content-Signal: search=yes, ai-input=yes, ai-train=no, use=reference/);
+  assert.match(llms, /Current documented version: 0\.29\.14/);
+  assert.match(llms, /D1 is the source of truth/);
+  assert.match(llms, /does not require Demo mode/);
 });
 
 test('primary navigation presents GitHub as an accessible icon-only action', () => {

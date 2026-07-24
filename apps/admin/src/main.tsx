@@ -11,9 +11,11 @@ import { ToastProvider } from './components/ui/Toast';
 import { AppErrorBoundary } from './components/AppErrorBoundary';
 import './index.css';
 
+const routerBaseName = import.meta.env.BASE_URL.replace(/\/$/, '') || '/';
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={routerBaseName}>
       <ThemeProvider>
         <LocaleProvider>
           <AppErrorBoundary>
