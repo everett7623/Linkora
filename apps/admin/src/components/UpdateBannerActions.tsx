@@ -42,6 +42,7 @@ export function UpdateBannerActions({
       {capability?.enabled ? (
         <button
           type="button"
+          data-testid="upgrade-action"
           onClick={onUpgrade}
           disabled={busy}
           className={`${upgradeClass} disabled:cursor-not-allowed disabled:opacity-60`}
@@ -56,6 +57,7 @@ export function UpdateBannerActions({
         </button>
       ) : (
         <a
+          data-testid="upgrade-action"
           href={upgradeWorkflowUrl}
           target="_blank"
           rel="noopener noreferrer"

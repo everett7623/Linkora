@@ -13,6 +13,24 @@ _(none)_
 
 ---
 
+## [0.29.11] - 2026-07-24
+
+### Changed
+
+- Reworked the Admin sidebar version entry into a compact release-status center inspired by the provided Sub2API reference while preserving Linketry's existing theme and navigation model.
+- Consolidated installed version, update availability, refresh state, changelog access, and the existing protected online-upgrade handoff into one contextual sidebar panel.
+
+### Safety
+
+- The panel reuses the existing repository, backup, migration, target, and release approval workflow; it introduces no new deployment endpoint, credential, or redirect behavior.
+- The top-level update notice remains the authoritative protected upgrade flow and manual fallback.
+
+### Tests
+
+- Verified responsive desktop/mobile panel placement, 25 Admin browser tests, 64 Admin unit tests, 110 Worker tests, 84 deployment tests, 8 project-site tests, Worker type-check, and normal/Demo Admin plus project-site production builds.
+
+---
+
 ## [0.29.10] - 2026-07-23
 
 ### Changed

@@ -78,7 +78,7 @@ export function Sidebar({ collapsed = false, mobile = false, onClose, onNavigate
           data-testid="sidebar-version-slot"
           className={clsx(collapsed && !mobile ? 'px-2 pb-3' : compact ? 'px-2 pb-2' : 'px-3 pb-3')}
         >
-          <SidebarVersionStatus collapsed={collapsed && !mobile} />
+          <SidebarVersionStatus collapsed={collapsed && !mobile} mobile={mobile} />
         </div>
       </div>
 

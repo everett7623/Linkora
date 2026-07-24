@@ -313,6 +313,15 @@ Status: complete in the repository; publication follows the normal reviewed proj
 - Navigation uses a recognizable labeled GitHub mark and the deployment route is indexed in the sitemap
 - Worker, redirect, Admin, API, D1/KV, migration, and production deployment behavior remain unchanged
 
+## 0.29.11: Sidebar Version Center
+
+Status: prepared in the repository; production and Demo remain on the verified v0.29.10 runtime.
+
+- The compact Admin brand area now makes the installed version and update state visible without taking toolbar space.
+- A contextual version panel exposes installed/latest state, explicit refresh, changelog access, and the existing protected online-upgrade handoff.
+- Desktop expanded, desktop collapsed, and mobile navigation each keep the panel within the viewport.
+- The release workflow, confirmation dialog, upgrade polling, and deployment safety gates are unchanged.
+
 ## 0.29.10: Documentation Reconciliation And Mainstream Tool Gap Audit
 
 Status: prepared in the repository after the completed v0.29.9 production and isolated Demo release.

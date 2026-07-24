@@ -2,7 +2,7 @@
 
 Quick reference for what is done, what is in progress, and what is not started.
 
-Last updated: 2026-07-23
+Last updated: 2026-07-24
 
 ---
 
@@ -10,18 +10,31 @@ Last updated: 2026-07-23
 
 | Layer                      | Status                | Notes                                                                                                                                                                                                   |
 | -------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Worker backend             | ✅ 0.29.9 live        | Production Worker health reports v0.29.9 after the approved `main` workflow; redirect, API, analytics, D1, and KV behavior are unchanged                                                              |
-| Admin frontend             | ✅ 0.29.9 live        | Production and isolated Demo Admin both serve v0.29.9 after their verified deployment workflows                                                                                                       |
+| Worker backend             | ✅ 0.29.10 live       | Production Worker health reports v0.29.10; redirect, API, analytics, D1, and KV behavior are unchanged                                                                                               |
+| Admin frontend             | ✅ 0.29.10 live       | Production and isolated Demo Admin both serve v0.29.10                                                                                                                                                |
 | Database schema            | ✅ Complete           | V6 analytics migration applied in production through GitHub Actions                                                                                                                                     |
-| Documentation              | 🟡 0.29.10 prepared   | Release records, examples, and the mainstream-tool gap audit are synchronized for the next reviewed documentation release                                                                              |
-| Deployment                 | ✅ 0.29.9 live        | Production run `29898513486` and isolated Demo run `29898513182` deployed and verified the approved `ba27982` commit                                                                                   |
+| Documentation              | 🟡 0.29.11 prepared   | Sidebar version center, examples, task record, and release metadata are synchronized for the next reviewed release                                                                                    |
+| Deployment                 | 🟡 0.29.10 runtime live | Demo run `29982497745` passed; production runtime is live, while custom-domain Admin readiness remains a tracked cache follow-up                                                                      |
 | End-to-end test            | ✅ Full regression    | 84 deployment, 110 Worker, 64 Admin unit, 25 Admin browser, 2 production-build browser, and 8 site tests pass; Worker type-check and normal/Demo Admin plus Site builds pass                            |
 | Known issues               | ✅ Tracked            | Partial large-import write cutoff fixed in v0.9.16; remaining operational limitations are documented in `docs/KNOWN_ISSUES.md`                                                                          |
-| Current version            | 🟡 0.29.10 prepared   | Repository documents the completed v0.29.9 release and bounded post-validation priorities; production and Demo remain verified on v0.29.9 until this maintenance release is approved                   |
-| Repository update target   | 🟡 0.29.10 prepared   | GitHub `main` package metadata remains the update-discovery source; no GitHub Release or tag is required                                                                                                |
+| Current version            | 🟡 0.29.11 prepared   | Repository adds the sidebar version center while production and Demo run the verified v0.29.10 runtime                                                                                                 |
+| Repository update target   | 🟡 0.29.11 prepared   | GitHub `main` package metadata remains the update-discovery source; no GitHub Release or tag is required                                                                                                |
 | Next planned work          | 🟡 Pre-1.0 validation | Fresh-account rehearsal, remote-D1 scale evidence, assistive-technology review, and private vulnerability reporting remain; then prioritize URL semantics, mobile deep links, and branded QR assets |
 | Shlink migration readiness | ✅ Complete           | Shlink imports preserve original short domains from `shortUrl`; stored links can then be migrated from a legacy domain such as `s.y8o.de` to a new domain                                               |
 | Mainstream-tool gap audit  | ✅ Complete           | [Official-vendor comparison](docs/MAINSTREAM_SHORT_LINK_GAP_AUDIT.md) prioritizes URL semantics, mobile deep links, and QR branding without expanding the redirect hot path                            |
+
+---
+
+## Linketry 0.29.11 Sidebar Version Center
+
+| Area                   | Status      | Notes                                                                                                                                            |
+| ---------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Sidebar information    | ✅ Complete | The product mark, installed version, and availability state use one compact, scannable Admin shell region                                       |
+| Release panel          | ✅ Complete | A contextual panel exposes installed/latest status, explicit refresh, changelog access, and the existing protected upgrade action               |
+| Responsive behavior    | ✅ Complete | The panel anchors beside expanded/collapsed desktop navigation and stays bounded inside mobile viewports                                         |
+| Upgrade safety         | ✅ Preserved | Existing confirmation, repository, backup, migration, target, and release gates remain the only upgrade path                                    |
+| Verification           | ✅ Complete | Desktop and mobile browser checks plus the full 25-test Admin browser suite pass; unit, Worker, deployment, site, type-check, and build regressions also pass |
+| Runtime/data impact    | ✅ None     | Redirects, Admin API behavior, D1/KV ownership, migrations, stored data, and Cloudflare resource configuration are unchanged                    |
 
 ---
 
@@ -861,6 +874,7 @@ Last updated: 2026-07-23
 | Issue                                               | Status          | Notes                                                                                           |
 | --------------------------------------------------- | --------------- | ----------------------------------------------------------------------------------------------- |
 | Browser plugin instability                          | ℹ️ Not blocking | API and production smoke checks completed; browser plugin not required for remaining cutover    |
+| Admin custom-domain asset convergence                | 🟡 Follow-up    | Production serves v0.29.10, but GitHub Runner repeatedly received a cached HTML fallback for a canonical JS path; direct Pages origin was healthy |
 | Admin API on `workers.dev` unavailable              | ℹ️ Not blocking | Admin should be built with the configured Worker/API origin                                     |
 | Wrangler v3 update warning                          | ✅ Fixed        | Project toolchain upgraded to Wrangler 4.111.0 in v0.13.0                                       |
 | KV stale active entry after admin changes           | ✅ Fixed        | Redirect handler now re-checks D1 on KV hits and preserves active KV only if D1 is unavailable  |

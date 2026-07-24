@@ -39,7 +39,7 @@ export const updateMessages = {
     checkingUpgrade: 'Checking upgrade',
     confirmUpgradeTitle: 'Confirm online upgrade',
     confirmUpgradeMessage:
-      'Deploy Linketry {version} from this instance\'s configured repository and branch? The protected backup, migration, target, and release gates must all pass.',
+      "Deploy Linketry {version} from this instance's configured repository and branch? The protected backup, migration, target, and release gates must all pass.",
     confirmUpgrade: 'Confirm upgrade',
     upgradeStarting: 'Starting the protected deployment...',
     upgradeQueued: 'Deployment is queued in GitHub Actions...',
@@ -52,7 +52,8 @@ export const updateMessages = {
     upgradeVerificationFailed:
       'Deployment succeeded, but this page could not verify the running version. Reload to confirm the update.',
     upgradeCompletedTitle: 'Linketry {version} upgrade complete',
-    upgradeCompletedDescription: 'The Admin refreshed successfully and is now running the new version.',
+    upgradeCompletedDescription:
+      'The Admin refreshed successfully and is now running the new version.',
     upgradePropagationTitle: 'Deployment complete. Waiting for Linketry {version}',
     upgradePropagationRefreshing:
       'This page is still running {currentVersion}. It will refresh once more in a few seconds.',
@@ -61,6 +62,7 @@ export const updateMessages = {
     refreshNow: 'Refresh now',
     dismissUpgradeResult: 'Dismiss upgrade result',
     dismissUpdate: 'Dismiss update notice',
+    closeVersionPanel: 'Close version status',
   },
   'zh-CN': {
     updateAvailableTitle: 'Linketry {version} 已发布',
@@ -119,5 +121,6 @@ export const updateMessages = {
     refreshNow: '立即刷新',
     dismissUpgradeResult: '关闭升级结果',
     dismissUpdate: '关闭更新提示',
+    closeVersionPanel: '关闭版本状态',
   },
 } as const;

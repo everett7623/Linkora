@@ -5,13 +5,25 @@ One item in "In Progress" at a time whenever possible.
 
 ---
 
-## 🟡 Ready To Release - Documentation Reconciliation And Mainstream Tool Gap Audit (v0.29.10)
+## 🟡 Ready To Release - Sidebar Version Center (v0.29.11)
+
+- [x] Audit the current Linketry Admin shell and the supplied Sub2API reference states
+- [x] Add a compact sidebar version trigger and contextual release-status panel
+- [x] Reuse the protected online-upgrade action and retain the existing top-level fallback
+- [x] Run Admin browser coverage, responsive screenshots, and full affected regression
+- [ ] Push `main` and verify the v0.29.11 production and Demo workflows
+
+Task record: `.codex/tasks/sidebar-update-center-2026-07-23.md`
+
+---
+
+## ✅ Completed - Documentation Reconciliation And Mainstream Tool Gap Audit (v0.29.10)
 
 - [x] Verify the remote `main` commit, production/Demo workflows, and public v0.29.9 runtime
 - [x] Reconcile release documentation, V7 status, version examples, and maintenance metadata
 - [x] Compare official Bitly, Short.io, Dub, Rebrandly, and Shlink capability documentation
 - [x] Add bounded URL semantics, deep-linking, and QR branding priorities without expanding current scope
-- [ ] Push `main` and verify the v0.29.10 documentation maintenance release
+- [x] Push `main`; isolated Demo run `29982497745` passed and public production/Demo endpoints report v0.29.10
 
 Task record: `.codex/tasks/documentation-reconciliation-market-gap-audit-2026-07-23.md`
 
@@ -591,6 +603,7 @@ Task record: `.codex/tasks/mainstream-import-adapters-2026-07-20.md`
 - [ ] V9+: Add multi-segment slugs and opt-in query/extra-path forwarding with strict, append, and ignore modes while preserving existing redirect defaults
 - [ ] V9+: Add iOS/Android mobile deep-link targets with explicit web fallbacks and no redirect-path network dependency
 - [ ] V9+: Add branded QR Code assets with safe styling, multiple export formats, and separately labeled scan attribution
+- [ ] Production follow-up: correct the proxied `admin.uukk.de` DNS/cache path or add a narrowly scoped cache-purge capability so Pages readiness cannot retain an HTML fallback under a canonical JS asset key
 
 - [x] V7: Add configurable backup retention, starting with a 30-day default
 - [x] V7: Add periodic target health monitoring, failure alerts, recovery alerts, and bounded status history
